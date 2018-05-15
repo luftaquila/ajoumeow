@@ -1,0 +1,37 @@
+<html>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+<script>
+  function handleOnLoad() {
+    $.ajax({
+      url: 'https://docs.google.com/spreadsheet/pub?key=1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A&single=true&gid=850606151&range=F:I&output=csv',
+      type: "GET",
+      dataType: 'text',
+      cache: false,
+      success: function (response) {
+        parseCSV(response, '\n', ',');
+      }
+    });
+  }
+
+  function parseCSV(text, lineTerminator, cellTerminator) {
+    const table = document.getElementById('outputTable');
+
+    text.split(lineTerminator).forEach((line) => {
+      const tableRow = table.appendChild(document.createElement('tr'));
+
+      //split the rows at the cellTerminator character
+      line.split(cellTerminator).forEach((information) => {
+        //append the cell to the row
+        const cell = tableRow.appendChild(document.createElement('td'));
+        cell.appendChild(document.createTextNode(information));
+      });
+    });
+  }
+</script>
+
+<body onload="handleOnLoad()">
+  <table id="outputTable">
+  </table>
+</body>
+</html>
