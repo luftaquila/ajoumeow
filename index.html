@@ -19,6 +19,7 @@
 
   function parseCSV(text, lineTerminator, cellTerminator) {
     datum = text.split(lineTerminator).map((line) => line.split(cellTerminator));
+    console.log(datum[0][0]);
   }
     /*
     for (var i = 0; i < datum.length; i++) {
@@ -149,13 +150,15 @@
 
   function yourNameIs(p1, p2, course, rank)
   {
+    var datum = SpreadsheetApp.getActiveSpreadsheet().getSheets()[1].getRange('Record!G2:I').getValues();
+
     /*
     p1 = (p1 == undefined ? -1 : p1);
     p2 = (p2 == undefined ? 0 : p2);
     course = (course == undefined ? 2 : course);
     rank = (rank == undefined ? 2 : rank);
     */
-   
+
     var week = new Date().getWeek();
     var year = new Date().getFullYear();
 
