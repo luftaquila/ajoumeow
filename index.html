@@ -15,14 +15,7 @@
   }
 
   function parseCSV(text, lineTerminator, cellTerminator) {
-    document.write(text);
-
-    var k = 0;
-
-    var datum = text.split(lineTerminator).forEach((line) => {
-      var datum[k] = line.split(cellTerminator);
-      k++;
-    });
+    const datum = text.split(lineTerminator).map((line) => line.split(cellTerminator));
 
     for (var i = 0; i < datum.length; i++) {
       document.write('<br />');
