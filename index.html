@@ -23,25 +23,15 @@
       var datum[k] = line.split(cellTerminator);
       k++;
     });
-    /*
-    text.split(lineTerminator).forEach((line) => {
-      const tableRow = table.appendChild(document.createElement('tr'));
 
-      //split the rows at the cellTerminator character
-      line.split(cellTerminator).forEach((information) => {
-        //append the cell to the row
-        const cell = tableRow.appendChild(document.createElement('td'));
-        cell.appendChild(document.createTextNode(information));
-      });
-    });
-    */
     for (var i = 0; i < datum.length; i++) {
-   document.write('<br />');
-   for (var j = 0; j < datum[i].length; j++) {
-     document.write(datum[i][j] + ', ');
-   }
- }
+      document.write('<br />');
+      for (var j = 0; j < datum[i].length; j++) {
+        document.write(datum[i][j] + ', ');
+      }
+    }
   }
+  
 </script>
 
 <body onload="handleOnLoad()">
