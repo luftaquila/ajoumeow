@@ -19,7 +19,6 @@
 
   function parseCSV(text, lineTerminator, cellTerminator) {
     datum = text.split(lineTerminator).map((line) => line.split(cellTerminator));
-    console.log(datum[0][0]);
   }
     /*
     for (var i = 0; i < datum.length; i++) {
@@ -150,17 +149,11 @@
 
   function yourNameIs(p1, p2, course, rank)
   {
-    /*
-    p1 = (p1 == undefined ? -1 : p1);
-    p2 = (p2 == undefined ? 0 : p2);
-    course = (course == undefined ? 2 : course);
-    rank = (rank == undefined ? 2 : rank);
-    */
-
     var week = new Date().getWeek();
     var year = new Date().getFullYear();
 
     var result = JSON.stringify(new Date(year, 0, 1 + p2 + ((week + p1) * 7) - new Date(year, 0, (week * 7)).getDay()));
+    console.log(datum[0][0]);
 
     for (var i = 0; ; i++)
     {
