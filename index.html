@@ -226,6 +226,11 @@
     document.getElementById("nextTwoWeek_4").innerHTML = new Date(year, 0, 1 + 3 + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
     document.getElementById("nextTwoWeek_5").innerHTML = new Date(year, 0, 1 + 4 + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
 
+    document.getElementById("thisWeek_d1_1").innerHTML = yourNameIs(-1, 0, 1, 1);
+    document.getElementById("thisWeek_d2_1").innerHTML = yourNameIs(-1, 1, 1, 1);
+    document.getElementById("thisWeek_d3_1").innerHTML = yourNameIs(-1, 2, 1, 1);
+    document.getElementById("thisWeek_d4_1").innerHTML = yourNameIs(-1, 3, 1, 1);
+    document.getElementById("thisWeek_d5_1").innerHTML = yourNameIs(-1, 4, 1, 1);
 
   }
 </script>
