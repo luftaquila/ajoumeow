@@ -18,6 +18,7 @@
 
   function parseCSV(text, lineTerminator, cellTerminator) {
     datum = text.split(lineTerminator).map((line) => line.split(cellTerminator));
+    document.getElementById("test").innerHTML = datum[1][1];
   }
     /*
     for (var i = 0; i < datum.length; i++) {
@@ -123,7 +124,7 @@
     <tr>
       <td class="tg-mcgq" rowspan="2">도서관&amp;텔동</td>
       <td class="tg-uys7">
-      <script type="text/javascript">document.write(datum[1][1])</script>
+      <p id="test"></p>
       </td>
       <td class="tg-uys7"></td>
       <td class="tg-uys7"></td>
