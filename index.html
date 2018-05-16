@@ -145,7 +145,7 @@
     var week = new Date().getWeek();
     var year = new Date().getFullYear();
 
-    var result = JSON.stringify(new Date(year, 0, 1 + p2 + ((week + p1 - 1) * 7) - new Date(year, 0, (week * 7)).getDay()));
+    var result = new Date(year, 0, 1 + p2 + ((week + p1 - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("yyyy. m. d");
     console.log(result);
     console.log(JSON.stringify(datum[0][1]));
     console.log("\n\n");
