@@ -207,10 +207,24 @@
     var year = new Date().getFullYear();
 
     document.getElementById("todayDate").innerHTML = new Date().format("m월 d일 dddd");
+
     document.getElementById("thisWeek_1").innerHTML = new Date(year, 0, 1 + 0 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
-    console.log(new Date(year, 0, 1 + 0 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)"));
-    document.getElementById("thisWeek_2").innerHTML = "test";
-    document.getElementById("thisWeek_3").innerHTML = "test";
+    document.getElementById("thisWeek_2").innerHTML = new Date(year, 0, 1 + 1 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+    document.getElementById("thisWeek_3").innerHTML = new Date(year, 0, 1 + 2 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+    document.getElementById("thisWeek_4").innerHTML = new Date(year, 0, 1 + 3 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+    document.getElementById("thisWeek_5").innerHTML = new Date(year, 0, 1 + 4 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+
+    document.getElementById("nextWeek_1").innerHTML = new Date(year, 0, 1 + 0 + (week * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+    document.getElementById("nextWeek_2").innerHTML = new Date(year, 0, 1 + 1 + (week * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+    document.getElementById("nextWeek_3").innerHTML = new Date(year, 0, 1 + 2 + (week * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+    document.getElementById("nextWeek_4").innerHTML = new Date(year, 0, 1 + 3 + (week * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+    document.getElementById("nextWeek_5").innerHTML = new Date(year, 0, 1 + 4 + (week * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+
+    document.getElementById("thisWeek_1").innerHTML = new Date(year, 0, 1 + 0 + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+    document.getElementById("thisWeek_2").innerHTML = new Date(year, 0, 1 + 1 + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+    document.getElementById("thisWeek_3").innerHTML = new Date(year, 0, 1 + 2 + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+    document.getElementById("thisWeek_4").innerHTML = new Date(year, 0, 1 + 3 + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+    document.getElementById("thisWeek_5").innerHTML = new Date(year, 0, 1 + 4 + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
 
 
   }
@@ -279,11 +293,11 @@
     </tr>
     <tr>
       <td class="tg-7x2k">다음 주</td>
-      <td class="tg-7x2k">5/7(월)</td>
-      <td class="tg-7x2k">5/8(화)</td>
-      <td class="tg-7x2k">5/9(수)</td>
-      <td class="tg-7x2k">5/10(목)</td>
-      <td class="tg-7x2k">5/11(금)</td>
+      <td class="tg-7x2k"><p id="nextWeek_1"></p></td>
+      <td class="tg-7x2k"><p id="nextWeek_2"></p></td>
+      <td class="tg-7x2k"><p id="nextWeek_3"></p></td>
+      <td class="tg-7x2k"><p id="nextWeek_4"></p></td>
+      <td class="tg-7x2k"><p id="nextWeek_5"></p></td>
     </tr>
     <tr>
       <td class="tg-7x2k" rowspan="2">도서관&amp;텔동</td>
@@ -317,11 +331,11 @@
     </tr>
     <tr>
       <td class="tg-q5p2">다다음 주</td>
-      <td class="tg-q5p2">5/14(월)</td>
-      <td class="tg-q5p2">5/15(화)</td>
-      <td class="tg-q5p2">5/16(수)</td>
-      <td class="tg-q5p2">05/17(목)</td>
-      <td class="tg-q5p2">5/18(금)</td>
+      <td class="tg-q5p2"><p id="nextTwoWeek_1"></p></td>
+      <td class="tg-q5p2"><p id="nextTwoWeek_2"></p></td>
+      <td class="tg-q5p2"><p id="nextTwoWeek_3"></p></td>
+      <td class="tg-q5p2"><p id="nextTwoWeek_4"></p></td>
+      <td class="tg-q5p2"><p id="nextTwoWeek_5"></p></td>
     </tr>
     <tr>
       <td class="tg-q5p2" rowspan="2">도서관&amp;텔동</td>
