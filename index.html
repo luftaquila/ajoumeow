@@ -146,10 +146,9 @@
     var year = new Date().getFullYear();
 
     var result = new Date(year, 0, 1 + p2 + ((week + p1 - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("yyyy. m. d");
-    result = "2018. 4. 2";
-    console.log(result);
-    console.log(JSON.stringify(datum[0][1]));
-    console.log("\n\n");
+    console.log(typeof(result));
+    console.log(typeof(datum[0][1]));
+    console.log("\n");
 
     for (var i = 0; i < datum.length; i++)
     {
@@ -187,10 +186,8 @@
           }
         }
       }
-      else {
-        return "-";
-      }
     }
+    return "-";
   }
 
   function setData()
