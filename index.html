@@ -3,6 +3,19 @@
   crossorigin="anonymous"></script>
 <script>
   var datum;
+
+  function handleOnLoad() {
+    $.ajax({
+      url: 'https://docs.google.com/spreadsheet/pub?key=1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A&single=true&gid=850606151&range=G2:I&output=csv',
+      type: "GET",
+      dataType: 'text',
+      cache: false,
+      success: function (response) {
+        parseCSV(response, '\n', ',');
+      }
+    });
+  }
+
   var dateFormat = function () {
     var	token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g,
       timezone = /\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC)(?:[-+]\d{4})?)\b/g,
@@ -119,18 +132,6 @@
   {
     var calc = new Date(this.getFullYear(), 0, 1);
     return Math.ceil((((this - calc) / 86400000) + calc.getDay() + 1) / 7);
-  }
-
-  function handleOnLoad() {
-    $.ajax({
-      url: 'https://docs.google.com/spreadsheet/pub?key=1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A&single=true&gid=850606151&range=G2:I&output=csv',
-      type: "GET",
-      dataType: 'text',
-      cache: false,
-      success: function (response) {
-        parseCSV(response, '\n', ',');
-      }
-    });
   }
 
   function parseCSV(text, lineTerminator, cellTerminator) {
