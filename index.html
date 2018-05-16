@@ -204,7 +204,7 @@
   function setData()
   {
     document.getElementById("todayDate").innerHTML = new Date().format("m월 d일 dddd");
-    document.getElementById("thisWeek_1").innerHTML = new Date(new Date(year, 0, 1) + (week - 1) * 7 - new Date(new Date(year, 0, 1) + week * 7).getDay()).format("m/d(ddd)");
+    document.getElementById("thisWeek_1").innerHTML = new Date(year, 0, 1 + 0 + ((week + -1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
     document.getElementById("thisWeek_2").innerHTML = "test";
     document.getElementById("thisWeek_3").innerHTML = "test";
 
