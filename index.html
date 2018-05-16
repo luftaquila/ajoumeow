@@ -146,12 +146,12 @@
     var year = new Date().getFullYear();
 
     var result = JSON.stringify(new Date(year, 0, 1 + p2 + ((week + p1 - 1) * 7) - new Date(year, 0, (week * 7)).getDay()));
+    console.log(result);
 
     for (var i = 0; i < datum.length; i++)
     {
       if(rank == 1)
       {
-        console.log("are you in rank 1?");
         if(result == JSON.stringify(datum[i][1]))
         {
           if((course == 1) && (datum[i][2] == "도서관 & 텔동 코스"))
@@ -183,9 +183,6 @@
             }
           }
         }
-      }
-      else {
-        return "wrong rank";
       }
     }
   }
