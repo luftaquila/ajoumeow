@@ -3,6 +3,7 @@
 <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
   crossorigin="anonymous"></script>
 <script>
+  var datum;
   function handleOnLoad() {
     $.ajax({
       url: 'https://docs.google.com/spreadsheet/pub?key=1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A&single=true&gid=850606151&range=G2:I&output=csv',
@@ -152,7 +153,7 @@
     var year = new Date().getFullYear();
 
     var result = JSON.stringify(new Date(year, 0, 1 + p2 + ((week + p1) * 7) - new Date(year, 0, (week * 7)).getDay()));
-    console.log(datum[0][0]);
+    console.log(datum[0]);
 
     for (var i = 0; ; i++)
     {
