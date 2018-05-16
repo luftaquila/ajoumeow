@@ -146,8 +146,7 @@
     var year = new Date().getFullYear();
 
     var result = new Date(year, 0, 1 + p2 + ((week + p1 - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("yyyy. m. d");
-    result = new Date(2018, 3, 2).format("yyyy. m. d");
-    
+
     for (var i = 0; i < datum.length; i++)
     {
       if(rank == 1)
@@ -213,6 +212,7 @@
     document.getElementById("nextTwoWeek_4").innerHTML = new Date(year, 0, 1 + 3 + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
     document.getElementById("nextTwoWeek_5").innerHTML = new Date(year, 0, 1 + 4 + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
 
+
     document.getElementById("thisWeek_d1_1").innerHTML = yourNameIs(0, 0, 1, 1);
     document.getElementById("thisWeek_d2_1").innerHTML = yourNameIs(0, 1, 1, 1);
     document.getElementById("thisWeek_d3_1").innerHTML = yourNameIs(0, 2, 1, 1);
@@ -224,6 +224,68 @@
     document.getElementById("thisWeek_d3_2").innerHTML = yourNameIs(0, 2, 1, 2);
     document.getElementById("thisWeek_d4_2").innerHTML = yourNameIs(0, 3, 1, 2);
     document.getElementById("thisWeek_d5_2").innerHTML = yourNameIs(0, 4, 1, 2);
+
+    document.getElementById("thisWeek_s1_1").innerHTML = yourNameIs(0, 0, 2, 1);
+    document.getElementById("thisWeek_s2_1").innerHTML = yourNameIs(0, 1, 2, 1);
+    document.getElementById("thisWeek_s3_1").innerHTML = yourNameIs(0, 2, 2, 1);
+    document.getElementById("thisWeek_s4_1").innerHTML = yourNameIs(0, 3, 2, 1);
+    document.getElementById("thisWeek_s5_1").innerHTML = yourNameIs(0, 4, 2, 1);
+
+    document.getElementById("thisWeek_s1_2").innerHTML = yourNameIs(0, 0, 2, 2);
+    document.getElementById("thisWeek_s2_2").innerHTML = yourNameIs(0, 1, 2, 2);
+    document.getElementById("thisWeek_s3_2").innerHTML = yourNameIs(0, 2, 2, 2);
+    document.getElementById("thisWeek_s4_2").innerHTML = yourNameIs(0, 3, 2, 2);
+    document.getElementById("thisWeek_s5_2").innerHTML = yourNameIs(0, 4, 2, 2);
+
+
+    document.getElementById("nextWeek_d1_1").innerHTML = yourNameIs(1, 0, 1, 1);
+    document.getElementById("nextWeek_d2_1").innerHTML = yourNameIs(1, 1, 1, 1);
+    document.getElementById("nextWeek_d3_1").innerHTML = yourNameIs(1, 2, 1, 1);
+    document.getElementById("nextWeek_d4_1").innerHTML = yourNameIs(1, 3, 1, 1);
+    document.getElementById("nextWeek_d5_1").innerHTML = yourNameIs(1, 4, 1, 1);
+
+    document.getElementById("nextWeek_d1_2").innerHTML = yourNameIs(1, 0, 1, 2);
+    document.getElementById("nextWeek_d2_2").innerHTML = yourNameIs(1, 1, 1, 2);
+    document.getElementById("nextWeek_d3_2").innerHTML = yourNameIs(1, 2, 1, 2);
+    document.getElementById("nextWeek_d4_2").innerHTML = yourNameIs(1, 3, 1, 2);
+    document.getElementById("nextWeek_d5_2").innerHTML = yourNameIs(1, 4, 1, 2);
+
+    document.getElementById("nextWeek_s1_1").innerHTML = yourNameIs(1, 0, 2, 1);
+    document.getElementById("nextWeek_s2_1").innerHTML = yourNameIs(1, 1, 2, 1);
+    document.getElementById("nextWeek_s3_1").innerHTML = yourNameIs(1, 2, 2, 1);
+    document.getElementById("nextWeek_s4_1").innerHTML = yourNameIs(1, 3, 2, 1);
+    document.getElementById("nextWeek_s5_1").innerHTML = yourNameIs(1, 4, 2, 1);
+
+    document.getElementById("nextWeek_s1_2").innerHTML = yourNameIs(1, 0, 2, 2);
+    document.getElementById("nextWeek_s2_2").innerHTML = yourNameIs(1, 1, 2, 2);
+    document.getElementById("nextWeek_s3_2").innerHTML = yourNameIs(1, 2, 2, 2);
+    document.getElementById("nextWeek_s4_2").innerHTML = yourNameIs(1, 3, 2, 2);
+    document.getElementById("nextWeek_s5_2").innerHTML = yourNameIs(1, 4, 2, 2);
+
+
+    document.getElementById("nextTwoWeek_d1_1").innerHTML = yourNameIs(2, 0, 1, 1);
+    document.getElementById("nextTwoWeek_d2_1").innerHTML = yourNameIs(2, 1, 1, 1);
+    document.getElementById("nextTwoWeek_d3_1").innerHTML = yourNameIs(2, 2, 1, 1);
+    document.getElementById("nextTwoWeek_d4_1").innerHTML = yourNameIs(2, 3, 1, 1);
+    document.getElementById("nextTwoWeek_d5_1").innerHTML = yourNameIs(2, 4, 1, 1);
+
+    document.getElementById("nextTwoWeek_d1_2").innerHTML = yourNameIs(2, 0, 1, 2);
+    document.getElementById("nextTwoWeek_d2_2").innerHTML = yourNameIs(2, 1, 1, 2);
+    document.getElementById("nextTwoWeek_d3_2").innerHTML = yourNameIs(2, 2, 1, 2);
+    document.getElementById("nextTwoWeek_d4_2").innerHTML = yourNameIs(2, 3, 1, 2);
+    document.getElementById("nextTwoWeek_d5_2").innerHTML = yourNameIs(2, 4, 1, 2);
+
+    document.getElementById("nextTwoWeek_s1_1").innerHTML = yourNameIs(2, 0, 2, 1);
+    document.getElementById("nextTwoWeek_s2_1").innerHTML = yourNameIs(2, 1, 2, 1);
+    document.getElementById("nextTwoWeek_s3_1").innerHTML = yourNameIs(2, 2, 2, 1);
+    document.getElementById("nextTwoWeek_s4_1").innerHTML = yourNameIs(2, 3, 2, 1);
+    document.getElementById("nextTwoWeek_s5_1").innerHTML = yourNameIs(2, 4, 2, 1);
+
+    document.getElementById("nextTwoWeek_s1_2").innerHTML = yourNameIs(2, 0, 2, 2);
+    document.getElementById("nextTwoWeek_s2_2").innerHTML = yourNameIs(2, 1, 2, 2);
+    document.getElementById("nextTwoWeek_s3_2").innerHTML = yourNameIs(2, 2, 2, 2);
+    document.getElementById("nextTwoWeek_s4_2").innerHTML = yourNameIs(2, 3, 2, 2);
+    document.getElementById("nextTwoWeek_s5_2").innerHTML = yourNameIs(2, 4, 2, 2);
   }
 </script>
 
@@ -282,11 +344,11 @@
       <td class="tg-uys7"><p id="thisWeek_s5_1"></p></td>
     </tr>
     <tr>
-    <td class="tg-uys7"><p id="thisWeek_s1_2"></p></td>
-    <td class="tg-uys7"><p id="thisWeek_s2_2"></p></td>
-    <td class="tg-uys7"><p id="thisWeek_s3_2"></p></td>
-    <td class="tg-uys7"><p id="thisWeek_s4_2"></p></td>
-    <td class="tg-uys7"><p id="thisWeek_s5_2"></p></td>
+      <td class="tg-uys7"><p id="thisWeek_s1_2"></p></td>
+      <td class="tg-uys7"><p id="thisWeek_s2_2"></p></td>
+      <td class="tg-uys7"><p id="thisWeek_s3_2"></p></td>
+      <td class="tg-uys7"><p id="thisWeek_s4_2"></p></td>
+      <td class="tg-uys7"><p id="thisWeek_s5_2"></p></td>
     </tr>
     <tr>
       <td class="tg-7x2k">다음 주</td>
@@ -298,33 +360,33 @@
     </tr>
     <tr>
       <td class="tg-7x2k" rowspan="2">도서관&amp;텔동</td>
-      <td class="tg-uys7">라</td>
-      <td class="tg-uys7"></td>
-      <td class="tg-uys7"></td>
-      <td class="tg-uys7"></td>
-      <td class="tg-uys7"></td>
+      <td class="tg-uys7"><p id="nextWeek_d1_1"></p></td>
+      <td class="tg-uys7"><p id="nextWeek_d2_1"></p></td>
+      <td class="tg-uys7"><p id="nextWeek_d3_1"></p></td>
+      <td class="tg-uys7"><p id="nextWeek_d4_1"></p></td>
+      <td class="tg-uys7"><p id="nextWeek_d5_1"></p></td>
     </tr>
     <tr>
-      <td class="tg-uys7">마</td>
-      <td class="tg-uys7"></td>
-      <td class="tg-uys7"></td>
-      <td class="tg-uys7"></td>
-      <td class="tg-uys7"></td>
+      <td class="tg-uys7"><p id="nextWeek_d1_2"></p></td>
+      <td class="tg-uys7"><p id="nextWeek_d2_2"></p></td>
+      <td class="tg-uys7"><p id="nextWeek_d3_2"></p></td>
+      <td class="tg-uys7"><p id="nextWeek_d4_2"></p></td>
+      <td class="tg-uys7"><p id="nextWeek_d5_2"></p></td>
     </tr>
     <tr>
       <td class="tg-7x2k" rowspan="2">신학&amp;성호관</td>
-      <td class="tg-uys7">바</td>
-      <td class="tg-uys7"></td>
-      <td class="tg-uys7"></td>
-      <td class="tg-uys7"></td>
-      <td class="tg-uys7"></td>
+      <td class="tg-uys7"><p id="nextWeek_s1_1"></p></td>
+      <td class="tg-uys7"><p id="nextWeek_s2_1"></p></td>
+      <td class="tg-uys7"><p id="nextWeek_s3_1"></p></td>
+      <td class="tg-uys7"><p id="nextWeek_s4_1"></p></td>
+      <td class="tg-uys7"><p id="nextWeek_s5_1"></p></td>
     </tr>
     <tr>
-      <td class="tg-uys7">사</td>
-      <td class="tg-uys7"></td>
-      <td class="tg-uys7"></td>
-      <td class="tg-uys7"></td>
-      <td class="tg-uys7"></td>
+      <td class="tg-uys7"><p id="nextWeek_s1_2"></p></td>
+      <td class="tg-uys7"><p id="nextWeek_s2_2"></p></td>
+      <td class="tg-uys7"><p id="nextWeek_s3_2"></p></td>
+      <td class="tg-uys7"><p id="nextWeek_s4_2"></p></td>
+      <td class="tg-uys7"><p id="nextWeek_s5_2"></p></td>
     </tr>
     <tr>
       <td class="tg-q5p2">다다음 주</td>
@@ -335,34 +397,34 @@
       <td class="tg-q5p2"><p id="nextTwoWeek_5"></p></td>
     </tr>
     <tr>
-      <td class="tg-q5p2" rowspan="2">도서관&amp;텔동</td>
-      <td class="tg-uys7">아</td>
-      <td class="tg-uys7"></td>
-      <td class="tg-uys7"></td>
-      <td class="tg-uys7"></td>
-      <td class="tg-uys7"></td>
+      <td class="tg-7x2k" rowspan="2">도서관&amp;텔동</td>
+      <td class="tg-uys7"><p id="nextTwoWeek_d1_1"></p></td>
+      <td class="tg-uys7"><p id="nextTwoWeek_d2_1"></p></td>
+      <td class="tg-uys7"><p id="nextTwoWeek_d3_1"></p></td>
+      <td class="tg-uys7"><p id="nextTwoWeek_d4_1"></p></td>
+      <td class="tg-uys7"><p id="nextTwoWeek_d5_1"></p></td>
     </tr>
     <tr>
-      <td class="tg-uys7">자</td>
-      <td class="tg-uys7"></td>
-      <td class="tg-uys7"></td>
-      <td class="tg-uys7"></td>
-      <td class="tg-uys7"></td>
+      <td class="tg-uys7"><p id="nextTwoWeek_d1_2"></p></td>
+      <td class="tg-uys7"><p id="nextTwoWeek_d2_2"></p></td>
+      <td class="tg-uys7"><p id="nextTwoWeek_d3_2"></p></td>
+      <td class="tg-uys7"><p id="nextTwoWeek_d4_2"></p></td>
+      <td class="tg-uys7"><p id="nextTwoWeek_d5_2"></p></td>
     </tr>
     <tr>
-      <td class="tg-q5p2" rowspan="2">신학&amp;성호관</td>
-      <td class="tg-uys7">차</td>
-      <td class="tg-uys7"></td>
-      <td class="tg-uys7"></td>
-      <td class="tg-uys7"></td>
-      <td class="tg-uys7"></td>
+      <td class="tg-7x2k" rowspan="2">신학&amp;성호관</td>
+      <td class="tg-uys7"><p id="nextTwoWeek_s1_1"></p></td>
+      <td class="tg-uys7"><p id="nextTwoWeek_s2_1"></p></td>
+      <td class="tg-uys7"><p id="nextTwoWeek_s3_1"></p></td>
+      <td class="tg-uys7"><p id="nextTwoWeek_s4_1"></p></td>
+      <td class="tg-uys7"><p id="nextTwoWeek_s5_1"></p></td>
     </tr>
     <tr>
-      <td class="tg-uys7">카</td>
-      <td class="tg-uys7"></td>
-      <td class="tg-uys7"></td>
-      <td class="tg-uys7"></td>
-      <td class="tg-uys7"></td>
+      <td class="tg-uys7"><p id="nextTwoWeek_s1_2"></p></td>
+      <td class="tg-uys7"><p id="nextTwoWeek_s2_2"></p></td>
+      <td class="tg-uys7"><p id="nextTwoWeek_s3_2"></p></td>
+      <td class="tg-uys7"><p id="nextTwoWeek_s4_2"></p></td>
+      <td class="tg-uys7"><p id="nextTwoWeek_s5_2"></p></td>
     </tr>
   </table></div>
   <script type="text/javascript" charset="utf-8">var TgTableSort=window.TgTableSort||function(n,t){"use strict";function r(n,t){for(var e=[],o=n.childNodes,i=0;i<o.length;++i){var u=o[i];if("."==t.substring(0,1)){var a=t.substring(1);f(u,a)&&e.push(u)}else u.nodeName.toLowerCase()==t&&e.push(u);var c=r(u,t);e=e.concat(c)}return e}function e(n,t){var e=[],o=r(n,"tr");return o.forEach(function(n){var o=r(n,"td");t>=0&&t<o.length&&e.push(o[t])}),e}function o(n){return n.textContent||n.innerText||""}function i(n){return n.innerHTML||""}function u(n,t){var r=e(n,t);return r.map(o)}function a(n,t){var r=e(n,t);return r.map(i)}function c(n){var t=n.className||"";return t.match(/\S+/g)||[]}function f(n,t){return-1!=c(n).indexOf(t)}function s(n,t){f(n,t)||(n.className+=" "+t)}function d(n,t){if(f(n,t)){var r=c(n),e=r.indexOf(t);r.splice(e,1),n.className=r.join(" ")}}function v(n){d(n,L),d(n,E)}function l(n,t,e){r(n,"."+E).map(v),r(n,"."+L).map(v),e==T?s(t,E):s(t,L)}function g(n){return function(t,r){var e=n*t.str.localeCompare(r.str);return 0==e&&(e=t.index-r.index),e}}function h(n){return function(t,r){var e=+t.str,o=+r.str;return e==o?t.index-r.index:n*(e-o)}}function m(n,t,r){var e=u(n,t),o=e.map(function(n,t){return{str:n,index:t}}),i=e&&-1==e.map(isNaN).indexOf(!0),a=i?h(r):g(r);return o.sort(a),o.map(function(n){return n.index})}function p(n,t,r,o){for(var i=f(o,E)?N:T,u=m(n,r,i),c=0;t>c;++c){var s=e(n,c),d=a(n,c);s.forEach(function(n,t){n.innerHTML=d[u[t]]})}l(n,o,i)}function x(n,t){var r=t.length;t.forEach(function(t,e){t.addEventListener("click",function(){p(n,r,e,t)}),s(t,"tg-sort-header")})}var T=1,N=-1,E="tg-sort-asc",L="tg-sort-desc";return function(t){var e=n.getElementById(t),o=r(e,"tr"),i=o.length>0?r(o[0],"td"):[];0==i.length&&(i=r(o[0],"th"));for(var u=1;u<o.length;++u){var a=r(o[u],"td");if(a.length!=i.length)return}x(e,i)}}(document);document.addEventListener("DOMContentLoaded",function(n){TgTableSort("tg-1pp0J")});</script>
