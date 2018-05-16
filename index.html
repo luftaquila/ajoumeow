@@ -15,6 +15,7 @@
   }
 
   function parseCSV(text, lineTerminator, cellTerminator) {
+    document.write(text);
     const table = document.getElementById('outputTable');
 
     text.split(lineTerminator).forEach((line) => {
