@@ -149,11 +149,13 @@
 
   function yourNameIs(p1, p2, course, rank)
   {
+    /*
     p1 = (p1 == undefined ? -1 : p1);
     p2 = (p2 == undefined ? 0 : p2);
     course = (course == undefined ? 2 : course);
     rank = (rank == undefined ? 2 : rank);
-
+    */
+   
     var week = new Date().getWeek();
     var year = new Date().getFullYear();
 
@@ -232,6 +234,13 @@
     document.getElementById("thisWeek_d4_1").innerHTML = yourNameIs(-1, 3, 1, 1);
     document.getElementById("thisWeek_d5_1").innerHTML = yourNameIs(-1, 4, 1, 1);
 
+    document.getElementById("thisWeek_d1_2").innerHTML = yourNameIs(-1, 0, 1, 2);
+    document.getElementById("thisWeek_d2_2").innerHTML = yourNameIs(-1, 1, 1, 2);
+    document.getElementById("thisWeek_d3_2").innerHTML = yourNameIs(-1, 2, 1, 2);
+    document.getElementById("thisWeek_d4_2").innerHTML = yourNameIs(-1, 3, 1, 2);
+    document.getElementById("thisWeek_d5_2").innerHTML = yourNameIs(-1, 4, 1, 2);
+
+    console.log(yourNameIs(-1, 0, 1, 1));
   }
 </script>
 
