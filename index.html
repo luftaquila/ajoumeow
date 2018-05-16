@@ -14,6 +14,7 @@
         parseCSV(response, '\n', ',');
       }
     });
+    setData();
   }
 
   function parseCSV(text, lineTerminator, cellTerminator) {
@@ -202,8 +203,9 @@
 
   function setData()
   {
-    document.getElementById("todayDate").innerHTML = "test";//new Date().format("m월 d일 dddd");
+    document.getElementById("todayDate").innerHTML = new Date().format("m월 d일 dddd");
     document.getElementById("thisWeek_1").innerHTML = datum[1][1];
+    
   }
 </script>
 
