@@ -15,9 +15,13 @@
   }
 
   function parseCSV(text, lineTerminator, cellTerminator) {
-    document.write(text);
     const table = document.getElementById('outputTable');
 
+    var datum = text.split(lineTerminator).forEach((line) => {
+      document.write(line);
+      var datum[line] = line.split(cellTerminator);
+    });
+    /*
     text.split(lineTerminator).forEach((line) => {
       const tableRow = table.appendChild(document.createElement('tr'));
 
@@ -28,6 +32,7 @@
         cell.appendChild(document.createTextNode(information));
       });
     });
+    */
   }
 </script>
 
