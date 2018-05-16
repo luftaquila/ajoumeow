@@ -131,11 +131,11 @@
         parseCSV(response, '\n', ',');
       }
     });
-    setData();
   }
 
   function parseCSV(text, lineTerminator, cellTerminator) {
     datum = text.split(lineTerminator).map((line) => line.split(cellTerminator));
+    setData();
   }
 
   function yourNameIs(p1, p2, course, rank)
