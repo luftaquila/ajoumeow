@@ -146,6 +146,7 @@
     var year = new Date().getFullYear();
 
     var result = new Date(year, 0, 1 + p2 + ((week + p1 - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("yyyy. m. d");
+    result = new Date(2018, 3, 2).format("yyyy. m. d");
 
     for (var i = 0; i < datum.length; i++)
     {
