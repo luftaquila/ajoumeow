@@ -203,6 +203,9 @@
 
   function setData()
   {
+    var week = new Date().getWeek();
+    var year = new Date().getFullYear();
+
     document.getElementById("todayDate").innerHTML = new Date().format("m월 d일 dddd");
     document.getElementById("thisWeek_1").innerHTML = new Date(year, 0, 1 + 0 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
     console.log(new Date(year, 0, 1 + 0 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)"));
