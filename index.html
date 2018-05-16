@@ -134,6 +134,7 @@
     return Math.ceil((((this - calc) / 86400000) + calc.getDay() + 1) / 7);
   }
 
+
   function parseCSV(text, lineTerminator, cellTerminator) {
     datum = text.split(lineTerminator).map((line) => line.split(cellTerminator));
     setData();
@@ -148,8 +149,6 @@
 
     for (var i = 0; ; i++)
     {
-      if (datum[i][1] == '')
-        break;
 
       if(rank == 1)
       {
