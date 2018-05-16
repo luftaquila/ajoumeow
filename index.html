@@ -253,12 +253,12 @@ ul.tabs li.current{
     document.getElementById("thisWeek_3").innerHTML = new Date(year, 0, 1 + 2 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
     document.getElementById("thisWeek_4").innerHTML = new Date(year, 0, 1 + 3 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
     document.getElementById("thisWeek_5").innerHTML = new Date(year, 0, 1 + 4 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
-    
-    if(new Date().getDay() == 0) document.getElementById("thisWeek_1").style.backgroundColor = "green";
-    if(new Date().getDay() == 1) document.getElementById("thisWeek_2").style.backgroundColor = "green";
-    if(new Date().getDay() == 2) document.getElementById("thisWeek_3").style.backgroundColor = "green";
-    if(new Date().getDay() == 3) document.getElementById("thisWeek_4").style.backgroundColor = "green";
-    if(new Date().getDay() == 4) document.getElementById("thisWeek_5").style.backgroundColor = "green";
+
+    if(new Date().getDay() == 1) document.getElementById("thisWeek_1").style.backgroundColor = "greenyellow ";
+    if(new Date().getDay() == 2) document.getElementById("thisWeek_2").style.backgroundColor = "greenyellow ";
+    if(new Date().getDay() == 3) document.getElementById("thisWeek_3").style.backgroundColor = "greenyellow ";
+    if(new Date().getDay() == 4) document.getElementById("thisWeek_4").style.backgroundColor = "greenyellow ";
+    if(new Date().getDay() == 5) document.getElementById("thisWeek_5").style.backgroundColor = "greenyellow ";
 
 
     document.getElementById("nextWeek_1").innerHTML = new Date(year, 0, 1 + 0 + (week * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
