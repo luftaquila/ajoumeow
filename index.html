@@ -147,9 +147,8 @@
 
     var result = JSON.stringify(new Date(year, 0, 1 + p2 + ((week + p1) * 7) - new Date(year, 0, (week * 7)).getDay()));
 
-    for (var i = 0; ; i++)
+    for (var i = 0; i < datum.length; i++)
     {
-
       if(rank == 1)
       {
         if(result == JSON.stringify(datum[i][1]))
