@@ -1,0 +1,820 @@
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta http-equiv="Content-Type" content="text/html">
+
+<style>
+body{
+  font-family: 'Malgun Gothic', serif;
+}
+.container{
+  width: 100%;
+  margin: 0 auto;
+}
+ul.tabs{
+  margin: 0px;
+  padding: 0px;
+  list-style: none;
+}
+ul.tabs li{
+  background: none;
+  color: #222;
+  display: inline-block;
+  padding: 10px 15px;
+  cursor: pointer;
+}
+
+ul.tabs li.current{
+  background: #ededed;
+  color: #222;
+}
+
+.tab-content{
+  display: none;
+  padding: 0px 5px 0px -15px;
+}
+
+.tab-content.current{
+  display: inherit;
+}
+</style>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+<script>
+  var datum;
+
+  $(document).ready(function(){
+
+    $('ul.tabs li').click(function(){
+      var tab_id = $(this).attr('data-tab');
+
+      $('ul.tabs li').removeClass('current');
+      $('.tab-content').removeClass('current');
+
+      $(this).addClass('current');
+      $("#"+tab_id).addClass('current');
+    })
+
+  })
+
+  function handleOnLoad() {
+    $.ajax({
+      url: 'https://docs.google.com/spreadsheet/pub?key=1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A&single=true&gid=850606151&range=G2:I&output=csv',
+      type: "GET",
+      dataType: 'text',
+      cache: false,
+      success: function (response) {
+        parseCSV(response, '\n', ',');
+      }
+    });
+  }
+
+  var dateFormat = function () {
+    var	token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g,
+      timezone = /\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC)(?:[-+]\d{4})?)\b/g,
+      timezoneClip = /[^-+\dA-Z]/g,
+      pad = function (val, len) {
+        val = String(val);
+        len = len || 2;
+        while (val.length < len) val = "0" + val;
+        return val;
+      };
+
+    // Regexes and supporting functions are cached through closure
+    return function (date, mask, utc) {
+      var dF = dateFormat;
+
+      // You can't provide utc if you skip other args (use the "UTC:" mask prefix)
+      if (arguments.length == 1 && Object.prototype.toString.call(date) == "[object String]" && !/\d/.test(date)) {
+        mask = date;
+        date = undefined;
+      }
+
+      // Passing date through Date applies Date.parse, if necessary
+      date = date ? new Date(date) : new Date;
+      if (isNaN(date)) throw SyntaxError("invalid date");
+
+      mask = String(dF.masks[mask] || mask || dF.masks["default"]);
+
+      // Allow setting the utc argument via the mask
+      if (mask.slice(0, 4) == "UTC:") {
+        mask = mask.slice(4);
+        utc = true;
+      }
+
+      var	_ = utc ? "getUTC" : "get",
+        d = date[_ + "Date"](),
+        D = date[_ + "Day"](),
+        m = date[_ + "Month"](),
+        y = date[_ + "FullYear"](),
+        H = date[_ + "Hours"](),
+        M = date[_ + "Minutes"](),
+        s = date[_ + "Seconds"](),
+        L = date[_ + "Milliseconds"](),
+        o = utc ? 0 : date.getTimezoneOffset(),
+        flags = {
+          d:    d,
+          dd:   pad(d),
+          ddd:  dF.i18n.dayNames[D],
+          dddd: dF.i18n.dayNames[D + 7],
+          m:    m + 1,
+          mm:   pad(m + 1),
+          mmm:  dF.i18n.monthNames[m],
+          mmmm: dF.i18n.monthNames[m + 12],
+          yy:   String(y).slice(2),
+          yyyy: y,
+          h:    H % 12 || 12,
+          hh:   pad(H % 12 || 12),
+          H:    H,
+          HH:   pad(H),
+          M:    M,
+          MM:   pad(M),
+          s:    s,
+          ss:   pad(s),
+          l:    pad(L, 3),
+          L:    pad(L > 99 ? Math.round(L / 10) : L),
+          t:    H < 12 ? "a"  : "p",
+          tt:   H < 12 ? "am" : "pm",
+          T:    H < 12 ? "A"  : "P",
+          TT:   H < 12 ? "AM" : "PM",
+          Z:    utc ? "UTC" : (String(date).match(timezone) || [""]).pop().replace(timezoneClip, ""),
+          o:    (o > 0 ? "-" : "+") + pad(Math.floor(Math.abs(o) / 60) * 100 + Math.abs(o) % 60, 4),
+          S:    ["th", "st", "nd", "rd"][d % 10 > 3 ? 0 : (d % 100 - d % 10 != 10) * d % 10]
+        };
+
+      return mask.replace(token, function ($0) {
+        return $0 in flags ? flags[$0] : $0.slice(1, $0.length - 1);
+      });
+    };
+  }();
+
+  // Some common format strings
+  dateFormat.masks = {
+    "default":      "ddd mmm dd yyyy HH:MM:ss",
+    shortDate:      "m/d/yy",
+    mediumDate:     "mmm d, yyyy",
+    longDate:       "mmmm d, yyyy",
+    fullDate:       "dddd, mmmm d, yyyy",
+    shortTime:      "h:MM TT",
+    mediumTime:     "h:MM:ss TT",
+    longTime:       "h:MM:ss TT Z",
+    isoDate:        "yyyy-mm-dd",
+    isoTime:        "HH:MM:ss",
+    isoDateTime:    "yyyy-mm-dd'T'HH:MM:ss",
+    isoUtcDateTime: "UTC:yyyy-mm-dd'T'HH:MM:ss'Z'"
+  };
+
+  // Internationalization strings
+  dateFormat.i18n = {
+    dayNames: [
+      "일", "월", "화", "수", "목", "금", "토",
+      "일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"
+    ],
+    monthNames: [
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+      "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
+    ]
+  };
+
+  // For convenience...
+  Date.prototype.format = function (mask, utc) {
+    return dateFormat(this, mask, utc);
+  };
+
+  Date.prototype.getWeek = function()
+  {
+    var calc = new Date(this.getFullYear(), 0, 1);
+    return Math.ceil((((this - calc) / 86400000) + calc.getDay() + 1) / 7);
+  }
+
+
+  function parseCSV(text, lineTerminator, cellTerminator) {
+    datum = text.split(lineTerminator).map((line) => line.split(cellTerminator));
+    datum.push(['0', '0', '0']);
+    setData();
+  }
+
+  function yourNameIs(p1, p2, course, rank)
+  {
+    var week = new Date().getWeek();
+    var year = new Date().getFullYear();
+
+    var result = new Date(year, 0, 1 + p2 + ((week + p1 - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("yyyy. m. d");
+
+    for (var i = 0; i < datum.length - 1; i++)
+    {
+      if(rank == 1)
+      {
+        if(result == datum[i][1])
+        {
+          if((course == 1) && (datum[i][2].includes("도서관 & 텔동 코스")))
+            return datum[i][0];
+
+          else if((course == 2) && (datum[i][2].includes("신학 & 성호관 코스")))
+            return datum[i][0];
+        }
+      }
+
+      else if(rank == 2)
+      {
+        if(result == datum[i][1])
+        {
+          if((course == 1) && (datum[i][2].includes("도서관 & 텔동 코스")))
+          {
+            if(result == datum[i + 1][1])
+            {
+              if((course == 1) && (datum[i + 1][2].includes("도서관 & 텔동 코스")))
+                return datum[i + 1][0];
+            }
+          }
+          else if((course == 2) && (datum[i][2].includes("신학 & 성호관 코스")))
+          {
+            if(result == datum[i + 1][1])
+            {
+              if((course == 2) && (datum[i + 1][2].includes("신학 & 성호관 코스")))
+                return datum[i + 1][0];
+            }
+          }
+        }
+      }
+    }
+    return " ";
+  }
+
+  function setData()
+  {
+    var week = new Date().getWeek();
+    var year = new Date().getFullYear();
+
+    document.getElementById("todayDate").innerHTML = new Date().format("m월 d일 dddd");
+
+    document.getElementById("thisWeek_1").innerHTML = new Date(year, 0, 1 + 0 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+    document.getElementById("thisWeek_2").innerHTML = new Date(year, 0, 1 + 1 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+    document.getElementById("thisWeek_3").innerHTML = new Date(year, 0, 1 + 2 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+    document.getElementById("thisWeek_4").innerHTML = new Date(year, 0, 1 + 3 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+    document.getElementById("thisWeek_5").innerHTML = new Date(year, 0, 1 + 4 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+
+    if(new Date().getDay() == 1) document.getElementById("thisWeek_1").style.backgroundColor = "greenyellow ";
+    if(new Date().getDay() == 2) document.getElementById("thisWeek_2").style.backgroundColor = "greenyellow ";
+    if(new Date().getDay() == 3) document.getElementById("thisWeek_3").style.backgroundColor = "greenyellow ";
+    if(new Date().getDay() == 4) document.getElementById("thisWeek_4").style.backgroundColor = "greenyellow ";
+    if(new Date().getDay() == 5) document.getElementById("thisWeek_5").style.backgroundColor = "greenyellow ";
+
+
+    document.getElementById("nextWeek_1").innerHTML = new Date(year, 0, 1 + 0 + (week * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+    document.getElementById("nextWeek_2").innerHTML = new Date(year, 0, 1 + 1 + (week * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+    document.getElementById("nextWeek_3").innerHTML = new Date(year, 0, 1 + 2 + (week * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+    document.getElementById("nextWeek_4").innerHTML = new Date(year, 0, 1 + 3 + (week * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+    document.getElementById("nextWeek_5").innerHTML = new Date(year, 0, 1 + 4 + (week * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+
+    document.getElementById("nextTwoWeek_1").innerHTML = new Date(year, 0, 1 + 0 + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+    document.getElementById("nextTwoWeek_2").innerHTML = new Date(year, 0, 1 + 1 + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+    document.getElementById("nextTwoWeek_3").innerHTML = new Date(year, 0, 1 + 2 + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+    document.getElementById("nextTwoWeek_4").innerHTML = new Date(year, 0, 1 + 3 + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+    document.getElementById("nextTwoWeek_5").innerHTML = new Date(year, 0, 1 + 4 + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+
+    document.getElementById("nextThreeWeek_1").innerHTML = new Date(year, 0, 1 + 0 + ((week + 2) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+    document.getElementById("nextThreeWeek_2").innerHTML = new Date(year, 0, 1 + 1 + ((week + 2) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+    document.getElementById("nextThreeWeek_3").innerHTML = new Date(year, 0, 1 + 2 + ((week + 2) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+    document.getElementById("nextThreeWeek_4").innerHTML = new Date(year, 0, 1 + 3 + ((week + 2) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+    document.getElementById("nextThreeWeek_5").innerHTML = new Date(year, 0, 1 + 4 + ((week + 2) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+
+    document.getElementById("thisWeek_d1_1").innerHTML = yourNameIs(0, 0, 1, 1);
+    document.getElementById("thisWeek_d2_1").innerHTML = yourNameIs(0, 1, 1, 1);
+    document.getElementById("thisWeek_d3_1").innerHTML = yourNameIs(0, 2, 1, 1);
+    document.getElementById("thisWeek_d4_1").innerHTML = yourNameIs(0, 3, 1, 1);
+    document.getElementById("thisWeek_d5_1").innerHTML = yourNameIs(0, 4, 1, 1);
+
+    document.getElementById("thisWeek_d1_2").innerHTML = yourNameIs(0, 0, 1, 2);
+    document.getElementById("thisWeek_d2_2").innerHTML = yourNameIs(0, 1, 1, 2);
+    document.getElementById("thisWeek_d3_2").innerHTML = yourNameIs(0, 2, 1, 2);
+    document.getElementById("thisWeek_d4_2").innerHTML = yourNameIs(0, 3, 1, 2);
+    document.getElementById("thisWeek_d5_2").innerHTML = yourNameIs(0, 4, 1, 2);
+
+    document.getElementById("thisWeek_s1_1").innerHTML = yourNameIs(0, 0, 2, 1);
+    document.getElementById("thisWeek_s2_1").innerHTML = yourNameIs(0, 1, 2, 1);
+    document.getElementById("thisWeek_s3_1").innerHTML = yourNameIs(0, 2, 2, 1);
+    document.getElementById("thisWeek_s4_1").innerHTML = yourNameIs(0, 3, 2, 1);
+    document.getElementById("thisWeek_s5_1").innerHTML = yourNameIs(0, 4, 2, 1);
+
+    document.getElementById("thisWeek_s1_2").innerHTML = yourNameIs(0, 0, 2, 2);
+    document.getElementById("thisWeek_s2_2").innerHTML = yourNameIs(0, 1, 2, 2);
+    document.getElementById("thisWeek_s3_2").innerHTML = yourNameIs(0, 2, 2, 2);
+    document.getElementById("thisWeek_s4_2").innerHTML = yourNameIs(0, 3, 2, 2);
+    document.getElementById("thisWeek_s5_2").innerHTML = yourNameIs(0, 4, 2, 2);
+
+
+    document.getElementById("nextWeek_d1_1").innerHTML = yourNameIs(1, 0, 1, 1);
+    document.getElementById("nextWeek_d2_1").innerHTML = yourNameIs(1, 1, 1, 1);
+    document.getElementById("nextWeek_d3_1").innerHTML = yourNameIs(1, 2, 1, 1);
+    document.getElementById("nextWeek_d4_1").innerHTML = yourNameIs(1, 3, 1, 1);
+    document.getElementById("nextWeek_d5_1").innerHTML = yourNameIs(1, 4, 1, 1);
+
+    document.getElementById("nextWeek_d1_2").innerHTML = yourNameIs(1, 0, 1, 2);
+    document.getElementById("nextWeek_d2_2").innerHTML = yourNameIs(1, 1, 1, 2);
+    document.getElementById("nextWeek_d3_2").innerHTML = yourNameIs(1, 2, 1, 2);
+    document.getElementById("nextWeek_d4_2").innerHTML = yourNameIs(1, 3, 1, 2);
+    document.getElementById("nextWeek_d5_2").innerHTML = yourNameIs(1, 4, 1, 2);
+
+    document.getElementById("nextWeek_s1_1").innerHTML = yourNameIs(1, 0, 2, 1);
+    document.getElementById("nextWeek_s2_1").innerHTML = yourNameIs(1, 1, 2, 1);
+    document.getElementById("nextWeek_s3_1").innerHTML = yourNameIs(1, 2, 2, 1);
+    document.getElementById("nextWeek_s4_1").innerHTML = yourNameIs(1, 3, 2, 1);
+    document.getElementById("nextWeek_s5_1").innerHTML = yourNameIs(1, 4, 2, 1);
+
+    document.getElementById("nextWeek_s1_2").innerHTML = yourNameIs(1, 0, 2, 2);
+    document.getElementById("nextWeek_s2_2").innerHTML = yourNameIs(1, 1, 2, 2);
+    document.getElementById("nextWeek_s3_2").innerHTML = yourNameIs(1, 2, 2, 2);
+    document.getElementById("nextWeek_s4_2").innerHTML = yourNameIs(1, 3, 2, 2);
+    document.getElementById("nextWeek_s5_2").innerHTML = yourNameIs(1, 4, 2, 2);
+
+
+    document.getElementById("nextTwoWeek_d1_1").innerHTML = yourNameIs(2, 0, 1, 1);
+    document.getElementById("nextTwoWeek_d2_1").innerHTML = yourNameIs(2, 1, 1, 1);
+    document.getElementById("nextTwoWeek_d3_1").innerHTML = yourNameIs(2, 2, 1, 1);
+    document.getElementById("nextTwoWeek_d4_1").innerHTML = yourNameIs(2, 3, 1, 1);
+    document.getElementById("nextTwoWeek_d5_1").innerHTML = yourNameIs(2, 4, 1, 1);
+
+    document.getElementById("nextTwoWeek_d1_2").innerHTML = yourNameIs(2, 0, 1, 2);
+    document.getElementById("nextTwoWeek_d2_2").innerHTML = yourNameIs(2, 1, 1, 2);
+    document.getElementById("nextTwoWeek_d3_2").innerHTML = yourNameIs(2, 2, 1, 2);
+    document.getElementById("nextTwoWeek_d4_2").innerHTML = yourNameIs(2, 3, 1, 2);
+    document.getElementById("nextTwoWeek_d5_2").innerHTML = yourNameIs(2, 4, 1, 2);
+
+    document.getElementById("nextTwoWeek_s1_1").innerHTML = yourNameIs(2, 0, 2, 1);
+    document.getElementById("nextTwoWeek_s2_1").innerHTML = yourNameIs(2, 1, 2, 1);
+    document.getElementById("nextTwoWeek_s3_1").innerHTML = yourNameIs(2, 2, 2, 1);
+    document.getElementById("nextTwoWeek_s4_1").innerHTML = yourNameIs(2, 3, 2, 1);
+    document.getElementById("nextTwoWeek_s5_1").innerHTML = yourNameIs(2, 4, 2, 1);
+
+    document.getElementById("nextTwoWeek_s1_2").innerHTML = yourNameIs(2, 0, 2, 2);
+    document.getElementById("nextTwoWeek_s2_2").innerHTML = yourNameIs(2, 1, 2, 2);
+    document.getElementById("nextTwoWeek_s3_2").innerHTML = yourNameIs(2, 2, 2, 2);
+    document.getElementById("nextTwoWeek_s4_2").innerHTML = yourNameIs(2, 3, 2, 2);
+    document.getElementById("nextTwoWeek_s5_2").innerHTML = yourNameIs(2, 4, 2, 2);
+
+
+    document.getElementById("nextThreeWeek_d1_1").innerHTML = yourNameIs(3, 0, 1, 1);
+    document.getElementById("nextThreeWeek_d2_1").innerHTML = yourNameIs(3, 1, 1, 1);
+    document.getElementById("nextThreeWeek_d3_1").innerHTML = yourNameIs(3, 2, 1, 1);
+    document.getElementById("nextThreeWeek_d4_1").innerHTML = yourNameIs(3, 3, 1, 1);
+    document.getElementById("nextThreeWeek_d5_1").innerHTML = yourNameIs(3, 4, 1, 1);
+
+    document.getElementById("nextThreeWeek_d1_2").innerHTML = yourNameIs(3, 0, 1, 2);
+    document.getElementById("nextThreeWeek_d2_2").innerHTML = yourNameIs(3, 1, 1, 2);
+    document.getElementById("nextThreeWeek_d3_2").innerHTML = yourNameIs(3, 2, 1, 2);
+    document.getElementById("nextThreeWeek_d4_2").innerHTML = yourNameIs(3, 3, 1, 2);
+    document.getElementById("nextThreeWeek_d5_2").innerHTML = yourNameIs(3, 4, 1, 2);
+
+    document.getElementById("nextThreeWeek_s1_1").innerHTML = yourNameIs(3, 0, 2, 1);
+    document.getElementById("nextThreeWeek_s2_1").innerHTML = yourNameIs(3, 1, 2, 1);
+    document.getElementById("nextThreeWeek_s3_1").innerHTML = yourNameIs(3, 2, 2, 1);
+    document.getElementById("nextThreeWeek_s4_1").innerHTML = yourNameIs(3, 3, 2, 1);
+    document.getElementById("nextThreeWeek_s5_1").innerHTML = yourNameIs(3, 4, 2, 1);
+
+    document.getElementById("nextThreeWeek_s1_2").innerHTML = yourNameIs(3, 0, 2, 2);
+    document.getElementById("nextThreeWeek_s2_2").innerHTML = yourNameIs(3, 1, 2, 2);
+    document.getElementById("nextThreeWeek_s3_2").innerHTML = yourNameIs(3, 2, 2, 2);
+    document.getElementById("nextThreeWeek_s4_2").innerHTML = yourNameIs(3, 3, 2, 2);
+    document.getElementById("nextThreeWeek_s5_2").innerHTML = yourNameIs(3, 4, 2, 2);
+  }
+</script>
+
+<body onload="handleOnLoad()">
+
+  <style type="text/css">.ritz .waffle a { color: inherit; }.ritz .waffle .s3{border-bottom:2px SOLID #000000;border-right:2px SOLID #000000;border-left:2px SOLID #000000;background-color:#ff9900;text-align:center;font-weight:bold;color:#ffffff;font-family:'Malgun Gothic';font-size:15pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s28{border-bottom:1px SOLID #000000;border-right:1px SOLID #b7b7b7;background-color:#ffffff;text-align:center;color:#000000;font-family:'Arial';font-size:10pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s30{border-bottom:2px SOLID #000000;border-right:1px SOLID #000000;border-left:2px SOLID #000000;background-color:#d5a6bd;text-align:center;color:#000000;font-family:'Malgun Gothic';font-size:10pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s13{border-bottom:2px SOLID #000000;border-right:1px SOLID #b7b7b7;background-color:#ffffff;text-align:center;color:#000000;font-family:'Malgun Gothic';font-size:10pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s2{border-right:2px SOLID #000000;background-color:#ffffff;text-align:center;font-weight:bold;color:#ffffff;font-family:'Malgun Gothic';font-size:0pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 0px 2px 3px;}.ritz .waffle .s25{border-bottom:1px SOLID #000000;border-right:2px SOLID #000000;background-color:#d5a6bd;text-align:center;color:#000000;font-family:'Malgun Gothic';font-size:10pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s23{border-bottom:1px SOLID #000000;border-right:1px SOLID #000000;border-left:2px SOLID #000000;background-color:#d5a6bd;text-align:center;color:#000000;font-family:'Malgun Gothic';font-size:10pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s21{border-bottom:1px SOLID #000000;border-right:2px SOLID #000000;background-color:#b4a7d6;text-align:center;color:#000000;font-family:'Malgun Gothic';font-size:10pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s16{border-bottom:1px SOLID #000000;border-right:1px SOLID #999999;background-color:#a4c2f4;text-align:center;color:#000000;font-family:'Malgun Gothic';font-size:10pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s26{border-bottom:1px SOLID #b7b7b7;border-right:1px SOLID #b7b7b7;background-color:#ffffff;text-align:center;color:#000000;font-family:'Arial';font-size:10pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s32{border-bottom:2px SOLID #000000;border-right:2px SOLID #000000;background-color:#ffffff;text-align:center;color:#000000;font-family:'Arial';font-size:10pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s8{border-bottom:1px SOLID #b7b7b7;border-right:1px SOLID #b7b7b7;background-color:#ffffff;text-align:center;color:#000000;font-family:'Malgun Gothic';font-size:10pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s10{border-bottom:1px SOLID #000000;border-right:1px SOLID #b7b7b7;background-color:#ffffff;text-align:center;color:#000000;font-family:'Malgun Gothic';font-size:10pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s15{border-bottom:1px SOLID #000000;border-right:1px SOLID #000000;border-left:2px SOLID #000000;background-color:#a4c2f4;text-align:center;color:#000000;font-family:'Malgun Gothic';font-size:10pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s7{border-bottom:1px SOLID #000000;border-right:2px SOLID #000000;background-color:#b6d7a8;text-align:center;color:#000000;font-family:'Malgun Gothic';font-size:10pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s22{border-bottom:2px SOLID #000000;border-right:1px SOLID #000000;border-left:2px SOLID #000000;background-color:#b4a7d6;text-align:center;color:#000000;font-family:'Malgun Gothic';font-size:10pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s4{border-right:2px SOLID #000000;background-color:#ffffff;text-align:center;color:#000000;font-family:'Malgun Gothic';font-size:10pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 0px 2px 2px;}.ritz .waffle .s18{border-bottom:2px SOLID #000000;border-right:1px SOLID #000000;border-left:2px SOLID #000000;background-color:#a4c2f4;text-align:center;color:#000000;font-family:'Malgun Gothic';font-size:10pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s1{border-bottom:2px SOLID #000000;background-color:#ffffff;text-align:center;font-weight:bold;color:#ffffff;font-family:'Malgun Gothic';font-size:15pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s19{border-bottom:1px SOLID #000000;border-right:1px SOLID #000000;border-left:2px SOLID #000000;background-color:#b4a7d6;text-align:center;color:#000000;font-family:'Malgun Gothic';font-size:10pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s14{border-bottom:2px SOLID #000000;border-right:2px SOLID #000000;background-color:#ffffff;text-align:center;color:#000000;font-family:'Malgun Gothic';font-size:10pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s29{border-bottom:1px SOLID #000000;border-right:2px SOLID #000000;background-color:#ffffff;text-align:center;color:#000000;font-family:'Arial';font-size:10pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s11{border-bottom:1px SOLID #000000;border-right:2px SOLID #000000;background-color:#ffffff;text-align:center;color:#000000;font-family:'Malgun Gothic';font-size:10pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s12{border-bottom:2px SOLID #000000;border-right:1px SOLID #000000;border-left:2px SOLID #000000;background-color:#b6d7a8;text-align:center;color:#000000;font-family:'Malgun Gothic';font-size:10pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s20{border-bottom:1px SOLID #000000;border-right:1px SOLID #999999;background-color:#b4a7d6;text-align:center;color:#000000;font-family:'Malgun Gothic';font-size:10pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s9{border-bottom:1px SOLID #b7b7b7;border-right:2px SOLID #000000;background-color:#ffffff;text-align:center;color:#000000;font-family:'Malgun Gothic';font-size:10pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s6{border-bottom:1px SOLID #000000;border-right:1px SOLID #999999;background-color:#b6d7a8;text-align:center;color:#000000;font-family:'Malgun Gothic';font-size:10pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s24{border-bottom:1px SOLID #000000;border-right:1px SOLID #999999;background-color:#d5a6bd;text-align:center;color:#000000;font-family:'Malgun Gothic';font-size:10pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s5{border-bottom:1px SOLID #000000;border-right:1px SOLID #000000;border-left:2px SOLID #000000;background-color:#b6d7a8;text-align:center;color:#000000;font-family:'Malgun Gothic';font-size:10pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s27{border-bottom:1px SOLID #b7b7b7;border-right:2px SOLID #000000;background-color:#ffffff;text-align:center;color:#000000;font-family:'Arial';font-size:10pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s33{background-color:#ffffff;text-align:center;color:#000000;font-family:'Malgun Gothic';font-size:10pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s31{border-bottom:2px SOLID #000000;border-right:1px SOLID #b7b7b7;background-color:#ffffff;text-align:center;color:#000000;font-family:'Arial';font-size:10pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s17{border-bottom:1px SOLID #000000;border-right:2px SOLID #000000;background-color:#a4c2f4;text-align:center;color:#000000;font-family:'Malgun Gothic';font-size:10pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s0{border-bottom:2px SOLID #000000;background-color:#ffffff;text-align:center;font-weight:bold;color:#ffffff;font-family:'Malgun Gothic';font-size:15pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}
+  </style>
+
+  <div class="container">
+
+  <ul class="tabs">
+    <li class="tab-link current" data-tab="tab-1">일정표</li>
+    <li class="tab-link" data-tab="tab-2">급식 신청</li>
+  </ul>
+
+  <div id="tab-1" class="tab-content current">
+
+
+    <div class="ritz grid-container" dir="ltr">
+    <table class="waffle" cellspacing="0" cellpadding="0" style="margin: 0 auto;"><tbody>
+    <tr style='height:24px;'>
+    <th id="0R0" style="height: 24px;" class="row-headers-background">
+
+    </th>
+    <td class="s0" dir="ltr">
+    </td>
+    <td class="s1" dir="ltr">
+    </td>
+    <td class="s1" dir="ltr">
+    </td>
+    <td class="s1" dir="ltr">
+    </td>
+    <td class="s1" dir="ltr">
+    </td>
+    <td class="s1" dir="ltr">
+    </td>
+    <td class="s1" dir="ltr">
+    </td>
+    </tr>
+    <tr style='height:24px;'>
+    <th id="0R1" style="height: 24px;" class="row-headers-background">
+
+    </th>
+    <td class="s3" dir="ltr" colspan="7" rowspan="2">
+      <p id="todayDate"></p>
+    </td>
+    </tr>
+    <tr style='height:24px;'>
+    <th id="0R2" style="height: 24px;" class="row-headers-background">
+
+    </th>
+    </tr>
+    <tr style='height:23px;'>
+    <th id="0R3" style="height: 23px;" class="row-headers-background">
+
+    </th>
+    <td class="s5" dir="ltr" colspan="2">이번 주
+    </td>
+    <td class="s6"><p id="thisWeek_1"></p>
+    </td>
+    <td class="s6"><p id="thisWeek_2"></p>
+    </td>
+    <td class="s6"><p id="thisWeek_3"></p>
+    </td>
+    <td class="s6"><p id="thisWeek_4"></p>
+    </td>
+    <td class="s7"><p id="thisWeek_5"></p>
+    </td>
+    </tr>
+    <tr style='height:20px;'>
+    <th id="0R4" style="height: 20px;" class="row-headers-background">
+
+    </th>
+    <td class="s5" dir="ltr" colspan="2" rowspan="2">도서관&amp;텔동
+    </td>
+    <td class="s8" dir="ltr"><p id="thisWeek_d1_1"></p>
+    </td>
+    <td class="s8" dir="ltr"><p id="thisWeek_d2_1"></p>
+    </td>
+    <td class="s8" dir="ltr"><p id="thisWeek_d3_1"></p>
+    </td>
+    <td class="s8" dir="ltr"><p id="thisWeek_d4_1"></p>
+    </td>
+    <td class="s9" dir="ltr"><p id="thisWeek_d5_1"></p>
+    </td>
+    </tr>
+    <tr style='height:20px;'>
+    <th id="0R5" style="height: 20px;" class="row-headers-background">
+
+    </th>
+    <td class="s10" dir="ltr"><p id="thisWeek_d1_2"></p>
+    </td>
+    <td class="s10" dir="ltr"><p id="thisWeek_d2_2"></p>
+    </td>
+    <td class="s10" dir="ltr"><p id="thisWeek_d3_2"></p>
+    </td>
+    <td class="s10" dir="ltr"><p id="thisWeek_d4_2"></p>
+    </td>
+    <td class="s11" dir="ltr"><p id="thisWeek_d5_2"></p>
+    </td>
+    </tr>
+    <tr style='height:20px;'>
+    <th id="0R6" style="height: 20px;" class="row-headers-background">
+
+    </th>
+    <td class="s12" dir="ltr" colspan="2" rowspan="2">신학&amp;성호관
+    </td>
+    <td class="s8" dir="ltr"><p id="thisWeek_s1_1"></p>
+    </td>
+    <td class="s8" dir="ltr"><p id="thisWeek_s2_1"></p>
+    </td>
+    <td class="s8" dir="ltr"><p id="thisWeek_s3_1"></p>
+    </td>
+    <td class="s8" dir="ltr"><p id="thisWeek_s4_1"></p>
+    </td>
+    <td class="s9" dir="ltr"><p id="thisWeek_s5_1"></p>
+    </td>
+    </tr>
+    <tr style='height:20px;'>
+    <th id="0R7" style="height: 20px;" class="row-headers-background">
+
+    </th>
+    <td class="s13" dir="ltr"><p id="thisWeek_s1_2"></p>
+    </td>
+    <td class="s13" dir="ltr"><p id="thisWeek_s2_2"></p>
+    </td>
+    <td class="s13" dir="ltr"><p id="thisWeek_s3_2"></p>
+    </td>
+    <td class="s13" dir="ltr"><p id="thisWeek_s4_2"></p>
+    </td>
+    <td class="s14" dir="ltr"><p id="thisWeek_s5_2"></p>
+    </td>
+    </tr>
+    <tr style='height:23px;'>
+    <th id="0R8" style="height: 23px;" class="row-headers-background">
+
+    </th>
+    <td class="s15" dir="ltr" colspan="2">다음 주
+    </td>
+    <td class="s16"><p id="nextWeek_1"></p>
+    </td>
+    <td class="s16"><p id="nextWeek_2"></p>
+    </td>
+    <td class="s16"><p id="nextWeek_3"></p>
+    </td>
+    <td class="s16"><p id="nextWeek_4"></p>
+    </td>
+    <td class="s17"><p id="nextWeek_5"></p>
+    </td>
+    </tr>
+    <tr style='height:20px;'>
+    <th id="0R9" style="height: 20px;" class="row-headers-background">
+
+    </th>
+    <td class="s15" dir="ltr" colspan="2" rowspan="2">도서관&amp;텔동
+    </td>
+    <td class="s8" dir="ltr"><p id="nextWeek_d1_1">
+    </td>
+    <td class="s8" dir="ltr"><p id="nextWeek_d2_1">
+    </td>
+    <td class="s8" dir="ltr"><p id="nextWeek_d3_1">
+    </td>
+    <td class="s8" dir="ltr"><p id="nextWeek_d4_1">
+    </td>
+    <td class="s9" dir="ltr"><p id="nextWeek_d5_1">
+    </td>
+    </tr>
+    <tr style='height:20px;'>
+    <th id="0R10" style="height: 20px;" class="row-headers-background">
+
+    </th>
+    <td class="s10" dir="ltr"><p id="nextWeek_d1_2"></p>
+    </td>
+    <td class="s10" dir="ltr"><p id="nextWeek_d2_2"></p>
+    </td>
+    <td class="s10" dir="ltr"><p id="nextWeek_d3_2"></p>
+    </td>
+    <td class="s10" dir="ltr"><p id="nextWeek_d4_2"></p>
+    </td>
+    <td class="s11" dir="ltr"><p id="nextWeek_d5_2"></p>
+    </td>
+    </tr>
+    <tr style='height:20px;'>
+    <th id="0R11" style="height: 20px;" class="row-headers-background">
+
+    </th>
+    <td class="s18" dir="ltr" colspan="2" rowspan="2">신학&amp;성호관
+    </td>
+    <td class="s8" dir="ltr"><p id="nextWeek_s1_1"></p>
+    </td>
+    <td class="s8" dir="ltr"><p id="nextWeek_s2_1"></p>
+    </td>
+    <td class="s8" dir="ltr"><p id="nextWeek_s3_1"></p>
+    </td>
+    <td class="s8" dir="ltr"><p id="nextWeek_s4_1"></p>
+    </td>
+    <td class="s9" dir="ltr"><p id="nextWeek_s5_1"></p>
+    </td>
+    </tr>
+    <tr style='height:20px;'>
+    <th id="0R12" style="height: 20px;" class="row-headers-background">
+
+    </th>
+    <td class="s13" dir="ltr"><p id="nextWeek_s1_2"></p>
+    </td>
+    <td class="s13" dir="ltr"><p id="nextWeek_s2_2"></p>
+    </td>
+    <td class="s13" dir="ltr"><p id="nextWeek_s3_2"></p>
+    </td>
+    <td class="s13" dir="ltr"><p id="nextWeek_s4_2"></p>
+    </td>
+    <td class="s14" dir="ltr"><p id="nextWeek_s5_2"></p>
+    </td>
+    </tr>
+    <tr style='height:23px;'>
+    <th id="0R13" style="height: 23px;" class="row-headers-background">
+
+    </th>
+    <td class="s19" dir="ltr" colspan="2">다다음 주
+    </td>
+    <td class="s20"><p id="nextTwoWeek_1"></p>
+    </td>
+    <td class="s20"><p id="nextTwoWeek_2"></p>
+    </td>
+    <td class="s20"><p id="nextTwoWeek_3"></p>
+    </td>
+    <td class="s20"><p id="nextTwoWeek_4"></p>
+    </td>
+    <td class="s21"><p id="nextTwoWeek_5"></p>
+    </td>
+    </tr>
+    <tr style='height:20px;'>
+    <th id="0R14" style="height: 20px;" class="row-headers-background">
+
+    </th>
+    <td class="s19" dir="ltr" colspan="2" rowspan="2">도서관&amp;텔동
+    </td>
+    <td class="s8" dir="ltr"><p id="nextTwoWeek_d1_1"></p>
+    </td>
+    <td class="s8" dir="ltr"><p id="nextTwoWeek_d2_1"></p>
+    </td>
+    <td class="s8" dir="ltr"><p id="nextTwoWeek_d3_1"></p>
+    </td>
+    <td class="s8" dir="ltr"><p id="nextTwoWeek_d4_1"></p>
+    </td>
+    <td class="s9" dir="ltr"><p id="nextTwoWeek_d5_1"></p>
+    </td>
+    </tr>
+    <tr style='height:20px;'>
+    <th id="0R15" style="height: 20px;" class="row-headers-background">
+
+    </th>
+    <td class="s10" dir="ltr"><p id="nextTwoWeek_d1_2"></p>
+    </td>
+    <td class="s10" dir="ltr"><p id="nextTwoWeek_d2_2"></p>
+    </td>
+    <td class="s10" dir="ltr"><p id="nextTwoWeek_d3_2"></p>
+    </td>
+    <td class="s10" dir="ltr"><p id="nextTwoWeek_d4_2"></p>
+    </td>
+    <td class="s11" dir="ltr"><p id="nextTwoWeek_d5_2"></p>
+    </td>
+    </tr>
+    <tr style='height:20px;'>
+    <th id="0R16" style="height: 20px;" class="row-headers-background">
+
+    </th>
+    <td class="s22" dir="ltr" colspan="2" rowspan="2">신학&amp;성호관
+    </td>
+    <td class="s8" dir="ltr"><p id="nextTwoWeek_s1_1"></p>
+    </td>
+    <td class="s8" dir="ltr"><p id="nextTwoWeek_s2_1"></p>
+    </td>
+    <td class="s8" dir="ltr"><p id="nextTwoWeek_s3_1"></p>
+    </td>
+    <td class="s8" dir="ltr"><p id="nextTwoWeek_s4_1"></p>
+    </td>
+    <td class="s9" dir="ltr"><p id="nextTwoWeek_s5_1"></p>
+    </td>
+    </tr>
+    <tr style='height:20px;'>
+    <th id="0R17" style="height: 20px;" class="row-headers-background">
+
+    </th>
+    <td class="s13" dir="ltr"><p id="nextTwoWeek_s1_2"></p>
+    </td>
+    <td class="s13" dir="ltr"><p id="nextTwoWeek_s2_2"></p>
+    </td>
+    <td class="s13" dir="ltr"><p id="nextTwoWeek_s3_2"></p>
+    </td>
+    <td class="s13" dir="ltr"><p id="nextTwoWeek_s4_2"></p>
+    </td>
+    <td class="s14" dir="ltr"><p id="nextTwoWeek_s5_2"></p>
+    </td>
+    </tr>
+    <tr style='height:23px;'>
+    <th id="0R18" style="height: 23px;" class="row-headers-background">
+
+    </th>
+    <td class="s23" dir="ltr" colspan="2">다다다음 주
+    </td>
+    <td class="s24"><p id="nextThreeWeek_1"></p>
+    </td>
+    <td class="s24"><p id="nextThreeWeek_2"></p>
+    </td>
+    <td class="s24"><p id="nextThreeWeek_3"></p>
+    </td>
+    <td class="s24"><p id="nextThreeWeek_4"></p>
+    </td>
+    <td class="s25"><p id="nextThreeWeek_5"></p>
+    </td>
+    </tr>
+    <tr style='height:20px;'>
+    <th id="0R19" style="height: 20px;" class="row-headers-background">
+
+    </th>
+    <td class="s23" colspan="2" rowspan="2">도서관&amp;텔동
+    </td>
+    <td class="s26"><p id="nextThreeWeek_d1_1"></p>
+    </td>
+    <td class="s26"><p id="nextThreeWeek_d2_1"></p>
+    </td>
+    <td class="s26"><p id="nextThreeWeek_d3_1"></p>
+    </td>
+    <td class="s26"><p id="nextThreeWeek_d4_1"></p>
+    </td>
+    <td class="s27"><p id="nextThreeWeek_d5_1"></p>
+    </td>
+    </tr>
+    <tr style='height:20px;'>
+    <th id="0R20" style="height: 20px;" class="row-headers-background">
+
+    </th>
+    <td class="s28"><p id="nextThreeWeek_d1_2"></p>
+    </td>
+    <td class="s28"><p id="nextThreeWeek_d2_2"></p>
+    </td>
+    <td class="s28"><p id="nextThreeWeek_d3_2"></p>
+    </td>
+    <td class="s28"><p id="nextThreeWeek_d4_2"></p>
+    </td>
+    <td class="s29"><p id="nextThreeWeek_d5_2"></p>
+    </td>
+    </tr>
+    <tr style='height:20px;'>
+    <th id="0R21" style="height: 20px;" class="row-headers-background">
+
+    </th>
+    <td class="s30" colspan="2" rowspan="2">신학&amp;성호관
+    </td>
+    <td class="s26"><p id="nextThreeWeek_s1_1"></p>
+    </td>
+    <td class="s26"><p id="nextThreeWeek_s2_1"></p>
+    </td>
+    <td class="s26"><p id="nextThreeWeek_s3_1"></p>
+    </td>
+    <td class="s26"><p id="nextThreeWeek_s4_1"></p>
+    </td>
+    <td class="s27"><p id="nextThreeWeek_s5_1"></p>
+    </td>
+    </tr>
+    <tr style='height:20px;'>
+    <th id="0R22" style="height: 20px;" class="row-headers-background">
+
+    </th>
+    <td class="s31"><p id="nextThreeWeek_s1_2"></p>
+    </td>
+    <td class="s31"><p id="nextThreeWeek_s2_2"></p>
+    </td>
+    <td class="s31"><p id="nextThreeWeek_s3_2"></p>
+    </td>
+    <td class="s31"><p id="nextThreeWeek_s4_2"></p>
+    </td>
+    <td class="s32"><p id="nextThreeWeek_s5_2"></p>
+    </td>
+    </tr>
+    <tr style='height:20px;'>
+    <th id="0R23" style="height: 20px;" class="row-headers-background">
+
+    </th>
+    <td class="s33" dir="ltr" colspan="7"><br>설문지 제출 후 표 업데이트까지 최대 60초가량 소요될 수 있습니다.
+    </td>
+    </tr>
+    <tr style='height:20px;'>
+    <th id="0R24" style="height: 20px;" class="row-headers-background">
+
+    </th>
+    <td class="s33" dir="ltr" colspan="7">by LUFT-AQUILA / luftaquila@protonmail.ch
+    </td>
+    </tr></tbody>
+    </table>
+    </div>
+
+  </div>
+  <div id="tab-2" class="tab-content">
+    <br>
+<iframe src="https://docs.google.com/forms/d/e/1FAIpQLSc36QOdoBUFC9q3ssvOWy6-jEKnA3262-wXGRGYdKkoCCzcPg/viewform?embedded=true" width="100%" height="90%" frameborder="0" marginheight="3" marginwidth="3">로드 중...</iframe>
+  </div>
+
+  </div>
+
+  <script type='text/javascript' nonce='4Fhz+6DF7w8KNyBLXqdmDSSoM9s'>
+  function posObj(sheet, id, row, col, x, y) {
+    var rtl = false;
+    var sheetElement = document.getElementById(sheet);
+    if (!sheetElement) {
+      sheetElement = document.getElementById(sheet + '-grid-container');
+    }
+    if (sheetElement) {
+      rtl = sheetElement.getAttribute('dir') == 'rtl';
+    }
+    var r = document.getElementById(sheet+'R'+row);
+    var c = document.getElementById(sheet+'C'+col);
+    if (r && c) {
+      var objElement = document.getElementById(id);
+      var s = objElement.style;
+      var t = y;
+      while (r && r != sheetElement) {
+        t += r.offsetTop;
+        r = r.offsetParent;
+      }
+      var offsetX = x;
+      while (c && c != sheetElement) {
+        offsetX += c.offsetLeft;
+        c = c.offsetParent;
+      }
+      if (rtl) {
+        offsetX -= objElement.offsetWidth;
+      }
+      s.left = offsetX + 'px';
+      s.top = t + 'px';
+      s.display = 'block';
+      s.border = '1px solid #000000';
+    }
+  };
+  function posObjs() {
+  };
+  posObjs();
+  </script>
+</body>
+</html>
