@@ -1,4 +1,5 @@
 <html>
+<meta name="google-site-verification" content="LdumQ1csatc-sergk4eQ5nBhKjcnisZ18Bo8RjRBxKo"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <meta http-equiv="Content-Type" content="text/html">
 
@@ -22,17 +23,14 @@ ul.tabs li{
   padding: 10px 15px;
   cursor: pointer;
 }
-
 ul.tabs li.current{
   background: #ededed;
   color: #222;
 }
-
 .tab-content{
   display: none;
   padding: 0px 5px 0px -15px;
 }
-
 .tab-content.current{
   display: inherit;
 }
@@ -42,21 +40,15 @@ ul.tabs li.current{
   crossorigin="anonymous"></script>
 <script>
   var datum;
-
   $(document).ready(function(){
-
     $('ul.tabs li').click(function(){
       var tab_id = $(this).attr('data-tab');
-
       $('ul.tabs li').removeClass('current');
       $('.tab-content').removeClass('current');
-
       $(this).addClass('current');
       $("#"+tab_id).addClass('current');
     })
-
   })
-
   function handleOnLoad() {
     $.ajax({
       url: 'https://docs.google.com/spreadsheet/pub?key=1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A&single=true&gid=850606151&range=G2:I&output=csv',
@@ -68,7 +60,6 @@ ul.tabs li.current{
       }
     });
   }
-
   var dateFormat = function () {
     var	token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g,
       timezone = /\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC)(?:[-+]\d{4})?)\b/g,
@@ -79,29 +70,23 @@ ul.tabs li.current{
         while (val.length < len) val = "0" + val;
         return val;
       };
-
     // Regexes and supporting functions are cached through closure
     return function (date, mask, utc) {
       var dF = dateFormat;
-
       // You can't provide utc if you skip other args (use the "UTC:" mask prefix)
       if (arguments.length == 1 && Object.prototype.toString.call(date) == "[object String]" && !/\d/.test(date)) {
         mask = date;
         date = undefined;
       }
-
       // Passing date through Date applies Date.parse, if necessary
       date = date ? new Date(date) : new Date;
       if (isNaN(date)) throw SyntaxError("invalid date");
-
       mask = String(dF.masks[mask] || mask || dF.masks["default"]);
-
       // Allow setting the utc argument via the mask
       if (mask.slice(0, 4) == "UTC:") {
         mask = mask.slice(4);
         utc = true;
       }
-
       var	_ = utc ? "getUTC" : "get",
         d = date[_ + "Date"](),
         D = date[_ + "Day"](),
@@ -141,13 +126,11 @@ ul.tabs li.current{
           o:    (o > 0 ? "-" : "+") + pad(Math.floor(Math.abs(o) / 60) * 100 + Math.abs(o) % 60, 4),
           S:    ["th", "st", "nd", "rd"][d % 10 > 3 ? 0 : (d % 100 - d % 10 != 10) * d % 10]
         };
-
       return mask.replace(token, function ($0) {
         return $0 in flags ? flags[$0] : $0.slice(1, $0.length - 1);
       });
     };
   }();
-
   // Some common format strings
   dateFormat.masks = {
     "default":      "ddd mmm dd yyyy HH:MM:ss",
@@ -163,7 +146,6 @@ ul.tabs li.current{
     isoDateTime:    "yyyy-mm-dd'T'HH:MM:ss",
     isoUtcDateTime: "UTC:yyyy-mm-dd'T'HH:MM:ss'Z'"
   };
-
   // Internationalization strings
   dateFormat.i18n = {
     dayNames: [
@@ -175,32 +157,25 @@ ul.tabs li.current{
       "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
     ]
   };
-
   // For convenience...
   Date.prototype.format = function (mask, utc) {
     return dateFormat(this, mask, utc);
   };
-
   Date.prototype.getWeek = function()
   {
     var calc = new Date(this.getFullYear(), 0, 1);
     return Math.ceil((((this - calc) / 86400000) + calc.getDay() + 1) / 7);
   }
-
-
   function parseCSV(text, lineTerminator, cellTerminator) {
     datum = text.split(lineTerminator).map((line) => line.split(cellTerminator));
     datum.push(['0', '0', '0']);
     setData();
   }
-
   function yourNameIs(p1, p2, course, rank)
   {
     var week = new Date().getWeek();
     var year = new Date().getFullYear();
-
     var result = new Date(year, 0, 1 + p2 + ((week + p1 - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("yyyy. m. d");
-
     for (var i = 0; i < datum.length - 1; i++)
     {
       if(rank == 1)
@@ -209,12 +184,10 @@ ul.tabs li.current{
         {
           if((course == 1) && (datum[i][2].includes("도서관 & 텔동 코스")))
             return datum[i][0];
-
           else if((course == 2) && (datum[i][2].includes("신학 & 성호관 코스")))
             return datum[i][0];
         }
       }
-
       else if(rank == 2)
       {
         if(result == datum[i][1])
@@ -240,138 +213,111 @@ ul.tabs li.current{
     }
     return " ";
   }
-
   function setData()
   {
     var week = new Date().getWeek();
     var year = new Date().getFullYear();
-
     document.getElementById("todayDate").innerHTML = new Date().format("m월 d일 dddd");
-
     document.getElementById("thisWeek_1").innerHTML = new Date(year, 0, 1 + 0 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
     document.getElementById("thisWeek_2").innerHTML = new Date(year, 0, 1 + 1 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
     document.getElementById("thisWeek_3").innerHTML = new Date(year, 0, 1 + 2 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
     document.getElementById("thisWeek_4").innerHTML = new Date(year, 0, 1 + 3 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
     document.getElementById("thisWeek_5").innerHTML = new Date(year, 0, 1 + 4 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
-
     if(new Date().getDay() == 1) document.getElementById("thisWeek_1").style.backgroundColor = "greenyellow ";
     if(new Date().getDay() == 2) document.getElementById("thisWeek_2").style.backgroundColor = "greenyellow ";
     if(new Date().getDay() == 3) document.getElementById("thisWeek_3").style.backgroundColor = "greenyellow ";
     if(new Date().getDay() == 4) document.getElementById("thisWeek_4").style.backgroundColor = "greenyellow ";
     if(new Date().getDay() == 5) document.getElementById("thisWeek_5").style.backgroundColor = "greenyellow ";
-
-
     document.getElementById("nextWeek_1").innerHTML = new Date(year, 0, 1 + 0 + (week * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
     document.getElementById("nextWeek_2").innerHTML = new Date(year, 0, 1 + 1 + (week * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
     document.getElementById("nextWeek_3").innerHTML = new Date(year, 0, 1 + 2 + (week * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
     document.getElementById("nextWeek_4").innerHTML = new Date(year, 0, 1 + 3 + (week * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
     document.getElementById("nextWeek_5").innerHTML = new Date(year, 0, 1 + 4 + (week * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
-
     document.getElementById("nextTwoWeek_1").innerHTML = new Date(year, 0, 1 + 0 + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
     document.getElementById("nextTwoWeek_2").innerHTML = new Date(year, 0, 1 + 1 + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
     document.getElementById("nextTwoWeek_3").innerHTML = new Date(year, 0, 1 + 2 + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
     document.getElementById("nextTwoWeek_4").innerHTML = new Date(year, 0, 1 + 3 + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
     document.getElementById("nextTwoWeek_5").innerHTML = new Date(year, 0, 1 + 4 + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
-
     document.getElementById("nextThreeWeek_1").innerHTML = new Date(year, 0, 1 + 0 + ((week + 2) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
     document.getElementById("nextThreeWeek_2").innerHTML = new Date(year, 0, 1 + 1 + ((week + 2) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
     document.getElementById("nextThreeWeek_3").innerHTML = new Date(year, 0, 1 + 2 + ((week + 2) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
     document.getElementById("nextThreeWeek_4").innerHTML = new Date(year, 0, 1 + 3 + ((week + 2) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
     document.getElementById("nextThreeWeek_5").innerHTML = new Date(year, 0, 1 + 4 + ((week + 2) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
-
     document.getElementById("thisWeek_d1_1").innerHTML = yourNameIs(0, 0, 1, 1);
     document.getElementById("thisWeek_d2_1").innerHTML = yourNameIs(0, 1, 1, 1);
     document.getElementById("thisWeek_d3_1").innerHTML = yourNameIs(0, 2, 1, 1);
     document.getElementById("thisWeek_d4_1").innerHTML = yourNameIs(0, 3, 1, 1);
     document.getElementById("thisWeek_d5_1").innerHTML = yourNameIs(0, 4, 1, 1);
-
     document.getElementById("thisWeek_d1_2").innerHTML = yourNameIs(0, 0, 1, 2);
     document.getElementById("thisWeek_d2_2").innerHTML = yourNameIs(0, 1, 1, 2);
     document.getElementById("thisWeek_d3_2").innerHTML = yourNameIs(0, 2, 1, 2);
     document.getElementById("thisWeek_d4_2").innerHTML = yourNameIs(0, 3, 1, 2);
     document.getElementById("thisWeek_d5_2").innerHTML = yourNameIs(0, 4, 1, 2);
-
     document.getElementById("thisWeek_s1_1").innerHTML = yourNameIs(0, 0, 2, 1);
     document.getElementById("thisWeek_s2_1").innerHTML = yourNameIs(0, 1, 2, 1);
     document.getElementById("thisWeek_s3_1").innerHTML = yourNameIs(0, 2, 2, 1);
     document.getElementById("thisWeek_s4_1").innerHTML = yourNameIs(0, 3, 2, 1);
     document.getElementById("thisWeek_s5_1").innerHTML = yourNameIs(0, 4, 2, 1);
-
     document.getElementById("thisWeek_s1_2").innerHTML = yourNameIs(0, 0, 2, 2);
     document.getElementById("thisWeek_s2_2").innerHTML = yourNameIs(0, 1, 2, 2);
     document.getElementById("thisWeek_s3_2").innerHTML = yourNameIs(0, 2, 2, 2);
     document.getElementById("thisWeek_s4_2").innerHTML = yourNameIs(0, 3, 2, 2);
     document.getElementById("thisWeek_s5_2").innerHTML = yourNameIs(0, 4, 2, 2);
-
-
     document.getElementById("nextWeek_d1_1").innerHTML = yourNameIs(1, 0, 1, 1);
     document.getElementById("nextWeek_d2_1").innerHTML = yourNameIs(1, 1, 1, 1);
     document.getElementById("nextWeek_d3_1").innerHTML = yourNameIs(1, 2, 1, 1);
     document.getElementById("nextWeek_d4_1").innerHTML = yourNameIs(1, 3, 1, 1);
     document.getElementById("nextWeek_d5_1").innerHTML = yourNameIs(1, 4, 1, 1);
-
     document.getElementById("nextWeek_d1_2").innerHTML = yourNameIs(1, 0, 1, 2);
     document.getElementById("nextWeek_d2_2").innerHTML = yourNameIs(1, 1, 1, 2);
     document.getElementById("nextWeek_d3_2").innerHTML = yourNameIs(1, 2, 1, 2);
     document.getElementById("nextWeek_d4_2").innerHTML = yourNameIs(1, 3, 1, 2);
     document.getElementById("nextWeek_d5_2").innerHTML = yourNameIs(1, 4, 1, 2);
-
     document.getElementById("nextWeek_s1_1").innerHTML = yourNameIs(1, 0, 2, 1);
     document.getElementById("nextWeek_s2_1").innerHTML = yourNameIs(1, 1, 2, 1);
     document.getElementById("nextWeek_s3_1").innerHTML = yourNameIs(1, 2, 2, 1);
     document.getElementById("nextWeek_s4_1").innerHTML = yourNameIs(1, 3, 2, 1);
     document.getElementById("nextWeek_s5_1").innerHTML = yourNameIs(1, 4, 2, 1);
-
     document.getElementById("nextWeek_s1_2").innerHTML = yourNameIs(1, 0, 2, 2);
     document.getElementById("nextWeek_s2_2").innerHTML = yourNameIs(1, 1, 2, 2);
     document.getElementById("nextWeek_s3_2").innerHTML = yourNameIs(1, 2, 2, 2);
     document.getElementById("nextWeek_s4_2").innerHTML = yourNameIs(1, 3, 2, 2);
     document.getElementById("nextWeek_s5_2").innerHTML = yourNameIs(1, 4, 2, 2);
-
-
     document.getElementById("nextTwoWeek_d1_1").innerHTML = yourNameIs(2, 0, 1, 1);
     document.getElementById("nextTwoWeek_d2_1").innerHTML = yourNameIs(2, 1, 1, 1);
     document.getElementById("nextTwoWeek_d3_1").innerHTML = yourNameIs(2, 2, 1, 1);
     document.getElementById("nextTwoWeek_d4_1").innerHTML = yourNameIs(2, 3, 1, 1);
     document.getElementById("nextTwoWeek_d5_1").innerHTML = yourNameIs(2, 4, 1, 1);
-
     document.getElementById("nextTwoWeek_d1_2").innerHTML = yourNameIs(2, 0, 1, 2);
     document.getElementById("nextTwoWeek_d2_2").innerHTML = yourNameIs(2, 1, 1, 2);
     document.getElementById("nextTwoWeek_d3_2").innerHTML = yourNameIs(2, 2, 1, 2);
     document.getElementById("nextTwoWeek_d4_2").innerHTML = yourNameIs(2, 3, 1, 2);
     document.getElementById("nextTwoWeek_d5_2").innerHTML = yourNameIs(2, 4, 1, 2);
-
     document.getElementById("nextTwoWeek_s1_1").innerHTML = yourNameIs(2, 0, 2, 1);
     document.getElementById("nextTwoWeek_s2_1").innerHTML = yourNameIs(2, 1, 2, 1);
     document.getElementById("nextTwoWeek_s3_1").innerHTML = yourNameIs(2, 2, 2, 1);
     document.getElementById("nextTwoWeek_s4_1").innerHTML = yourNameIs(2, 3, 2, 1);
     document.getElementById("nextTwoWeek_s5_1").innerHTML = yourNameIs(2, 4, 2, 1);
-
     document.getElementById("nextTwoWeek_s1_2").innerHTML = yourNameIs(2, 0, 2, 2);
     document.getElementById("nextTwoWeek_s2_2").innerHTML = yourNameIs(2, 1, 2, 2);
     document.getElementById("nextTwoWeek_s3_2").innerHTML = yourNameIs(2, 2, 2, 2);
     document.getElementById("nextTwoWeek_s4_2").innerHTML = yourNameIs(2, 3, 2, 2);
     document.getElementById("nextTwoWeek_s5_2").innerHTML = yourNameIs(2, 4, 2, 2);
-
-
     document.getElementById("nextThreeWeek_d1_1").innerHTML = yourNameIs(3, 0, 1, 1);
     document.getElementById("nextThreeWeek_d2_1").innerHTML = yourNameIs(3, 1, 1, 1);
     document.getElementById("nextThreeWeek_d3_1").innerHTML = yourNameIs(3, 2, 1, 1);
     document.getElementById("nextThreeWeek_d4_1").innerHTML = yourNameIs(3, 3, 1, 1);
     document.getElementById("nextThreeWeek_d5_1").innerHTML = yourNameIs(3, 4, 1, 1);
-
     document.getElementById("nextThreeWeek_d1_2").innerHTML = yourNameIs(3, 0, 1, 2);
     document.getElementById("nextThreeWeek_d2_2").innerHTML = yourNameIs(3, 1, 1, 2);
     document.getElementById("nextThreeWeek_d3_2").innerHTML = yourNameIs(3, 2, 1, 2);
     document.getElementById("nextThreeWeek_d4_2").innerHTML = yourNameIs(3, 3, 1, 2);
     document.getElementById("nextThreeWeek_d5_2").innerHTML = yourNameIs(3, 4, 1, 2);
-
     document.getElementById("nextThreeWeek_s1_1").innerHTML = yourNameIs(3, 0, 2, 1);
     document.getElementById("nextThreeWeek_s2_1").innerHTML = yourNameIs(3, 1, 2, 1);
     document.getElementById("nextThreeWeek_s3_1").innerHTML = yourNameIs(3, 2, 2, 1);
     document.getElementById("nextThreeWeek_s4_1").innerHTML = yourNameIs(3, 3, 2, 1);
     document.getElementById("nextThreeWeek_s5_1").innerHTML = yourNameIs(3, 4, 2, 1);
-
     document.getElementById("nextThreeWeek_s1_2").innerHTML = yourNameIs(3, 0, 2, 2);
     document.getElementById("nextThreeWeek_s2_2").innerHTML = yourNameIs(3, 1, 2, 2);
     document.getElementById("nextThreeWeek_s3_2").innerHTML = yourNameIs(3, 2, 2, 2);
