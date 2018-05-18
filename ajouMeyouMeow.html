@@ -371,8 +371,11 @@
       </ul>
       <div id="tab-1" class="tab-content current">
         <div class="ritz grid-container" dir="ltr">
-          <table class="waffle" cellspacing="0" cellpadding="0" style="margin: 0 auto; @media (min-width:760px){width: 100%}">
-            <tbody style="@media (min-width:760px){width: 100%}">
+          <table class="waffle" cellspacing="0" cellpadding="0" style="margin: 0 auto;">
+            <style>
+              @media (max-width:360px){table{width: 100%;}}
+            </style>
+            <tbody>
               <tr style='height:24px;'>
                 <th id="0R0" style="height: 24px;" class="row-headers-background"></th>
               </tr>
