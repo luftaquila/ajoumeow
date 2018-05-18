@@ -372,7 +372,12 @@
       <div id="tab-1" class="tab-content current">
         <div class="ritz grid-container" dir="ltr">
           <table class="waffle" cellspacing="0" cellpadding="0" style="margin: 0 auto;">
-            <style>@media (max-width:760px){table{width: 100%;}}</style>
+            <style>
+              @media (max-width:760px){table{width: 100%;}}
+              @media (max-width:360px){html{font-size:10px;}}
+              @media (min-width:361px) and (max-width:759px){html{font-size:20px;}}
+              @media (min-width:760px){html{font-size:24px;}}
+            </style>
             <tbody>
               <tr style='height:24px;'>
                 <th id="0R0" style="height: 24px;" class="row-headers-background"></th>
