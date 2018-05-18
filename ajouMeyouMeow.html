@@ -174,8 +174,7 @@ ul.tabs li.current{
   Date.prototype.format = function (mask, utc) {
     return dateFormat(this, mask, utc);
   };
-  Date.prototype.getWeek = function()
-  {
+  Date.prototype.getWeek = function() {
     var calc = new Date(this.getFullYear(), 0, 1);
     return Math.ceil((((this - calc) / 86400000) + calc.getDay() + 1) / 7);
   }
@@ -184,39 +183,29 @@ ul.tabs li.current{
     datum.push(['0', '0', '0']);
     setData();
   }
-  function yourNameIs(p1, p2, course, rank)
-  {
+  function yourNameIs(p1, p2, course, rank) {
     var week = new Date().getWeek();
     var year = new Date().getFullYear();
     var result = new Date(year, 0, 1 + p2 + ((week + p1 - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("yyyy. m. d");
-    for (var i = 0; i < datum.length - 1; i++)
-    {
-      if(rank == 1)
-      {
-        if(result == datum[i][1])
-        {
+    for (var i = 0; i < datum.length - 1; i++) {
+      if(rank == 1) {
+        if(result == datum[i][1]) {
           if((course == 1) && (datum[i][2].includes("도서관 & 텔동 코스")))
             return datum[i][0];
           else if((course == 2) && (datum[i][2].includes("신학 & 성호관 코스")))
             return datum[i][0];
         }
       }
-      else if(rank == 2)
-      {
-        if(result == datum[i][1])
-        {
-          if((course == 1) && (datum[i][2].includes("도서관 & 텔동 코스")))
-          {
-            if(result == datum[i + 1][1])
-            {
+      else if(rank == 2) {
+        if(result == datum[i][1]) {
+          if((course == 1) && (datum[i][2].includes("도서관 & 텔동 코스"))) {
+            if(result == datum[i + 1][1]) {
               if((course == 1) && (datum[i + 1][2].includes("도서관 & 텔동 코스")))
                 return datum[i + 1][0];
             }
           }
-          else if((course == 2) && (datum[i][2].includes("신학 & 성호관 코스")))
-          {
-            if(result == datum[i + 1][1])
-            {
+          else if((course == 2) && (datum[i][2].includes("신학 & 성호관 코스"))) {
+            if(result == datum[i + 1][1]) {
               if((course == 2) && (datum[i + 1][2].includes("신학 & 성호관 코스")))
                 return datum[i + 1][0];
             }
@@ -226,8 +215,7 @@ ul.tabs li.current{
     }
     return " ";
   }
-  function setData()
-  {
+  function setData() {
     var week = new Date().getWeek();
     var year = new Date().getFullYear();
 
