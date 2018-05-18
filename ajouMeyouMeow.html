@@ -231,11 +231,11 @@ ul.tabs li.current{
     var week = new Date().getWeek();
     var year = new Date().getFullYear();
 
-    if(new Date().getDay() == 1) document.getElementById("thisWeek_first").style.backgroundColor = "greenyellow ";
-    if(new Date().getDay() == 2) document.getElementById("thisWeek_second").style.backgroundColor = "greenyellow ";
-    if(new Date().getDay() == 3) document.getElementById("thisWeek_third").style.backgroundColor = "greenyellow ";
-    if(new Date().getDay() == 4) document.getElementById("thisWeek_forth").style.backgroundColor = "greenyellow ";
-    if(new Date().getDay() == 5) document.getElementById("thisWeek_fifth").style.backgroundColor = "greenyellow ";
+    if(new Date().getDay() == 1) document.getElementById("thisWeek_1").style.backgroundColor = "greenyellow ";
+    if(new Date().getDay() == 2) document.getElementById("thisWeek_2").style.backgroundColor = "greenyellow ";
+    if(new Date().getDay() == 3) document.getElementById("thisWeek_3").style.backgroundColor = "greenyellow ";
+    if(new Date().getDay() == 4) document.getElementById("thisWeek_4").style.backgroundColor = "greenyellow ";
+    if(new Date().getDay() == 5) document.getElementById("thisWeek_5").style.backgroundColor = "greenyellow ";
 
     document.getElementById("todayDate").innerHTML = new Date().format("m월 d일 dddd");
     document.getElementById("thisWeek_1").innerHTML = new Date(year, 0, 1 + 0 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
@@ -354,76 +354,41 @@ ul.tabs li.current{
   </ul>
 
   <div id="tab-1" class="tab-content current">
-
-
     <div class="ritz grid-container" dir="ltr">
     <table class="waffle" cellspacing="0" cellpadding="0" style="margin: 0 auto;">
     <tbody>
     <tr style='height:24px;'>
-    <th id="0R0" style="height: 24px;" class="row-headers-background">
-
-    </th>
-    <td class="s0" dir="ltr">
-    </td>
-    <td class="s1" dir="ltr">
-    </td>
-    <td class="s1" dir="ltr">
-    </td>
-    <td class="s1" dir="ltr">
-    </td>
-    <td class="s1" dir="ltr">
-    </td>
-    <td class="s1" dir="ltr">
-    </td>
-    <td class="s1" dir="ltr">
-    </td>
+      <th id="0R0" style="height: 24px;" class="row-headers-background"></th>
+      <br>
     </tr>
     <tr style='height:24px;'>
-    <th id="0R1" style="height: 24px;" class="row-headers-background">
-
-    </th>
-    <td class="s3" dir="ltr" colspan="7" rowspan="2">
-      <p id="todayDate">로딩 중...</p>
-    </td>
+      <th id="0R1" style="height: 24px;" class="row-headers-background"></th>
+      <td class="s3" dir="ltr" colspan="7" rowspan="2">
+        <p id="todayDate">로딩 중...</p>
+      </td>
     </tr>
     <tr style='height:24px;'>
-    <th id="0R2" style="height: 24px;" class="row-headers-background">
-
-    </th>
+      <th id="0R2" style="height: 24px;" class="row-headers-background"></th>
     </tr>
+
     <tr style='height:23px;'>
-    <th id="0R3" style="height: 23px;" class="row-headers-background">
-
-    </th>
-    <td class="s5" dir="ltr" colspan="2">이번 주
-    </td>
-    <td class="s6" id="thisWeek_first"><p id="thisWeek_1"></p>
-    </td>
-    <td class="s6" id="thisWeek_second"><p id="thisWeek_2"></p>
-    </td>
-    <td class="s6" id="thisWeek_third"><p id="thisWeek_3"></p>
-    </td>
-    <td class="s6" id="thisWeek_forth"><p id="thisWeek_4"></p>
-    </td>
-    <td class="s7" id="thisWeek_fifth"><p id="thisWeek_5"></p>
-    </td>
+      <th id="0R3" style="height: 23px;" class="row-headers-background"></th>
+      <td class="s5" dir="ltr" colspan="2">이번 주</td>
+      <td class="s6" id="thisWeek_1"></td>
+      <td class="s6" id="thisWeek_2"></td>
+      <td class="s6" id="thisWeek_3"></td>
+      <td class="s6" id="thisWeek_4"></td>
+      <td class="s7" id="thisWeek_5"></td>
     </tr>
-    <tr style='height:20px;'>
-    <th id="0R4" style="height: 20px;" class="row-headers-background">
 
-    </th>
-    <td class="s5" dir="ltr" colspan="2" rowspan="2">도서관&amp;텔동
-    </td>
-    <td class="s8" dir="ltr"><p id="thisWeek_d1_1"></p>
-    </td>
-    <td class="s8" dir="ltr"><p id="thisWeek_d2_1"></p>
-    </td>
-    <td class="s8" dir="ltr"><p id="thisWeek_d3_1"></p>
-    </td>
-    <td class="s8" dir="ltr"><p id="thisWeek_d4_1"></p>
-    </td>
-    <td class="s9" dir="ltr"><p id="thisWeek_d5_1"></p>
-    </td>
+    <tr style='height:20px;'>
+      <th id="0R4" style="height: 20px;" class="row-headers-background"></th>
+      <td class="s5" dir="ltr" colspan="2" rowspan="2">도서관&amp;텔동</td>
+      <td class="s8" dir="ltr"><p id="thisWeek_d1_1"></p></td>
+      <td class="s8" dir="ltr"><p id="thisWeek_d2_1"></p></td>
+      <td class="s8" dir="ltr"><p id="thisWeek_d3_1"></p></td>
+      <td class="s8" dir="ltr"><p id="thisWeek_d4_1"></p></td>
+      <td class="s9" dir="ltr"><p id="thisWeek_d5_1"></p></td>
     </tr>
     <tr style='height:20px;'>
     <th id="0R5" style="height: 20px;" class="row-headers-background">
