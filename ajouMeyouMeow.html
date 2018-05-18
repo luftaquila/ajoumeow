@@ -332,7 +332,7 @@
     }
   </script>
   <body onload="handleOnLoad()">
-    <style type="text/css">
+    <style type="text/css">.ritz .waffle a { color: inherit; }
       .ritz .waffle .s3{border-top:2px SOLID #000000;border-bottom:2px SOLID #000000;border-right:2px SOLID #000000;border-left:2px SOLID #000000;background-color:#ff9900;text-align:center;font-weight:bold;color:#ffffff;font-family:'Malgun Gothic';font-size:15pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}
       .ritz .waffle .s5{border-bottom:1px SOLID #000000;border-right:1px SOLID #000000;border-left:2px SOLID #000000;background-color:#b6d7a8;text-align:center;color:#000000;font-family:'Malgun Gothic';font-size:10pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}
       .ritz .waffle .s6{border-bottom:1px SOLID #000000;border-right:1px SOLID #999999;background-color:#b6d7a8;text-align:center;color:#b6d7a8;font-family:'Malgun Gothic';font-size:10pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}
@@ -371,8 +371,8 @@
       </ul>
       <div id="tab-1" class="tab-content current">
         <div class="ritz grid-container" dir="ltr">
-          <table class="waffle" cellspacing="0" cellpadding="0" style="margin: 0 auto;">
-            <tbody style="width: 100px;">
+          <table class="waffle" cellspacing="0" cellpadding="0" style="margin: 0 auto; @media (max-width:760px){tbody{width: 100%;}}">
+            <tbody>
               <tr style='height:24px;'>
                 <th id="0R0" style="height: 24px;" class="row-headers-background"></th>
               </tr>
