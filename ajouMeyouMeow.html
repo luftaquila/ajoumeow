@@ -230,17 +230,19 @@ ul.tabs li.current{
   {
     var week = new Date().getWeek();
     var year = new Date().getFullYear();
+
+    if(new Date().getDay() == 1) document.getElementById("thisWeek_first").style.backgroundColor = "greenyellow ";
+    if(new Date().getDay() == 2) document.getElementById("thisWeek_second").style.backgroundColor = "greenyellow ";
+    if(new Date().getDay() == 3) document.getElementById("thisWeek_third").style.backgroundColor = "greenyellow ";
+    if(new Date().getDay() == 4) document.getElementById("thisWeek_forth").style.backgroundColor = "greenyellow ";
+    if(new Date().getDay() == 5) document.getElementById("thisWeek_fifth").style.backgroundColor = "greenyellow ";
+
     document.getElementById("todayDate").innerHTML = new Date().format("m월 d일 dddd");
     document.getElementById("thisWeek_1").innerHTML = new Date(year, 0, 1 + 0 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
     document.getElementById("thisWeek_2").innerHTML = new Date(year, 0, 1 + 1 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
     document.getElementById("thisWeek_3").innerHTML = new Date(year, 0, 1 + 2 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
     document.getElementById("thisWeek_4").innerHTML = new Date(year, 0, 1 + 3 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
     document.getElementById("thisWeek_5").innerHTML = new Date(year, 0, 1 + 4 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
-    if(new Date().getDay() == 1) document.getElementById("thisWeek_1").style.backgroundColor = "greenyellow ";
-    if(new Date().getDay() == 2) document.getElementById("thisWeek_2").style.backgroundColor = "greenyellow ";
-    if(new Date().getDay() == 3) document.getElementById("thisWeek_3").style.backgroundColor = "greenyellow ";
-    if(new Date().getDay() == 4) document.getElementById("thisWeek_4").style.backgroundColor = "greenyellow ";
-    if(new Date().getDay() == 5) document.getElementById("thisWeek_5").style.backgroundColor = "greenyellow ";
     document.getElementById("nextWeek_1").innerHTML = new Date(year, 0, 1 + 0 + (week * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
     document.getElementById("nextWeek_2").innerHTML = new Date(year, 0, 1 + 1 + (week * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
     document.getElementById("nextWeek_3").innerHTML = new Date(year, 0, 1 + 2 + (week * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
@@ -380,7 +382,7 @@ ul.tabs li.current{
     <th id="0R1" style="height: 24px;" class="row-headers-background">
 
     </th>
-    <td class="s3" dir="ltr" colspan="7" rowspan="2">
+    <td class="s3" dir="ltr" colspan="7" rowspan="2">로딩 중...
       <p id="todayDate"></p>
     </td>
     </tr>
@@ -395,15 +397,15 @@ ul.tabs li.current{
     </th>
     <td class="s5" dir="ltr" colspan="2">이번 주
     </td>
-    <td class="s6"><p id="thisWeek_1"></p>
+    <td class="s6" id="thisWeek_first"><p id="thisWeek_1"></p>
     </td>
-    <td class="s6"><p id="thisWeek_2"></p>
+    <td class="s6" id="thisWeek_second"><p id="thisWeek_2"></p>
     </td>
-    <td class="s6"><p id="thisWeek_3"></p>
+    <td class="s6" id="thisWeek_third"><p id="thisWeek_3"></p>
     </td>
-    <td class="s6"><p id="thisWeek_4"></p>
+    <td class="s6" id="thisWeek_forth"><p id="thisWeek_4"></p>
     </td>
-    <td class="s7"><p id="thisWeek_5"></p>
+    <td class="s7" id="thisWeek_fifth"><p id="thisWeek_5"></p>
     </td>
     </tr>
     <tr style='height:20px;'>
