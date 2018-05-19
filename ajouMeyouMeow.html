@@ -236,6 +236,7 @@
       document.getElementById("thisWeek_4").style.color = "#000000";
       document.getElementById("thisWeek_5").style.color = "#000000";
       document.getElementById("todayDate").innerHTML = new Date().format("m월 d일 dddd");
+      document.getElementById("latestUpdate").innerHTML = "Latest Update at" + document.write(new Date().format("hh:MM:ss TT"));
       document.getElementById("thisWeek_1").innerHTML = new Date(year, 0, 1 + 0 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
       document.getElementById("thisWeek_2").innerHTML = new Date(year, 0, 1 + 1 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
       document.getElementById("thisWeek_3").innerHTML = new Date(year, 0, 1 + 2 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
@@ -572,7 +573,7 @@
               <tr style='height:1.25rem;'>
                 <th id="0R23" style="height: 1.25rem;" class="row-headers-background"></th>
                 <td class="s33" dir="ltr" colspan="7">
-                  <div id="latestUpdate" style="height:1rem; text-align:right; font-size:0.7rem;">Latest Update at <script>document.write(new Date().format("hh:MM:ss TT"));</script></div>
+                  <div id="latestUpdate" style="height:1rem; text-align:right; font-size:0.7rem;"></div>
                   설문지 제출 후 표에 반영되기까지 최대 1분 정도 소요됩니다.<br>
                   ©<script>document.write(new Date().getFullYear())</script> LUFT-AQUILA. <a href="/ajoumeyoumeow/about.html" style="color:#0366d6">About</a>
                 </td>
