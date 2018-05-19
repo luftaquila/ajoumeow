@@ -70,6 +70,7 @@
     function handleOnLoad() {
       datum = [];
       if($(this).attr('data-tab') == 'tab-2') {
+        console.log("activate");
         $('ul.tabs li').removeClass('current');
         $('.tab-content').removeClass('current');
         $(this).addClass('current');
