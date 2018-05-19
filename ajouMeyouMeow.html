@@ -69,7 +69,13 @@
     })
     function handleOnLoad() {
       datum = [];
-      $("#" + 'tab-1').show();
+      if($(this).attr('data-tab') == 'tab-2') {
+        $('ul.tabs li').removeClass('current');
+        $('.tab-content').removeClass('current');
+        $(this).addClass('current');
+        $("#" + 'tab-1').addClass('current');
+        $("#" + 'tab-1').show();
+      }
       document.getElementById("todayDate").innerHTML = "Loading...";
       $.ajax({
         url: 'https://docs.google.com/spreadsheet/pub?key=1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A&single=true&gid=850606151&range=G2:I&output=csv',
