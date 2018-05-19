@@ -236,7 +236,7 @@
       document.getElementById("thisWeek_4").style.color = "#000000";
       document.getElementById("thisWeek_5").style.color = "#000000";
       document.getElementById("todayDate").innerHTML = new Date().format("m월 d일 dddd");
-      document.getElementById("latestUpdate").innerHTML = "Latest Update at" + document.write(new Date().format("hh:MM:ss TT"));
+      document.getElementById("latestUpdate").innerHTML = document.write(new Date().format("hh:MM:ss TT"));
       document.getElementById("thisWeek_1").innerHTML = new Date(year, 0, 1 + 0 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
       document.getElementById("thisWeek_2").innerHTML = new Date(year, 0, 1 + 1 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
       document.getElementById("thisWeek_3").innerHTML = new Date(year, 0, 1 + 2 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
