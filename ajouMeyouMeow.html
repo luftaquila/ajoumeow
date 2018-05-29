@@ -195,15 +195,25 @@
         else if(rank == 2) {
           if(result == datum[i][1]) {
             if((course == 1) && (datum[i][2].includes("도서관 & 텔동 코스"))) {
-              if(result == datum[i + 1][1]) {
-                if((course == 1) && (datum[i + 1][2].includes("도서관 & 텔동 코스")))
-                  return datum[i + 1][0];
+              for(var j = 1; result == datum[i + j][1]; j++)
+              {
+                if((course == 1) && (datum[i + j][2].includes("도서관 & 텔동 코스"))) {
+                  if(datum[i][0] == datum[i + j][0])
+                    continue;
+                  else
+                    return datum[i + j][0];
+                }
               }
             }
             else if((course == 2) && (datum[i][2].includes("신학 & 성호관 코스"))) {
-              if(result == datum[i + 1][1]) {
-                if((course == 2) && (datum[i + 1][2].includes("신학 & 성호관 코스")))
-                  return datum[i + 1][0];
+              for(var j = 1; result == datum[i + j][1]; j++)
+              {
+                if((course == 2) && (datum[i + j][2].includes("신학 & 성호관 코스"))) {
+                  if(datum[i][0] == datum[i + j][0])
+                    continue;
+                  else
+                    return datum[i + j][0];
+                }
               }
             }
           }
@@ -473,7 +483,7 @@
                 <th id="0R23" style="height: 1.25rem;" class="row-headers-background"></th>
                 <td class="s33" dir="ltr" colspan="7">
                   <div id="latestUpdate" style="height:1rem; text-align:right; font-size:0.7rem;">Loading...</div>
-                  설문지 제출 후 표에 반영되기까지 최대 1분 정도 소요됩니다.<br>
+                  설문지 제출 후 표에 반영되기까지 최대 3분 정도 소요됩니다.<br>
                   ©<script>document.write(new Date().getFullYear())</script> LUFT-AQUILA. <a href="/ajoumeyoumeow/about.html" style="color:#0366d6">About</a>
                 </td>
               </tr>
