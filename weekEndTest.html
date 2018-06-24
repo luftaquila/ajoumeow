@@ -220,6 +220,9 @@
       var year = new Date().getFullYear();
       document.getElementById("todayDate").innerHTML = new Date().format("m월 d일 dddd");
       document.getElementById("latestUpdate").innerHTML = "Latest Update at " + new Date().format("hh:MM:ss TT");
+      document.getElementById("todayDateWeekEnd").innerHTML = new Date().format("m월 d일 dddd");
+      document.getElementById("latestUpdateWeekEnd").innerHTML = "Latest Update at " + new Date().format("hh:MM:ss TT");
+
       for(var i = 1; i <= 5; i++)
       {
         if(new Date().getDay() == i) document.getElementById("thisWeek_" + i).style.backgroundColor = "greenyellow ";
@@ -527,7 +530,7 @@
                </tr>
                <tr style='height:1.65rem;'>
                  <th id="0R1" style="height: 1.65rem;" class="row-headers-background"></th>
-                 <td class="s3" dir="ltr" colspan="7" rowspan="2" id="todayDate">Loading...</td>
+                 <td class="s3" dir="ltr" colspan="7" rowspan="2" id="todayDateWeekEnd">Loading...</td>
                </tr>
                <tr style='height:1.65rem;'>
                  <th id="0R2" style="height: 1.65rem;" class="row-headers-background"></th>
@@ -647,7 +650,7 @@
                <tr style='height:1.25rem;'>
                  <th id="0R23" style="height: 1.25rem;" class="row-headers-background"></th>
                  <td class="s33" dir="ltr" colspan="7">
-                   <div id="latestUpdate" style="height:1rem; text-align:right; font-size:0.7rem;">Loading...</div>
+                   <div id="latestUpdateWeekEnd" style="height:1rem; text-align:right; font-size:0.7rem;">Loading...</div>
                    설문지 제출 후 표에 반영되기까지 최대 3분 정도 소요됩니다.<br>
                    ©<script>document.write(new Date().getFullYear())</script> LUFT-AQUILA. <a href="/ajoumeyoumeow/about.html" style="color:#0366d6">About</a>
                  </td>
