@@ -218,12 +218,12 @@
     function setData() {
       var week = new Date().getWeek();
       var year = new Date().getFullYear();
+      document.getElementById("todayDate").innerHTML = new Date().format("m월 d일 dddd");
+      document.getElementById("latestUpdate").innerHTML = "Latest Update at " + new Date().format("hh:MM:ss TT");
       for(var i = 1; i <= 5; i++)
       {
         if(new Date().getDay() == i) document.getElementById("thisWeek_" + i).style.backgroundColor = "greenyellow ";
         document.getElementById("thisWeek_" + i).style.color = "#000000";
-        document.getElementById("todayDate").innerHTML = new Date().format("m월 d일 dddd");
-        document.getElementById("latestUpdate").innerHTML = "Latest Update at " + new Date().format("hh:MM:ss TT");
         document.getElementById("thisWeek_" + i).innerHTML = new Date(year, 0, i + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
         document.getElementById("nextWeek_" + i).innerHTML = new Date(year, 0, i + (week * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
         document.getElementById("nextTwoWeek_" + i).innerHTML = new Date(year, 0, i + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
@@ -239,6 +239,26 @@
           document.getElementById("nextThreeWeek_d" + i + "_" + j).innerHTML = yourNameIs(3, i - 1, 1, j);
           document.getElementById("nextThreeWeek_s" + i + "_" + j).innerHTML = yourNameIs(3, i - 1, 2, j);
         }
+      }
+      for(var i = 1; i <= 2; i++)
+      {
+         if(new Date().getDay() == i) document.getElementById("thisWeekEnd_" + i).style.backgroundColor = "greenyellow ";
+         document.getElementById("thisWeekEnd_" + i).style.color = "#000000";
+         document.getElementById("thisWeekEnd_" + i).innerHTML = new Date(year, 0, i + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+         document.getElementById("nextWeekEnd_" + i).innerHTML = new Date(year, 0, i + (week * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+         document.getElementById("nextTwoWeekEnd_" + i).innerHTML = new Date(year, 0, i + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+         document.getElementById("nextThreeWeekEnd_" + i).innerHTML = new Date(year, 0, i + ((week + 2) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+         for(var j = 1; j <= 2; j++)
+         {
+          document.getElementById("thisWeekEnd_d" + i + "_" + j).innerHTML = yourNameIs(0, i - 1, 1, j);
+          document.getElementById("thisWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(0, i - 1, 2, j);
+          document.getElementById("nextWeekEnd_d" + i + "_" + j).innerHTML = yourNameIs(1, i - 1, 1, j);
+          document.getElementById("nextWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(1, i - 1, 2, j);
+          document.getElementById("nextTwoWeekEnd_d" + i + "_" + j).innerHTML = yourNameIs(2, i - 1, 1, j);
+          document.getElementById("nextTwoWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(2, i - 1, 2, j);
+          document.getElementById("nextThreeWeekEnd_d" + i + "_" + j).innerHTML = yourNameIs(3, i - 1, 1, j);
+          document.getElementById("nextThreeWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(3, i - 1, 2, j);
+         }
       }
     }
   </script>
@@ -515,8 +535,8 @@
                <tr style='height:1.3rem;'>
                  <th id="0R3" style="height: 1.3rem;" class="row-headers-background"></th>
                  <td class="s5" dir="ltr" colspan="2">이번 주</td>
-                 <td class="s6" id="thisWeek_1">0/00(월)</td>
-                 <td class="s7" id="thisWeek_5">0/00(월)</td>
+                 <td class="s6" id="thisWeekEnd_1">0/00(월)</td>
+                 <td class="s7" id="thisWeekEnd_2">0/00(월)</td>
                </tr>
                <tr style='height:1.3rem;'>
                  <th id="0R4" style="height: 1.3rem;" class="row-headers-background"></th>
