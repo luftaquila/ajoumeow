@@ -4,7 +4,7 @@
     <link rel="shortcut icon" type="image/x-icon" href="/ajoumeyoumeow/Icons/Resized/meyoumeow.ico" />
     <meta property="og:title" content="아주대학교 미유미유"/>
     <meta property="og:url" content="https://luftaquila.github.io/ajoumeyoumeow/"/>
-    <meta property="og:image" content="https://luftaquila.github.io/ajoumeyoumeow/Icons/Resized/%EB%AF%B8%EC%9C%A0%EB%AF%B8%EC%9C%A0_thumbnail.png"/>
+    <meta property="og:image" content="https://luftaquila.github.io/ajoumeyoumeow/Icons/%EB%AF%B8%EC%9C%A0%EB%AF%B8%EC%9C%A0.png"/>
     <meta property="og:description" content="아주대학교 고양이는 미유미유"/>
     <meta name="google-site-verification" content="LdumQ1csatc-sergk4eQ5nBhKjcnisZ18Bo8RjRBxKo"/>
     <meta name="naver-site-verification" content="f3183dc84e33039873fc22ec89ee6b402fe3c54d"/>
@@ -253,20 +253,20 @@
       {
          if(new Date().getDay() == i) document.getElementById("thisWeekEnd_" + i).style.backgroundColor = "greenyellow ";
          document.getElementById("thisWeekEnd_" + i).style.color = "#000000";
-         document.getElementById("thisWeekEnd_" + i).innerHTML = new Date(year, 0, i + 5 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
-         document.getElementById("nextWeekEnd_" + i).innerHTML = new Date(year, 0, i + 5 + (week * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
-         document.getElementById("nextTwoWeekEnd_" + i).innerHTML = new Date(year, 0, i + 5 + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
-         document.getElementById("nextThreeWeekEnd_" + i).innerHTML = new Date(year, 0, i + 5 + ((week + 2) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+         document.getElementById("thisWeekEnd_" + i).innerHTML = new Date(year, 0, i + 5 + ((week - 2) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+         document.getElementById("nextWeekEnd_" + i).innerHTML = new Date(year, 0, i + 5 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+         document.getElementById("nextTwoWeekEnd_" + i).innerHTML = new Date(year, 0, i + 5 + (week * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+         document.getElementById("nextThreeWeekEnd_" + i).innerHTML = new Date(year, 0, i + 5 + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
          for(var j = 1; j <= 2; j++)
          {
-          document.getElementById("thisWeekEnd_d" + i + "_" + j).innerHTML = yourNameIs(0, i - 1 + 5, 1, j);
-          document.getElementById("thisWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(0, i - 1 + 5, 2, j);
-          document.getElementById("nextWeekEnd_d" + i + "_" + j).innerHTML = yourNameIs(1, i - 1 + 5, 1, j);
-          document.getElementById("nextWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(1, i - 1 + 5, 2, j);
-          document.getElementById("nextTwoWeekEnd_d" + i + "_" + j).innerHTML = yourNameIs(2, i - 1 + 5, 1, j);
-          document.getElementById("nextTwoWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(2, i - 1 + 5, 2, j);
-          document.getElementById("nextThreeWeekEnd_d" + i + "_" + j).innerHTML = yourNameIs(3, i - 1 + 5, 1, j);
-          document.getElementById("nextThreeWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(3, i - 1 + 5, 2, j);
+          document.getElementById("thisWeekEnd_d" + i + "_" + j).innerHTML = yourNameIs(-1, i + 4, 1, j);
+          document.getElementById("thisWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(-1, i + 4, 2, j);
+          document.getElementById("nextWeekEnd_d" + i + "_" + j).innerHTML = yourNameIs(0, i + 4, 1, j);
+          document.getElementById("nextWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(0, i + 4, 2, j);
+          document.getElementById("nextTwoWeekEnd_d" + i + "_" + j).innerHTML = yourNameIs(1, i + 4, 1, j);
+          document.getElementById("nextTwoWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(1, i + 4, 2, j);
+          document.getElementById("nextThreeWeekEnd_d" + i + "_" + j).innerHTML = yourNameIs(2, i + 4, 1, j);
+          document.getElementById("nextThreeWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(2, i + 4, 2, j);
          }
       }
     }
