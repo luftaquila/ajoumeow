@@ -1,50 +1,73 @@
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-
-<p>메인 콘텐츠입니다. Lightbox를 표시하려면<a href="#open">여기</a>를 클릭하십시오.</p>
+<body>
+   <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+   <p>메인 콘텐츠입니다. Lightbox를 표시하려면<a href="#open">여기</a>를 클릭하십시오.</p>
    <div class="white_content" id="open">
       <script type="text/javascript">
-      $(document).ready( function() {
-      $("#headers").load("/ajoumeyoumeow/about.html");  // 원하는 파일 경로를 삽입하면 된다
-      });
+         $(document).ready(function() {
+            $("#headers").load("/ajoumeyoumeow/about.html"); // 원하는 파일 경로를 삽입하면 된다
+         });
       </script>
 
       <div>
          <div id="headers"></div>
 
-           <p>Lightbox<a href="#close">닫기</a></p>
+         <p>Lightbox<a href="#close">닫기</a></p>
       </div>
    </div>
+</body>
 
-   <style>
-      @media (max-width:760px){table{width: 100%;}}
-      @media (max-width:360px){html{font-size:15px;}}
-      @media (min-width:361px) and (max-width:759px){html{font-size:17px;}}
-      @media (min-width:760px){html{font-size:20px;}}
+<style>
+   @media (max-width:760px) {
+      table {
+         width: 100%;
+      }
+   }
+
+   @media (max-width:360px) {
+      html {
+         font-size: 15px;
+      }
+   }
+
+   @media (min-width:361px) and (max-width:759px) {
+      html {
+         font-size: 17px;
+      }
+   }
+
+   @media (min-width:760px) {
+      html {
+         font-size: 20px;
+      }
+   }
+
    .white_content {
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    background: rgba(0, 0, 0, 0.8);
-    opacity:0;
-    -webkit-transition: opacity 400ms ease-in;
-    -moz-transition: opacity 400ms ease-in;
-    transition: opacity 400ms ease-in;
-    pointer-events: none;
-}
-.white_content:target {
-    opacity:1;
-    pointer-events: auto;
-}
-.white_content > div {
-	position: absolute;
-	top: 25%;
-	left: 25%;
-	width: 50%;
-	height: 50%;
-	padding: 0.7rem;
-	border: 0.7rem solid gray;
-	overflow: auto;
-}
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background: rgba(0, 0, 0, 0.8);
+      opacity: 0;
+      -webkit-transition: opacity 400ms ease-in;
+      -moz-transition: opacity 400ms ease-in;
+      transition: opacity 400ms ease-in;
+      pointer-events: none;
+   }
+
+   .white_content:target {
+      opacity: 1;
+      pointer-events: auto;
+   }
+
+   .white_content>div {
+      position: absolute;
+      top: 25%;
+      left: 25%;
+      width: 50%;
+      height: 50%;
+      padding: 0.7rem;
+      border: 0.7rem solid gray;
+      overflow: auto;
+   }
 </style>
