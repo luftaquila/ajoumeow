@@ -1,7 +1,15 @@
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
 <p>메인 콘텐츠입니다. Lightbox를 표시하려면<a href="#open">여기</a>를 클릭하십시오.</p>
    <div class="white_content" id="open">
       <div>
-           <p>Lightbox 콘텐츠입니다. <a href="#close">닫기</a></p>
+         <script>
+         $(document).ready( function() {
+
+	$("#contents").load("www.naver.com");
+});
+</script>
+           <!---<p>Lightbox 콘텐츠입니다. <a href="#close">닫기</a></p>-->
       </div>
    </div>
 
