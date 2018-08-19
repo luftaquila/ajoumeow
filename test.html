@@ -41,16 +41,17 @@
 <!-- The Modal -->
 <div id="myModal" class="modal">
 
+   <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+   <script type="text/javascript">
+     $(document).ready(function() {
+        $("#modal-content").load("/ajoumeyoumeow/about.html"); // 원하는 파일 경로를 삽입하면 된다
+     });
+   </script>
+
   <!-- Modal content -->
   <div class="modal-content">
     <span class="close">&times;</span>
     <p>Some text in the Modal..</p>
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-    <script type="text/javascript">
-      $(document).ready(function() {
-         $("#headers").load("/ajoumeyoumeow/about.html"); // 원하는 파일 경로를 삽입하면 된다
-      });
-    </script>
   </div>
 
 </div>
