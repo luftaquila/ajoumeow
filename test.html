@@ -307,6 +307,9 @@
          }
       }
     }
+    function modal() {
+        modal.style.display = "block";
+    }
   </script>
   <body onload="handleOnLoad()">
     <style type="text/css">.ritz .waffle a { color: inherit; }
@@ -346,8 +349,7 @@
         <li class="tab-link current" data-tab="tab-1">평일</li>
         <li class="tab-link" data-tab="tab-2">주말</li>
         <li class="tab-link" data-tab="tab-3">급식 신청</li>
-        &nbsp;<button id="myBtn" style="padding: 0.5rem 0.8rem; cursor: pointer; font-size: 0.9rem">공지사항</button>&nbsp;
-        &nbsp;<button onclick="handleOnLoad();" style="float: right; padding: 0.5rem 0.8rem; cursor: pointer; font-size: 0.9rem">새로고침</button>&nbsp;
+        <button onclick="handleOnLoad();" style="float: right; padding: 0.5rem 0.8rem; cursor: pointer; font-size: 0.9rem">새로고침</button>
 
         <div id="myModal" class="modal">
            <div class="modal-content">
@@ -363,10 +365,6 @@
         var btn = document.getElementById("myBtn");
         // Get the <span> element that closes the modal
         var span = document.getElementsByClassName("close")[0];
-        // When the user clicks on the button, open the modal
-        btn.onclick = function() {
-            modal.style.display = "block";
-        }
         // When the user clicks on <span> (x), close the modal
         span.onclick = function() {
             modal.style.display = "none";
@@ -721,10 +719,11 @@
                  <td class="s33" dir="ltr" colspan="7">
                    <div id="latestUpdateWeekEnd" style="height:1rem; text-align:right; font-size:0.7rem;">Loading...</div>
                    설문지 제출 후 표에 반영되기까지 최대 3분 정도 소요됩니다.<br>
-                   ©<script>document.write(new Date().getFullYear())</script> LUFT-AQUILA. <a href="/ajoumeyoumeow/about.html" style="color:#0366d6">About</a>
+                   ©<script>document.write(new Date().getFullYear())</script> LUFT-AQUILA. <a href="/ajoumeyoumeow/about.html" style="color:#0366d6">About</a><br>
+                   <a href="#" onclick="modal()" style="color:#0366d6">Log</a>
                  </td>
                </tr>
-             </tbody>
+            </tbody>
            </table>
          </div>
       </div>
