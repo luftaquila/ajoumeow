@@ -60,6 +60,7 @@
       width: 100%;
       height: 100%;
     }
+
     .modal {
         display: none;
         position: fixed;
@@ -304,8 +305,11 @@
          }
       }
     }
-    function onModalClick() {
-        modal.style.display = "block";
+    function onLogClick() {
+        log.style.display = "block";
+    }
+    function onRankClick() {
+        rank.style.display = "block";
     }
   </script>
   <body onload="handleOnLoad()">
@@ -348,23 +352,37 @@
         <li class="tab-link" data-tab="tab-3">급식 신청</li>
         <button onclick="handleOnLoad();" style="float: right; padding: 0.5rem 0.8rem; cursor: pointer; font-size: 0.9rem">새로고침</button>
 
-        <div id="myModal" class="modal">
+        <div id="logModal" class="modal">
            <div class="modal-content">
              <span class="close">&times;</span>
              <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTS42UTV58NdXxJMBIg3ARIVmnGLcMmok7gv0YjyIkH29t1Yk16OidImCYsrtuU1B7f42MhUNQA5kKA/pubhtml" width="100%" height="90%" scrolling="no"></iframe><br>
            </div>
         </div>
 
+        <div id="rankModal" class="modal">
+           <div class="modal-content">
+             <span class="close">&times;</span>
+             Rank
+             <iframe src="" width="100%" height="90%" scrolling="no"></iframe><br>
+           </div>
+        </div>
+
         <script>
-        var modal = document.getElementById('myModal');
+        var log = document.getElementById('logModal');
+        var rank = document.getElementById('rankModal');
         var span = document.getElementsByClassName("close")[0];
         span.onclick = function() {
-            modal.style.display = "none";
+            log.style.display = "none";
+            rank.style.display = "none";
         }
         window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
+            if (event.target == log) {
+                log.style.display = "none";
             }
+            if (event.target == rank) {
+                rank.style.display = "none";
+            }
+
         }
         </script>
 
@@ -567,7 +585,8 @@
                   <div id="latestUpdate" style="height:1rem; text-align:right; font-size:0.7rem;">Loading...</div>
                   설문지 제출 후 표에 반영되기까지 최대 3분 정도 소요됩니다.<br>
                   ©<script>document.write(new Date().getFullYear())</script> LUFT-AQUILA. <a href="/ajoumeyoumeow/about.html" style="color:#0366d6">About</a>
-                  &nbsp;<a href="#" onclick="onModalClick()" style="color:#0366d6">Log</a>
+                  &nbsp;<a href="" onclick="onLogClick()" style="color:#0366d6">Log</a>
+                  &nbsp;<a href="" onclick="onRankClick()" style="color:#0366d6">Rank</a>
                 </td>
               </tr>
             </tbody>
@@ -712,7 +731,8 @@
                    <div id="latestUpdateWeekEnd" style="height:1rem; text-align:right; font-size:0.7rem;">Loading...</div>
                    설문지 제출 후 표에 반영되기까지 최대 3분 정도 소요됩니다.<br>
                    ©<script>document.write(new Date().getFullYear())</script> LUFT-AQUILA. <a href="/ajoumeyoumeow/about.html" style="color:#0366d6">About</a>
-                   &nbsp;<a href="#" onclick="onModalClick()" style="color:#0366d6">Log</a>
+                   &nbsp;<a href="" onclick="onLogClick()" style="color:#0366d6">Log</a>
+                   &nbsp;<a href="" onclick="onRankClick()" style="color:#0366d6">Rank</a>
                  </td>
                </tr>
             </tbody>
