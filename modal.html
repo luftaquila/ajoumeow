@@ -24,14 +24,6 @@
     border: 0.063rem solid #888;
     width: 90%; /* Could be more or less, depending on screen size */
 }
-.modal-content2 {
-    background-color: #fefefe;
-    margin: 5% auto 1%; /* 15% from the top and centered */
-    padding: 1.25rem;
-    border: 0.063rem solid #888;
-    width: 90%; /* Could be more or less, depending on screen size */
-}
-
 .close {
     color: #aaa;
     float: right;
@@ -58,19 +50,18 @@
 </div>
 
 <div id="myModal2" class="modal">
-  <div class="modal-content2">
+  <div class="modal-content">
     <span class="close">&times;</span>
     Modal2<br>
     <iframe src="/ajoumeyoumeow/about.html" width="100%" height="100%"></iframe><br>
   </div>
 </div>
 
-
 <script>
 var modal = document.getElementById('myModal');
 var btn = document.getElementById("myBtn");
-var modal2 = document.getElementById('myModal');
-var btn2 = document.getElementById("myBtn");
+var modal2 = document.getElementById('myModal2');
+var btn2 = document.getElementById("myBtn2");
 
 var span = document.getElementsByClassName("close")[0];
 btn.onclick = function() {
