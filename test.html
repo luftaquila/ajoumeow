@@ -266,6 +266,7 @@
                j = datum.length - 2;
             }
             for(var k = i; k < j; k++) { name[k - i] = datum[k][0]; }
+            name.sort();
             for(var l = 0; l <name.length; ++l) {
                if(!final[name[l]])
                   final[name[l]] = 0;
@@ -323,6 +324,9 @@
               }
            }
            yourRankIs(1, 0);
+           yourRankIs(-1, 0);
+           yourRankIs(0, 0);
+
          }
       </script>
       <body onload="handleOnLoad()">
