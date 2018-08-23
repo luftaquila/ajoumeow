@@ -256,42 +256,18 @@
 
           function yourRankIs(time, rank) {
             var month = new Date().format("m");
-            //month -= 1;
-            month += '';
             var name = [];
+            if(time == -1) { month -= 1; }
+            month += '';
             for(var i = 0; !month.includes(datum[i][1].substring(6, datum[i][1].indexOf('.', 5))); i++) { }
             for(var j = i;  month.includes(datum[j][1].substring(6, datum[j][1].indexOf('.', 5))); j++) { }
-            for(var k = i; k < j; k++) {
-               name[k - i] = datum[k][0];
+            if(time == 0) {
+               i = 0;
+               j = datum.length - 2;
             }
-            console.log(name);
-
-            /*
-               for(var k = 0; k < name.length; k++) {
-                  if(name[k].includes(datum[j][0])) { break; }
-               }
-               if(k - 1 == name.length) {
-                  name.push([datum[j][0], 0]);
-               }
-               else {
-                  name[k][1] += 1;
-               }
-            }
-            console.log(k, name);
-            */
-            //j--;
-            /*
-            if(time == 1) { // 이번 달
-
-            }
-            else if(time == -1) { // 이전 달
-
-            }
-            else if(time == 0) { // 전 기간
-
-            }
-            */
+            for(var k = i; k < j; k++) { name[k - i] = datum[k][0]; }
           }
+          console.log(k, name);
 
          function setData() {
            var week = new Date().getWeek();
@@ -341,7 +317,9 @@
                document.getElementById("nextThreeWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(2, i + 4, 2, j);
               }
            }
-           yourRankIs();
+           yourRankIs(1, 0);
+           yourRankIs(-1, 0);
+           yourRankIs(0, 0);
          }
       </script>
       <body onload="handleOnLoad()">
