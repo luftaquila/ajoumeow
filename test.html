@@ -126,7 +126,7 @@
         datum = text.split(lineTerminator).map((line) => line.split(cellTerminator));
         datum.push(['0', '0', '0']);
         setData();
-        console.log('parseCSV' + datum);
+        console.log(datum[1]);
       }
       var dateFormat = function () {
         var	token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g,
