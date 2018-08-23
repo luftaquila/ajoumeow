@@ -14,7 +14,7 @@
       <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119383265-1"></script>
       <script>
          window.dataLayer = window.dataLayer || [];
-         function gtag(){dataLayer.push(arguments);}
+         function gtag(){ dataLayer.push(arguments); }
          gtag('js', new Date());
          gtag('config', 'UA-119383265-1');
       </script>
@@ -302,12 +302,6 @@
            }
         }
       }
-      function onLogClick() {
-          log.style.display = "block";
-      }
-      function onRankClick() {
-          rank.style.display = "block";
-      }
    </script>
    <body onload="handleOnLoad()">
       <style type="text/css">.ritz .waffle a { color: inherit; }
@@ -357,28 +351,20 @@
             <div id="rankModal" class="modal">
                <div class="modal-content">
                   <span id="rankSpanClose"class="close">&times;</span>
-                  Rank
                </div>
             </div>
             <script>
+               function onLogClick() { log.style.display = "block"; }
+               function onRankClick() { rank.style.display = "block"; }
                var log = document.getElementById('logModal');
                var rank = document.getElementById('rankModal');
                var logClose = document.getElementById('logSpanClose');
                var rankClose = document.getElementById('rankSpanClose');
-               
-               logClose.onclick = function() {
-                   log.style.display = "none";
-               }
-               rankClose.onclick = function() {
-                   rank.style.display = "none";
-               }
+               logClose.onclick = function() { log.style.display = "none"; }
+               rankClose.onclick = function() { rank.style.display = "none"; }
                window.onclick = function(event) {
-                   if (event.target == log) {
-                       log.style.display = "none";
-                   }
-                   if (event.target == rank) {
-                       rank.style.display = "none";
-                   }
+                   if (event.target == log) { log.style.display = "none"; }
+                   if (event.target == rank) { rank.style.display = "none"; }
                }
             </script>
          </ul>
@@ -580,8 +566,8 @@
                            <div id="latestUpdate" style="height:1rem; text-align:right; font-size:0.7rem;">Loading...</div>
                            설문지 제출 후 표에 반영되기까지 최대 3분 정도 소요됩니다.<br>
                            ©<script>document.write(new Date().getFullYear())</script> LUFT-AQUILA. <a href="/ajoumeyoumeow/about.html" style="color:#0366d6">About</a>
-                           &nbsp;<a href="#" onclick="onLogClick()" style="color:#0366d6">Log</a>
                            &nbsp;<a href="#" onclick="onRankClick()" style="color:#0366d6">Rank</a>
+                           &nbsp;<a href="#" onclick="onLogClick()" style="color:#0366d6">Log</a>
                         </td>
                      </tr>
                   </tbody>
@@ -726,8 +712,8 @@
                            <div id="latestUpdateWeekEnd" style="height:1rem; text-align:right; font-size:0.7rem;">Loading...</div>
                            설문지 제출 후 표에 반영되기까지 최대 3분 정도 소요됩니다.<br>
                            ©<script>document.write(new Date().getFullYear())</script> LUFT-AQUILA. <a href="/ajoumeyoumeow/about.html" style="color:#0366d6">About</a>
-                           &nbsp;<a href="#" onclick="onLogClick()" style="color:#0366d6">Log</a>
                            &nbsp;<a href="#" onclick="onRankClick()" style="color:#0366d6">Rank</a>
+                           &nbsp;<a href="#" onclick="onLogClick()" style="color:#0366d6">Log</a>
                         </td>
                      </tr>
                   </tbody>
