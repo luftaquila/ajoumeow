@@ -264,7 +264,7 @@
                for(var k = 0; k < name.length; k++) {
                   if(name[k].includes(datum[j][0])) { break; }
                }
-               if(k == name.length) {
+               if(k - 1 == name.length) {
                   name.push([datum[j][0], 0]);
                }
                else {
