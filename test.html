@@ -256,12 +256,7 @@
 
           function yourRankIs(time, rank) {
             var month = new Date().format("m");
-            console.log("before log\n");
-            for(var i = 0; datum.length; i++) {
-               console.log(datum[i][1].substring(6, datum[i][1].indexOf('.', 5)) + '\n');
-               console.log(month == datum[i][1].substring(6, datum[i][1].indexOf('.', 5)) + '\n');
-               console.log(i + '-------------------\n');
-            }
+            console.log(month, typeof(month) + '\n' + datum[200][1].substring(6, datum[200][1].indexOf('.', 5)), typeof(datum[200][1].substring(6, datum[200][1].indexOf('.', 5))));
 
             if(time == 1) { // 이번 달
 
