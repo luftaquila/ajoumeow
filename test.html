@@ -256,7 +256,8 @@
 
           function yourRankIs(time, rank) {
             var month = new Date().format("m");
-            month = month - 1;
+            month -= 1;
+            month += '';
             var name = [];
             for(var i = 0; !month.includes(datum[i][1].substring(6, datum[i][1].indexOf('.', 5))); i++) { }
             for(var j = i; (j < datum.length - 2) && month.includes(datum[j][1].substring(6, datum[j][1].indexOf('.', 5))); j++) {
