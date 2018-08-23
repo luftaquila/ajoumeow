@@ -354,26 +354,29 @@
 
         <div id="logModal" class="modal">
            <div class="modal-content">
-             <span class="close">&times;</span>
+             <span id="logSpanClose" class="close">&times;</span>
              <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTS42UTV58NdXxJMBIg3ARIVmnGLcMmok7gv0YjyIkH29t1Yk16OidImCYsrtuU1B7f42MhUNQA5kKA/pubhtml" width="100%" height="90%" scrolling="no"></iframe><br>
            </div>
         </div>
 
         <div id="rankModal" class="modal">
            <div class="modal-content">
-             <span class="close">&times;</span>
+             <span id="rankSpanClose"class="close">&times;</span>
              Rank
-             <iframe src="" width="100%" height="90%" scrolling="no"></iframe><br>
            </div>
         </div>
 
         <script>
         var log = document.getElementById('logModal');
         var rank = document.getElementById('rankModal');
-        var span = document.getElementsByClassName("close")[0];
-        span.onclick = function() {
+        var logClose = document.getElementById('logSpanClose');
+        var rankClose = document.getElementById('rankSpanClose');
+
+        logClose.onclick = function() {
             log.style.display = "none";
-            rank.style.display = "none";
+        }
+        rankClose.onclick = function() {
+            log.style.display = "none";
         }
         window.onclick = function(event) {
             if (event.target == log) {
@@ -382,7 +385,6 @@
             if (event.target == rank) {
                 rank.style.display = "none";
             }
-
         }
         </script>
 
@@ -585,8 +587,8 @@
                   <div id="latestUpdate" style="height:1rem; text-align:right; font-size:0.7rem;">Loading...</div>
                   설문지 제출 후 표에 반영되기까지 최대 3분 정도 소요됩니다.<br>
                   ©<script>document.write(new Date().getFullYear())</script> LUFT-AQUILA. <a href="/ajoumeyoumeow/about.html" style="color:#0366d6">About</a>
-                  &nbsp;<a href="" onclick="onLogClick()" style="color:#0366d6">Log</a>
-                  &nbsp;<a href="" onclick="onRankClick()" style="color:#0366d6">Rank</a>
+                  &nbsp;<a href="#" onclick="onLogClick()" style="color:#0366d6">Log</a>
+                  &nbsp;<a href="#" onclick="onRankClick()" style="color:#0366d6">Rank</a>
                 </td>
               </tr>
             </tbody>
