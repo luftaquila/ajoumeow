@@ -266,7 +266,9 @@
                j = datum.length - 2;
             }
             for(var k = i; k < j; k++) { name[k - i] = datum[k][0]; }
-            console.log(name, name.length, k);
+            console.log(name, name.length);
+            name.sort();
+            console.log(name, name.length);
           }
 
          function setData() {
@@ -317,9 +319,6 @@
                document.getElementById("nextThreeWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(2, i + 4, 2, j);
               }
            }
-           yourRankIs(1, 0);
-           yourRankIs(-1, 0);
-           yourRankIs(0, 0);
          }
       </script>
       <body onload="handleOnLoad()">
