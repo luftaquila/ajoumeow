@@ -265,8 +265,7 @@
                i = 0;
                j = datum.length - 2;
             }
-            for(var k = i; k < j; k++) { name[k - i] = datum[k][0]; }
-            console.log(name, name.length);
+            for(var k = i; k < j; k++) { name[k - i] = [datum[k][0], 0]; }
             name.sort();
             console.log(name, name.length);
           }
