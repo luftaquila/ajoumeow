@@ -126,7 +126,7 @@
         datum = text.split(lineTerminator).map((line) => line.split(cellTerminator));
         datum.push(['0', '0', '0']);
         setData();
-        console.log(datum[1]);
+        console.log(datum[5][2]);
       }
       var dateFormat = function () {
         var	token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g,
@@ -261,9 +261,6 @@
 
          //var tester = datum[5][1].substring(6, datum[5][1].indexOf('.', 5));
          //console.log(tester, typeof(tester));
-         console.log(datum, typeof(datum));
-         console.log(datum[5], typeof(datum[5]));
-         console.log(datum[5][1], typeof(datum[5][1]));
 
          if(time == 1) { // 이번 달
 
