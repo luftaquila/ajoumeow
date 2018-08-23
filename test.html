@@ -120,6 +120,7 @@
             parseCSV(response, '\n', ',');
           }
         });
+        yourRankIs();
       }
       function parseCSV(text, lineTerminator, cellTerminator) {
         datum = text.split(lineTerminator).map((line) => line.split(cellTerminator));
@@ -253,6 +254,21 @@
         }
         return " ";
       }
+
+       function yourRankIs(time, rank) {
+         var month = new Date().format("m");
+         console.log(month, typeof(month));
+         if(time == 1) { // 이번 달
+
+         }
+         else if(time == -1) { // 이전 달
+
+         }
+         else if(time == 0) { // 전 기간
+
+         }
+       }
+
       function setData() {
         var week = new Date().getWeek();
         var year = new Date().getFullYear();
@@ -351,6 +367,15 @@
             <div id="rankModal" class="modal">
                <div class="modal-content">
                   <span id="rankSpanClose"class="close">&times;</span>
+                  이번 달 1등 : <p id='this1st'></p><br>
+                  이번 달 2등 : <p id='this2nd'></p><br>
+                  이번 달 3등 : <p id='this3rd'></p><br><br>
+                  지난 달 1등 : <p id='past1st'></p><br>
+                  지난 달 2등 : <p id='past2nd'></p><br>
+                  지난 달 3등 : <p id='past3rd'></p><br><br>
+                  전체 1등 : <p id='total1st'></p><br>
+                  전체 2등 : <p id='total2nd'></p><br>
+                  전체 3등 : <p id='total3rd'></p><br><br>
                </div>
             </div>
             <script>
