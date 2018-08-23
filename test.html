@@ -256,7 +256,7 @@
 
           function yourRankIs(time, rank) {
             var month = new Date().format("m");
-            var name = [];
+            var name = [], final = {};
             if(time == -1) { month -= 1; }
             month += '';
             for(var i = 0; !month.includes(datum[i][1].substring(6, datum[i][1].indexOf('.', 5))); i++) { }
@@ -265,9 +265,13 @@
                i = 0;
                j = datum.length - 2;
             }
-            for(var k = i; k < j; k++) { name[k - i] = [datum[k][0], 0]; }
-            name.sort();
-            console.log(name, name.length);
+            for(var k = i; k < j; k++) { name[k - i] = datum[k][0]; }
+            for(var l = 0; ; <name.length; ++l) {
+               if(!final[name[l]])
+                  final[name[l]] = 0;
+               ++final[name[l]];
+            }
+            console.log(final);
           }
 
          function setData() {
