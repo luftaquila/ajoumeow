@@ -256,10 +256,9 @@
 
           function yourRankIs(time, rank) {
             var month = new Date().format("m");
-            console.log('yourRankIs ' + datum[5][2] + '\n');
 
-            //var tester = datum[5][1].substring(6, datum[5][1].indexOf('.', 5));
-            //console.log(tester, typeof(tester));
+            var tester = datum[5][1].substring(6, datum[5][1].indexOf('.', 5));
+            console.log(tester, typeof(tester));
 
             if(time == 1) { // 이번 달
 
@@ -320,8 +319,7 @@
                document.getElementById("nextThreeWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(2, i + 4, 2, j);
               }
            }
-           console.log('setData ' + datum[5][2] + '\n');
-           yourRankIs(1, 1);
+           yourRankIs();
          }
       </script>
       <body onload="handleOnLoad()">
