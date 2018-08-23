@@ -260,7 +260,9 @@
             month += '';
             var name = [];
             for(var i = 0; !month.includes(datum[i][1].substring(6, datum[i][1].indexOf('.', 5))); i++) { }
-            for(var j = i; month.includes(datum[j][1].substring(6, datum[j][1].indexOf('.', 5))); j++) {
+            for(var j = i; month.includes(datum[j][1].substring(6, datum[j][1].indexOf('.', 5))); j++) { }
+            console.log(i, j);
+            /*
                for(var k = 0; k < name.length; k++) {
                   if(name[k].includes(datum[j][0])) { break; }
                }
@@ -271,7 +273,8 @@
                   name[k][1] += 1;
                }
             }
-            console.log(j, k, name);
+            console.log(k, name);
+            */
             //j--;
             /*
             if(time == 1) { // 이번 달
