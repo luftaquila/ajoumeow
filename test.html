@@ -257,7 +257,7 @@
           function yourRankIs(time, rank) {
             var month = new Date().format("m");
             for(var i = 0; !month.includes(datum[i][1].substring(6, datum[i][1].indexOf('.', 5))); i++) { }
-            i++;
+            //i++;
             console.log(i, month.includes(datum[i][1].substring(6, datum[i][1].indexOf('.', 5))), datum[i][1].substring(6, datum[i][1].indexOf('.', 5)));
 
             if(time == 1) { // 이번 달
