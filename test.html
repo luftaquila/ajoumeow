@@ -260,9 +260,9 @@
             month += '';
             var name = [];
             for(var i = 0; !month.includes(datum[i][1].substring(6, datum[i][1].indexOf('.', 5))); i++) { }
-            for(var j = i; month.includes(datum[j][1].substring(6, datum[j][1].indexOf('.', 5))); j++) { }
+            for(var j = i;  month.includes(datum[j][1].substring(6, datum[j][1].indexOf('.', 5))); j++) { }
             for(var k = i; k < j; k++) {
-               name[k - i] = datum[k][1];
+               name[k - i] = datum[k][0];
             }
             console.log(name);
 
