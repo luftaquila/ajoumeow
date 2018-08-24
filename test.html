@@ -256,7 +256,7 @@
 
       function yourRankIs(time, rank) {
         var month = new Date().format("m");
-        var name = [], final = {};
+        var name = [], final = {}, tmp;
         if(time >= 0) {
            month -= time;
            month += '';
@@ -269,13 +269,25 @@
         }
         for(var k = i; k < j; k++) { name[k - i] = datum[k][0]; }
         name.sort();
+
+        for(var l = 0; l < name.length; l++) {
+           if(name[l] != tmp) {
+             final.push(name[l], 1);
+          }
+          else {
+             final[final.length - 1][1]++;
+          }
+          tmp = name[l];
+        }
+        
+        /*
         for(var l = 0; l <name.length; l++) {
            if(!final[name[l]])
              final[name[l]] = 0;
            ++final[name[l]];
-        }
+        }*/
         console.log(final);
-        for(var x = 0; x < 10; x++){console.log(name[x])}
+        //for(var x = 0; x < 10; x++){console.log(name[x])}
       }
 
       function setData() {
