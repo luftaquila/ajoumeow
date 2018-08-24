@@ -274,7 +274,6 @@
           else { final[final.length - 1][1]++; }
           tmp = name[l];
         }
-        console.log(final);
         final.sort(function(a, b) {
            if (a[1] == b[1]) {
               var x = a[0], y = b[0];
@@ -333,7 +332,7 @@
             document.getElementById("nextThreeWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(2, i + 4, 2, j);
            }
         }
-        yourRankIs(0, 0);
+        yourRankIs(-1, 0);
       }
    </script>
    <body onload="handleOnLoad()">
