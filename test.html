@@ -269,30 +269,13 @@
         }
         for(var k = i; k < j; k++) { name[k - i] = datum[k][0]; }
         name.sort();
-
         for(var l = 0; l < name.length; l++) {
-           if(name[l] != tmp) {
-             final.push([name[l], 1]);
-          }
-          else {
-             final[final.length - 1][1]++;
-          }
+          if(name[l] != tmp) { final.push([name[l], 1]); }
+          else { final[final.length - 1][1]++; }
           tmp = name[l];
         }
-        var sum = 0;
-        for(var m = 0; m < final.length; m++) {
-           sum += final[m][1];
-        }
-
-        /*
-        for(var l = 0; l <name.length; l++) {
-           if(!final[name[l]])
-             final[name[l]] = 0;
-           ++final[name[l]];
-        }*/
         console.log(final);
         console.log(sum);
-        //for(var x = 0; x < 10; x++){console.log(name[x])}
       }
 
       function setData() {
@@ -396,15 +379,12 @@
             <div id="rankModal" class="modal">
                <div class="modal-content">
                   <span id="rankSpanClose"class="close">&times;</span>
-                  이번 달 1등 : <p id='this1st'></p><br>
-                  이번 달 2등 : <p id='this2nd'></p><br>
-                  이번 달 3등 : <p id='this3rd'></p><br><br>
-                  지난 달 1등 : <p id='past1st'></p><br>
-                  지난 달 2등 : <p id='past2nd'></p><br>
-                  지난 달 3등 : <p id='past3rd'></p><br><br>
-                  전체 1등 : <p id='total1st'></p><br>
-                  전체 2등 : <p id='total2nd'></p><br>
-                  전체 3등 : <p id='total3rd'></p><br><br>
+                  이번 달 1등 : <p id='this1st'></p>
+                  이번 달 2등 : <p id='this2nd'></p>
+                  이번 달 3등 : <p id='this3rd'></p><br>
+                  지난 달 1등 : <p id='past1st'></p>
+                  지난 달 2등 : <p id='past2nd'></p>
+                  지난 달 3등 : <p id='past3rd'></p><br>
                </div>
             </div>
             <script>
