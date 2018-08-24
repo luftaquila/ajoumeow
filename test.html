@@ -272,14 +272,14 @@
 
         for(var l = 0; l < name.length; l++) {
            if(name[l] != tmp) {
-             final.push(name[l], 1);
+             final.push([name[l], 1]);
           }
           else {
              final[final.length - 1][1]++;
           }
           tmp = name[l];
         }
-        
+
         /*
         for(var l = 0; l <name.length; l++) {
            if(!final[name[l]])
