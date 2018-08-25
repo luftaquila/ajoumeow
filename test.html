@@ -337,11 +337,11 @@
         document.getElementById("this_" + i).innerHTML = yourRankIs(0, i);
         document.getElementById("past_" + i).innerHTML = yourRankIs(1, i);
       }
-      if($.cookie('popup') != 'hidden') { rank.style.display = "block"; }
+      if(Cookies.get('popup') != 'hidden') { rank.style.display = "block"; }
     }
     function popupBlocker() {
       rank.style.display = "none";
-      $.cookie('popup', 'hidden', {expires : 5});
+      Cookies.set('popup', 'hidden', {expires : 5});
     }
   </script>
   <body onload="handleOnLoad()">
@@ -411,7 +411,7 @@
           function onLogClick() { log.style.display = "block"; }
           function onRankClick() {
             rank.style.display = "block";
-            $.cookie('popup', null);
+            Cookies.remove('popup');
           }
           var log = document.getElementById('logModal');
           var rank = document.getElementById('rankModal');
