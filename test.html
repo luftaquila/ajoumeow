@@ -282,16 +282,14 @@
            return b[1] - a[1];
         });
 
-        console.log(final);
-
         var max = final[0][1], target, response = [], i = 0;
         target = max;
         for(var x = 0; x < rank - 1; x++) {
            for(i; final[i][1] == target; i++) { }
            target = final[i][1];
         }
-           for(var i = 0; i < final.length; i++) { if(final[i][1] == target) {response.push(final[i][0]);}}
-           console.log(rank, response, target);
+        for(var i = 0; i < final.length; i++) { if(final[i][1] == target) {response.push(final[i][0]);}}
+        console.log(rank, response, target);
       }
 
       function setData() {
@@ -342,7 +340,7 @@
             document.getElementById("nextThreeWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(2, i + 4, 2, j);
            }
         }
-        for(var i = 1; i < 8; i++) { yourRankIs(-1, i);}
+        for(var i = 1; i < 8; i++) { yourRankIs(-1, i); }
       }
    </script>
    <body onload="handleOnLoad()">
