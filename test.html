@@ -283,6 +283,7 @@
       }
       for(var i = 0; i < final.length; i++) { if(final[i][1] == target) {response.push(final[i][0]);}}
       console.log(rank, response, target);
+      return response;
     }
 
     function setData() {
@@ -333,10 +334,9 @@
           document.getElementById("nextThreeWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(2, i + 4, 2, j);
         }
       }
-      for(var i = -1; i < 2; i++) {
-        for(var j = 1; j < 8; j++) {
-          yourRankIs(i, j);
-        }
+      for(var i = 1; i <= 3; i++) {
+        document.getElementById.("this_" + i).innerHTML = yourRankIs(0, i);
+        document.getElementById.("past_" + i).innerHTML = yourRankIs(1, i);
       }
     }
   </script>
@@ -389,13 +389,13 @@
           <div class="modal-content">
             <span id="rankSpanClose"class="close">&times;</span>
               이번 달 현재까지<br>
-              1등 : <p id='this1st'></p>
-              2등 : <p id='this2nd'></p>
-              3등 : <p id='this3rd'></p><br>
+              1등 : <p id='this_1'></p>
+              2등 : <p id='this_2'></p>
+              3등 : <p id='this_3'></p><br>
               지난 달
-              1등 : <p id='past1st'></p>
-              2등 : <p id='past2nd'></p>
-              3등 : <p id='past3rd'></p><br>
+              1등 : <p id='past_1'></p>
+              2등 : <p id='past_2'></p>
+              3등 : <p id='past_3'></p><br>
           </div>
         </div>
         <script>
