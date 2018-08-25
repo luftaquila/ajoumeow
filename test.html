@@ -269,10 +269,10 @@
         }
         for(var k = i; k < j; k++) { name[k - i] = datum[k][0]; }
         name.sort();
-        for(var l = 0; l < name.length; l++) {
-          if(name[l] != tmp) { final.push([name[l], 1]); }
+        for(var i = 0; i < name.length; i++) {
+          if(name[i] != tmp) { final.push([name[i], 1]); }
           else { final[final.length - 1][1]++; }
-          tmp = name[l];
+          tmp = name[i];
         }
         final.sort(function(a, b) {
            if (a[1] == b[1]) {
@@ -281,7 +281,19 @@
            }
            return b[1] - a[1];
         });
-        console.log(final);
+
+        var max = final[0][1], target, response = [];
+        target = max;
+        if(rank == 1) {
+           for(var i = 0; i < final.length; i++) { if(final[i][1] == target) {response.push(final[i][0]);}}
+           console.log('1 : ' + response);
+        }
+        else if(rank == 2) {
+           for(var i = 0; final[i][1] == max; i++) { }
+           target = final[i][1];
+           for(var i = 0; i < final.length; i++) { if(final[i][1] == target) {response.push(final[i][0]);}}
+           console.log('2 : ' + response);
+        }
       }
 
       function setData() {
@@ -332,7 +344,7 @@
             document.getElementById("nextThreeWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(2, i + 4, 2, j);
            }
         }
-        yourRankIs(-1, 0);
+        yourRankIs(-1, 1);
       }
    </script>
    <body onload="handleOnLoad()">
