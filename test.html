@@ -113,6 +113,7 @@
           parseCSV(response, '\n', ',');
         }
       });
+      rank.style.display = "block";
     }
     function parseCSV(text, lineTerminator, cellTerminator) {
       datum = text.split(lineTerminator).map((line) => line.split(cellTerminator));
@@ -282,7 +283,6 @@
         target = final[i][1];
       }
       for(var i = 0; i < final.length; i++) { if(final[i][1] == target) {response.push(final[i][0]);}}
-      console.log(final);
       return response;
     }
 
