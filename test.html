@@ -114,7 +114,6 @@
           parseCSV(response, '\n', ',');
         }
       });
-      rank.style.display = "block";
     }
     function parseCSV(text, lineTerminator, cellTerminator) {
       datum = text.split(lineTerminator).map((line) => line.split(cellTerminator));
@@ -339,6 +338,7 @@
         document.getElementById("this_" + i).innerHTML = yourRankIs(0, i);
         document.getElementById("past_" + i).innerHTML = yourRankIs(1, i);
       }
+      if($.cookie('popup') != 'hidden') { rank.style.display = "block"; }
     }
     function popupBlocker() {
       rank.style.display = "none";
@@ -410,7 +410,10 @@
         </div>
         <script>
           function onLogClick() { log.style.display = "block"; }
-          function onRankClick() { rank.style.display = "block"; }
+          function onRankClick() {
+            rank.style.display = "block";
+            $.cookie.('popup', null);
+          }
           var log = document.getElementById('logModal');
           var rank = document.getElementById('rankModal');
           var logClose = document.getElementById('logSpanClose');
