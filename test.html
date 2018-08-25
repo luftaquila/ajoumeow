@@ -288,13 +288,13 @@
         target = max;
         if(rank == 1) {
            for(var i = 0; i < final.length; i++) { if(final[i][1] == target) {response.push(final[i][0]);}}
-           console.log('1 : ' + response);
+           console.log('1 : ' + response, target);
         }
         else if(rank == 2) {
            for(var i = 0; final[i][1] == max; i++) { }
            target = final[i][1];
            for(var i = 0; i < final.length; i++) { if(final[i][1] == target) {response.push(final[i][0]);}}
-           console.log('2 : ' + response);
+           console.log('2 : ' + response, target);
         }
       }
 
