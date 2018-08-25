@@ -339,7 +339,10 @@
         document.getElementById("this_" + i).innerHTML = yourRankIs(0, i);
         document.getElementById("past_" + i).innerHTML = yourRankIs(1, i);
       }
-      yourRankIs(-1, 1);
+    }
+    function popupBlocker() {
+      rank.style.display = "none";
+      $.cookie('popup', 'hidden', {expires : 5});
     }
   </script>
   <body onload="handleOnLoad()">
@@ -400,7 +403,7 @@
               3등 : <span id='past_3'></span><br><br>
             <div style="position: absolute; right: 8; bottom: 5">
               <label for="popupBlock">
-                <input type="checkbox" name="popupBlock" value="앞으로 5일간 보지 않기">
+                <input type="checkbox" id="popupBlock" onclick="popupBlocker();">앞으로 5일간 보지 않기
               </label>
             </div>
           </div>
