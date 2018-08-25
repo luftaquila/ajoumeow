@@ -286,16 +286,12 @@
 
         var max = final[0][1], target, response = [];
         target = max;
-        if(rank == 1) {
-           for(var i = 0; i < final.length; i++) { if(final[i][1] == target) {response.push(final[i][0]);}}
-           console.log('1 : ' + response, target);
-        }
-        else if(rank == 2) {
-           for(var i = 0; final[i][1] == max; i++) { }
+        for(var x = 0; x < rank - 1; x++) {
+           for(var i = 0; final[i][1] == target; i++) { }
            target = final[i][1];
-           for(var i = 0; i < final.length; i++) { if(final[i][1] == target) {response.push(final[i][0]);}}
-           console.log('2 : ' + response, target);
         }
+           for(var i = 0; i < final.length; i++) { if(final[i][1] == target) {response.push(final[i][0]);}}
+           console.log(rank, response, target);
       }
 
       function setData() {
