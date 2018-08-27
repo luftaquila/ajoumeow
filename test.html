@@ -69,10 +69,11 @@
       margin: 5% auto;
       padding: 0rem 0.8rem 0rem 0.5rem;
       border: 0.063rem solid #888;
-      overflow: auto;
+      overflow: hidden;
       width: 90%;
       height: auto;
       max-height: 90%;
+      float: left;
     }
     .close {
       color: #aaa;
@@ -393,24 +394,22 @@
         </div>
         <div id="rankModal" class="modal">
           <div class="modal-content" style="position: relative">
-            <div>
-              <span id="rankSpanClose" class="close">&times;</span>
-              <div width="100%" style="position: absolute; left: 5; up: 5">
-                <span style="text-align: center">☆미유미유 급식 랭킹☆</span>
-                <br><br>이번 달 현재까지<br>
-                1등 : <span id='this_1'></span><br>
-                2등 : <span id='this_2'></span><br>
-                3등 : <span id='this_3'></span><br><br>
-                지난 달<br>
-                1등 : <span id='past_1'></span><br>
-                2등 : <span id='past_2'></span><br>
-                3등 : <span id='past_3'></span><br><br>
-              </div>
-              <div style="position: absolute; right: 8; bottom: 5">
-                <label for="popupBlock">
-                  <input type="checkbox" id="popupBlock" onclick="popupBlocker();">앞으로 5일간 보지 않기
-                </label>
-              </div>
+            <span id="rankSpanClose" class="close">&times;</span>
+            <div width="100%" style="position: absolute; left: 5; up: 5">
+              <span style="text-align: center">☆미유미유 급식 랭킹☆</span>
+              <br><br>이번 달 현재까지<br>
+              1등 : <span id='this_1'></span><br>
+              2등 : <span id='this_2'></span><br>
+              3등 : <span id='this_3'></span><br><br>
+              지난 달<br>
+              1등 : <span id='past_1'></span><br>
+              2등 : <span id='past_2'></span><br>
+              3등 : <span id='past_3'></span><br><br>
+            </div>
+            <div style="position: absolute; right: 8; bottom: 5">
+              <label for="popupBlock">
+                <input type="checkbox" id="popupBlock" onclick="popupBlocker();">앞으로 5일간 보지 않기
+              </label>
             </div>
           </div>
         </div>
