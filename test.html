@@ -283,6 +283,7 @@
         target = final[i][1];
       }
       for(var i = 0; i < final.length; i++) { if(final[i][1] == target) {response.push(final[i][0]);}}
+      console.log(final);
       return response;
     }
 
@@ -339,6 +340,7 @@
         document.getElementById("past_" + i).innerHTML = yourRankIs(1, i);
       }
       if(Cookies.get('popup') != 'hidden') { rank.style.display = "block"; }
+      yourRankIs(-1, 1);
     }
     function popupBlocker() {
       rank.style.display = "none";
