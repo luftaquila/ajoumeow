@@ -247,7 +247,6 @@
       }
       return " ";
     }
-
     function yourRankIs(time, rank) {
       var month = new Date().format("m");
       var name = [], final = [], tmp;
@@ -275,7 +274,6 @@
         }
         return b[1] - a[1];
       });
-
       var max = final[0][1], target, response = [], i = 0;
       target = max;
       for(var x = 0; x < rank - 1; x++) {
@@ -285,7 +283,6 @@
       for(var i = 0; i < final.length; i++) { if(final[i][1] == target) {response.push(final[i][0]);}}
       return response;
     }
-
     function setData() {
       var week = new Date().getWeek();
       var year = new Date().getFullYear();
@@ -417,6 +414,7 @@
           function onRankClick() {
             rank.style.display = "block";
             Cookies.remove('popup');
+            popupBlock.checked = false;
           }
           var log = document.getElementById('logModal');
           var rank = document.getElementById('rankModal');
