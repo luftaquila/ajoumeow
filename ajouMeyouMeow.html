@@ -212,18 +212,18 @@
       for (var i = 0; i < datum.length - 1; i++) {
         if(rank == 1) {
           if(result == datum[i][1]) {
-            if((course == 1) && (datum[i][2].includes("도서관 & 텔동 코스")))
+            if((course == 1) && (datum[i][2].includes("1코스")))
               return datum[i][0];
-            else if((course == 2) && (datum[i][2].includes("신학 & 성호관 코스")))
+            else if((course == 2) && (datum[i][2].includes("2코스")))
               return datum[i][0];
           }
         }
         else if(rank == 2) {
           if(result == datum[i][1]) {
-            if((course == 1) && (datum[i][2].includes("도서관 & 텔동 코스"))) {
+            if((course == 1) && (datum[i][2].includes("1코스"))) {
               for(var j = 1; result == datum[i + j][1]; j++)
               {
-                if((course == 1) && (datum[i + j][2].includes("도서관 & 텔동 코스"))) {
+                if((course == 1) && (datum[i + j][2].includes("1코스"))) {
                   if(datum[i][0] == datum[i + j][0])
                     continue;
                   else
@@ -231,10 +231,10 @@
                 }
               }
             }
-            else if((course == 2) && (datum[i][2].includes("신학 & 성호관 코스"))) {
+            else if((course == 2) && (datum[i][2].includes("2코스"))) {
               for(var j = 1; result == datum[i + j][1]; j++)
               {
-                if((course == 2) && (datum[i + j][2].includes("신학 & 성호관 코스"))) {
+                if((course == 2) && (datum[i + j][2].includes("2코스"))) {
                   if(datum[i][0] == datum[i + j][0])
                     continue;
                   else
@@ -400,7 +400,7 @@
               1등 : <span id='past_1'></span><br>
               2등 : <span id='past_2'></span><br>
               3등 : <span id='past_3'></span><br>
-              <span style="font-size: 0.5rem;"><br><br>팝업창 디자인이 구린 점 양해 부탁드립니다(...)<br>제가 디자인은 잘...</span>
+              <span style="font-size: 0.5rem;"><br><br>팝업창 디자인이 구린 점 양해 부탁드립니다(...)</span>
             </div>
             <div style="font-size: 0.8rem; position: absolute; right: 8; bottom: 5">
               <label for="popupBlock">
@@ -459,7 +459,7 @@
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R4" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s5" dir="ltr" colspan="2" rowspan="2">도서관&amp;텔동</td>
+                <td class="s5" dir="ltr" colspan="2" rowspan="2">1코스</td>
                 <td class="s8" dir="ltr" id="thisWeek_d1_1"></td>
                 <td class="s8" dir="ltr" id="thisWeek_d2_1"></td>
                 <td class="s8" dir="ltr" id="thisWeek_d3_1"></td>
@@ -476,7 +476,7 @@
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R6" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s12" dir="ltr" colspan="2" rowspan="2">신학&amp;성호관</td>
+                <td class="s12" dir="ltr" colspan="2" rowspan="2">2코스</td>
                 <td class="s8" dir="ltr" id="thisWeek_s1_1"></td>
                 <td class="s8" dir="ltr" id="thisWeek_s2_1"></td>
                 <td class="s8" dir="ltr" id="thisWeek_s3_1"></td>
@@ -502,7 +502,7 @@
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R9" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s15" dir="ltr" colspan="2" rowspan="2">도서관&amp;텔동</td>
+                <td class="s15" dir="ltr" colspan="2" rowspan="2">1코스</td>
                 <td class="s8" dir="ltr" id="nextWeek_d1_1"></td>
                 <td class="s8" dir="ltr" id="nextWeek_d2_1"></td>
                 <td class="s8" dir="ltr" id="nextWeek_d3_1"></td>
@@ -519,7 +519,7 @@
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R11" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s18" dir="ltr" colspan="2" rowspan="2">신학&amp;성호관</td>
+                <td class="s18" dir="ltr" colspan="2" rowspan="2">2코스</td>
                 <td class="s8" dir="ltr" id="nextWeek_s1_1"></td>
                 <td class="s8" dir="ltr" id="nextWeek_s2_1"></td>
                 <td class="s8" dir="ltr" id="nextWeek_s3_1"></td>
@@ -545,7 +545,7 @@
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R14" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s19" dir="ltr" colspan="2" rowspan="2">도서관&amp;텔동</td>
+                <td class="s19" dir="ltr" colspan="2" rowspan="2">1코스</td>
                 <td class="s8" dir="ltr" id="nextTwoWeek_d1_1"></td>
                 <td class="s8" dir="ltr" id="nextTwoWeek_d2_1"></td>
                 <td class="s8" dir="ltr" id="nextTwoWeek_d3_1"></td>
@@ -562,7 +562,7 @@
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R16" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s22" dir="ltr" colspan="2" rowspan="2">신학&amp;성호관</td>
+                <td class="s22" dir="ltr" colspan="2" rowspan="2">2코스</td>
                 <td class="s8" dir="ltr" id="nextTwoWeek_s1_1"></td>
                 <td class="s8" dir="ltr" id="nextTwoWeek_s2_1"></td>
                 <td class="s8" dir="ltr" id="nextTwoWeek_s3_1"></td>
@@ -588,7 +588,7 @@
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R19" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s23" colspan="2" rowspan="2">도서관&amp;텔동</td>
+                <td class="s23" colspan="2" rowspan="2">1코스</td>
                 <td class="s26" id="nextThreeWeek_d1_1"></td>
                 <td class="s26" id="nextThreeWeek_d2_1"></td>
                 <td class="s26" id="nextThreeWeek_d3_1"></td>
@@ -605,7 +605,7 @@
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R21" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s30" colspan="2" rowspan="2">신학&amp;성호관</td>
+                <td class="s30" colspan="2" rowspan="2">2코스</td>
                 <td class="s26" id="nextThreeWeek_s1_1"></td>
                 <td class="s26" id="nextThreeWeek_s2_1"></td>
                 <td class="s26" id="nextThreeWeek_s3_1"></td>
@@ -624,7 +624,7 @@
                 <th id="0R23" style="height: 1.25rem;" class="row-headers-background"></th>
                 <td class="s33" dir="ltr" colspan="7">
                   <div id="latestUpdate" style="height:1rem; text-align:right; font-size:0.7rem;">Loading...</div>
-                    설문지 제출 후 표에 반영되기까지 최대 3분 정도 소요됩니다.<br>
+                    신청서 제출 후 표에 반영되기까지 최대 3분 정도 소요됩니다.<br>
                     ©<script>document.write(new Date().getFullYear())</script> LUFT-AQUILA. <a href="/ajoumeyoumeow/about.html" style="color:#0366d6">About</a>
                     &nbsp;<a href="#" onclick="onRankClick()" style="color:#0366d6">Rank</a>
                     &nbsp;<a href="#" onclick="onLogClick()" style="color:#0366d6">Log</a>
@@ -662,7 +662,7 @@
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R4" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s5" dir="ltr" colspan="2" rowspan="2">도서관&amp;텔동</td>
+                <td class="s5" dir="ltr" colspan="2" rowspan="2">1코스</td>
                 <td class="s8" dir="ltr" id="thisWeekEnd_d1_1"></td>
                 <td class="s9" dir="ltr" id="thisWeekEnd_d2_1"></td>
               </tr>
@@ -673,7 +673,7 @@
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R6" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s12" dir="ltr" colspan="2" rowspan="2">신학&amp;성호관</td>
+                <td class="s12" dir="ltr" colspan="2" rowspan="2">2코스</td>
                 <td class="s8" dir="ltr" id="thisWeekEnd_s1_1"></td>
                 <td class="s9" dir="ltr" id="thisWeekEnd_s2_1"></td>
               </tr>
@@ -690,7 +690,7 @@
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R9" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s15" dir="ltr" colspan="2" rowspan="2">도서관&amp;텔동</td>
+                <td class="s15" dir="ltr" colspan="2" rowspan="2">1코스</td>
                 <td class="s8" dir="ltr" id="nextWeekEnd_d1_1"></td>
                 <td class="s9" dir="ltr" id="nextWeekEnd_d2_1"></td>
               </tr>
@@ -701,7 +701,7 @@
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R11" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s18" dir="ltr" colspan="2" rowspan="2">신학&amp;성호관</td>
+                <td class="s18" dir="ltr" colspan="2" rowspan="2">2코스</td>
                 <td class="s8" dir="ltr" id="nextWeekEnd_s1_1"></td>
                 <td class="s9" dir="ltr" id="nextWeekEnd_s2_1"></td>
               </tr>
@@ -718,7 +718,7 @@
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R14" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s19" dir="ltr" colspan="2" rowspan="2">도서관&amp;텔동</td>
+                <td class="s19" dir="ltr" colspan="2" rowspan="2">1코스</td>
                 <td class="s8" dir="ltr" id="nextTwoWeekEnd_d1_1"></td>
                 <td class="s9" dir="ltr" id="nextTwoWeekEnd_d2_1"></td>
               </tr>
@@ -729,7 +729,7 @@
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R16" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s22" dir="ltr" colspan="2" rowspan="2">신학&amp;성호관</td>
+                <td class="s22" dir="ltr" colspan="2" rowspan="2">2코스</td>
                 <td class="s8" dir="ltr" id="nextTwoWeekEnd_s1_1"></td>
                 <td class="s9" dir="ltr" id="nextTwoWeekEnd_s2_1"></td>
               </tr>
@@ -746,7 +746,7 @@
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R19" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s23" colspan="2" rowspan="2">도서관&amp;텔동</td>
+                <td class="s23" colspan="2" rowspan="2">1코스</td>
                 <td class="s26" id="nextThreeWeekEnd_d1_1"></td>
                 <td class="s27" id="nextThreeWeekEnd_d2_1"></td>
               </tr>
@@ -757,7 +757,7 @@
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R21" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s30" colspan="2" rowspan="2">신학&amp;성호관</td>
+                <td class="s30" colspan="2" rowspan="2">2코스</td>
                 <td class="s26" id="nextThreeWeekEnd_s1_1"></td>
                 <td class="s27" id="nextThreeWeekEnd_s2_1"></td>
               </tr>
@@ -770,7 +770,7 @@
                 <th id="0R23" style="height: 1.25rem;" class="row-headers-background"></th>
                 <td class="s33" dir="ltr" colspan="7">
                   <div id="latestUpdateWeekEnd" style="height:1rem; text-align:right; font-size:0.7rem;">Loading...</div>
-                    설문지 제출 후 표에 반영되기까지 최대 3분 정도 소요됩니다.<br>
+                    신청서 제출 후 표에 반영되기까지 최대 3분 정도 소요됩니다.<br>
                     ©<script>document.write(new Date().getFullYear())</script> LUFT-AQUILA. <a href="/ajoumeyoumeow/about.html" style="color:#0366d6">About</a>
                     &nbsp;<a href="#" onclick="onRankClick()" style="color:#0366d6">Rank</a>
                     &nbsp;<a href="#" onclick="onLogClick()" style="color:#0366d6">Log</a>
