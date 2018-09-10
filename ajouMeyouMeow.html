@@ -247,7 +247,7 @@
       }
       return " ";
     }
-    function yourRankIs(time, rank) {
+    function yourRankIs(time, rank, num) {
       var month = new Date().format("m");
       var name = [], final = [], tmp;
       if(time >= 0) {
@@ -281,7 +281,8 @@
         target = final[i][1];
       }
       for(var i = 0; i < final.length; i++) { if(final[i][1] == target) {response.push(final[i][0]);}}
-      return response;
+      if(num) return target;
+      else return response;
     }
     function setData() {
       var week = new Date().getWeek();
@@ -332,8 +333,10 @@
         }
       }
       for(var i = 1; i <= 3; i++) {
-        document.getElementById("this_" + i).innerHTML = yourRankIs(0, i);
-        document.getElementById("past_" + i).innerHTML = yourRankIs(1, i);
+        document.getElementById("this_" + i).innerHTML = yourRankIs(0, i, 0);
+        document.getElementById("past_" + i).innerHTML = yourRankIs(1, i, 0);
+        document.getElementById("this_t_" + i).innerHTML = yourRankIs(0, i, 1);
+        document.getElementById("past_t_" + i).innerHTML = yourRankIs(1, i, 1);
       }
       if(Cookies.get('popup') != 'hidden') { rank.style.display = "block"; }
     }
@@ -393,13 +396,13 @@
             <div style="position: absolute; height: 19rem; top: 0; bottom: 0; left: 0; right: 0; margin: auto;">
               <span style="font-size: 1.3rem">☆미유미유 급식 랭킹☆</span>
               <br><br>이번 달 현재까지<br>
-              1등 : <span id='this_1'></span><br>
-              2등 : <span id='this_2'></span><br>
-              3등 : <span id='this_3'></span><br><br>
+              1등(<span id='this_t_1'></span>회) : <span id='this_1'></span><br>
+              2등(<span id='this_t_2'></span>회) : <span id='this_2'></span><br>
+              3등(<span id='this_t_3'></span>회) : <span id='this_3'></span><br><br>
               지난 달<br>
-              1등 : <span id='past_1'></span><br>
-              2등 : <span id='past_2'></span><br>
-              3등 : <span id='past_3'></span><br>
+              1등(<span id='past_t_1'></span>회) : <span id='past_1'></span><br>
+              2등(<span id='past_t_2'></span>회) : <span id='past_2'></span><br>
+              3등(<span id='past_t_3'></span>회) : <span id='past_3'></span><br>
               <span style="font-size: 0.5rem;"><br><br>팝업창 디자인이 구린 점 양해 부탁드립니다(...)</span>
             </div>
             <div style="font-size: 0.8rem; position: absolute; right: 8; bottom: 5">
