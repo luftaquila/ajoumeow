@@ -1,1 +1,9 @@
-
+<form id="frm" action="action.jsp">
+    <p>날짜 입력:</p>
+    <div><input type="month" id="userdate" name="userdate"
+                value="2015-10-10"></div>
+    <div><input type="submit" value="전송">
+    <input type="button"
+           onclick="alert(typeof(document.getElementById('userdate').value));"
+           value="data"></div>
+</form>
