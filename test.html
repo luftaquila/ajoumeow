@@ -198,12 +198,10 @@
         "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
       ]
     };
-    Date.prototype.format = function (mask, utc) {
-      return dateFormat(this, mask, utc);
-    };
+    Date.prototype.format = function (mask, utc) { return dateFormat(this, mask, utc); };
     Date.prototype.getWeek = function() {
       var calc = new Date(this.getFullYear(), 0, 1);
-      return Math.ceil((((this - calc) / 86400000) + calc.getDay() + 1) / 7);
+      return Math.ceil((((this - calc) / 86400000) + calc.getDay() - 1) / 7);
     }
     function yourNameIs(p1, p2, course, rank) {
       var week = new Date().getWeek();
@@ -316,20 +314,20 @@
       for(var i = 1; i <= 2; i++)
       {
         document.getElementById("thisWeekEnd_" + i).style.color = "#000000";
-        document.getElementById("thisWeekEnd_" + i).innerHTML = new Date(year, 0, i + 5 + ((week - 2) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
-        document.getElementById("nextWeekEnd_" + i).innerHTML = new Date(year, 0, i + 5 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
-        document.getElementById("nextTwoWeekEnd_" + i).innerHTML = new Date(year, 0, i + 5 + (week * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
-        document.getElementById("nextThreeWeekEnd_" + i).innerHTML = new Date(year, 0, i + 5 + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+        document.getElementById("thisWeekEnd_" + i).innerHTML = new Date(year, 0, i + 5 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+        document.getElementById("nextWeekEnd_" + i).innerHTML = new Date(year, 0, i + 5 + ((week + 0) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+        document.getElementById("nextTwoWeekEnd_" + i).innerHTML = new Date(year, 0, i + 5 + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+        document.getElementById("nextThreeWeekEnd_" + i).innerHTML = new Date(year, 0, i + 5 + ((week + 2) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
         for(var j = 1; j <= 2; j++)
         {
-          document.getElementById("thisWeekEnd_d" + i + "_" + j).innerHTML = yourNameIs(-1, i + 4, 1, j);
-          document.getElementById("thisWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(-1, i + 4, 2, j);
-          document.getElementById("nextWeekEnd_d" + i + "_" + j).innerHTML = yourNameIs(0, i + 4, 1, j);
-          document.getElementById("nextWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(0, i + 4, 2, j);
-          document.getElementById("nextTwoWeekEnd_d" + i + "_" + j).innerHTML = yourNameIs(1, i + 4, 1, j);
-          document.getElementById("nextTwoWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(1, i + 4, 2, j);
-          document.getElementById("nextThreeWeekEnd_d" + i + "_" + j).innerHTML = yourNameIs(2, i + 4, 1, j);
-          document.getElementById("nextThreeWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(2, i + 4, 2, j);
+          document.getElementById("thisWeekEnd_d" + i + "_" + j).innerHTML = yourNameIs(0, i + 4, 1, j);
+          document.getElementById("thisWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(0, i + 4, 2, j);
+          document.getElementById("nextWeekEnd_d" + i + "_" + j).innerHTML = yourNameIs(1, i + 4, 1, j);
+          document.getElementById("nextWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(1, i + 4, 2, j);
+          document.getElementById("nextTwoWeekEnd_d" + i + "_" + j).innerHTML = yourNameIs(2, i + 4, 1, j);
+          document.getElementById("nextTwoWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(2, i + 4, 2, j);
+          document.getElementById("nextThreeWeekEnd_d" + i + "_" + j).innerHTML = yourNameIs(3, i + 4, 1, j);
+          document.getElementById("nextThreeWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(3, i + 4, 2, j);
         }
       }
       for(var i = 1; i <= 3; i++) {
@@ -628,7 +626,8 @@
                 <td class="s33" dir="ltr" colspan="7">
                   <div id="latestUpdate" style="height:1rem; text-align:right; font-size:0.7rem;">Loading...</div>
                     신청서 제출 후 표에 반영되기까지 최대 3분 정도 소요됩니다.<br>
-                    ©<script>document.write(new Date().getFullYear())</script> LUFT-AQUILA. <a href="/ajoumeyoumeow/about.html" style="color:#0366d6">About</a>
+                    ©<script>document.write(new Date().getFullYear())</script> LUFT-AQUILA. <a href="/ajoumeyoumeow/about" style="color:#0366d6">About</a>
+                    &nbsp;<a href="/ajoumeyoumeow/admin" style="color:#0366d6">Admin</a>
                     &nbsp;<a href="#" onclick="onRankClick()" style="color:#0366d6">Rank</a>
                     &nbsp;<a href="#" onclick="onLogClick()" style="color:#0366d6">Log</a>
                 </td>
@@ -775,6 +774,7 @@
                   <div id="latestUpdateWeekEnd" style="height:1rem; text-align:right; font-size:0.7rem;">Loading...</div>
                     신청서 제출 후 표에 반영되기까지 최대 3분 정도 소요됩니다.<br>
                     ©<script>document.write(new Date().getFullYear())</script> LUFT-AQUILA. <a href="/ajoumeyoumeow/about.html" style="color:#0366d6">About</a>
+                    &nbsp;<a href="/ajoumeyoumeow/admin" style="color:#0366d6">Admin</a>
                     &nbsp;<a href="#" onclick="onRankClick()" style="color:#0366d6">Rank</a>
                     &nbsp;<a href="#" onclick="onLogClick()" style="color:#0366d6">Log</a>
                 </td>

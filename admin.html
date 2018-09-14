@@ -1,23 +1,13 @@
 <html>
   <head>
-    <title>아주대학교 고양이는 미유미유</title>
+    <title>Administrator Mode</title>
     <link rel="shortcut icon" type="image/x-icon" href="/ajoumeyoumeow/Icons/Resized/meyoumeow.ico" />
-    <meta property="og:title" content="아주대학교 미유미유"/>
+    <meta property="og:title" content="Administrator"/>
     <meta property="og:url" content="https://luftaquila.github.io/ajoumeyoumeow/"/>
     <meta property="og:image" content="https://luftaquila.github.io/ajoumeyoumeow/Icons/%EB%AF%B8%EC%9C%A0%EB%AF%B8%EC%9C%A0.png"/>
-    <meta property="og:description" content="아주대학교 고양이는 미유미유"/>
-    <meta name="google-site-verification" content="LdumQ1csatc-sergk4eQ5nBhKjcnisZ18Bo8RjRBxKo"/>
-    <meta name="naver-site-verification" content="f3183dc84e33039873fc22ec89ee6b402fe3c54d"/>
+    <meta property="og:description" content="Administrator mode"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta http-equiv="Content-Type" content="text/html">
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119383265-1"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){ dataLayer.push(arguments); }
-      gtag('js', new Date());
-      gtag('config', 'UA-119383265-1');
-    </script>
   </head>
   <style>
     body { font-family: 'Malgun Gothic', serif; }
@@ -25,24 +15,6 @@
       width: 100%;
       margin: 0 auto;
     }
-    ul.tabs {
-      margin: 0px;
-      padding: 0px;
-      list-style: none;
-    }
-    ul.tabs li {
-      background: none;
-      color: #222;
-      display: inline-block;
-      padding: 0.5rem 0.938rem;
-      cursor: pointer;
-    }
-    ul.tabs li.current {
-      background: #ededed;
-      color: #222;
-    }
-    .tab-content { display: none; }
-    .tab-content.current { display: inherit; }
     .formwrap {
       position: relative;
       width: 100%;
@@ -90,21 +62,10 @@
   <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
   <script>
     var datum;
-    $(document).ready(function(){
-      $('ul.tabs li').click(function(){
-        var tab_id = $(this).attr('data-tab');
-        $('ul.tabs li').removeClass('current');
-        $('.tab-content').removeClass('current');
-        $(this).addClass('current');
-        $("#"+tab_id).addClass('current');
-      })
-    })
     function handleOnLoad() {
       datum = [];
       document.getElementById("todayDate").innerHTML = "Loading...";
       document.getElementById("latestUpdate").innerHTML = "Loading...";
-      document.getElementById("todayDateWeekEnd").innerHTML = "Loading...";
-      document.getElementById("latestUpdateWeekEnd").innerHTML = "Loading...";
       $.ajax({
         url: 'https://docs.google.com/spreadsheet/pub?key=1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A&single=true&gid=850606151&range=G2:I&output=csv',
         type: "GET",
@@ -206,9 +167,10 @@
       return Math.ceil((((this - calc) / 86400000) + calc.getDay() + 1) / 7);
     }
     function yourNameIs(p1, p2, course, rank) {
-      var week = new Date().getWeek();
-      var year = new Date().getFullYear();
-      var result = new Date(year, 0, 1 + p2 + ((week + p1 - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("yyyy. m. d");
+      var calc = 8 * p1 + p2;
+      var date = document.getElementById('inputMonth').value + '-' + calc.toString();
+      if(date.includes("32")) return " ";
+      var result = new Date(date).format("yyyy. m. d");
       for (var i = 0; i < datum.length - 1; i++) {
         if(rank == 1) {
           if(result == datum[i][1]) {
@@ -247,20 +209,46 @@
       }
       return " ";
     }
-    function yourRankIs(time, rank, num) {
-      var month = new Date().format("m");
+    function setData() {
       var name = [], final = [], tmp;
-      if(time >= 0) {
-        month -= time;
-        month += '';
+      var month = document.getElementById('inputMonth').value;
+      document.getElementById("todayDate").innerHTML = new Date().format("m월 d일 dddd");
+      document.getElementById("latestUpdate").innerHTML = "Latest Update at " + new Date().format("hh:MM:ss TT");
+      for(var i = 1; i <= 8; i++)
+      {
+        if(new Date(month + '-' + i.toString()).getDay() == 0 || new Date(month + '-' + i.toString()).getDay() == 6) document.getElementById("thisWeek_" + i).style.backgroundColor = "greenyellow";
+        else document.getElementById("thisWeek_" + i).style.backgroundColor = "#B6D7A8";
+        if(new Date(month + '-' + (i + 8).toString()).getDay() == 0 || new Date(month + '-' + (i + 8).toString()).getDay() == 6) document.getElementById("nextWeek_" + i).style.backgroundColor = "greenyellow";
+        else document.getElementById("nextWeek_" + i).style.backgroundColor = "#A4C2F4";
+        if(new Date(month + '-' + (i + 16).toString()).getDay() == 0 || new Date(month + '-' + (i + 16).toString()).getDay() == 6) document.getElementById("nextTwoWeek_" + i).style.backgroundColor = "greenyellow";
+        else document.getElementById("nextTwoWeek_" + i).style.backgroundColor = "#B4A7D6";
+        if(new Date(month + '-' + (i + 24).toString()).getDay() == 0 || new Date(month + '-' + (i + 24).toString()).getDay() == 6) document.getElementById("nextThreeWeek_" + i).style.backgroundColor = "greenyellow";
+        else document.getElementById("nextThreeWeek_" + i).style.backgroundColor = "#D5A6BD";
+        document.getElementById("thisWeek_" + i).style.color = "#000000";
+        document.getElementById("thisWeek_" + i).innerHTML = new Date(month + '-' + i.toString()).format("m/d(ddd)");
+        document.getElementById("nextWeek_" + i).innerHTML = new Date(month + '-' + (i + 8).toString()).format("m/d(ddd)");
+        document.getElementById("nextTwoWeek_" + i).innerHTML = new Date(month + '-' + (i + 16).toString()).format("m/d(ddd)");
+        if(i != 8) document.getElementById("nextThreeWeek_" + i).innerHTML = new Date(month + '-' + (i + 24).toString()).format("m/d(ddd)");
+        for(var j = 1; j <= 2; j++)
+        {
+          document.getElementById("thisWeek_d" + i + "_" + j).innerHTML = tmp = yourNameIs(0, i, 1, j);
+          if(!tmp.includes(" ")) name.push(tmp);
+          document.getElementById("thisWeek_s" + i + "_" + j).innerHTML = tmp = yourNameIs(0, i, 2, j);
+          if(!tmp.includes(" ")) name.push(tmp);
+          document.getElementById("nextWeek_d" + i + "_" + j).innerHTML = tmp = yourNameIs(1, i, 1, j);
+          if(!tmp.includes(" ")) name.push(tmp);
+          document.getElementById("nextWeek_s" + i + "_" + j).innerHTML = tmp = yourNameIs(1, i, 2, j);
+          if(!tmp.includes(" ")) name.push(tmp);
+          document.getElementById("nextTwoWeek_d" + i + "_" + j).innerHTML = tmp = yourNameIs(2, i, 1, j);
+          if(!tmp.includes(" ")) name.push(tmp);
+          document.getElementById("nextTwoWeek_s" + i + "_" + j).innerHTML = tmp = yourNameIs(2, i, 2, j);
+          if(!tmp.includes(" ")) name.push(tmp);
+          document.getElementById("nextThreeWeek_d" + i + "_" + j).innerHTML = tmp = yourNameIs(3, i, 1, j);
+          if(!tmp.includes(" ")) name.push(tmp);
+          document.getElementById("nextThreeWeek_s" + i + "_" + j).innerHTML = tmp = yourNameIs(3, i, 2, j);
+          if(!tmp.includes(" ")) name.push(tmp);
+        }
       }
-      for(var i = 0; !month.includes(datum[i][1].substring(6, datum[i][1].indexOf('.', 5))); i++) { }
-      for(var j = i;  month.includes(datum[j][1].substring(6, datum[j][1].indexOf('.', 5))); j++) { }
-      if(time < 0) {
-        i = 0;
-        j = datum.length - 2;
-      }
-      for(var k = i; k < j; k++) { name[k - i] = datum[k][0]; }
       name.sort();
       for(var i = 0; i < name.length; i++) {
         if(name[i] != tmp) { final.push([name[i], 1]); }
@@ -274,78 +262,10 @@
         }
         return b[1] - a[1];
       });
-      var max = final[0][1], target, response = [], i = 0;
-      target = max;
-      for(var x = 0; x < rank - 1; x++) {
-        for(i; final[i][1] == target; i++) { }
-        target = final[i][1];
-      }
-      for(var i = 0; i < final.length; i++) { if(final[i][1] == target) {response.push(final[i][0]);}}
-      if(num) return target;
-      else return response;
-    }
-    function setData() {
-      var week = new Date().getWeek();
-      var year = new Date().getFullYear();
-      document.getElementById("todayDate").innerHTML = new Date().format("m월 d일 dddd");
-      document.getElementById("latestUpdate").innerHTML = "Latest Update at " + new Date().format("hh:MM:ss TT");
-      document.getElementById("todayDateWeekEnd").innerHTML = new Date().format("m월 d일 dddd");
-      document.getElementById("latestUpdateWeekEnd").innerHTML = "Latest Update at " + new Date().format("hh:MM:ss TT");
-      if(new Date().getDay() == 0) document.getElementById("thisWeekEnd_2").style.backgroundColor = "greenyellow";
-      if(new Date().getDay() == 6) document.getElementById("thisWeekEnd_1").style.backgroundColor = "greenyellow";
-      for(var i = 1; i <= 5; i++)
-      {
-        if(new Date().getDay() == i) document.getElementById("thisWeek_" + i).style.backgroundColor = "greenyellow";
-        document.getElementById("thisWeek_" + i).style.color = "#000000";
-        document.getElementById("thisWeek_" + i).innerHTML = new Date(year, 0, i + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
-        document.getElementById("nextWeek_" + i).innerHTML = new Date(year, 0, i + (week * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
-        document.getElementById("nextTwoWeek_" + i).innerHTML = new Date(year, 0, i + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
-        document.getElementById("nextThreeWeek_" + i).innerHTML = new Date(year, 0, i + ((week + 2) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
-        for(var j = 1; j <= 2; j++)
-        {
-          document.getElementById("thisWeek_d" + i + "_" + j).innerHTML = yourNameIs(0, i - 1, 1, j);
-          document.getElementById("thisWeek_s" + i + "_" + j).innerHTML = yourNameIs(0, i - 1, 2, j);
-          document.getElementById("nextWeek_d" + i + "_" + j).innerHTML = yourNameIs(1, i - 1, 1, j);
-          document.getElementById("nextWeek_s" + i + "_" + j).innerHTML = yourNameIs(1, i - 1, 2, j);
-          document.getElementById("nextTwoWeek_d" + i + "_" + j).innerHTML = yourNameIs(2, i - 1, 1, j);
-          document.getElementById("nextTwoWeek_s" + i + "_" + j).innerHTML = yourNameIs(2, i - 1, 2, j);
-          document.getElementById("nextThreeWeek_d" + i + "_" + j).innerHTML = yourNameIs(3, i - 1, 1, j);
-          document.getElementById("nextThreeWeek_s" + i + "_" + j).innerHTML = yourNameIs(3, i - 1, 2, j);
-        }
-      }
-      for(var i = 1; i <= 2; i++)
-      {
-        document.getElementById("thisWeekEnd_" + i).style.color = "#000000";
-        document.getElementById("thisWeekEnd_" + i).innerHTML = new Date(year, 0, i + 5 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
-        document.getElementById("nextWeekEnd_" + i).innerHTML = new Date(year, 0, i + 5 + ((week) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
-        document.getElementById("nextTwoWeekEnd_" + i).innerHTML = new Date(year, 0, i + 5 + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
-        document.getElementById("nextThreeWeekEnd_" + i).innerHTML = new Date(year, 0, i + 5 + ((week + 2) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
-        for(var j = 1; j <= 2; j++)
-        {
-          document.getElementById("thisWeekEnd_d" + i + "_" + j).innerHTML = yourNameIs(0, i + 4, 1, j);
-          document.getElementById("thisWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(0, i + 4, 2, j);
-          document.getElementById("nextWeekEnd_d" + i + "_" + j).innerHTML = yourNameIs(1, i + 4, 1, j);
-          document.getElementById("nextWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(1, i + 4, 2, j);
-          document.getElementById("nextTwoWeekEnd_d" + i + "_" + j).innerHTML = yourNameIs(2, i + 4, 1, j);
-          document.getElementById("nextTwoWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(2, i + 4, 2, j);
-          document.getElementById("nextThreeWeekEnd_d" + i + "_" + j).innerHTML = yourNameIs(3, i + 4, 1, j);
-          document.getElementById("nextThreeWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(3, i + 4, 2, j);
-        }
-      }
-      for(var i = 1; i <= 3; i++) {
-        document.getElementById("this_" + i).innerHTML = yourRankIs(0, i, 0);
-        document.getElementById("past_" + i).innerHTML = yourRankIs(1, i, 0);
-        document.getElementById("this_t_" + i).innerHTML = yourRankIs(0, i, 1);
-        document.getElementById("past_t_" + i).innerHTML = yourRankIs(1, i, 1);
-      }
-      if(Cookies.get('popup') != 'hidden') { rank.style.display = "block"; }
-    }
-    function popupBlocker() {
-      rank.style.display = "none";
-      Cookies.set('popup', 'hidden', {expires : 5});
+      console.log(final);
     }
   </script>
-  <body onload="handleOnLoad()">
+  <body>
     <style type="text/css">.ritz .waffle a { color: inherit; }
       .ritz .waffle .s3{border-top:0.125rem SOLID #000000;border-bottom:0.125rem SOLID #000000;border-right:0.125rem SOLID #000000;border-left:0.125rem SOLID #000000;background-color:#ff9900;text-align:center;font-weight:bold;color:#ffffff;font-family:'Malgun Gothic';font-size:1.250rem;vertical-align:middle;white-space:nowrap;direction:ltr;padding:0.125rem 0.188rem 0.125rem 0.188rem;}
       .ritz .waffle .s5{border-bottom:0.063rem SOLID #000000;border-right:0.063rem SOLID #000000;border-left:0.125rem SOLID #000000;background-color:#b6d7a8;text-align:center;color:#000000;font-family:'Malgun Gothic';font-size:0.813rem;vertical-align:middle;white-space:nowrap;direction:ltr;padding:0.125rem 0.188rem 0.125rem 0.188rem;}
@@ -379,58 +299,21 @@
       .ritz .waffle .s33{background-color:#ffffff;text-align:center;color:#000000;font-family:'Malgun Gothic';font-size:0.813rem;vertical-align:middle;white-space:nowrap;direction:ltr;padding:0.125rem 0.188rem 0.125rem 0.188rem;}
     </style>
     <div class="container">
-      <ul class="tabs">
-        <li class="tab-link current" data-tab="tab-1">평일</li>
-        <li class="tab-link" data-tab="tab-2">주말</li>
-        <li class="tab-link" data-tab="tab-3">급식 신청</li>
-        <button onclick="handleOnLoad();" style="float: right; padding: 0.5rem 0.8rem; cursor: pointer; font-size: 0.9rem">새로고침</button>
-        <div id="logModal" class="modal">
-          <div class="modal-content" style="position: relative; height: auto!important; margin: 5% auto!important;">
-            <span id="logSpanClose" class="close" style="position: absolute; right: 8; top: -3;">&times;<br></span>
-            <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTS42UTV58NdXxJMBIg3ARIVmnGLcMmok7gv0YjyIkH29t1Yk16OidImCYsrtuU1B7f42MhUNQA5kKA/pubhtml" width="100%" height="93%" scrolling="no" style="margin-top: 1rem"></iframe><br>
-          </div>
+      <input type="month" min="2018-09-01" id="inputMonth">
+      <input type="button" onclick="handleOnLoad();" value="Load"><p></p>
+      <div id="logModal" class="modal">
+        <div class="modal-content" style="position: relative; height: auto!important; margin: 5% auto!important;">
+          <span id="logSpanClose" class="close" style="position: absolute; right: 8; top: -3;">&times;<br></span>
+          <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTS42UTV58NdXxJMBIg3ARIVmnGLcMmok7gv0YjyIkH29t1Yk16OidImCYsrtuU1B7f42MhUNQA5kKA/pubhtml" width="100%" height="93%" scrolling="no" style="margin-top: 1rem"></iframe><br>
         </div>
-        <div id="rankModal" class="modal">
-          <div class="modal-content" style="position: relative; text-align: center">
-            <span id="rankSpanClose" class="close" style="position: absolute; right: 8; top: -3;">&times;</span>
-            <div style="position: absolute; height: 19rem; top: 0; bottom: 0; left: 0; right: 0; margin: auto;">
-              <span style="font-size: 1.3rem">☆미유미유 급식 랭킹☆</span>
-              <br><br>이번 달 현재까지<br>
-              1등(<span id='this_t_1'></span>회) : <span id='this_1'></span><br>
-              2등(<span id='this_t_2'></span>회) : <span id='this_2'></span><br>
-              3등(<span id='this_t_3'></span>회) : <span id='this_3'></span><br><br>
-              지난 달<br>
-              1등(<span id='past_t_1'></span>회) : <span id='past_1'></span><br>
-              2등(<span id='past_t_2'></span>회) : <span id='past_2'></span><br>
-              3등(<span id='past_t_3'></span>회) : <span id='past_3'></span><br>
-              <span style="font-size: 0.5rem;"><br><br>팝업창 디자인이 구린 점 양해 부탁드립니다(...)</span>
-            </div>
-            <div style="font-size: 0.8rem; position: absolute; right: 8; bottom: 5">
-              <label for="popupBlock">
-                <input type="checkbox" id="popupBlock" onclick="popupBlocker();">앞으로 5일간 보지 않기
-              </label>
-            </div>
-          </div>
-        </div>
-        <script>
-          function onLogClick() { log.style.display = "block"; }
-          function onRankClick() {
-            rank.style.display = "block";
-            Cookies.remove('popup');
-            popupBlock.checked = false;
-          }
-          var log = document.getElementById('logModal');
-          var rank = document.getElementById('rankModal');
-          var logClose = document.getElementById('logSpanClose');
-          var rankClose = document.getElementById('rankSpanClose');
-          logClose.onclick = function() { log.style.display = "none"; }
-          rankClose.onclick = function() { rank.style.display = "none"; }
-          window.onclick = function(event) {
-            if (event.target == log) { log.style.display = "none"; }
-            if (event.target == rank) { rank.style.display = "none"; }
-          }
-        </script>
-      </ul>
+      </div>
+      <script>
+        function onLogClick() { log.style.display = "block"; }
+        var log = document.getElementById('logModal');
+        var logClose = document.getElementById('logSpanClose');
+        logClose.onclick = function() { log.style.display = "none"; }
+        window.onclick = function(event) { if (event.target == log) { log.style.display = "none"; } }
+      </script>
       <div id="tab-1" class="tab-content current">
         <div class="ritz grid-container" dir="ltr">
           <table class="waffle" cellspacing="0" cellpadding="0" style="margin: 0 auto;">
@@ -446,19 +329,22 @@
               </tr>
               <tr style='height:1.65rem;'>
                 <th id="0R1" style="height: 1.65rem;" class="row-headers-background"></th>
-                <td class="s3" dir="ltr" colspan="7" rowspan="2" id="todayDate">Loading...</td>
+                <td class="s3" dir="ltr" colspan="10" rowspan="2" id="todayDate">Loading...</td>
               </tr>
               <tr style='height:1.65rem;'>
                 <th id="0R2" style="height: 1.65rem;" class="row-headers-background"></th>
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R3" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s5" dir="ltr" colspan="2">이번 주</td>
+                <td class="s5" dir="ltr" colspan="2">1주차</td>
                 <td class="s6" id="thisWeek_1">0/00(월)</td>
                 <td class="s6" id="thisWeek_2">0/00(월)</td>
                 <td class="s6" id="thisWeek_3">0/00(월)</td>
                 <td class="s6" id="thisWeek_4">0/00(월)</td>
-                <td class="s7" id="thisWeek_5">0/00(월)</td>
+                <td class="s6" id="thisWeek_5">0/00(월)</td>
+                <td class="s6" id="thisWeek_6">0/00(월)</td>
+                <td class="s6" id="thisWeek_7">0/00(월)</td>
+                <td class="s7" id="thisWeek_8">0/00(월)</td>
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R4" style="height: 1.3rem;" class="row-headers-background"></th>
@@ -467,7 +353,10 @@
                 <td class="s8" dir="ltr" id="thisWeek_d2_1"></td>
                 <td class="s8" dir="ltr" id="thisWeek_d3_1"></td>
                 <td class="s8" dir="ltr" id="thisWeek_d4_1"></td>
-                <td class="s9" dir="ltr" id="thisWeek_d5_1"></td>
+                <td class="s8" dir="ltr" id="thisWeek_d5_1"></td>
+                <td class="s8" dir="ltr" id="thisWeek_d6_1"></td>
+                <td class="s8" dir="ltr" id="thisWeek_d7_1"></td>
+                <td class="s9" dir="ltr" id="thisWeek_d8_1"></td>
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R5" style="height: 1.3rem;" class="row-headers-background"></th>
@@ -475,7 +364,10 @@
                 <td class="s10" dir="ltr" id="thisWeek_d2_2"></td>
                 <td class="s10" dir="ltr" id="thisWeek_d3_2"></td>
                 <td class="s10" dir="ltr" id="thisWeek_d4_2"></td>
-                <td class="s11" dir="ltr" id="thisWeek_d5_2"></td>
+                <td class="s10" dir="ltr" id="thisWeek_d5_2"></td>
+                <td class="s10" dir="ltr" id="thisWeek_d6_2"></td>
+                <td class="s10" dir="ltr" id="thisWeek_d7_2"></td>
+                <td class="s11" dir="ltr" id="thisWeek_d8_2"></td>
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R6" style="height: 1.3rem;" class="row-headers-background"></th>
@@ -484,7 +376,10 @@
                 <td class="s8" dir="ltr" id="thisWeek_s2_1"></td>
                 <td class="s8" dir="ltr" id="thisWeek_s3_1"></td>
                 <td class="s8" dir="ltr" id="thisWeek_s4_1"></td>
-                <td class="s9" dir="ltr" id="thisWeek_s5_1"></td>
+                <td class="s8" dir="ltr" id="thisWeek_s5_1"></td>
+                <td class="s8" dir="ltr" id="thisWeek_s6_1"></td>
+                <td class="s8" dir="ltr" id="thisWeek_s7_1"></td>
+                <td class="s9" dir="ltr" id="thisWeek_s8_1"></td>
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R7" style="height: 1.3rem;" class="row-headers-background"></th>
@@ -492,16 +387,22 @@
                 <td class="s13" dir="ltr" id="thisWeek_s2_2"></td>
                 <td class="s13" dir="ltr" id="thisWeek_s3_2"></td>
                 <td class="s13" dir="ltr" id="thisWeek_s4_2"></td>
-                <td class="s14" dir="ltr" id="thisWeek_s5_2"></td>
+                <td class="s13" dir="ltr" id="thisWeek_s5_2"></td>
+                <td class="s13" dir="ltr" id="thisWeek_s6_2"></td>
+                <td class="s13" dir="ltr" id="thisWeek_s7_2"></td>
+                <td class="s14" dir="ltr" id="thisWeek_s8_2"></td>
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R8" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s15" dir="ltr" colspan="2">다음 주</td>
+                <td class="s15" dir="ltr" colspan="2">2주차</td>
                 <td class="s16" id="nextWeek_1"></td>
                 <td class="s16" id="nextWeek_2"></td>
                 <td class="s16" id="nextWeek_3"></td>
                 <td class="s16" id="nextWeek_4"></td>
-                <td class="s17" id="nextWeek_5"></td>
+                <td class="s16" id="nextWeek_5"></td>
+                <td class="s16" id="nextWeek_6"></td>
+                <td class="s16" id="nextWeek_7"></td>
+                <td class="s17" id="nextWeek_8"></td>
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R9" style="height: 1.3rem;" class="row-headers-background"></th>
@@ -510,7 +411,10 @@
                 <td class="s8" dir="ltr" id="nextWeek_d2_1"></td>
                 <td class="s8" dir="ltr" id="nextWeek_d3_1"></td>
                 <td class="s8" dir="ltr" id="nextWeek_d4_1"></td>
-                <td class="s9" dir="ltr" id="nextWeek_d5_1"></td>
+                <td class="s8" dir="ltr" id="nextWeek_d5_1"></td>
+                <td class="s8" dir="ltr" id="nextWeek_d6_1"></td>
+                <td class="s8" dir="ltr" id="nextWeek_d7_1"></td>
+                <td class="s9" dir="ltr" id="nextWeek_d8_1"></td>
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R10" style="height: 1.3rem;" class="row-headers-background"></th>
@@ -518,7 +422,10 @@
                 <td class="s10" dir="ltr" id="nextWeek_d2_2"></td>
                 <td class="s10" dir="ltr" id="nextWeek_d3_2"></td>
                 <td class="s10" dir="ltr" id="nextWeek_d4_2"></td>
-                <td class="s11" dir="ltr" id="nextWeek_d5_2"></td>
+                <td class="s10" dir="ltr" id="nextWeek_d5_2"></td>
+                <td class="s10" dir="ltr" id="nextWeek_d6_2"></td>
+                <td class="s10" dir="ltr" id="nextWeek_d7_2"></td>
+                <td class="s11" dir="ltr" id="nextWeek_d8_2"></td>
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R11" style="height: 1.3rem;" class="row-headers-background"></th>
@@ -527,7 +434,10 @@
                 <td class="s8" dir="ltr" id="nextWeek_s2_1"></td>
                 <td class="s8" dir="ltr" id="nextWeek_s3_1"></td>
                 <td class="s8" dir="ltr" id="nextWeek_s4_1"></td>
-                <td class="s9" dir="ltr" id="nextWeek_s5_1"></td>
+                <td class="s8" dir="ltr" id="nextWeek_s5_1"></td>
+                <td class="s8" dir="ltr" id="nextWeek_s6_1"></td>
+                <td class="s8" dir="ltr" id="nextWeek_s7_1"></td>
+                <td class="s9" dir="ltr" id="nextWeek_s8_1"></td>
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R12" style="height: 1.3rem;" class="row-headers-background"></th>
@@ -535,16 +445,22 @@
                 <td class="s13" dir="ltr" id="nextWeek_s2_2"></td>
                 <td class="s13" dir="ltr" id="nextWeek_s3_2"></td>
                 <td class="s13" dir="ltr" id="nextWeek_s4_2"></td>
-                <td class="s14" dir="ltr" id="nextWeek_s5_2"></td>
+                <td class="s13" dir="ltr" id="nextWeek_s5_2"></td>
+                <td class="s13" dir="ltr" id="nextWeek_s6_2"></td>
+                <td class="s13" dir="ltr" id="nextWeek_s7_2"></td>
+                <td class="s14" dir="ltr" id="nextWeek_s8_2"></td>
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R13" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s19" dir="ltr" colspan="2">다다음 주</td>
+                <td class="s19" dir="ltr" colspan="2">3주차</td>
                 <td class="s20" id="nextTwoWeek_1"></td>
                 <td class="s20" id="nextTwoWeek_2"></td>
                 <td class="s20" id="nextTwoWeek_3"></td>
                 <td class="s20" id="nextTwoWeek_4"></td>
-                <td class="s21" id="nextTwoWeek_5"></td>
+                <td class="s20" id="nextTwoWeek_5"></td>
+                <td class="s20" id="nextTwoWeek_6"></td>
+                <td class="s20" id="nextTwoWeek_7"></td>
+                <td class="s21" id="nextTwoWeek_8"></td>
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R14" style="height: 1.3rem;" class="row-headers-background"></th>
@@ -553,7 +469,10 @@
                 <td class="s8" dir="ltr" id="nextTwoWeek_d2_1"></td>
                 <td class="s8" dir="ltr" id="nextTwoWeek_d3_1"></td>
                 <td class="s8" dir="ltr" id="nextTwoWeek_d4_1"></td>
-                <td class="s9" dir="ltr" id="nextTwoWeek_d5_1"></td>
+                <td class="s8" dir="ltr" id="nextTwoWeek_d5_1"></td>
+                <td class="s8" dir="ltr" id="nextTwoWeek_d6_1"></td>
+                <td class="s8" dir="ltr" id="nextTwoWeek_d7_1"></td>
+                <td class="s9" dir="ltr" id="nextTwoWeek_d8_1"></td>
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R15" style="height: 1.3rem;" class="row-headers-background"></th>
@@ -561,7 +480,10 @@
                 <td class="s10" dir="ltr" id="nextTwoWeek_d2_2"></td>
                 <td class="s10" dir="ltr" id="nextTwoWeek_d3_2"></td>
                 <td class="s10" dir="ltr" id="nextTwoWeek_d4_2"></td>
-                <td class="s11" dir="ltr" id="nextTwoWeek_d5_2"></td>
+                <td class="s10" dir="ltr" id="nextTwoWeek_d5_2"></td>
+                <td class="s10" dir="ltr" id="nextTwoWeek_d6_2"></td>
+                <td class="s10" dir="ltr" id="nextTwoWeek_d7_2"></td>
+                <td class="s11" dir="ltr" id="nextTwoWeek_d8_2"></td>
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R16" style="height: 1.3rem;" class="row-headers-background"></th>
@@ -570,7 +492,10 @@
                 <td class="s8" dir="ltr" id="nextTwoWeek_s2_1"></td>
                 <td class="s8" dir="ltr" id="nextTwoWeek_s3_1"></td>
                 <td class="s8" dir="ltr" id="nextTwoWeek_s4_1"></td>
-                <td class="s9" dir="ltr" id="nextTwoWeek_s5_1"></td>
+                <td class="s8" dir="ltr" id="nextTwoWeek_s5_1"></td>
+                <td class="s8" dir="ltr" id="nextTwoWeek_s6_1"></td>
+                <td class="s8" dir="ltr" id="nextTwoWeek_s7_1"></td>
+                <td class="s9" dir="ltr" id="nextTwoWeek_s8_1"></td>
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R17" style="height: 1.3rem;" class="row-headers-background"></th>
@@ -578,16 +503,22 @@
                 <td class="s13" dir="ltr" id="nextTwoWeek_s2_2"></td>
                 <td class="s13" dir="ltr" id="nextTwoWeek_s3_2"></td>
                 <td class="s13" dir="ltr" id="nextTwoWeek_s4_2"></td>
-                <td class="s14" dir="ltr" id="nextTwoWeek_s5_2"></td>
+                <td class="s13" dir="ltr" id="nextTwoWeek_s5_2"></td>
+                <td class="s13" dir="ltr" id="nextTwoWeek_s6_2"></td>
+                <td class="s13" dir="ltr" id="nextTwoWeek_s7_2"></td>
+                <td class="s14" dir="ltr" id="nextTwoWeek_s8_2"></td>
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R18" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s23" dir="ltr" colspan="2">다다다음 주</td>
+                <td class="s23" dir="ltr" colspan="2">4주차</td>
                 <td class="s24" id="nextThreeWeek_1"></td>
                 <td class="s24" id="nextThreeWeek_2"></td>
                 <td class="s24" id="nextThreeWeek_3"></td>
                 <td class="s24" id="nextThreeWeek_4"></td>
-                <td class="s25" id="nextThreeWeek_5"></td>
+                <td class="s24" id="nextThreeWeek_5"></td>
+                <td class="s24" id="nextThreeWeek_6"></td>
+                <td class="s24" id="nextThreeWeek_7"></td>
+                <td class="s25" id="nextThreeWeek_8"></td>
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R19" style="height: 1.3rem;" class="row-headers-background"></th>
@@ -596,7 +527,10 @@
                 <td class="s26" id="nextThreeWeek_d2_1"></td>
                 <td class="s26" id="nextThreeWeek_d3_1"></td>
                 <td class="s26" id="nextThreeWeek_d4_1"></td>
-                <td class="s27" id="nextThreeWeek_d5_1"></td>
+                <td class="s26" id="nextThreeWeek_d5_1"></td>
+                <td class="s26" id="nextThreeWeek_d6_1"></td>
+                <td class="s26" id="nextThreeWeek_d7_1"></td>
+                <td class="s27" id="nextThreeWeek_d8_1"></td>
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R20" style="height: 1.3rem;" class="row-headers-background"></th>
@@ -604,7 +538,10 @@
                 <td class="s28" id="nextThreeWeek_d2_2"></td>
                 <td class="s28" id="nextThreeWeek_d3_2"></td>
                 <td class="s28" id="nextThreeWeek_d4_2"></td>
-                <td class="s29" id="nextThreeWeek_d5_2"></td>
+                <td class="s28" id="nextThreeWeek_d5_2"></td>
+                <td class="s28" id="nextThreeWeek_d6_2"></td>
+                <td class="s28" id="nextThreeWeek_d7_2"></td>
+                <td class="s29" id="nextThreeWeek_d8_2"></td>
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R21" style="height: 1.3rem;" class="row-headers-background"></th>
@@ -613,7 +550,10 @@
                 <td class="s26" id="nextThreeWeek_s2_1"></td>
                 <td class="s26" id="nextThreeWeek_s3_1"></td>
                 <td class="s26" id="nextThreeWeek_s4_1"></td>
-                <td class="s27" id="nextThreeWeek_s5_1"></td>
+                <td class="s26" id="nextThreeWeek_s5_1"></td>
+                <td class="s26" id="nextThreeWeek_s6_1"></td>
+                <td class="s26" id="nextThreeWeek_s7_1"></td>
+                <td class="s27" id="nextThreeWeek_s8_1"></td>
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R22" style="height: 1.3rem;" class="row-headers-background"></th>
@@ -621,181 +561,24 @@
                 <td class="s31" id="nextThreeWeek_s2_2"></td>
                 <td class="s31" id="nextThreeWeek_s3_2"></td>
                 <td class="s31" id="nextThreeWeek_s4_2"></td>
-                <td class="s32" id="nextThreeWeek_s5_2"></td>
+                <td class="s31" id="nextThreeWeek_s5_2"></td>
+                <td class="s31" id="nextThreeWeek_s6_2"></td>
+                <td class="s31" id="nextThreeWeek_s7_2"></td>
+                <td class="s32" id="nextThreeWeek_s8_2"></td>
               </tr>
               <tr style='height:1.25rem;'>
                 <th id="0R23" style="height: 1.25rem;" class="row-headers-background"></th>
-                <td class="s33" dir="ltr" colspan="7">
+                <td class="s33" dir="ltr" colspan="10">
                   <div id="latestUpdate" style="height:1rem; text-align:right; font-size:0.7rem;">Loading...</div>
-                    신청서 제출 후 표에 반영되기까지 최대 3분 정도 소요됩니다.<br>
                     ©<script>document.write(new Date().getFullYear())</script> LUFT-AQUILA. <a href="/ajoumeyoumeow/about.html" style="color:#0366d6">About</a>
-                    &nbsp;<a href="#" onclick="onRankClick()" style="color:#0366d6">Rank</a>
                     &nbsp;<a href="#" onclick="onLogClick()" style="color:#0366d6">Log</a>
                 </td>
               </tr>
             </tbody>
           </table>
-        </div>
-      </div>
-      <div id="tab-2" class="tab-content">
-        <div class="ritz grid-container" dir="ltr">
-          <table class="waffle" cellspacing="0" cellpadding="0" style="margin: 0 auto;">
-            <style>
-              @media (max-width:760px){table{width: 100%;}}
-              @media (max-width:360px){html{font-size:15px;}}
-              @media (min-width:361px) and (max-width:759px){html{font-size:17px;}}
-              @media (min-width:760px){html{font-size:20px;}}
-            </style>
-            <tbody>
-              <tr style='height:8px;'>
-                <th id="0R0" style="height: 8px;" class="row-headers-background"></th>
-              </tr>
-              <tr style='height:1.65rem;'>
-                <th id="0R1" style="height: 1.65rem;" class="row-headers-background"></th>
-                <td class="s3" dir="ltr" colspan="7" rowspan="2" id="todayDateWeekEnd">Loading...</td>
-              </tr>
-              <tr style='height:1.65rem;'>
-                <th id="0R2" style="height: 1.65rem;" class="row-headers-background"></th>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R3" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s5" dir="ltr" colspan="2">이번 주</td>
-                <td class="s6" id="thisWeekEnd_1">0/00(월)</td>
-                <td class="s7" id="thisWeekEnd_2">0/00(월)</td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R4" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s5" dir="ltr" colspan="2" rowspan="2">1코스</td>
-                <td class="s8" dir="ltr" id="thisWeekEnd_d1_1"></td>
-                <td class="s9" dir="ltr" id="thisWeekEnd_d2_1"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R5" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s10" dir="ltr" id="thisWeekEnd_d1_2"></td>
-                <td class="s11" dir="ltr" id="thisWeekEnd_d2_2"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R6" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s12" dir="ltr" colspan="2" rowspan="2">2코스</td>
-                <td class="s8" dir="ltr" id="thisWeekEnd_s1_1"></td>
-                <td class="s9" dir="ltr" id="thisWeekEnd_s2_1"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R7" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s13" dir="ltr" id="thisWeekEnd_s1_2"></td>
-                <td class="s14" dir="ltr" id="thisWeekEnd_s2_2"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R8" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s15" dir="ltr" colspan="2">다음 주</td>
-                <td class="s16" id="nextWeekEnd_1"></td>
-                <td class="s17" id="nextWeekEnd_2"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R9" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s15" dir="ltr" colspan="2" rowspan="2">1코스</td>
-                <td class="s8" dir="ltr" id="nextWeekEnd_d1_1"></td>
-                <td class="s9" dir="ltr" id="nextWeekEnd_d2_1"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R10" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s10" dir="ltr" id="nextWeekEnd_d1_2"></td>
-                <td class="s11" dir="ltr" id="nextWeekEnd_d2_2"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R11" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s18" dir="ltr" colspan="2" rowspan="2">2코스</td>
-                <td class="s8" dir="ltr" id="nextWeekEnd_s1_1"></td>
-                <td class="s9" dir="ltr" id="nextWeekEnd_s2_1"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R12" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s13" dir="ltr" id="nextWeekEnd_s1_2"></td>
-                <td class="s14" dir="ltr" id="nextWeekEnd_s2_2"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R13" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s19" dir="ltr" colspan="2">다다음 주</td>
-                <td class="s20" id="nextTwoWeekEnd_1"></td>
-                <td class="s21" id="nextTwoWeekEnd_2"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R14" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s19" dir="ltr" colspan="2" rowspan="2">1코스</td>
-                <td class="s8" dir="ltr" id="nextTwoWeekEnd_d1_1"></td>
-                <td class="s9" dir="ltr" id="nextTwoWeekEnd_d2_1"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R15" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s10" dir="ltr" id="nextTwoWeekEnd_d1_2"></td>
-                <td class="s11" dir="ltr" id="nextTwoWeekEnd_d2_2"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R16" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s22" dir="ltr" colspan="2" rowspan="2">2코스</td>
-                <td class="s8" dir="ltr" id="nextTwoWeekEnd_s1_1"></td>
-                <td class="s9" dir="ltr" id="nextTwoWeekEnd_s2_1"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R17" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s13" dir="ltr" id="nextTwoWeekEnd_s1_2"></td>
-                <td class="s14" dir="ltr" id="nextTwoWeekEnd_s2_2"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R18" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s23" dir="ltr" colspan="2">다다다음 주</td>
-                <td class="s24" id="nextThreeWeekEnd_1"></td>
-                <td class="s25" id="nextThreeWeekEnd_2"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R19" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s23" colspan="2" rowspan="2">1코스</td>
-                <td class="s26" id="nextThreeWeekEnd_d1_1"></td>
-                <td class="s27" id="nextThreeWeekEnd_d2_1"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R20" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s28" id="nextThreeWeekEnd_d1_2"></td>
-                <td class="s29" id="nextThreeWeekEnd_d2_2"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R21" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s30" colspan="2" rowspan="2">2코스</td>
-                <td class="s26" id="nextThreeWeekEnd_s1_1"></td>
-                <td class="s27" id="nextThreeWeekEnd_s2_1"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R22" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s31" id="nextThreeWeekEnd_s1_2"></td>
-                <td class="s32" id="nextThreeWeekEnd_s2_2"></td>
-              </tr>
-              <tr style='height:1.25rem;'>
-                <th id="0R23" style="height: 1.25rem;" class="row-headers-background"></th>
-                <td class="s33" dir="ltr" colspan="7">
-                  <div id="latestUpdateWeekEnd" style="height:1rem; text-align:right; font-size:0.7rem;">Loading...</div>
-                    신청서 제출 후 표에 반영되기까지 최대 3분 정도 소요됩니다.<br>
-                    ©<script>document.write(new Date().getFullYear())</script> LUFT-AQUILA. <a href="/ajoumeyoumeow/about.html" style="color:#0366d6">About</a>
-                    &nbsp;<a href="#" onclick="onRankClick()" style="color:#0366d6">Rank</a>
-                    &nbsp;<a href="#" onclick="onLogClick()" style="color:#0366d6">Log</a>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <div id="tab-3" class="tab-content">
-        <br>
-        <div class="formwrap">
-          <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSc36QOdoBUFC9q3ssvOWy6-jEKnA3262-wXGRGYdKkoCCzcPg/viewform?embedded=true" width="100%" height="100%" frameborder="0" marginheight="3" marginwidth="3">로드 중...</iframe>
         </div>
       </div>
     </div>
-    <script type="text/javascript" src="//wcs.naver.net/wcslog.js"></script>
-    <script type="text/javascript">
-      if(!wcs_add) var wcs_add = {};
-      wcs_add["wa"] = "89774287089c10";
-      wcs_do();
-    </script>
   </body>
 </html>
 <!-- F2 = SORT(A2:D, 3, 1, 4, 1, 1, 1) -->
