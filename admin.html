@@ -1,11 +1,11 @@
 <html>
   <head>
-    <title>Admin Mode</title>
+    <title>Administrator Mode</title>
     <link rel="shortcut icon" type="image/x-icon" href="/ajoumeyoumeow/Icons/Resized/meyoumeow.ico" />
     <meta property="og:title" content="Administrator"/>
     <meta property="og:url" content="https://luftaquila.github.io/ajoumeyoumeow/"/>
     <meta property="og:image" content="https://luftaquila.github.io/ajoumeyoumeow/Icons/%EB%AF%B8%EC%9C%A0%EB%AF%B8%EC%9C%A0.png"/>
-    <meta property="og:description" content="Admin mode"/>
+    <meta property="og:description" content="Administrator mode"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta http-equiv="Content-Type" content="text/html">
   </head>
@@ -329,11 +329,6 @@
         document.getElementById("this_t_" + i).innerHTML = yourRankIs(0, i, 1);
         document.getElementById("past_t_" + i).innerHTML = yourRankIs(1, i, 1);
       }
-      if(Cookies.get('popup') != 'hidden') { rank.style.display = "block"; }
-    }
-    function popupBlocker() {
-      rank.style.display = "none";
-      Cookies.set('popup', 'hidden', {expires : 5});
     }
   </script>
   <body>
@@ -588,7 +583,6 @@
                   <div id="latestUpdate" style="height:1rem; text-align:right; font-size:0.7rem;">Loading...</div>
                     신청서 제출 후 표에 반영되기까지 최대 3분 정도 소요됩니다.<br>
                     ©<script>document.write(new Date().getFullYear())</script> LUFT-AQUILA. <a href="/ajoumeyoumeow/about.html" style="color:#0366d6">About</a>
-                    &nbsp;<a href="#" onclick="onRankClick()" style="color:#0366d6">Rank</a>
                     &nbsp;<a href="#" onclick="onLogClick()" style="color:#0366d6">Log</a>
                 </td>
               </tr>
