@@ -336,7 +336,7 @@
       Cookies.set('popup', 'hidden', {expires : 5});
     }
   </script>
-  <body onload="handleOnLoad()">
+  <body>
     <style type="text/css">.ritz .waffle a { color: inherit; }
       .ritz .waffle .s3{border-top:0.125rem SOLID #000000;border-bottom:0.125rem SOLID #000000;border-right:0.125rem SOLID #000000;border-left:0.125rem SOLID #000000;background-color:#ff9900;text-align:center;font-weight:bold;color:#ffffff;font-family:'Malgun Gothic';font-size:1.250rem;vertical-align:middle;white-space:nowrap;direction:ltr;padding:0.125rem 0.188rem 0.125rem 0.188rem;}
       .ritz .waffle .s5{border-bottom:0.063rem SOLID #000000;border-right:0.063rem SOLID #000000;border-left:0.125rem SOLID #000000;background-color:#b6d7a8;text-align:center;color:#000000;font-family:'Malgun Gothic';font-size:0.813rem;vertical-align:middle;white-space:nowrap;direction:ltr;padding:0.125rem 0.188rem 0.125rem 0.188rem;}
@@ -370,9 +370,9 @@
       .ritz .waffle .s33{background-color:#ffffff;text-align:center;color:#000000;font-family:'Malgun Gothic';font-size:0.813rem;vertical-align:middle;white-space:nowrap;direction:ltr;padding:0.125rem 0.188rem 0.125rem 0.188rem;}
     </style>
     <div class="container">
-      <p>월 입력 : </p>
+      <span>월 입력 : <span>
       <input type="month" min="2018-09-01" id="inputMonth">
-      <input type="button" onclick=" " value="Load">
+      <input type="button" onclick="handleOnLoad" value="Load"><br>
       <ul class="tabs">
         <li class="tab-link current" data-tab="tab-1">평일</li>
         <li class="tab-link" data-tab="tab-2">주말</li>
