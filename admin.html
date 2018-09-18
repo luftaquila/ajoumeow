@@ -250,7 +250,7 @@
       var month = document.getElementById('inputMonth').value
       document.getElementById("todayDate").innerHTML = new Date().format("m월 d일 dddd");
       document.getElementById("latestUpdate").innerHTML = "Latest Update at " + new Date().format("hh:MM:ss TT");
-      for(var i = 1; i <= 7; i++)
+      for(var i = 1; i <= 8; i++)
       {
         if(new Date(month + '-' + i.toString()).getDay() == 0 || new Date(month + '-' + i.toString()).getDay() == 6) document.getElementById("thisWeek_" + i).style.backgroundColor = "greenyellow";
         if(new Date(month + '-' + (i + 7).toString()).getDay() == 0 || new Date(month + '-' + (i + 7).toString()).getDay() == 6) document.getElementById("nextWeek_" + i).style.backgroundColor = "greenyellow";
