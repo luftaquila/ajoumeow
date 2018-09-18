@@ -250,6 +250,7 @@
       else return response;
     }
     function setData() {
+      console.log(new Date("2018-09-32"));
       var month = document.getElementById('inputMonth').value
       document.getElementById("todayDate").innerHTML = new Date().format("m월 d일 dddd");
       document.getElementById("latestUpdate").innerHTML = "Latest Update at " + new Date().format("hh:MM:ss TT");
@@ -261,11 +262,8 @@
         if(new Date(month + '-' + (i + 24).toString()).getDay() == 0 || new Date(month + '-' + (i + 24).toString()).getDay() == 6) document.getElementById("nextThreeWeek_" + i).style.backgroundColor = "greenyellow";
         document.getElementById("thisWeek_" + i).style.color = "#000000";
         document.getElementById("thisWeek_" + i).innerHTML = new Date(month + '-' + i.toString()).format("m/d(ddd)");
-        console.log('stuck1');
         document.getElementById("nextWeek_" + i).innerHTML = new Date(month + '-' + (i + 8).toString()).format("m/d(ddd)");
-        console.log('stuck2');
         document.getElementById("nextTwoWeek_" + i).innerHTML = new Date(month + '-' + (i + 16).toString()).format("m/d(ddd)");
-        console.log('stuck3');
         document.getElementById("nextThreeWeek_" + i).innerHTML = new Date(month + '-' + (i + 24).toString()).format("m/d(ddd)");
         console.log('stuck4');
         for(var j = 1; j <= 2; j++)
