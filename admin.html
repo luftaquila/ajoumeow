@@ -254,6 +254,10 @@
       document.getElementById("latestUpdate").innerHTML = "Latest Update at " + new Date().format("hh:MM:ss TT");
       for(var i = 1; i <= 7; i++)
       {
+        if(new Date(month + '-' + i.toString()) == 0 || 6) document.getElementById("thisWeek_" + i).style.backgroundColor = "greenyellow";
+        if(new Date(month + '-' + (i + 7).toString()) == 0 || 6) document.getElementById("nexWeek_" + i).style.backgroundColor = "greenyellow";
+        if(new Date(month + '-' + (i + 14).toString()) == 0 || 6) document.getElementById("nextTwoWeek_" + i).style.backgroundColor = "greenyellow";
+        if(new Date(month + '-' + (i + 21).toString()) == 0 || 6) document.getElementById("nextThreeWeek_" + i).style.backgroundColor = "greenyellow";
         document.getElementById("thisWeek_" + i).style.color = "#000000";
         document.getElementById("thisWeek_" + i).innerHTML = new Date(month + '-' + i.toString()).format("m/d(ddd)");
         document.getElementById("nextWeek_" + i).innerHTML = new Date(month + '-' + (i + 7).toString()).format("m/d(ddd)");
