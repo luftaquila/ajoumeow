@@ -168,7 +168,7 @@
     }
     function yourNameIs(p1, p2, course, rank) {
       var month = document.getElementById('inputMonth').value;
-      var result = new Date(month + '-' + (8 * p1 + p2).toString()).format("yyyy. m. d");
+      var result = new Date(month + '-' + (8 * p1 + p2 - 1).toString()).format("yyyy. m. d");
       //new Date(year, 0, 1 + p2 + ((week + p1 - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("yyyy. m. d");
       for (var i = 0; i < datum.length - 1; i++) {
         if(rank == 1) {
