@@ -286,7 +286,7 @@
       for(var i = 1; i <= 5; i++)
       {
         document.getElementById("thisWeek_" + i).style.color = "#000000";
-        document.getElementById("thisWeek_" + i).innerHTML = new Date(month).format("m/d(ddd)");
+        document.getElementById("thisWeek_" + i).innerHTML = new Date(month + i).format("m/d(ddd)");
         document.getElementById("nextWeek_" + i).innerHTML = new Date(year, 0, i + (week * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
         document.getElementById("nextTwoWeek_" + i).innerHTML = new Date(year, 0, i + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
         document.getElementById("nextThreeWeek_" + i).innerHTML = new Date(year, 0, i + ((week + 2) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
