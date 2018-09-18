@@ -276,20 +276,17 @@
       else return response;
     }
     function setData() {
-      console.log(document.getElementById('inputMonth').value);
+      var month = document.getElementById('inputMonth').value
       var week = new Date().getWeek();
       var year = new Date().getFullYear();
       document.getElementById("todayDate").innerHTML = new Date().format("m월 d일 dddd");
       document.getElementById("latestUpdate").innerHTML = "Latest Update at " + new Date().format("hh:MM:ss TT");
       document.getElementById("todayDateWeekEnd").innerHTML = new Date().format("m월 d일 dddd");
       document.getElementById("latestUpdateWeekEnd").innerHTML = "Latest Update at " + new Date().format("hh:MM:ss TT");
-      if(new Date().getDay() == 0) document.getElementById("thisWeekEnd_2").style.backgroundColor = "greenyellow";
-      if(new Date().getDay() == 6) document.getElementById("thisWeekEnd_1").style.backgroundColor = "greenyellow";
       for(var i = 1; i <= 5; i++)
       {
-        if(new Date().getDay() == i) document.getElementById("thisWeek_" + i).style.backgroundColor = "greenyellow";
         document.getElementById("thisWeek_" + i).style.color = "#000000";
-        document.getElementById("thisWeek_" + i).innerHTML = new Date(year, 0, i + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+        document.getElementById("thisWeek_" + i).innerHTML = new Date(month).format("m/d(ddd)");
         document.getElementById("nextWeek_" + i).innerHTML = new Date(year, 0, i + (week * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
         document.getElementById("nextTwoWeek_" + i).innerHTML = new Date(year, 0, i + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
         document.getElementById("nextThreeWeek_" + i).innerHTML = new Date(year, 0, i + ((week + 2) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
