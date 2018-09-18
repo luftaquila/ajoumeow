@@ -168,7 +168,7 @@
     }
     function yourNameIs(p1, p2, course, rank) {
       var month = document.getElementById('inputMonth').value;
-      var result = new Date(month + '-' + (7 * p1 + p2).toString()).format("yyyy. m. d");
+      var result = new Date(month + '-' + (8 * p1 + p2).toString()).format("yyyy. m. d");
       //new Date(year, 0, 1 + p2 + ((week + p1 - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("yyyy. m. d");
       for (var i = 0; i < datum.length - 1; i++) {
         if(rank == 1) {
@@ -253,9 +253,9 @@
       for(var i = 1; i <= 8; i++)
       {
         if(new Date(month + '-' + i.toString()).getDay() == 0 || new Date(month + '-' + i.toString()).getDay() == 6) document.getElementById("thisWeek_" + i).style.backgroundColor = "greenyellow";
-        if(new Date(month + '-' + (i + 7).toString()).getDay() == 0 || new Date(month + '-' + (i + 7).toString()).getDay() == 6) document.getElementById("nextWeek_" + i).style.backgroundColor = "greenyellow";
-        if(new Date(month + '-' + (i + 14).toString()).getDay() == 0 || new Date(month + '-' + (i + 14).toString()).getDay() == 6) document.getElementById("nextTwoWeek_" + i).style.backgroundColor = "greenyellow";
-        if(new Date(month + '-' + (i + 21).toString()).getDay() == 0 || new Date(month + '-' + (i + 14).toString()).getDay() == 6) document.getElementById("nextThreeWeek_" + i).style.backgroundColor = "greenyellow";
+        if(new Date(month + '-' + (i + 8).toString()).getDay() == 0 || new Date(month + '-' + (i + 8).toString()).getDay() == 6) document.getElementById("nextWeek_" + i).style.backgroundColor = "greenyellow";
+        if(new Date(month + '-' + (i + 16).toString()).getDay() == 0 || new Date(month + '-' + (i + 16).toString()).getDay() == 6) document.getElementById("nextTwoWeek_" + i).style.backgroundColor = "greenyellow";
+        if(new Date(month + '-' + (i + 24).toString()).getDay() == 0 || new Date(month + '-' + (i + 24).toString()).getDay() == 6) document.getElementById("nextThreeWeek_" + i).style.backgroundColor = "greenyellow";
         document.getElementById("thisWeek_" + i).style.color = "#000000";
         document.getElementById("thisWeek_" + i).innerHTML = new Date(month + '-' + i.toString()).format("m/d(ddd)");
         document.getElementById("nextWeek_" + i).innerHTML = new Date(month + '-' + (i + 7).toString()).format("m/d(ddd)");
@@ -339,7 +339,7 @@
               </tr>
               <tr style='height:1.65rem;'>
                 <th id="0R1" style="height: 1.65rem;" class="row-headers-background"></th>
-                <td class="s3" dir="ltr" colspan="9" rowspan="2" id="todayDate">Loading...</td>
+                <td class="s3" dir="ltr" colspan="10" rowspan="2" id="todayDate">Loading...</td>
               </tr>
               <tr style='height:1.65rem;'>
                 <th id="0R2" style="height: 1.65rem;" class="row-headers-background"></th>
