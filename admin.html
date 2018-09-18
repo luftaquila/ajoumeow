@@ -213,7 +213,7 @@
       return " ";
     }
     function setData() {
-      var name = [], tmp;
+      var name = [], final = [], tmp;
       var month = document.getElementById('inputMonth').value;
       document.getElementById("todayDate").innerHTML = new Date().format("m월 d일 dddd");
       document.getElementById("latestUpdate").innerHTML = "Latest Update at " + new Date().format("hh:MM:ss TT");
@@ -249,7 +249,19 @@
         }
       }
       name.sort();
-      console.log(name);
+      for(var i = 0; i < name.length; i++) {
+        if(name[i] != tmp) { final.push([name[i], 1]); }
+        else { final[final.length - 1][1]++; }
+        tmp = name[i];
+      }
+      final.sort(function(a, b) {
+        if (a[1] == b[1]) {
+          var x = a[0], y = b[0];
+          return x < y ? -1 : x > y ? 1 : 0;
+        }
+        return b[1] - a[1];
+      });
+      console.log(final);
     }
   </script>
   <body>
