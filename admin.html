@@ -211,46 +211,9 @@
       }
       return " ";
     }
-    function yourRankIs(time, rank, num) {
-      var month = new Date().format("m");
-      var name = [], final = [], tmp;
-      if(time >= 0) {
-        month -= time;
-        month += '';
-      }
-      for(var i = 0; !month.includes(datum[i][1].substring(6, datum[i][1].indexOf('.', 5))); i++) { }
-      for(var j = i;  month.includes(datum[j][1].substring(6, datum[j][1].indexOf('.', 5))); j++) { }
-      if(time < 0) {
-        i = 0;
-        j = datum.length - 2;
-      }
-      for(var k = i; k < j; k++) { name[k - i] = datum[k][0]; }
-      name.sort();
-      for(var i = 0; i < name.length; i++) {
-        if(name[i] != tmp) { final.push([name[i], 1]); }
-        else { final[final.length - 1][1]++; }
-        tmp = name[i];
-      }
-      final.sort(function(a, b) {
-        if (a[1] == b[1]) {
-          var x = a[0], y = b[0];
-          return x < y ? -1 : x > y ? 1 : 0;
-        }
-        return b[1] - a[1];
-      });
-      var max = final[0][1], target, response = [], i = 0;
-      target = max;
-      for(var x = 0; x < rank - 1; x++) {
-        for(i; final[i][1] == target; i++) { }
-        target = final[i][1];
-      }
-      for(var i = 0; i < final.length; i++) { if(final[i][1] == target) {response.push(final[i][0]);}}
-      console.log(final);
-      if(num) return target;
-      else return response;
-    }
     function setData() {
-      var month = document.getElementById('inputMonth').value
+      var name = [], tmp;
+      var month = document.getElementById('inputMonth').value;
       document.getElementById("todayDate").innerHTML = new Date().format("m월 d일 dddd");
       document.getElementById("latestUpdate").innerHTML = "Latest Update at " + new Date().format("hh:MM:ss TT");
       for(var i = 1; i <= 8; i++)
@@ -266,16 +229,26 @@
         if(i != 8) document.getElementById("nextThreeWeek_" + i).innerHTML = new Date(month + '-' + (i + 24).toString()).format("m/d(ddd)");
         for(var j = 1; j <= 2; j++)
         {
-          document.getElementById("thisWeek_d" + i + "_" + j).innerHTML = yourNameIs(0, i, 1, j);
-          document.getElementById("thisWeek_s" + i + "_" + j).innerHTML = yourNameIs(0, i, 2, j);
-          document.getElementById("nextWeek_d" + i + "_" + j).innerHTML = yourNameIs(1, i, 1, j);
-          document.getElementById("nextWeek_s" + i + "_" + j).innerHTML = yourNameIs(1, i, 2, j);
-          document.getElementById("nextTwoWeek_d" + i + "_" + j).innerHTML = yourNameIs(2, i, 1, j);
-          document.getElementById("nextTwoWeek_s" + i + "_" + j).innerHTML = yourNameIs(2, i, 2, j);
-          document.getElementById("nextThreeWeek_d" + i + "_" + j).innerHTML = yourNameIs(3, i, 1, j);
-          document.getElementById("nextThreeWeek_s" + i + "_" + j).innerHTML = yourNameIs(3, i, 2, j);
+          document.getElementById("thisWeek_d" + i + "_" + j).innerHTML = tmp = yourNameIs(0, i, 1, j);
+          name.push(tmp);
+          document.getElementById("thisWeek_s" + i + "_" + j).innerHTML = tmp = yourNameIs(0, i, 2, j);
+          name.push(tmp);
+          document.getElementById("nextWeek_d" + i + "_" + j).innerHTML = tmp = yourNameIs(1, i, 1, j);
+          name.push(tmp);
+          document.getElementById("nextWeek_s" + i + "_" + j).innerHTML = tmp = yourNameIs(1, i, 2, j);
+          name.push(tmp);
+          document.getElementById("nextTwoWeek_d" + i + "_" + j).innerHTML = tmp = yourNameIs(2, i, 1, j);
+          name.push(tmp);
+          document.getElementById("nextTwoWeek_s" + i + "_" + j).innerHTML = tmp = yourNameIs(2, i, 2, j);
+          name.push(tmp);
+          document.getElementById("nextThreeWeek_d" + i + "_" + j).innerHTML = tmp = yourNameIs(3, i, 1, j);
+          name.push(tmp);
+          document.getElementById("nextThreeWeek_s" + i + "_" + j).innerHTML = tmp = yourNameIs(3, i, 2, j);
+          name.push(tmp);
         }
       }
+      name.sort();
+      console.log(name);
     }
   </script>
   <body>
