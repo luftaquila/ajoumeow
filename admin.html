@@ -262,9 +262,9 @@
         if(new Date(month + '-' + (i + 24).toString()).getDay() == 0 || new Date(month + '-' + (i + 24).toString()).getDay() == 6) document.getElementById("nextThreeWeek_" + i).style.backgroundColor = "greenyellow";
         document.getElementById("thisWeek_" + i).style.color = "#000000";
         document.getElementById("thisWeek_" + i).innerHTML = new Date(month + '-' + i.toString()).format("m/d(ddd)");
-        document.getElementById("nextWeek_" + i).innerHTML = new Date(month + '-' + (i + 7).toString()).format("m/d(ddd)");
-        document.getElementById("nextTwoWeek_" + i).innerHTML = new Date(month + '-' + (i + 14).toString()).format("m/d(ddd)");
-        document.getElementById("nextThreeWeek_" + i).innerHTML = new Date(month + '-' + (i + 21).toString()).format("m/d(ddd)");
+        document.getElementById("nextWeek_" + i).innerHTML = new Date(month + '-' + (i + 8).toString()).format("m/d(ddd)");
+        document.getElementById("nextTwoWeek_" + i).innerHTML = new Date(month + '-' + (i + 16).toString()).format("m/d(ddd)");
+        document.getElementById("nextThreeWeek_" + i).innerHTML = new Date(month + '-' + (i + 24).toString()).format("m/d(ddd)");
         for(var j = 1; j <= 2; j++)
         {
           document.getElementById("thisWeek_d" + i + "_" + j).innerHTML = yourNameIs(0, i, 1, j);
