@@ -256,9 +256,13 @@
       for(var i = 1; i <= 8; i++)
       {
         if(new Date(month + '-' + i.toString()).getDay() == 0 || new Date(month + '-' + i.toString()).getDay() == 6) document.getElementById("thisWeek_" + i).style.backgroundColor = "greenyellow";
+        console.log('stuck1');
         if(new Date(month + '-' + (i + 8).toString()).getDay() == 0 || new Date(month + '-' + (i + 8).toString()).getDay() == 6) document.getElementById("nextWeek_" + i).style.backgroundColor = "greenyellow";
+        console.log('stuck2');
         if(new Date(month + '-' + (i + 16).toString()).getDay() == 0 || new Date(month + '-' + (i + 16).toString()).getDay() == 6) document.getElementById("nextTwoWeek_" + i).style.backgroundColor = "greenyellow";
+        console.log('stuck3');
         if(new Date(month + '-' + (i + 24).toString()).getDay() == 0 || new Date(month + '-' + (i + 24).toString()).getDay() == 6) document.getElementById("nextThreeWeek_" + i).style.backgroundColor = "greenyellow";
+        console.log('stuck4');
         document.getElementById("thisWeek_" + i).style.color = "#000000";
         document.getElementById("thisWeek_" + i).innerHTML = new Date(month + '-' + i.toString()).format("m/d(ddd)");
         document.getElementById("nextWeek_" + i).innerHTML = new Date(month + '-' + (i + 8).toString()).format("m/d(ddd)");
