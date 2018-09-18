@@ -252,7 +252,7 @@
       var year = new Date().getFullYear();
       document.getElementById("todayDate").innerHTML = new Date().format("m월 d일 dddd");
       document.getElementById("latestUpdate").innerHTML = "Latest Update at " + new Date().format("hh:MM:ss TT");
-      for(var i = 1; i <= 5; i++)
+      for(var i = 1; i <= 7; i++)
       {
         document.getElementById("thisWeek_" + i).style.color = "#000000";
         document.getElementById("thisWeek_" + i).innerHTML = new Date(month + '-' + i.toString()).format("m/d(ddd)");
@@ -349,7 +349,9 @@
                 <td class="s6" id="thisWeek_2">0/00(월)</td>
                 <td class="s6" id="thisWeek_3">0/00(월)</td>
                 <td class="s6" id="thisWeek_4">0/00(월)</td>
-                <td class="s7" id="thisWeek_5">0/00(월)</td>
+                <td class="s6" id="thisWeek_5">0/00(월)</td>
+                <td class="s6" id="thisWeek_6">0/00(월)</td>
+                <td class="s7" id="thisWeek_7">0/00(월)</td>
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R4" style="height: 1.3rem;" class="row-headers-background"></th>
@@ -358,7 +360,9 @@
                 <td class="s8" dir="ltr" id="thisWeek_d2_1"></td>
                 <td class="s8" dir="ltr" id="thisWeek_d3_1"></td>
                 <td class="s8" dir="ltr" id="thisWeek_d4_1"></td>
-                <td class="s9" dir="ltr" id="thisWeek_d5_1"></td>
+                <td class="s8" dir="ltr" id="thisWeek_d5_1"></td>
+                <td class="s8" dir="ltr" id="thisWeek_d6_1"></td>
+                <td class="s9" dir="ltr" id="thisWeek_d7_1"></td>
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R5" style="height: 1.3rem;" class="row-headers-background"></th>
@@ -366,7 +370,9 @@
                 <td class="s10" dir="ltr" id="thisWeek_d2_2"></td>
                 <td class="s10" dir="ltr" id="thisWeek_d3_2"></td>
                 <td class="s10" dir="ltr" id="thisWeek_d4_2"></td>
-                <td class="s11" dir="ltr" id="thisWeek_d5_2"></td>
+                <td class="s10" dir="ltr" id="thisWeek_d5_2"></td>
+                <td class="s10" dir="ltr" id="thisWeek_d6_2"></td>
+                <td class="s11" dir="ltr" id="thisWeek_d7_2"></td>
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R6" style="height: 1.3rem;" class="row-headers-background"></th>
@@ -375,7 +381,9 @@
                 <td class="s8" dir="ltr" id="thisWeek_s2_1"></td>
                 <td class="s8" dir="ltr" id="thisWeek_s3_1"></td>
                 <td class="s8" dir="ltr" id="thisWeek_s4_1"></td>
-                <td class="s9" dir="ltr" id="thisWeek_s5_1"></td>
+                <td class="s8" dir="ltr" id="thisWeek_s5_1"></td>
+                <td class="s8" dir="ltr" id="thisWeek_s6_1"></td>
+                <td class="s9" dir="ltr" id="thisWeek_s7_1"></td>
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R7" style="height: 1.3rem;" class="row-headers-background"></th>
@@ -383,7 +391,9 @@
                 <td class="s13" dir="ltr" id="thisWeek_s2_2"></td>
                 <td class="s13" dir="ltr" id="thisWeek_s3_2"></td>
                 <td class="s13" dir="ltr" id="thisWeek_s4_2"></td>
-                <td class="s14" dir="ltr" id="thisWeek_s5_2"></td>
+                <td class="s13" dir="ltr" id="thisWeek_s5_2"></td>
+                <td class="s13" dir="ltr" id="thisWeek_s6_2"></td>
+                <td class="s14" dir="ltr" id="thisWeek_s7_2"></td>
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R8" style="height: 1.3rem;" class="row-headers-background"></th>
@@ -392,7 +402,9 @@
                 <td class="s16" id="nextWeek_2"></td>
                 <td class="s16" id="nextWeek_3"></td>
                 <td class="s16" id="nextWeek_4"></td>
-                <td class="s17" id="nextWeek_5"></td>
+                <td class="s16" id="nextWeek_5"></td>
+                <td class="s16" id="nextWeek_6"></td>
+                <td class="s17" id="nextWeek_7"></td>
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R9" style="height: 1.3rem;" class="row-headers-background"></th>
@@ -401,7 +413,9 @@
                 <td class="s8" dir="ltr" id="nextWeek_d2_1"></td>
                 <td class="s8" dir="ltr" id="nextWeek_d3_1"></td>
                 <td class="s8" dir="ltr" id="nextWeek_d4_1"></td>
-                <td class="s9" dir="ltr" id="nextWeek_d5_1"></td>
+                <td class="s8" dir="ltr" id="nextWeek_d5_1"></td>
+                <td class="s8" dir="ltr" id="nextWeek_d6_1"></td>
+                <td class="s9" dir="ltr" id="nextWeek_d7_1"></td>
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R10" style="height: 1.3rem;" class="row-headers-background"></th>
@@ -409,7 +423,9 @@
                 <td class="s10" dir="ltr" id="nextWeek_d2_2"></td>
                 <td class="s10" dir="ltr" id="nextWeek_d3_2"></td>
                 <td class="s10" dir="ltr" id="nextWeek_d4_2"></td>
-                <td class="s11" dir="ltr" id="nextWeek_d5_2"></td>
+                <td class="s10" dir="ltr" id="nextWeek_d5_2"></td>
+                <td class="s10" dir="ltr" id="nextWeek_d6_2"></td>
+                <td class="s11" dir="ltr" id="nextWeek_d7_2"></td>
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R11" style="height: 1.3rem;" class="row-headers-background"></th>
@@ -418,7 +434,9 @@
                 <td class="s8" dir="ltr" id="nextWeek_s2_1"></td>
                 <td class="s8" dir="ltr" id="nextWeek_s3_1"></td>
                 <td class="s8" dir="ltr" id="nextWeek_s4_1"></td>
-                <td class="s9" dir="ltr" id="nextWeek_s5_1"></td>
+                <td class="s8" dir="ltr" id="nextWeek_s5_1"></td>
+                <td class="s8" dir="ltr" id="nextWeek_s6_1"></td>
+                <td class="s9" dir="ltr" id="nextWeek_s7_1"></td>
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R12" style="height: 1.3rem;" class="row-headers-background"></th>
@@ -426,7 +444,9 @@
                 <td class="s13" dir="ltr" id="nextWeek_s2_2"></td>
                 <td class="s13" dir="ltr" id="nextWeek_s3_2"></td>
                 <td class="s13" dir="ltr" id="nextWeek_s4_2"></td>
-                <td class="s14" dir="ltr" id="nextWeek_s5_2"></td>
+                <td class="s13" dir="ltr" id="nextWeek_s5_2"></td>
+                <td class="s13" dir="ltr" id="nextWeek_s6_2"></td>
+                <td class="s14" dir="ltr" id="nextWeek_s7_2"></td>
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R13" style="height: 1.3rem;" class="row-headers-background"></th>
@@ -435,7 +455,9 @@
                 <td class="s20" id="nextTwoWeek_2"></td>
                 <td class="s20" id="nextTwoWeek_3"></td>
                 <td class="s20" id="nextTwoWeek_4"></td>
-                <td class="s21" id="nextTwoWeek_5"></td>
+                <td class="s20" id="nextTwoWeek_5"></td>
+                <td class="s20" id="nextTwoWeek_6"></td>
+                <td class="s21" id="nextTwoWeek_7"></td>
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R14" style="height: 1.3rem;" class="row-headers-background"></th>
@@ -444,7 +466,9 @@
                 <td class="s8" dir="ltr" id="nextTwoWeek_d2_1"></td>
                 <td class="s8" dir="ltr" id="nextTwoWeek_d3_1"></td>
                 <td class="s8" dir="ltr" id="nextTwoWeek_d4_1"></td>
-                <td class="s9" dir="ltr" id="nextTwoWeek_d5_1"></td>
+                <td class="s8" dir="ltr" id="nextTwoWeek_d5_1"></td>
+                <td class="s8" dir="ltr" id="nextTwoWeek_d6_1"></td>
+                <td class="s9" dir="ltr" id="nextTwoWeek_d7_1"></td>
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R15" style="height: 1.3rem;" class="row-headers-background"></th>
@@ -452,7 +476,9 @@
                 <td class="s10" dir="ltr" id="nextTwoWeek_d2_2"></td>
                 <td class="s10" dir="ltr" id="nextTwoWeek_d3_2"></td>
                 <td class="s10" dir="ltr" id="nextTwoWeek_d4_2"></td>
-                <td class="s11" dir="ltr" id="nextTwoWeek_d5_2"></td>
+                <td class="s10" dir="ltr" id="nextTwoWeek_d5_2"></td>
+                <td class="s10" dir="ltr" id="nextTwoWeek_d6_2"></td>
+                <td class="s11" dir="ltr" id="nextTwoWeek_d7_2"></td>
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R16" style="height: 1.3rem;" class="row-headers-background"></th>
@@ -461,7 +487,9 @@
                 <td class="s8" dir="ltr" id="nextTwoWeek_s2_1"></td>
                 <td class="s8" dir="ltr" id="nextTwoWeek_s3_1"></td>
                 <td class="s8" dir="ltr" id="nextTwoWeek_s4_1"></td>
-                <td class="s9" dir="ltr" id="nextTwoWeek_s5_1"></td>
+                <td class="s8" dir="ltr" id="nextTwoWeek_s5_1"></td>
+                <td class="s8" dir="ltr" id="nextTwoWeek_s6_1"></td>
+                <td class="s9" dir="ltr" id="nextTwoWeek_s7_1"></td>
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R17" style="height: 1.3rem;" class="row-headers-background"></th>
@@ -469,7 +497,9 @@
                 <td class="s13" dir="ltr" id="nextTwoWeek_s2_2"></td>
                 <td class="s13" dir="ltr" id="nextTwoWeek_s3_2"></td>
                 <td class="s13" dir="ltr" id="nextTwoWeek_s4_2"></td>
-                <td class="s14" dir="ltr" id="nextTwoWeek_s5_2"></td>
+                <td class="s13" dir="ltr" id="nextTwoWeek_s5_2"></td>
+                <td class="s13" dir="ltr" id="nextTwoWeek_s6_2"></td>
+                <td class="s14" dir="ltr" id="nextTwoWeek_s7_2"></td>
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R18" style="height: 1.3rem;" class="row-headers-background"></th>
@@ -478,7 +508,9 @@
                 <td class="s24" id="nextThreeWeek_2"></td>
                 <td class="s24" id="nextThreeWeek_3"></td>
                 <td class="s24" id="nextThreeWeek_4"></td>
-                <td class="s25" id="nextThreeWeek_5"></td>
+                <td class="s24" id="nextThreeWeek_5"></td>
+                <td class="s24" id="nextThreeWeek_6"></td>
+                <td class="s25" id="nextThreeWeek_7"></td>
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R19" style="height: 1.3rem;" class="row-headers-background"></th>
@@ -487,7 +519,9 @@
                 <td class="s26" id="nextThreeWeek_d2_1"></td>
                 <td class="s26" id="nextThreeWeek_d3_1"></td>
                 <td class="s26" id="nextThreeWeek_d4_1"></td>
-                <td class="s27" id="nextThreeWeek_d5_1"></td>
+                <td class="s26" id="nextThreeWeek_d5_1"></td>
+                <td class="s26" id="nextThreeWeek_d6_1"></td>
+                <td class="s27" id="nextThreeWeek_d7_1"></td>
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R20" style="height: 1.3rem;" class="row-headers-background"></th>
@@ -495,7 +529,9 @@
                 <td class="s28" id="nextThreeWeek_d2_2"></td>
                 <td class="s28" id="nextThreeWeek_d3_2"></td>
                 <td class="s28" id="nextThreeWeek_d4_2"></td>
-                <td class="s29" id="nextThreeWeek_d5_2"></td>
+                <td class="s28" id="nextThreeWeek_d5_2"></td>
+                <td class="s28" id="nextThreeWeek_d6_2"></td>
+                <td class="s29" id="nextThreeWeek_d7_2"></td>
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R21" style="height: 1.3rem;" class="row-headers-background"></th>
@@ -504,7 +540,9 @@
                 <td class="s26" id="nextThreeWeek_s2_1"></td>
                 <td class="s26" id="nextThreeWeek_s3_1"></td>
                 <td class="s26" id="nextThreeWeek_s4_1"></td>
-                <td class="s27" id="nextThreeWeek_s5_1"></td>
+                <td class="s26" id="nextThreeWeek_s5_1"></td>
+                <td class="s26" id="nextThreeWeek_s6_1"></td>
+                <td class="s27" id="nextThreeWeek_s7_1"></td>
               </tr>
               <tr style='height:1.3rem;'>
                 <th id="0R22" style="height: 1.3rem;" class="row-headers-background"></th>
