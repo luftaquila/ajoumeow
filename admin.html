@@ -231,21 +231,21 @@
         for(var j = 1; j <= 2; j++)
         {
           document.getElementById("thisWeek_d" + i + "_" + j).innerHTML = tmp = yourNameIs(0, i, 1, j);
-          name.push(tmp);
+          if(!tmp.includes(" ")) name.push(tmp);
           document.getElementById("thisWeek_s" + i + "_" + j).innerHTML = tmp = yourNameIs(0, i, 2, j);
-          name.push(tmp);
+          if(!tmp.includes(" ")) name.push(tmp);
           document.getElementById("nextWeek_d" + i + "_" + j).innerHTML = tmp = yourNameIs(1, i, 1, j);
-          name.push(tmp);
+          if(!tmp.includes(" ")) name.push(tmp);
           document.getElementById("nextWeek_s" + i + "_" + j).innerHTML = tmp = yourNameIs(1, i, 2, j);
-          name.push(tmp);
+          if(!tmp.includes(" ")) name.push(tmp);
           document.getElementById("nextTwoWeek_d" + i + "_" + j).innerHTML = tmp = yourNameIs(2, i, 1, j);
-          name.push(tmp);
+          if(!tmp.includes(" ")) name.push(tmp);
           document.getElementById("nextTwoWeek_s" + i + "_" + j).innerHTML = tmp = yourNameIs(2, i, 2, j);
-          name.push(tmp);
+          if(!tmp.includes(" ")) name.push(tmp);
           document.getElementById("nextThreeWeek_d" + i + "_" + j).innerHTML = tmp = yourNameIs(3, i, 1, j);
-          name.push(tmp);
+          if(!tmp.includes(" ")) name.push(tmp);
           document.getElementById("nextThreeWeek_s" + i + "_" + j).innerHTML = tmp = yourNameIs(3, i, 2, j);
-          name.push(tmp);
+          if(!tmp.includes(" ")) name.push(tmp);
         }
       }
       name.sort();
