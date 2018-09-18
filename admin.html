@@ -167,11 +167,11 @@
       return Math.ceil((((this - calc) / 86400000) + calc.getDay() + 1) / 7);
     }
     function yourNameIs(p1, p2, course, rank) {
-      var calc = 8 * p1 + p2 - 1;
+      var calc = 8 * p1 + p2;
       if(calc > 31) calc = 31;
       var date = document.getElementById('inputMonth').value + '-' + calc.toString();
       console.log(p1, p2, calc, date);
-      var result = new Date(month + '-' + calc.toString()).format("yyyy. m. d");
+      var result = new Date(date).format("yyyy. m. d");
       console.log(result);
       //new Date(year, 0, 1 + p2 + ((week + p1 - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("yyyy. m. d");
       for (var i = 0; i < datum.length - 1; i++) {
