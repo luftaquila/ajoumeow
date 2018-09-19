@@ -169,11 +169,8 @@
     function yourNameIs(p1, p2, course, rank) {
       var calc = 8 * p1 + p2;
       var date = document.getElementById('inputMonth').value + '-' + calc.toString();
-      console.log(p1, p2, calc, date);
       if(date.includes("32")) return " ";
       var result = new Date(date).format("yyyy. m. d");
-      console.log(result);
-      //new Date(year, 0, 1 + p2 + ((week + p1 - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("yyyy. m. d");
       for (var i = 0; i < datum.length - 1; i++) {
         if(rank == 1) {
           if(result == datum[i][1]) {
