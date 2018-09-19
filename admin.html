@@ -217,9 +217,13 @@
       for(var i = 1; i <= 8; i++)
       {
         if(new Date(month + '-' + i.toString()).getDay() == 0 || new Date(month + '-' + i.toString()).getDay() == 6) document.getElementById("thisWeek_" + i).style.backgroundColor = "greenyellow";
+        else document.getElementById("thisWeek_" + i).style.backgroundColor = "#B6D7A8";
         if(new Date(month + '-' + (i + 8).toString()).getDay() == 0 || new Date(month + '-' + (i + 8).toString()).getDay() == 6) document.getElementById("nextWeek_" + i).style.backgroundColor = "greenyellow";
+        else document.getElementById("nextWeek_" + i).style.backgroundColor = "#A4C2F4";
         if(new Date(month + '-' + (i + 16).toString()).getDay() == 0 || new Date(month + '-' + (i + 16).toString()).getDay() == 6) document.getElementById("nextTwoWeek_" + i).style.backgroundColor = "greenyellow";
+        else document.getElementById("nextTwoWeek_" + i).style.backgroundColor = "#B4A7D6";
         if(new Date(month + '-' + (i + 24).toString()).getDay() == 0 || new Date(month + '-' + (i + 24).toString()).getDay() == 6) document.getElementById("nextThreeWeek_" + i).style.backgroundColor = "greenyellow";
+        else document.getElementById("nextThreeWeek_" + i).style.backgroundColor = "#D5A6BD";
         document.getElementById("thisWeek_" + i).style.color = "#000000";
         document.getElementById("thisWeek_" + i).innerHTML = new Date(month + '-' + i.toString()).format("m/d(ddd)");
         document.getElementById("nextWeek_" + i).innerHTML = new Date(month + '-' + (i + 8).toString()).format("m/d(ddd)");
@@ -259,6 +263,7 @@
         return b[1] - a[1];
       });
       console.log(final);
+      document.getElementById("rankoutput").innerHTML = final;
     }
   </script>
   <body>
@@ -568,6 +573,7 @@
                   <div id="latestUpdate" style="height:1rem; text-align:right; font-size:0.7rem;">Loading...</div>
                     ©<script>document.write(new Date().getFullYear())</script> LUFT-AQUILA. <a href="/ajoumeyoumeow/about.html" style="color:#0366d6">About</a>
                     &nbsp;<a href="#" onclick="onLogClick()" style="color:#0366d6">Log</a>
+                    <span id = "rankoutput"></span>
                 </td>
               </tr>
             </tbody>
