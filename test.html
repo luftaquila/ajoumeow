@@ -317,20 +317,20 @@
         for(var i = 1; i <= 2; i++)
         {
           document.getElementById("thisWeekEnd_" + i).style.color = "#000000";
-          document.getElementById("thisWeekEnd_" + i).innerHTML = new Date(year, 0, i + 5 + ((week - 2) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
-          document.getElementById("nextWeekEnd_" + i).innerHTML = new Date(year, 0, i + 5 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
-          document.getElementById("nextTwoWeekEnd_" + i).innerHTML = new Date(year, 0, i + 5 + ((week + 0) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
-          document.getElementById("nextThreeWeekEnd_" + i).innerHTML = new Date(year, 0, i + 5 + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+          document.getElementById("thisWeekEnd_" + i).innerHTML = new Date(year, 0, i + 5 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+          document.getElementById("nextWeekEnd_" + i).innerHTML = new Date(year, 0, i + 5 + ((week + 0) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+          document.getElementById("nextTwoWeekEnd_" + i).innerHTML = new Date(year, 0, i + 5 + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+          document.getElementById("nextThreeWeekEnd_" + i).innerHTML = new Date(year, 0, i + 5 + ((week + 2) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
           for(var j = 1; j <= 2; j++)
           {
-            document.getElementById("thisWeekEnd_d" + i + "_" + j).innerHTML = yourNameIs(-1, i + 4, 1, j);
-            document.getElementById("thisWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(-1, i + 4, 2, j);
-            document.getElementById("nextWeekEnd_d" + i + "_" + j).innerHTML = yourNameIs(0, i + 4, 1, j);
-            document.getElementById("nextWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(0, i + 4, 2, j);
-            document.getElementById("nextTwoWeekEnd_d" + i + "_" + j).innerHTML = yourNameIs(1, i + 4, 1, j);
-            document.getElementById("nextTwoWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(1, i + 4, 2, j);
-            document.getElementById("nextThreeWeekEnd_d" + i + "_" + j).innerHTML = yourNameIs(2, i + 4, 1, j);
-            document.getElementById("nextThreeWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(2, i + 4, 2, j);
+            document.getElementById("thisWeekEnd_d" + i + "_" + j).innerHTML = yourNameIs(0, i + 4, 1, j);
+            document.getElementById("thisWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(0, i + 4, 2, j);
+            document.getElementById("nextWeekEnd_d" + i + "_" + j).innerHTML = yourNameIs(1, i + 4, 1, j);
+            document.getElementById("nextWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(1, i + 4, 2, j);
+            document.getElementById("nextTwoWeekEnd_d" + i + "_" + j).innerHTML = yourNameIs(2, i + 4, 1, j);
+            document.getElementById("nextTwoWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(2, i + 4, 2, j);
+            document.getElementById("nextThreeWeekEnd_d" + i + "_" + j).innerHTML = yourNameIs(3, i + 4, 1, j);
+            document.getElementById("nextThreeWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(3, i + 4, 2, j);
           }
         }
         for(var i = 1; i <= 3; i++) {
