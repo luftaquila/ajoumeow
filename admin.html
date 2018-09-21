@@ -174,18 +174,18 @@
       for (var i = 0; i < datum.length - 1; i++) {
         if(rank == 1) {
           if(result == datum[i][1]) {
-            if((course == 1) && (datum[i][2].includes("1코스")))
+            if((course == 1) && ((datum[i][2].includes("1코스")) || (datum[i][2].includes("도서관 & 텔동 코스"))))
               return datum[i][0];
-            else if((course == 2) && (datum[i][2].includes("2코스")))
+            else if((course == 2) && ((datum[i][2].includes("2코스")) || (datum[i][2].includes("신학 & 성호관 코스"))))
               return datum[i][0];
           }
         }
         else if(rank == 2) {
           if(result == datum[i][1]) {
-            if((course == 1) && (datum[i][2].includes("1코스"))) {
+            if((course == 1) && ((datum[i][2].includes("1코스")) || (datum[i][2].includes("도서관 & 텔동 코스")))) {
               for(var j = 1; result == datum[i + j][1]; j++)
               {
-                if((course == 1) && (datum[i + j][2].includes("1코스"))) {
+                if((course == 1) && ((datum[i + j][2].includes("1코스")) || (datum[i][2].includes("도서관 & 텔동 코스")))) {
                   if(datum[i][0] == datum[i + j][0])
                     continue;
                   else
@@ -193,10 +193,10 @@
                 }
               }
             }
-            else if((course == 2) && (datum[i][2].includes("2코스"))) {
+            else if((course == 2) && ((datum[i][2].includes("2코스")) || (datum[i][2].includes("신학 & 성호관 코스")))) {
               for(var j = 1; result == datum[i + j][1]; j++)
               {
-                if((course == 2) && (datum[i + j][2].includes("2코스"))) {
+                if((course == 2) && ((datum[i + j][2].includes("2코스")) || (datum[i][2].includes("신학 & 성호관 코스")))) {
                   if(datum[i][0] == datum[i + j][0])
                     continue;
                   else
@@ -572,7 +572,6 @@
                   <div id="latestUpdate" style="height:1rem; text-align:right; font-size:0.7rem;">Loading...</div>
                     ©<script>document.write(new Date().getFullYear())</script> LUFT-AQUILA. <a href="/ajoumeyoumeow/about.html" style="color:#0366d6">About</a>
                     &nbsp;<a href="#" onclick="onLogClick()" style="color:#0366d6">Log</a>
-                    <span id = "rankoutput"></span>
                 </td>
               </tr>
             </tbody>
