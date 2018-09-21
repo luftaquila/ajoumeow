@@ -174,18 +174,18 @@
       for (var i = 0; i < datum.length - 1; i++) {
         if(rank == 1) {
           if(result == datum[i][1]) {
-            if((course == 1) && ((datum[i][2].includes("1코스")) || (datum[i][2].includes("도서관 & 텔동 코스"))))
+            if((course == 1) && (datum[i][2].includes("1코스")))
               return datum[i][0];
-            else if((course == 2) && ((datum[i][2].includes("2코스")) || (datum[i][2].includes("신학 & 성호관 코스"))))
+            else if((course == 2) && (datum[i][2].includes("2코스")))
               return datum[i][0];
           }
         }
         else if(rank == 2) {
           if(result == datum[i][1]) {
-            if((course == 1) && ((datum[i][2].includes("1코스")) || (datum[i][2].includes("도서관 & 텔동 코스")))) {
+            if((course == 1) && (datum[i][2].includes("1코스"))) {
               for(var j = 1; result == datum[i + j][1]; j++)
               {
-                if((course == 1) && ((datum[i + j][2].includes("1코스")) || (datum[i][2].includes("도서관 & 텔동 코스")))) {
+                if((course == 1) && (datum[i + j][2].includes("1코스"))) {
                   if(datum[i][0] == datum[i + j][0])
                     continue;
                   else
@@ -193,10 +193,10 @@
                 }
               }
             }
-            else if((course == 2) && ((datum[i][2].includes("2코스")) || (datum[i][2].includes("신학 & 성호관 코스")))) {
+            else if((course == 2) && (datum[i][2].includes("2코스"))) {
               for(var j = 1; result == datum[i + j][1]; j++)
               {
-                if((course == 2) && ((datum[i + j][2].includes("2코스")) || (datum[i][2].includes("신학 & 성호관 코스")))) {
+                if((course == 2) && (datum[i + j][2].includes("2코스"))) {
                   if(datum[i][0] == datum[i + j][0])
                     continue;
                   else
