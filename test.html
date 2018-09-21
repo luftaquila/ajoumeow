@@ -1,3 +1,4 @@
+
   <html>
     <head>
       <title>아주대학교 고양이는 미유미유</title>
@@ -203,7 +204,7 @@
       };
       Date.prototype.getWeek = function() {
         var calc = new Date(this.getFullYear(), 0, 1);
-        return Math.ceil((((this - calc) / 86400000) + calc.getDay() + 1) / 7);
+        return Math.ceil((((this - calc) / 86400000) + calc.getDay() - 1) / 7);
       }
       function yourNameIs(p1, p2, course, rank) {
         var week = new Date().getWeek();
