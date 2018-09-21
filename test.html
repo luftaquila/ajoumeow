@@ -200,7 +200,10 @@
         ]
       };
       Date.prototype.format = function (mask, utc) { return dateFormat(this, mask, utc); };
-      Date.prototype.getWeek = function() { return Math.ceil((((this - new Date(this.getFullYear(), 0, 1)) / 86400000) + calc.getDay() - 1) / 7); }
+      Date.prototype.getWeek = function() {
+        var calc = new Date(this.getFullYear(), 0, 1);
+        return Math.ceil((((this - calc) / 86400000) + calc.getDay() - 1) / 7);
+      }
       function yourNameIs(p1, p2, course, rank) {
         var week = new Date().getWeek();
         var year = new Date().getFullYear();
