@@ -101,10 +101,9 @@
     })
     function handleOnLoad() {
       datum = [];
-      document.getElementById("todayDate").innerHTML = "Loading...";
+      document.getElementById("todayDate").innerHTML = "작동 중...";
+      document.getElementById("todayDateWeekEnd").innerHTML = "작동 중...";
       document.getElementById("latestUpdate").innerHTML = "Loading...";
-      document.getElementById("todayDateWeekEnd").innerHTML = "Loading...";
-      document.getElementById("latestUpdateWeekEnd").innerHTML = "Loading...";
       $.ajax({
         url: 'https://docs.google.com/spreadsheet/pub?key=1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A&single=true&gid=850606151&range=G2:I&output=csv',
         type: "GET",
@@ -177,7 +176,7 @@
             t:    H < 12 ? "a"  : "p",
             tt:   H < 12 ? "am" : "pm",
             T:    H < 12 ? "A"  : "P",
-            TT:   H < 12 ? "AM" : "PM",
+            TT:   H < 12 ? "오전" : "오후",
             Z:    utc ? "UTC" : (String(date).match(timezone) || [""]).pop().replace(timezoneClip, ""),
             o:    (o > 0 ? "-" : "+") + pad(Math.floor(Math.abs(o) / 60) * 100 + Math.abs(o) % 60, 4),
             S:    ["th", "st", "nd", "rd"][d % 10 > 3 ? 0 : (d % 100 - d % 10 != 10) * d % 10]
@@ -286,9 +285,8 @@
       var week = new Date().getWeek();
       var year = new Date().getFullYear();
       document.getElementById("todayDate").innerHTML = new Date().format("m월 d일 dddd");
-      document.getElementById("latestUpdate").innerHTML = "Last Updated on : " + new Date().format("hh:MM:ss TT");
       document.getElementById("todayDateWeekEnd").innerHTML = new Date().format("m월 d일 dddd");
-      document.getElementById("latestUpdateWeekEnd").innerHTML = "Last Updated on : " + new Date().format("hh:MM:ss TT");
+      document.getElementById("latestUpdate").innerHTML = "Last Updated on : " + new Date().format("TT hh시 MM분 ss초");
       if(new Date().getDay() == 0) document.getElementById("thisWeekEnd_2").style.backgroundColor = "greenyellow";
       if(new Date().getDay() == 6) document.getElementById("thisWeekEnd_1").style.backgroundColor = "greenyellow";
       for(var i = 1; i <= 5; i++)
@@ -374,7 +372,6 @@
       .ritz .waffle .s30{border-bottom:0.125rem SOLID #000000;border-right:0.063rem SOLID #000000;border-left:0.125rem SOLID #000000;background-color:#d5a6bd;text-align:center;color:#000000;font-family:'Malgun Gothic';font-size:0.813rem;vertical-align:middle;white-space:nowrap;direction:ltr;padding:0.125rem 0.188rem 0.125rem 0.188rem;}
       .ritz .waffle .s31{border-bottom:0.125rem SOLID #000000;border-right:0.063rem SOLID #b7b7b7;background-color:#ffffff;text-align:center;color:#000000;font-family:'Arial';font-size:0.813rem;vertical-align:middle;white-space:nowrap;direction:ltr;padding:0.125rem 0.188rem 0.125rem 0.188rem;}
       .ritz .waffle .s32{border-bottom:0.125rem SOLID #000000;border-right:0.125rem SOLID #000000;background-color:#ffffff;text-align:center;color:#000000;font-family:'Arial';font-size:0.813rem;vertical-align:middle;white-space:nowrap;direction:ltr;padding:0.125rem 0.188rem 0.125rem 0.188rem;}
-      .ritz .waffle .s33{background-color:#ffffff;text-align:center;color:#000000;font-family:'Malgun Gothic';font-size:0.813rem;vertical-align:middle;white-space:nowrap;direction:ltr;padding:0.125rem 0.188rem 0.125rem 0.188rem;}
     </style>
     <div class="container">
       <ul class="tabs">
@@ -632,12 +629,6 @@
                 <td class="s31" id="nextThreeWeek_s4_2"></td>
                 <td class="s32" id="nextThreeWeek_s5_2"></td>
               </tr>
-              <tr style='height:1.25rem;'>
-                <th id="0R23" style="height: 1.25rem;" class="row-headers-background"></th>
-                <td class="s33" dir="ltr" colspan="7">
-                  <div id="latestUpdate" style="height:1rem; text-align:right; font-size:0.7rem;">Loading...</div>
-                </td>
-              </tr>
             </tbody>
           </table>
         </div>
@@ -774,12 +765,6 @@
                 <td class="s31" id="nextThreeWeekEnd_s1_2"></td>
                 <td class="s32" id="nextThreeWeekEnd_s2_2"></td>
               </tr>
-              <tr style='height:1.25rem;'>
-                <th id="0R23" style="height: 1.25rem;" class="row-headers-background"></th>
-                <td class="s33" dir="ltr" colspan="7">
-                  <div id="latestUpdateWeekEnd" style="height:1rem; text-align:right; font-size:0.7rem;">Loading...</div>
-                </td>
-              </tr>
             </tbody>
           </table>
         </div>
@@ -790,6 +775,7 @@
           <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSc36QOdoBUFC9q3ssvOWy6-jEKnA3262-wXGRGYdKkoCCzcPg/viewform?embedded=true" width="100%" height="100%" frameborder="0" marginheight="3" marginwidth="3">로드 중...</iframe>
         </div>
       </div>
+      <div id="latestUpdate" style="height:1rem; text-align:right; font-size:0.7rem; font-family:'Malgun Gothic';">Loading...</div>
       <div style="text-align:center; font-size:0.813rem; font-family:'Malgun Gothic';">
         &nbsp;<a href="/ajoumeyoumeow/admin" style="color:#0366d6">Admin</a>
         &nbsp;<a href="#" onclick="onRankClick()" style="color:#0366d6">Rank</a>
@@ -799,7 +785,7 @@
         <span style="font-size:0.4rem"><br></span>©2018 LUFT - AQUILA.
         &nbsp;<a href="/ajoumeyoumeow/about.html" style="color:#0366d6">About</a>
         <br>신청서 제출 후 표에 반영되기까지 최대 3분 정도 소요됩니다.
-    </div>
+      </div>
     </div>
     <script type="text/javascript" src="//wcs.naver.net/wcslog.js"></script>
     <script type="text/javascript">
