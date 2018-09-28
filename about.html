@@ -3,6 +3,8 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119383265-1"></script>
     <script>
+      document.getElementById('version').innerHTML = "v2.9.2"
+      document.getElementById('release').innerHTML = "2018-09-28 11:26 PM"
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
@@ -48,17 +50,16 @@
       @media (min-width:760px){html{font-size:15px;}}
     </style>
     <div class="container" style="font-weight: bold; font-size: 2.5rem;">
-      <br>아주대학교 길고양이 동아리 미유미유<br>급식 일정표 자동화 시스템 v2.9.1
+      <br>아주대학교 길고양이 동아리 미유미유<br>급식 일정표 자동화 시스템 <span id="version"></span>
       <div style="font-size: 2rem;">
         <br>
         <div style="font-weight: normal">
           developed by
           <div style="font-weight: bold; display: inline;">LUFT-AQUILA</div>
         </div>
-        <div style="font-family:'Malgun Gothic'; font-size: 1.5rem; font-weight: normal;">전자공학과 18학번 오병준</div>
-        <br>
+        <div style="font-family:'Malgun Gothic'; font-size: 1.5rem; font-weight: normal;">전자공학과 18학번 오병준</div><br>
         <div style="font-weight: normal; display: inline;">latest stable release at</div>
-        <br>2018-09-28 12:59 PM<br><br>
+        <br><span id="release"></span><br><br>
         <div style="font-weight: normal; display: inline;">inital v1.0.0 release at</div>
         <br>2018-05-15 11:28 AM<br><br>
         <div style="line-height: 1.3rem">
