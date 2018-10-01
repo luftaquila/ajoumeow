@@ -111,7 +111,8 @@
       {
         $("#tab-1").removeClass('current');
         $("#tab-2").addClass('current');
-
+        $('.tab-content').addClass('current');
+        $(this).removeClass('current');
       }
       $.ajax({
         url: 'https://docs.google.com/spreadsheet/pub?key=1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A&single=true&gid=850606151&range=G2:I&output=csv',
