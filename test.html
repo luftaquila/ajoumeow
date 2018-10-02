@@ -109,10 +109,10 @@
       document.getElementById("latestUpdate").innerHTML = "Loading...";
       if(new Date().getDay() == 2)
       {
-        $("#tab-1").removeClass('current');
-        $(this).removeClass('current');
-        $("#tab-2").addClass('current');
-        $('#tab-2.tab-content').addClass('current');
+        $('ul.tabs li').removeClass('current');
+        $('#tab-1').removeClass('current');
+        $('#tab-2').addClass('current');
+        $('ul.tabs li#tab-2').addClass('current');
       }
       $.ajax({
         url: 'https://docs.google.com/spreadsheet/pub?key=1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A&single=true&gid=850606151&range=G2:I&output=csv',
