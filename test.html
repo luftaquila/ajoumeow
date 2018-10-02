@@ -111,8 +111,7 @@
         {
           $('ul.tabs li').removeClass('current');
           $('#tab-1').removeClass('current');
-          $('#tab-2').addClass('current');
-          var tab_id = $('ul.tabs li').attr('data-tab');
+          var tab_id = document.querySelectorAll('[data-tab="tab-2"]');
           console.log(tab_id);
         }
         $.ajax({
