@@ -265,11 +265,7 @@
           for(var i = 0; !month.includes(datum[i][1].substring(6, datum[i][1].indexOf('.', 5))); i++) { }
           for(var j = i;  month.includes(datum[j][1].substring(6, datum[j][1].indexOf('.', 5))); j++) { }
         }
-        catch(exception) {
-          var output = "";
-          for(var i in exception) { output += i + ':' + exception[i] + '\n'; }
-          console.log(output);
-        }
+        catch{}
         if(time < 0) {
           i = 0;
           j = datum.length - 2;
