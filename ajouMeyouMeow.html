@@ -261,8 +261,11 @@
           month -= time;
           month += '';
         }
-        for(var i = 0; !month.includes(datum[i][1].substring(6, datum[i][1].indexOf('.', 5))); i++) { }
-        for(var j = i;  month.includes(datum[j][1].substring(6, datum[j][1].indexOf('.', 5))); j++) { }
+        try {
+          for(var i = 0; !month.includes(datum[i][1].substring(6, datum[i][1].indexOf('.', 5))); i++) { }
+          for(var j = i;  month.includes(datum[j][1].substring(6, datum[j][1].indexOf('.', 5))); j++) { }
+        }
+        catch {}
         if(time < 0) {
           i = 0;
           j = datum.length - 2;
@@ -348,7 +351,7 @@
       }
       function popupBlocker() {
         rank.style.display = "none";
-        Cookies.set('popup', 'hidden', {expires : 5});
+        Cookies.set('popup', 'hidden', {expires : 3});
       }
     </script>
     <body onload="handleOnLoad()">
@@ -418,7 +421,7 @@
               </div>
               <div style="font-size: 0.8rem; position: absolute; right: 8; bottom: 5">
                 <label for="popupBlock">
-                  <input type="checkbox" id="popupBlock" onclick="popupBlocker();">앞으로 5일간 보지 않기
+                  <input type="checkbox" id="popupBlock" onclick="popupBlocker();">앞으로 3일간 보지 않기
                 </label>
               </div>
             </div>
