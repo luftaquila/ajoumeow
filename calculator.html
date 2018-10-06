@@ -1,0 +1,140 @@
+<html>
+  <head>
+    <title>Mileage Calculator</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Onload Test Page</title>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+      $(function() {
+        $("#timestamp").datepicker();
+        datum = [];
+        $.ajax({
+          url: 'https://docs.google.com/spreadsheet/pub?key=1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A&single=true&gid=850606151&range=G2:I&output=csv',
+          type: "GET",
+          dataType: 'text',
+          cache: false,
+          success: function (response) {
+            parseCSV(response, '\n', ',');
+            $('#status').css('color', '#15be00');
+            $('#status').text('200 Ready. ' + (dataSize(response) / 1000).toFixed(1) + 'KB Loaded');
+            $('[disabled]').attr('disabled', false);
+          }
+        });
+        function parseCSV(text, lineTerminator, cellTerminator) {
+          datum = text.split(lineTerminator).map((line) => line.split(cellTerminator));
+          datum.push(['0', '0', '0']);
+        }
+      });
+
+      var dateFormat = function () {
+        var	token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g,
+            pad = function (val, len) {
+              val = String(val);
+              len = len || 2;
+              while (val.length < len) val = "0" + val;
+              return val;
+            };
+        return function (date, mask, utc) {
+          var dF = dateFormat;
+          if (arguments.length == 1 && Object.prototype.toString.call(date) == "[object String]" && !/\d/.test(date)) {
+            mask = date;
+            date = undefined;
+          }
+          date = date ? new Date(date) : new Date;
+          var	_ = utc ? "getUTC" : "get",
+            d = date[_ + "Date"](),
+            m = date[_ + "Month"](),
+            y = date[_ + "FullYear"](),
+            flags = {
+              d:    d,
+              m:    m + 1,
+              yyyy: y,
+            };
+          return mask.replace(token, function ($0) {
+            return $0 in flags ? flags[$0] : $0.slice(1, $0.length - 1);
+          });
+        };
+      }();
+      Date.prototype.format = function (mask, utc) { return dateFormat(this, mask, utc); };
+    </script>
+  </head>
+  <body>
+    <form id="DATA">
+      Status : <span id="status" style="color:#ffbf00">Loading Data...</span><br>
+      <input id="timestamp" name="timestamp" value="" onchange="load();" disabled="true"/>
+      <input id="submit" type="submit" value="제출" disabled="true"/>
+      <br><br>
+      <div id="list" name="list"></div>
+    </form>
+    <script>
+      jQuery( document ).ready(function( $ ) {
+        $("#DATA").submit( function(event) {
+          $('#timestamp, #submit').attr('disabled', true);
+          var request;
+          if (request) { request.abort(); }
+          if($("#timestamp").val() == "") {
+            $('#status').css('color', '#da0000');
+            $('#status').text('400 Error - No Input');
+            $('[disabled]').attr('disabled', false);
+          }
+          else if($("#list").html() == "") {
+            $('#status').css('color', '#da0000');
+            $('#status').text('400 Error - No Data');
+            $('[disabled]').attr('disabled', false);
+          }
+          else {
+            $("input:checkbox[name=namelist]").each(function() {
+              var nameSlicer = $(this).val().split('/');
+              var dateSlicer = $("#timestamp").val().split('/');
+              var date = new Date(dateSlicer[2], dateSlicer[0] - 1, dateSlicer[1]).format('yyyy. m. d');
+              var serializedData = "지급 일자=" + date + "&이름=" + nameSlicer[0] + "&코스=" + nameSlicer[1] + "&지급 점수=" + 1;
+              console.log("DataSet : " + serializedData);
+              $('#status').css('color', '#ffbf00');
+              $('#status').text('Sending ' + dataSize(encodeURI(serializedData)) + 'B Data...');
+              request = $.ajax({
+                  type: 'POST',
+                  url: "https://script.google.com/macros/s/AKfycbwlIRS2mijHFMnA5222c6ZhB-EWKDswQSggGHERc1zShw1yGFM/exec",
+                  data: encodeURI(serializedData)
+              });
+              request.done(function() {
+                $('#status').css('color', '#15be00');
+                $('#status').text('201 Transmitted. Ready.');
+              });
+              request.fail(function(jqXHR, textStatus, errorThrown) {
+                $('#status').css('color', '#da0000');
+                $('#status').text('Error - ' + textStatus + errorThrown);
+              });
+              request.always(function() {  $('[disabled]').attr('disabled', false);  });
+            });
+            }
+            event.preventDefault();
+            $("#list").html("");
+        });
+      });
+      function load() {
+        var currentDate = $("#timestamp").datepicker("getDate"), str = "";
+        if(currentDate !== null)
+        {
+          currentDate = currentDate.format("yyyy. m. d");
+          var j = 1;
+          for(var i = 0; i < datum.length - 1; i++)
+          {
+            if(currentDate == datum[i][1])
+            {
+              str += '<label for="namelist_' + j + '">' + '<input type="checkbox" checked="checked" name="namelist" id="namelist_' + j + '" value=' + datum[i][0] + "/" + datum[i][2] + '>' + datum[i][0] + " / " + datum[i][2] + "</input></label><br>";
+              j++;
+            }
+          }
+          $("#list").html(str);
+        }
+      }
+      function dataSize(s, b, i, c) {
+        for(b = i = 0; c = s.charCodeAt(i++); b += c >> 11 ? 3 : c >> 7 ? 2 : 1);
+        return b
+      }
+      </script>
+  </body>
+</html>
