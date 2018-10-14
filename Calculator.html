@@ -11,7 +11,6 @@
   <script>
     $(function() {
       $("#datepicker").datepicker();
-      console.log("test");
     });
   </script>
 </head>
@@ -19,6 +18,10 @@
 <body>
 
   <input id="datepicker"></div>
+  <script>
+    var currentDate = $("#datepicker").datepicker("getDate");
+    console.log(currentDate);
+  </script>
 
 
 </body>
