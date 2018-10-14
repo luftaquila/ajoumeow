@@ -16,14 +16,15 @@
 </head>
 
 <body>
+<script>
+function load() {
+  var currentDate = $("#datepicker").datepicker("getDate");
+  console.log(currentDate);
+}
+</script>
 
   <input id="datepicker"></div>
-  <script>
-    var currentDate = $("#datepicker").datepicker("getDate");
-    while(1) {
-      console.log(currentDate);
-    }
-  </script>
+  <button onClick="load();"></button>
 
 
 </body>
