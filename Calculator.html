@@ -112,7 +112,7 @@
   <body onload="handleOnLoad()">
     <script>
       function load() {
-        var currentDate = $("#datepicker").datepicker("getDate");
+        var currentDate = $("#datepicker").datepicker("getDate"), str;
         if(currentDate !== null)
         {
           currentDate = currentDate.format("yyyy. m. d");
@@ -121,13 +121,17 @@
           {
             if(currentDate == datum[i][1])
             {
-              console.log(datum[i][1], datum[i][0], datum[i][2]);
+              str += String(datum[i][0]) + String(datum[i][2] + "\n");
+
             }
           }
+          console.log(str);
+          document.getElementById("list").innerHTML = str;
         }
       }
     </script>
     <input id="datepicker"></div>
     <button onClick="load();">Load</button>
+    <div id="list"></div>
   </body>
 </html>
