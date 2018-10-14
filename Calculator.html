@@ -12,7 +12,7 @@
         $("#datepicker").datepicker();
       });
       function handleOnLoad() {
-        $("#datepicker").datepicker("setDate", new Date());
+        $("#datepicker").datepicker();
         datum = [];
         $.ajax({
           url: 'https://docs.google.com/spreadsheet/pub?key=1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A&single=true&gid=850606151&range=G2:I&output=csv',
@@ -128,7 +128,8 @@
         }
       }
     </script>
-    <input id="datepicker" onchange="load();"></div>
+    날짜 : <input id="datepicker" onchange="load();">
+    <button onClick="submit();">제출</button>
     <div id="list"></div>
   </body>
 </html>
