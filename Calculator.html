@@ -116,13 +116,11 @@
         if(currentDate !== null)
         {
           currentDate = currentDate.format("yyyy. m. d");
-          console.log(currentDate);
           for(var i = 0; i < datum.length - 1; i++)
           {
             if(currentDate == datum[i][1])
             {
-              str += String(datum[i][0]) + String(datum[i][2] + "\n");
-
+              str += String(datum[i][0]) + " " + String(datum[i][2] + "<br>");
             }
           }
           console.log(str);
