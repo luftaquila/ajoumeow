@@ -1,32 +1,51 @@
 <html lang="en">
-
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>jQuery UI Datepicker - Display inline</title>
-  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-  <link rel="stylesheet" href="/resources/demos/style.css">
-  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-  <script>
-    $(function() {
-      $("#datepicker").datepicker();
-    });
-  </script>
-</head>
-
-<body>
-<script>
-function load() {
-  var currentDate = $("#datepicker").datepicker("getDate");
-  console.log(currentDate);
-}
-</script>
-
-  <input id="datepicker"></div>
-  <button onClick="load();">Load</button>
-
-
-</body>
-
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>jQuery UI Datepicker - Display inline</title>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="/resources/demos/style.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+      $(function() {
+        $("#datepicker").datepicker();
+      });
+      function handleOnLoad() {
+        datum = [];
+        $.ajax({
+          url: 'https://docs.google.com/spreadsheet/pub?key=1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A&single=true&gid=850606151&range=G2:I&output=csv',
+          type: "GET",
+          dataType: 'text',
+          cache: false,
+          success: function (response) {
+            parseCSV(response, '\n', ',');
+          }
+        });
+      }
+      function parseCSV(text, lineTerminator, cellTerminator) {
+        datum = text.split(lineTerminator).map((line) => line.split(cellTerminator));
+        datum.push(['0', '0', '0']);
+      }
+    </script>
+  </head>
+  <body onload="handleOnLoad()">
+    <script>
+      function load() {
+        var currentDate = $("#datepicker").datepicker("getDate");
+        if(currentDate !== null)
+        {
+          for(var i = 0; i < datum.length - 1; i++)
+          {
+            if(currentDate == datum[i][1])
+            {
+              console.log(datum[i][1], datum[i][0], datum[i][2]);
+            }
+          }
+        }
+      }
+    </script>
+    <input id="datepicker"></div>
+    <button onClick="load();">Load</button>
+  </body>
 </html>
