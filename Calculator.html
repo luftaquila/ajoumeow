@@ -127,7 +127,7 @@
       }
       function submit() {
         document.getElementById('list').innerHTML = "";
-        if($('[name|=namelist]').is(":checked") === true) console.log("true");
+        if($("input:checkbox[name='namelist']").is(":checked") == true) console.log("true");
       }
     </script>
     날짜 : <input id="datepicker" onchange="load();"></input>
