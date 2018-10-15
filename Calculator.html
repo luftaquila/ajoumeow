@@ -123,11 +123,11 @@
             }
           }
           console.log(str);
-          document.getElementById("list").innerHTML = str;
+          document.getElementById('list').innerHTML = str;
         }
       }
       function submit() {
-        $("[id|='list']").remove();
+        document.getElementById('list').innerHTML = "";
       }
     </script>
     날짜 : <input id="datepicker" onchange="load();">
