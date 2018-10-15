@@ -119,18 +119,18 @@
           {
             if(currentDate == datum[i][1])
             {
-              str += '<label for="namelist_' + i + '">' + '<input type="checkbox" name="namelist" id="namelist_' + i + '">' + datum[i][0] + " " + datum[i][2] + "</input></label><br>";
+              str += '<label for="namelist_' + i + '">' + '<input type="checkbox" checked="checked" name="namelist" id="namelist_' + i + '" value=' + datum[i][0] + '/' + datum[i][2] + '>' + datum[i][0] + " / " + datum[i][2] + "</input></label><br>";
             }
           }
-          console.log(str);
           document.getElementById('list').innerHTML = str;
         }
       }
       function submit() {
         document.getElementById('list').innerHTML = "";
+        if($('[name|=namelist]').is(":checked") === true) console.log("true");
       }
     </script>
-    날짜 : <input id="datepicker" onchange="load();">
+    날짜 : <input id="datepicker" onchange="load();"></input>
     <button onClick="submit();">제출</button>
     <div id="list"></div>
   </body>
