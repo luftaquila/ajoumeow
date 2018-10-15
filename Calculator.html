@@ -1,8 +1,8 @@
-<html lang="en">
+<html>
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>jQuery UI Datepicker - Display inline</title>
+    <title>Onload Test Page</title>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="/resources/demos/style.css">
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
@@ -12,7 +12,6 @@
         $("#datepicker").datepicker();
       });
       function handleOnLoad() {
-        $("#datepicker").datepicker();
         datum = [];
         $.ajax({
           url: 'https://docs.google.com/spreadsheet/pub?key=1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A&single=true&gid=850606151&range=G2:I&output=csv',
@@ -126,6 +125,9 @@
           console.log(str);
           document.getElementById("list").innerHTML = str;
         }
+      }
+      function submit() {
+        $("[name|='namelist']").remove();
       }
     </script>
     날짜 : <input id="datepicker" onchange="load();">
