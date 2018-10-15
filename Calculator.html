@@ -115,9 +115,9 @@
         if(currentDate !== null)
         {
           currentDate = currentDate.format("yyyy. m. d");
+          var j = 1;
           for(var i = 0; i < datum.length - 1; i++)
           {
-            var j = 1;
             if(currentDate == datum[i][1])
             {
               str += '<label for="namelist_' + j + '">' + '<input type="checkbox" checked="checked" name="namelist" id="namelist_' + j + '" value='
