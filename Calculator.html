@@ -128,8 +128,8 @@
         }
       }
       function submit() {
-        console.log($("#chkBox:checked").length);
-        $('#chkBox:checked').each(function() {
+        console.log($("input:checkbox[name=namelist]").length);
+        $("input:checkbox[name=namelist]").each(function() {
              console.log($(this).val());
         });
         document.getElementById('list').innerHTML = "";
