@@ -123,14 +123,13 @@
               j++;
             }
           }
-          console.log(str);
           document.getElementById('list').innerHTML = str;
         }
       }
       function submit() {
-        console.log($("input:checkbox[name=namelist]").length);
+        group = [];
         $("input:checkbox[name=namelist]").each(function() {
-             console.log($(this).val());
+          group.push($(this).val());
         });
         document.getElementById('list').innerHTML = "";
       }
