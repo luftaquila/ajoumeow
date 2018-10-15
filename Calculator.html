@@ -132,8 +132,8 @@
         $('#chkBox:checked').each(function() {
              console.log($(this).val());
         });
+        document.getElementById('list').innerHTML = "";
       }
-      document.getElementById('list').innerHTML = "";
     </script>
     날짜 : <input id="datepicker" onchange="load();"></input>
     <button onClick="submit();">제출</button>
