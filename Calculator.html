@@ -8,9 +8,7 @@
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script>
-      $(function() {
-        $("#datepicker").datepicker();
-      });
+      $(function() {  $("#datepicker").datepicker();  });
       function handleOnLoad() {
         datum = [];
         $.ajax({
@@ -130,7 +128,12 @@
         }
       }
       function submit() {
+        var group = []
         document.getElementById('list').innerHTML = "";
+        console.log($("#chkBox:checked").length);
+        $('#chkBox:checked').each(function() {
+             console.log($(this).val());
+        });
       }
     </script>
     날짜 : <input id="datepicker" onchange="load();"></input>
