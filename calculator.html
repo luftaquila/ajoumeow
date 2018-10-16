@@ -18,7 +18,8 @@
           cache: false,
           success: function (response) {
             parseCSV(response, '\n', ',');
-            $("#timestamp").attr('value', "");
+            $('#status').css('color', '#15be00');
+            $('#status').text('Ready.');
             $('[disabled]').attr('disabled', false);
           }
         });
@@ -62,8 +63,9 @@
   </head>
   <body>
     <form id="DATA">
-      <input id="timestamp" name="timestamp" value="Loading Data..." onchange="load();" disabled="true"/>
+      <input id="timestamp" name="timestamp" value="" onchange="load();" disabled="true"/>
       <input id="submit" type="submit" value="제출" disabled="true"/>
+      <br>Status : <span id="status" style="color:#ffbf00">Loading Data...</span><br><br>
       <div id="list" name="list"></div>
     </form>
 
@@ -75,14 +77,19 @@
           $('#submit').attr('disabled', true);
           if (request) {  request.abort();  }
           var serializedData = $("#DATA").serialize();
-          console.log("DataSet :\n " + serializedData + "\n\nSending Data...");
+          console.log("DataSet :\n " + serializedData);
+          $('#status').css('color', '#ffbf00');
+          $('#status').text('Sending Data...');
           request = $.ajax({
               url: "https://script.google.com/macros/s/AKfycbwlIRS2mijHFMnA5222c6ZhB-EWKDswQSggGHERc1zShw1yGFM/exec",
               type: "post",
               data: serializedData
           });
-          request.done(function() { console.log('Sending Data Successful')});
-          request.fail(function(jqXHR, textStatus, errorThrown) {  console.error('Error Occured' + textStatus + errorThrown);  });
+          request.done(function() {
+            $('#status').css('color', '#15be00');
+            $('#status').text('Data Sent.');
+          });
+          request.fail(function(jqXHR, textStatus, errorThrown) { console.error('Error Occured' + textStatus + errorThrown); });
           request.always(function() {  $('[disabled]').attr('disabled', false);  });
           event.preventDefault();
           document.getElementById('list').innerHTML = "";
@@ -115,6 +122,5 @@
         }
       }
       </script>
-    <div id="list"></div>
   </body>
 </html>
