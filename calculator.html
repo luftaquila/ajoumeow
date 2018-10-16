@@ -18,7 +18,8 @@
           cache: false,
           success: function (response) {
             parseCSV(response, '\n', ',');
-            $("[disabled]").attr('disabled', false);
+            $("#timestamp").attr('value', "");
+            $('[disabled]').attr('disabled', false);
           }
         });
         function parseCSV(text, lineTerminator, cellTerminator) {
@@ -61,19 +62,20 @@
   </head>
   <body>
     <form id="DATA">
-      <input id="timestamp" name="timestamp" value="" onchange="load();" disabled="true"/>
+      <input id="timestamp" name="timestamp" value="Loading Data..." onchange="load();" disabled="true"/>
+      <input id="submit" type="submit" value="제출" disabled="true"/>
       <div id="list" name="list"></div>
-      <input type="submit" value="제출" disabled="true"/>
     </form>
 
     <script>
       jQuery( document ).ready(function( $ ) {
         var request;
         $("#DATA").submit( function(event) {
+          $('#timestamp').attr('disabled', true);
+          $('#submit').attr('disabled', true);
           if (request) {  request.abort();  }
           var serializedData = $("#DATA").serialize();
-          console.log("DATASET :\n " + serializedData + "\n\nSending Data...");
-          /* Disable input fields */
+          console.log("DataSet :\n " + serializedData + "\n\nSending Data...");
           request = $.ajax({
               url: "https://script.google.com/macros/s/AKfycbwlIRS2mijHFMnA5222c6ZhB-EWKDswQSggGHERc1zShw1yGFM/exec",
               type: "post",
@@ -81,15 +83,18 @@
           });
           request.done(function() { console.log('Sending Data Successful')});
           request.fail(function(jqXHR, textStatus, errorThrown) {  console.error('Error Occured' + textStatus + errorThrown);  });
-          request.always(function() { /* Re-enable input fields */});
+          request.always(function() {  $('[disabled]').attr('disabled', false);  });
           event.preventDefault();
+          document.getElementById('list').innerHTML = "";
 
+          /*
           group = [];
           $("input:checkbox[name=namelist]").each(function() {
             group.push($(this).val());
           });
           console.log(group);
-          document.getElementById('list').innerHTML = "";
+          */
+
         });
       });
       function load() {
