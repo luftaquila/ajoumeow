@@ -19,7 +19,7 @@
           success: function (response) {
             parseCSV(response, '\n', ',');
             $('#status').css('color', '#15be00');
-            $('#status').text('200 Ready.');
+            $('#status').text('200 Ready... ' + dataSize(response) / 1000 + 'KB');
             $('[disabled]').attr('disabled', false);
           }
         });
@@ -90,10 +90,10 @@
               var nameSlicer = $(this).val().split('/');
               var dateSlicer = $("#timestamp").val().split('/');
               var date = new Date(dateSlicer[2], dateSlicer[0] - 1, dateSlicer[1]).format('yyyy. m. d');
-              var serializedData = "Date=" + date + "&Name=" + nameSlicer[0] + "&Course=" + nameSlicer[1] + "&Score=" + 1;
+              var serializedData = "지급 일자=" + date + "&이름=" + nameSlicer[0] + "&코스=" + nameSlicer[1] + "&지급 점수=" + 1;
               console.log("DataSet : " + serializedData);
               $('#status').css('color', '#ffbf00');
-              $('#status').text('Sending Data...');
+              $('#status').text('Sending Data... ' + dataSize(encodeURI(serializedData)) + 'B');
               request = $.ajax({
                   type: 'POST',
                   url: "https://script.google.com/macros/s/AKfycbwlIRS2mijHFMnA5222c6ZhB-EWKDswQSggGHERc1zShw1yGFM/exec",
@@ -130,6 +130,10 @@
           }
           $("#list").html(str);
         }
+      }
+      function dataSize(s, b, i, c) {
+        for(b = i = 0; c = s.charCodeAt(i++); b += c >> 11 ? 3 : c >> 7 ? 2 : 1);
+        return b
       }
       </script>
   </body>
