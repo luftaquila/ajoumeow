@@ -19,7 +19,7 @@
           success: function (response) {
             parseCSV(response, '\n', ',');
             $('#status').css('color', '#15be00');
-            $('#status').text('200 Ready. ' + dataSize(response) / 1000 + 'KB Loaded');
+            $('#status').text('200 Ready. ' + (dataSize(response) / 1000).toFixed(1) + 'KB Loaded');
             $('[disabled]').attr('disabled', false);
           }
         });
@@ -93,7 +93,7 @@
               var serializedData = "지급 일자=" + date + "&이름=" + nameSlicer[0] + "&코스=" + nameSlicer[1] + "&지급 점수=" + 1;
               console.log("DataSet : " + serializedData);
               $('#status').css('color', '#ffbf00');
-              $('#status').text('Sending Data...');
+              $('#status').text('Sending ' + dataSize(encodeURI(serializedData)) + 'B Data...');
               request = $.ajax({
                   type: 'POST',
                   url: "https://script.google.com/macros/s/AKfycbwlIRS2mijHFMnA5222c6ZhB-EWKDswQSggGHERc1zShw1yGFM/exec",
@@ -101,7 +101,7 @@
               });
               request.done(function() {
                 $('#status').css('color', '#15be00');
-                $('#status').text('201 ' + dataSize(encodeURI(serializedData)) + 'B Data Sent. Ready.');
+                $('#status').text('201 Transmitted. Ready.');
               });
               request.fail(function(jqXHR, textStatus, errorThrown) {
                 $('#status').css('color', '#da0000');
