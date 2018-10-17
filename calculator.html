@@ -19,7 +19,7 @@
           success: function (response) {
             parseCSV(response, '\n', ',');
             $('#status').css('color', '#15be00');
-            $('#status').text('Ready.');
+            $('#status').text('200 Ready.');
             $('[disabled]').attr('disabled', false);
           }
         });
@@ -71,15 +71,18 @@
     <script>
       jQuery( document ).ready(function( $ ) {
         $("#DATA").submit( function(event) {
-          $('#timestamp').attr('disabled', true);
-          $('#submit').attr('disabled', true);
+          $('#timestamp, #submit').attr('disabled', true);
           var request;
           if (request) { request.abort(); }
+          if($("#timestamp").val() == "") {
+            $('#status').css('color', '#da0000');
+            $('#status').text('400 Error - No Input');
+            $('[disabled]').attr('disabled', false);
+          }
           if($("#list").html() == "") {
             $('#status').css('color', '#da0000');
-            $('#status').text('Error - No Data');
-            $('#timestamp').attr('disabled', false);
-            $('#submit').attr('disabled', false);
+            $('#status').text('400 Error - No Data');
+            $('[disabled]').attr('disabled', false);
           }
           else {
             $("input:checkbox[name=namelist]").each(function() {
@@ -97,7 +100,7 @@
               });
               request.done(function() {
                 $('#status').css('color', '#15be00');
-                $('#status').text('Data Sent.');
+                $('#status').text('201 Data Sent.');
               });
               request.fail(function(jqXHR, textStatus, errorThrown) {
                 $('#status').css('color', '#da0000');
