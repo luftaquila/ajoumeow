@@ -79,7 +79,7 @@
             $('#status').text('400 Error - No Input');
             $('[disabled]').attr('disabled', false);
           }
-          if($("#list").html() == "") {
+          else if($("#list").html() == "") {
             $('#status').css('color', '#da0000');
             $('#status').text('400 Error - No Data');
             $('[disabled]').attr('disabled', false);
