@@ -70,31 +70,44 @@
     </form>
     <script>
       jQuery( document ).ready(function( $ ) {
-        var request;
         $("#DATA").submit( function(event) {
           $('#timestamp').attr('disabled', true);
           $('#submit').attr('disabled', true);
+          var request;
           if (request) { request.abort(); }
-          $("input:checkbox[name=namelist]").each(function() {
-            var slicer = $(this).val().split('/');
-            var serializedData = "Date=" + $("#timestamp").val() + "&Name=" + slicer[0] + "&Course=" + slicer[1] + "&Score=" + 1;
-            console.log("DataSet :\n " + serializedData);
-            $('#status').css('color', '#ffbf00');
-            $('#status').text('Sending Data...');
-            request = $.ajax({
-                type: 'POST',
-                url: "https://script.google.com/macros/s/AKfycbwlIRS2mijHFMnA5222c6ZhB-EWKDswQSggGHERc1zShw1yGFM/exec",
-                data: encodeURI(serializedData)
+          if($("#list").html() == "") {
+            $('#status').css('color', '#da0000');
+            $('#status').text('Error - No Data');
+            $('#timestamp').attr('disabled', false);
+            $('#submit').attr('disabled', false);
+          }
+          else {
+            $("input:checkbox[name=namelist]").each(function() {
+              var nameSlicer = $(this).val().split('/');
+              var dateSlicer = $("#timestamp").val().split('/');
+              var date = new Date(dateSlicer[2], dateSlicer[0] - 1, dateSlicer[1]).format('yyyy. m. d');
+              var serializedData = "Date=" + date + "&Name=" + nameSlicer[0] + "&Course=" + nameSlicer[1] + "&Score=" + 1;
+              console.log("DataSet : " + serializedData);
+              $('#status').css('color', '#ffbf00');
+              $('#status').text('Sending Data...');
+              request = $.ajax({
+                  type: 'POST',
+                  url: "https://script.google.com/macros/s/AKfycbwlIRS2mijHFMnA5222c6ZhB-EWKDswQSggGHERc1zShw1yGFM/exec",
+                  data: encodeURI(serializedData)
+              });
+              request.done(function() {
+                $('#status').css('color', '#15be00');
+                $('#status').text('Data Sent.');
+              });
+              request.fail(function(jqXHR, textStatus, errorThrown) {
+                $('#status').css('color', '#da0000');
+                $('#status').text('Error - ' + textStatus + errorThrown);
+              });
+              request.always(function() {  $('[disabled]').attr('disabled', false);  });
             });
-            request.done(function() {
-              $('#status').css('color', '#15be00');
-              $('#status').text('Data Sent.');
-            });
-            request.fail(function(jqXHR, textStatus, errorThrown) { console.error('Error Occured' + textStatus + errorThrown); });
-            request.always(function() {  $('[disabled]').attr('disabled', false);  });
-          });
-          event.preventDefault();
-          document.getElementById('list').innerHTML = "";
+            }
+            event.preventDefault();
+            $("#list").html("");
         });
       });
       function load() {
@@ -111,7 +124,7 @@
               j++;
             }
           }
-          document.getElementById('list').innerHTML = str;
+          $("#list").html(str);
         }
       }
       </script>
