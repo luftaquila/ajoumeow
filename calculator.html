@@ -68,40 +68,33 @@
       <br>Status : <span id="status" style="color:#ffbf00">Loading Data...</span><br><br>
       <div id="list" name="list"></div>
     </form>
-
     <script>
       jQuery( document ).ready(function( $ ) {
         var request;
         $("#DATA").submit( function(event) {
           $('#timestamp').attr('disabled', true);
           $('#submit').attr('disabled', true);
-          if (request) {  request.abort();  }
-          var serializedData = $("#DATA").serialize();
-          console.log("DataSet :\n " + serializedData);
-          $('#status').css('color', '#ffbf00');
-          $('#status').text('Sending Data...');
-          request = $.ajax({
-              url: "https://script.google.com/macros/s/AKfycbwlIRS2mijHFMnA5222c6ZhB-EWKDswQSggGHERc1zShw1yGFM/exec",
-              type: "post",
-              data: serializedData
+          if (request) { request.abort(); }
+          $("input:checkbox[name=namelist]").each(function() {
+            var slicer = $(this).val().split('/');
+            var serializedData = "Date=" + $("#timestamp").val() + "&Name=" + slicer[0] + "&Course=" + slicer[1] + "&Score=" + 1;
+            console.log("DataSet :\n " + serializedData);
+            $('#status').css('color', '#ffbf00');
+            $('#status').text('Sending Data...');
+            request = $.ajax({
+                type: 'POST',
+                url: "https://script.google.com/macros/s/AKfycbwlIRS2mijHFMnA5222c6ZhB-EWKDswQSggGHERc1zShw1yGFM/exec",
+                data: encodeURI(serializedData)
+            });
+            request.done(function() {
+              $('#status').css('color', '#15be00');
+              $('#status').text('Data Sent.');
+            });
+            request.fail(function(jqXHR, textStatus, errorThrown) { console.error('Error Occured' + textStatus + errorThrown); });
+            request.always(function() {  $('[disabled]').attr('disabled', false);  });
           });
-          request.done(function() {
-            $('#status').css('color', '#15be00');
-            $('#status').text('Data Sent.');
-          });
-          request.fail(function(jqXHR, textStatus, errorThrown) { console.error('Error Occured' + textStatus + errorThrown); });
-          request.always(function() {  $('[disabled]').attr('disabled', false);  });
           event.preventDefault();
           document.getElementById('list').innerHTML = "";
-
-          /*
-          group = [];
-          $("input:checkbox[name=namelist]").each(function() {
-            group.push($(this).val());
-          });
-          console.log(group);
-          */
-
         });
       });
       function load() {
