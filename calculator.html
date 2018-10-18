@@ -10,6 +10,7 @@
     <script>
       $(function() {
         $("#timestamp").datepicker();
+        data = [];
         datum = [];
         $.ajax({
           url: 'https://docs.google.com/spreadsheet/pub?key=1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A&single=true&gid=850606151&range=G2:I&output=csv',
@@ -67,7 +68,8 @@
       <input id="timestamp" name="timestamp" value="" onchange="load();" disabled="true"/>
       <input id="submit" type="submit" value="제출" disabled="true"/>
       <br><br>
-      <div id="list" name="list"></div>
+      <div id="isTest"></div>
+      <div id="list"></div>
     </form>
     <script>
       jQuery( document ).ready(function( $ ) {
@@ -80,20 +82,28 @@
             $('#status').text('400 Error - No Input');
             $('[disabled]').attr('disabled', false);
           }
-          else if($("#list").html() == "") {
+          else if($("#list").html() == "" || $("input:checkbox[name=namelist]:checked").length == 0) {
             $('#status').css('color', '#da0000');
             $('#status').text('400 Error - No Data');
             $('[disabled]').attr('disabled', false);
           }
           else {
-            $("input:checkbox[name=namelist]").each(function() {
-              var nameSlicer = $(this).val().split('/');
-              var dateSlicer = $("#timestamp").val().split('/');
+            var count = 0;
+            $("input:checkbox[name=namelist]:checked").each(function() {
+              var nameSlicer = $(this).val().split('/'), dateSlicer = $("#timestamp").val().split('/');
               var date = new Date(dateSlicer[2], dateSlicer[0] - 1, dateSlicer[1]).format('yyyy. m. d');
-              var serializedData = "지급 일자=" + date + "&이름=" + nameSlicer[0] + "&코스=" + nameSlicer[1] + "&지급 점수=" + 1;
+              data[count] = [];
+              data[count][0] = nameSlicer[0];
+              data[count][1] = date;
+              data[count][2] = nameSlicer[1];
+              count++;
+            });
+            for(var i = 1; i < 3; i++) { scoreProvider(data, i, $("#radio").prop('checked')); }
+            for(var i = 0; i < data.length; i++) {
+              var serializedData = "지급 일자=" + data[i][1] + "&이름=" + data[i][0] + "&코스=" + data[i][2] + "&지급 점수=" + data[i][3];
               console.log("DataSet : " + serializedData);
               $('#status').css('color', '#ffbf00');
-              $('#status').text('Sending ' + dataSize(encodeURI(serializedData)) + 'B Data...');
+              $('#status').text('Sending ' + dataSize(encodeURI(serializedData)) * count + 'B Data...');
               request = $.ajax({
                   type: 'POST',
                   url: "https://script.google.com/macros/s/AKfycbwlIRS2mijHFMnA5222c6ZhB-EWKDswQSggGHERc1zShw1yGFM/exec",
@@ -108,33 +118,42 @@
                 $('#status').text('Error - ' + textStatus + errorThrown);
               });
               request.always(function() {  $('[disabled]').attr('disabled', false);  });
-            });
-            }
-            event.preventDefault();
-            $("#list").html("");
-        });
-      });
-      function load() {
-        var currentDate = $("#timestamp").datepicker("getDate"), str = "";
-        if(currentDate !== null)
-        {
-          currentDate = currentDate.format("yyyy. m. d");
-          var j = 1;
-          for(var i = 0; i < datum.length - 1; i++)
-          {
-            if(currentDate == datum[i][1])
-            {
-              str += '<label for="namelist_' + j + '">' + '<input type="checkbox" checked="checked" name="namelist" id="namelist_' + j + '" value=' + datum[i][0] + "/" + datum[i][2] + '>' + datum[i][0] + " / " + datum[i][2] + "</input></label><br>";
-              j++;
             }
           }
+          event.preventDefault();
+          $("#list").html("");
+          $("#isTest").html("");
+        });
+      });
+      function scoreProvider(data, course, check) {
+        var low = 1, mid = 1.5, high = 2;
+        if(check) { low = 1.5; mid = 2; high = 3; }
+        var dateArray = new Date(data[0][1].replace(/\s/g, '').replace(/\./g, '-'));
+        for(var i = count = 0; i < data.length; i++) { if(data[i][2].includes(course + "코스")) { count++; } }
+        if(count == 1) {
+          if(dateArray.getDay() == 0 || dateArray.getDay() == 6) { for(var i = 0; i < data.length; i++) { if(data[i][2].includes(course + "코스")) { data[i][3] = high; } } }
+          else { for(var i = 0; i < data.length; i++) { if(data[i][2].includes(course + "코스")) { data[i][3] = mid; } } }
+        }
+        else {
+          if(dateArray.getDay() == 0 || dateArray.getDay() == 6) { for(var i = 0; i < data.length; i++) { if(data[i][2].includes(course + "코스")) { data[i][3] = mid; } } }
+          else { for(var i = 0; i < data.length; i++) { if(data[i][2].includes(course + "코스")) { data[i][3] = low; } } }
+        }
+      }
+      function load() {
+        data = [];
+        var currentDate = $("#timestamp").datepicker("getDate"), str = "", isTest = "";
+        if(currentDate !== null) {
+          currentDate = currentDate.format("yyyy. m. d");
+          var i = j = 1;
+          for(i = 0; i < datum.length - 1; i++) {
+            if(currentDate == datum[i][1]) { str += '<label for="namelist_' + j + '">' + '<input type="checkbox" checked="checked" name="namelist" id="namelist_' + j + '" value=' + datum[i][0] + "/" + datum[i][2] + '>' + datum[i][0] + " / " + datum[i][2] + "</input></label><br>"; j++; }
+          }
+          if(str != "") { $("#isTest").html("<input type='checkbox' id='radio' value='test'>시험 기간 할증</input><hr style='width:130px;border-bottom:0px;text-align:left;margin-left:0px'>"); }
+          else { $("#isTest").html(""); }
           $("#list").html(str);
         }
       }
-      function dataSize(s, b, i, c) {
-        for(b = i = 0; c = s.charCodeAt(i++); b += c >> 11 ? 3 : c >> 7 ? 2 : 1);
-        return b
-      }
+      function dataSize(s, b, i, c) { for(b = i = 0; c = s.charCodeAt(i++); b += c >> 11 ? 3 : c >> 7 ? 2 : 1); return b; }
       </script>
   </body>
 </html>
