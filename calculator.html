@@ -148,7 +148,7 @@
           for(i = 0; i < datum.length - 1; i++) {
             if(currentDate == datum[i][1]) { str += '<label for="namelist_' + j + '">' + '<input type="checkbox" checked="checked" name="namelist" id="namelist_' + j + '" value=' + datum[i][0] + "/" + datum[i][2] + '>' + datum[i][0] + " / " + datum[i][2] + "</input></label><br>"; j++; }
           }
-          if(str != "") { $("#isTest").html("<input type='checkbox' id='radio' value='test'>시험 기간 할증</input><hr style='width:130px;border-bottom:0px;text-align:left;margin-left:0px'>"); }
+          if(str != "") { $("#isTest").html("<label for='radio'><input type='checkbox' id='radio' value='test'>시험 기간 할증</input></label><hr style='width:130px;border-bottom:0px;text-align:left;margin-left:0px'>"); }
           else { $("#isTest").html(""); }
           $("#list").html(str);
         }
