@@ -10,8 +10,7 @@
     <script>
       $(function() {
         $("#timestamp").datepicker();
-        data = [];
-        datum = [];
+        data = [], datum = [];
         $.ajax({
           url: 'https://docs.google.com/spreadsheet/pub?key=1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A&single=true&gid=850606151&range=G2:I&output=csv',
           type: "GET",
@@ -26,10 +25,9 @@
         });
         function parseCSV(text, lineTerminator, cellTerminator) {
           datum = text.split(lineTerminator).map((line) => line.split(cellTerminator));
-          datum.push(['0', '0', '0']);
+          datum.push(['18', '10', '09']);
         }
       });
-
       var dateFormat = function () {
         var	token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g,
             pad = function (val, len) {
@@ -66,10 +64,18 @@
     <form id="DATA">
       Status : <span id="status" style="color:#ffbf00">Loading Data...</span><br>
       <input id="timestamp" name="timestamp" value="" onchange="load();" disabled="true"/>
-      <input id="submit" type="submit" value="제출" disabled="true"/>
-      <br><br>
-      <div id="isTest"></div>
-      <div id="list"></div>
+      <input id="submit" type="submit" value="제출" disabled="true"/><br><span style="line-height:50%"><br></span>
+      <label for='nonManual'><input type='radio' id='nonManual' name='isManual' value="normal" checked='checked' onclick="stdIn();">표준 입력</input></label>&nbsp;&nbsp;
+      <label for='Manual'><input type='radio' id='Manual' name='isManual' value='manual' onclick="mnIn();">수동 입력</input></label><br><span style="line-height:50%"><br></span>
+      <div id='stdWrapper'>
+        <div id="isTest"></div>
+        <div id="list"></div>
+      </div>
+      <div id='mnWrapper' style="display:none">
+        이름 : <input id='mnName' type='text' style="width:100px"></input><br><span style="line-height:50%"><br></span>
+        점수 : <input id='mnScore' type='number' style="width:100px"></input>
+
+      </div>
     </form>
     <script>
       jQuery( document ).ready(function( $ ) {
@@ -154,6 +160,8 @@
         }
       }
       function dataSize(s, b, i, c) { for(b = i = 0; c = s.charCodeAt(i++); b += c >> 11 ? 3 : c >> 7 ? 2 : 1); return b; }
+      function stdIn() { $("#stdWrapper").show(); $("#mnWrapper").hide(); }
+      function mnIn()  { $("#stdWrapper").hide(); $("#mnWrapper").show(); }
       </script>
   </body>
 </html>
