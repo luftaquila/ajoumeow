@@ -40,11 +40,10 @@
             $('#status').css('color', '#15be00');
             $('#status').text('200 Ready. ' + (dataSize(response) / 1000).toFixed(1) + 'KB Loaded');
             $('input').attr('disabled', false);
-            setTimeout(function () {
-              while(1) {
-                var pwPosition = datum.length - 1, pwInput = prompt("Verification Required", "");
-                if(pwInput == datum[pwPosition][1] + datum[pwPosition][2]) { break; }
-              }
+            setTimeout(function verify() {
+              var pwPosition = datum.length - 1, pwInput = prompt("Verification Required", "");
+              if(pwInput == datum[pwPosition][1] + datum[pwPosition][2]) { return; }
+              else verify();
             }, 50);
           }
         });
