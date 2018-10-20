@@ -43,7 +43,7 @@
             setTimeout(function verify() {
               var pwPosition = datum.length - 1, pwInput = prompt("Verification Required", "");
               if(pwInput == datum[pwPosition][1] + datum[pwPosition][2]) { return; }
-              else if(pwInput == null) { history.back(); }
+              else if(pwInput == null) { window.location.href = 'https://luftaquila.github.io/ajoumeyoumeow'; }
               else verify();
             }, 50);
           }
