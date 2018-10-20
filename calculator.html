@@ -39,13 +39,13 @@
             datum.push(['18', '10', '09']);
             $('#status').css('color', '#15be00');
             $('#status').text('200 Ready. ' + (dataSize(response) / 1000).toFixed(1) + 'KB Loaded');
-            $('input').attr('disabled', false);/*
+            $('input').attr('disabled', false);
             setTimeout(function verify() {
               var pwPosition = datum.length - 1, pwInput = prompt("Verification Required", "");
               if(pwInput == datum[pwPosition][1] + datum[pwPosition][2]) { return; }
               else if(pwInput == null) { window.location.href = 'https://luftaquila.github.io/ajoumeyoumeow'; }
               else verify();
-            }, 50);*/
+            }, 50);
           }
         });
         $("#DATA").submit( function(event) {
