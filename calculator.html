@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>Mileage Calculator</title>
+    <title>미유미유 급식인증기</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
@@ -10,7 +10,7 @@
     <form id="DATA">
       Status : <span id="status" style="color:#ffbf00">Loading Data...</span><br>
       <input id="timestamp" type="date" name="timestamp" value="" onchange="load();" disabled="true"/>
-      <input id="submit" type="submit" value="제출" disabled="true"/><br><span style="line-height:50%"><br></span>
+      <input id="submit" type="submit" value="Confirm" disabled="true"/><br><span style="line-height:50%"><br></span>
       <label for='nonManual'><input type='radio' id='nonManual' name='isManual' value="normal" checked='checked' onclick="stdIn();" disabled="true">표준 입력</input></label>&nbsp;&nbsp;
       <label for='Manual'><input type='radio' id='Manual' name='isManual' value='manual' onclick="mnIn();" disabled="true">수동 입력</input></label><br><span style="line-height:50%"><br></span>
       <div id='stdWrapper'>
