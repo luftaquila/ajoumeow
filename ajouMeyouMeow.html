@@ -2,6 +2,7 @@
     <head>
       <title>아주대학교 고양이는 미유미유</title>
       <link rel="shortcut icon" type="image/x-icon" href="/ajoumeyoumeow/Icons/Resized/meyoumeow.ico" />
+      <meta charset="utf-8">
       <meta property="og:title" content="아주대학교 미유미유"/>
       <meta property="og:url" content="https://luftaquila.github.io/ajoumeyoumeow/"/>
       <meta property="og:image" content="https://luftaquila.github.io/ajoumeyoumeow/Icons/%EB%AF%B8%EC%9C%A0%EB%AF%B8%EC%9C%A0.png"/>
@@ -93,20 +94,20 @@
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
     <script>
       var datum;
-      $(document).ready(function(){
+      $(function() {
         $('ul.tabs li').click(function(){
           var tab_id = $(this).attr('data-tab');
           $('ul.tabs li').removeClass('current');
           $('.tab-content').removeClass('current');
           $(this).addClass('current');
           $("#"+tab_id).addClass('current');
-        })
-      })
+        });
+      });
       function handleOnLoad() {
         datum = [];
-        document.getElementById("todayDate").innerHTML = "작동 중...";
-        document.getElementById("todayDateWeekEnd").innerHTML = "작동 중...";
-        document.getElementById("latestUpdate").innerHTML = "Loading...";
+        $("#todayDate").html("작동 중...");
+        $("#todayDateWeekEnd").html("작동 중...");
+        $("#latestUpdate").html("Loading...");
         if(new Date().getDay() == 0 || new Date().getDay() == 6)
         {
           $('ul.tabs li').removeClass('current');
@@ -120,14 +121,11 @@
           dataType: 'text',
           cache: false,
           success: function (response) {
-            parseCSV(response, '\n', ',');
+            datum = response.split('\n').map((line) => line.split(','));
+            datum.push(['18', '10', '09']);
+            rankReceiver();
           }
         });
-      }
-      function parseCSV(text, lineTerminator, cellTerminator) {
-        datum = text.split(lineTerminator).map((line) => line.split(cellTerminator));
-        datum.push(['0', '0', '0']);
-        setData();
       }
       var dateFormat = function () {
         var	token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g,
@@ -254,104 +252,74 @@
         }
         return " ";
       }
-      function yourRankIs(time, rank, num) {
-        var month = new Date().format("m");
-        var name = [], final = [], tmp;
-        if(time >= 0) {
-          month -= time;
-          month += '';
-        }
-        try {
-          for(var i = 0; !month.includes(datum[i][1].substring(6, datum[i][1].indexOf('.', 5))); i++) { }
-          for(var j = i;  month.includes(datum[j][1].substring(6, datum[j][1].indexOf('.', 5))); j++) { }
-        }
-        catch {}
-        if(time < 0) {
-          i = 0;
-          j = datum.length - 2;
-        }
-        for(var k = i; k < j; k++) { name[k - i] = datum[k][0]; }
-        name.sort();
-        for(var i = 0; i < name.length; i++) {
-          if(name[i] != tmp) { final.push([name[i], 1]); }
-          else { final[final.length - 1][1]++; }
-          tmp = name[i];
-        }
-        final.sort(function(a, b) {
-          if (a[1] == b[1]) {
-            var x = a[0], y = b[0];
-            return x < y ? -1 : x > y ? 1 : 0;
+      function rankReceiver() {
+        rankArray = [];
+        $.ajax({
+          url: 'https://docs.google.com/spreadsheet/pub?key=1j41TAb8itKVq2X2c-pSpRgIpGeMrt-95ePrkAhe4Vec&single=true&gid=1900667290&sheet=Statistics&range=A3:E5&output=csv',
+          type: "GET",
+          dataType: 'text',
+          cache: false,
+          success: function (response) {
+            rankArray = response.split('\n').map((line) => line.split(','));
+            rankArray.forEach(function(value) { value.splice(2, 1); });
+            setData();
           }
-          return b[1] - a[1];
         });
-        var max = final[0][1], target, response = [], i = 0;
-        target = max;
-        for(var x = 0; x < rank - 1; x++) {
-          for(i; final[i][1] == target; i++) { }
-          target = final[i][1];
-        }
-        for(var i = 0; i < final.length; i++) { if(final[i][1] == target) {response.push(final[i][0]);}}
-        if(num) return target;
-        else return response;
       }
       function setData() {
         var week = new Date().getWeek();
         var year = new Date().getFullYear();
-        document.getElementById("todayDate").innerHTML = new Date().format("m월 d일 dddd");
-        document.getElementById("todayDateWeekEnd").innerHTML = new Date().format("m월 d일 dddd");
-        document.getElementById("latestUpdate").innerHTML = "Latest Update : " + new Date().format("TT hh시 MM분 ss초");
-        if(new Date().getDay() == 0) document.getElementById("thisWeekEnd_2").style.backgroundColor = "greenyellow";
-        if(new Date().getDay() == 6) document.getElementById("thisWeekEnd_1").style.backgroundColor = "greenyellow";
+        $("#todayDate").html(new Date().format("m월 d일 dddd"));
+        $("#todayDateWeekEnd").html(new Date().format("m월 d일 dddd"));
+        $("#latestUpdate").html("Latest Update : " + new Date().format("TT hh시 MM분 ss초"));
+        if(new Date().getDay() == 0) $("#thisWeekEnd_2").css("backgroundColor", "greenyellow");
+        if(new Date().getDay() == 6) $("#thisWeekEnd_1").css("backgroundColor", "greenyellow");
         for(var i = 1; i <= 5; i++)
         {
-          if(new Date().getDay() == i) document.getElementById("thisWeek_" + i).style.backgroundColor = "greenyellow";
-          document.getElementById("thisWeek_" + i).style.color = "#000000";
-          document.getElementById("thisWeek_" + i).innerHTML = new Date(year, 0, i + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
-          document.getElementById("nextWeek_" + i).innerHTML = new Date(year, 0, i + (week * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
-          document.getElementById("nextTwoWeek_" + i).innerHTML = new Date(year, 0, i + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
-          document.getElementById("nextThreeWeek_" + i).innerHTML = new Date(year, 0, i + ((week + 2) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+          if(new Date().getDay() == i) $("#thisWeek_" + i).css("backgroundColor", "greenyellow");
+          $("#thisWeek_" + i).css("color", "#000000");
+          $("#thisWeek_" + i).html(new Date(year, 0, i + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)"));
+          $("#nextWeek_" + i).html(new Date(year, 0, i + (week * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)"));
+          $("#nextTwoWeek_" + i).html(new Date(year, 0, i + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)"));
+          $("#nextThreeWeek_" + i).html(new Date(year, 0, i + ((week + 2) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)"));
           for(var j = 1; j <= 2; j++)
           {
-            document.getElementById("thisWeek_d" + i + "_" + j).innerHTML = yourNameIs(0, i - 1, 1, j);
-            document.getElementById("thisWeek_s" + i + "_" + j).innerHTML = yourNameIs(0, i - 1, 2, j);
-            document.getElementById("nextWeek_d" + i + "_" + j).innerHTML = yourNameIs(1, i - 1, 1, j);
-            document.getElementById("nextWeek_s" + i + "_" + j).innerHTML = yourNameIs(1, i - 1, 2, j);
-            document.getElementById("nextTwoWeek_d" + i + "_" + j).innerHTML = yourNameIs(2, i - 1, 1, j);
-            document.getElementById("nextTwoWeek_s" + i + "_" + j).innerHTML = yourNameIs(2, i - 1, 2, j);
-            document.getElementById("nextThreeWeek_d" + i + "_" + j).innerHTML = yourNameIs(3, i - 1, 1, j);
-            document.getElementById("nextThreeWeek_s" + i + "_" + j).innerHTML = yourNameIs(3, i - 1, 2, j);
+            $("#thisWeek_d" + i + "_" + j).html(yourNameIs(0, i - 1, 1, j));
+            $("#thisWeek_s" + i + "_" + j).html(yourNameIs(0, i - 1, 2, j));
+            $("#nextWeek_d" + i + "_" + j).html(yourNameIs(1, i - 1, 1, j));
+            $("#nextWeek_s" + i + "_" + j).html(yourNameIs(1, i - 1, 2, j));
+            $("#nextTwoWeek_d" + i + "_" + j).html(yourNameIs(2, i - 1, 1, j));
+            $("#nextTwoWeek_s" + i + "_" + j).html(yourNameIs(2, i - 1, 2, j));
+            $("#nextThreeWeek_d" + i + "_" + j).html(yourNameIs(3, i - 1, 1, j));
+            $("#nextThreeWeek_s" + i + "_" + j).html(yourNameIs(3, i - 1, 2, j));
           }
         }
         for(var i = 1; i <= 2; i++)
         {
-          document.getElementById("thisWeekEnd_" + i).style.color = "#000000";
-          document.getElementById("thisWeekEnd_" + i).innerHTML = new Date(year, 0, i + 5 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
-          document.getElementById("nextWeekEnd_" + i).innerHTML = new Date(year, 0, i + 5 + ((week + 0) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
-          document.getElementById("nextTwoWeekEnd_" + i).innerHTML = new Date(year, 0, i + 5 + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
-          document.getElementById("nextThreeWeekEnd_" + i).innerHTML = new Date(year, 0, i + 5 + ((week + 2) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)");
+          $("#thisWeekEnd_" + i).css("color", "#000000");
+          $("#thisWeekEnd_" + i).html(new Date(year, 0, i + 5 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)"));
+          $("#nextWeekEnd_" + i).html(new Date(year, 0, i + 5 + ((week + 0) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)"));
+          $("#nextTwoWeekEnd_" + i).html(new Date(year, 0, i + 5 + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)"));
+          $("#nextThreeWeekEnd_" + i).html(new Date(year, 0, i + 5 + ((week + 2) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)"));
           for(var j = 1; j <= 2; j++)
           {
-            document.getElementById("thisWeekEnd_d" + i + "_" + j).innerHTML = yourNameIs(0, i + 4, 1, j);
-            document.getElementById("thisWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(0, i + 4, 2, j);
-            document.getElementById("nextWeekEnd_d" + i + "_" + j).innerHTML = yourNameIs(1, i + 4, 1, j);
-            document.getElementById("nextWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(1, i + 4, 2, j);
-            document.getElementById("nextTwoWeekEnd_d" + i + "_" + j).innerHTML = yourNameIs(2, i + 4, 1, j);
-            document.getElementById("nextTwoWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(2, i + 4, 2, j);
-            document.getElementById("nextThreeWeekEnd_d" + i + "_" + j).innerHTML = yourNameIs(3, i + 4, 1, j);
-            document.getElementById("nextThreeWeekEnd_s" + i + "_" + j).innerHTML = yourNameIs(3, i + 4, 2, j);
+            $('#thisWeekEnd_d' + i + "_" + j).html(yourNameIs(0, i + 4, 1, j));
+            $('#thisWeekEnd_s' + i + "_" + j).html(yourNameIs(0, i + 4, 2, j));
+            $('#nextWeekEnd_d' + i + "_" + j).html(yourNameIs(1, i + 4, 1, j));
+            $('#nextWeekEnd_s' + i + "_" + j).html(yourNameIs(1, i + 4, 2, j));
+            $('#nextTwoWeekEnd_d' + i + "_" + j).html(yourNameIs(2, i + 4, 1, j));
+            $('#nextTwoWeekEnd_s' + i + "_" + j).html(yourNameIs(2, i + 4, 2, j));
+            $('#nextThreeWeekEnd_d' + i + "_" + j).html(yourNameIs(3, i + 4, 1, j));
+            $('#nextThreeWeekEnd_s' + i + "_" + j).html(yourNameIs(3, i + 4, 2, j));
           }
         }
         for(var i = 1; i <= 3; i++) {
-          document.getElementById("this_" + i).innerHTML = yourRankIs(0, i, 0);
-          document.getElementById("past_" + i).innerHTML = yourRankIs(1, i, 0);
-          document.getElementById("this_t_" + i).innerHTML = yourRankIs(0, i, 1);
-          document.getElementById("past_t_" + i).innerHTML = yourRankIs(1, i, 1);
+          $("#this_" + i).html(rankArray[i - 1][0]);
+          $("#past_" + i).html(rankArray[i - 1][2]);
+          $("#this_t_" + i).html(parseFloat(rankArray[i - 1][1]));
+          $("#past_t_" + i).html(parseFloat(rankArray[i - 1][3]));
         }
-        if(Cookies.get('popup') != 'hidden') { rank.style.display = "block"; }
-      }
-      function popupBlocker() {
-        rank.style.display = "none";
-        Cookies.set('popup', 'hidden', {expires : 3});
+        if(Cookies.get('popup') != 'hidden') { $('#rankModal').css("display", "block"); }
       }
     </script>
     <body onload="handleOnLoad()">
@@ -404,20 +372,27 @@
               <img src="/ajoumeyoumeow/Icons/map.png" style="width:100%; height:100%">
             </div>
           </div>
+          <div id="mileModal" class="modal">
+            <div class="modal-content" style="position: relative; height: auto!important; margin: 5% auto!important;">
+              <span id="mileSpanClose" class="close" style="position: absolute; right: 8; top: -3;">&times;<br></span>
+              <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTy8HCVMBZr1Dz1VYjmgUBNWBTd8Ic45W99vL81L4-sKmq1KZpAmRlEd94jiK3m35ZQmbiqFxEzvWS1/pubhtml?gid=1900667290&amp;single=true&amp;widget=true&amp;headers=false" width="100%" height="93%" scrolling="no" style="margin-top: 1rem"></iframe><br>
+            </div>
+          </div>
           <div id="rankModal" class="modal">
             <div class="modal-content" style="position: relative; text-align: center">
               <span id="rankSpanClose" class="close" style="position: absolute; right: 8; top: -3;">&times;</span>
               <div style="position: absolute; height: 19rem; top: 0; bottom: 0; left: 0; right: 0; margin: auto;">
-                <span style="font-size: 1.3rem">☆미유미유 급식 랭킹☆</span>
+                <span style="font-size: 1.3rem">☆미유미유 마일리지 랭킹☆</span>
                 <br><br>이번 달 현재까지<br>
-                1등(<span id='this_t_1'></span>회) : <span id='this_1'></span><br>
-                2등(<span id='this_t_2'></span>회) : <span id='this_2'></span><br>
-                3등(<span id='this_t_3'></span>회) : <span id='this_3'></span><br><br>
+                1등(<span id='this_t_1'></span>점) : <span id='this_1'></span><br>
+                2등(<span id='this_t_2'></span>점) : <span id='this_2'></span><br>
+                3등(<span id='this_t_3'></span>점) : <span id='this_3'></span><br><span style="font-size: 0.5rem;"><br></span>
                 지난 달<br>
-                1등(<span id='past_t_1'></span>회) : <span id='past_1'></span><br>
-                2등(<span id='past_t_2'></span>회) : <span id='past_2'></span><br>
-                3등(<span id='past_t_3'></span>회) : <span id='past_3'></span><br>
-                <span style="font-size: 0.5rem;"><br><br>팝업창 디자인이 구린 점 양해 부탁드립니다(...)<br>데이터가 정확하지 않을 수 있습니다. 참고용으로만 사용하세요</span>
+                1등(<span id='past_t_1'></span>점) : <span id='past_1'></span><br>
+                2등(<span id='past_t_2'></span>점) : <span id='past_2'></span><br>
+                3등(<span id='past_t_3'></span>점) : <span id='past_3'></span><br><span style="font-size: 0.5rem;"><br></span>
+                <a href="#" onclick="onMileClick()" style="color:#0366d6;font-size: 0.8rem">이번 달 마일리지 현황</a>
+                <span style="font-size: 0.5rem;"><br><br>팝업창 디자인이 구린 점 양해 부탁드립니다(...)</span>
               </div>
               <div style="font-size: 0.8rem; position: absolute; right: 8; bottom: 5">
                 <label for="popupBlock">
@@ -427,26 +402,29 @@
             </div>
           </div>
           <script>
-            function onLogClick() { log.style.display = "block"; }
-            function onMapClick() { map.style.display = "block"; }
+            log = $('#logModal'), map = $('#mapModal'), rank = $('#rankModal'), mile = $('#mileModal');
+            logClose = $('#logSpanClose'), mapClose = $('#mapSpanClose'), rankClose = $('#rankSpanClose'), mileClose = $('#mileSpanClose');
+            function onLogClick() { log.css("display", "block"); }
+            function onMapClick() { map.css("display", "block"); }
+            function onMileClick() { rank.css("display", "none"); mile.css("display", "block"); }
             function onRankClick() {
-              rank.style.display = "block";
+              rank.css("display", "block");
               Cookies.remove('popup');
               popupBlock.checked = false;
             }
-            var log = document.getElementById('logModal');
-            var map = document.getElementById('mapModal');
-            var rank = document.getElementById('rankModal');
-            var logClose = document.getElementById('logSpanClose');
-            var mapClose = document.getElementById('mapSpanClose');
-            var rankClose = document.getElementById('rankSpanClose');
-            logClose.onclick = function() { log.style.display = "none"; }
-            mapClose.onclick = function() { map.style.display = "none"; }
-            rankClose.onclick = function() { rank.style.display = "none"; }
+            function popupBlocker() {
+              rank.css("display", "none");
+              Cookies.set('popup', 'hidden', {expires : 3});
+            }
+            logClose.click(function() { log.css("display", "none"); });
+            mapClose.click(function() { map.css("display", "none"); });
+            rankClose.click(function() { rank.css("display", "none"); });
+            mileClose.click(function() { mile.css("display", "none"); });
             window.onclick = function(event) {
-              if (event.target == log) { log.style.display = "none"; }
-              if (event.target == rank) { rank.style.display = "none"; }
-              if (event.target == map) { map.style.display = "none"; }
+              if (event.target == document.getElementById('logModal')) { log.css("display", "none"); }
+              if (event.target == document.getElementById('mapModal')) { map.css("display", "none"); }
+              if (event.target == document.getElementById('rankModal')) { rank.css("display", "none"); }
+              if (event.target == document.getElementById('mileModal')) { mile.css("display", "none"); }
             }
           </script>
         </ul>
@@ -790,7 +768,7 @@
         </div>
         <div id="latestUpdate" style="height:1rem; text-align:right; font-size:0.7rem; font-family:'Malgun Gothic';">Loading...</div>
         <div style="text-align:center; font-size:0.813rem; font-family:'Malgun Gothic';">
-          <a href="/ajoumeyoumeow/admin" style="color:#0366d6">Admin</a>
+          <a href="/ajoumeyoumeow/statistics" style="color:#0366d6">Statistics</a>
           &nbsp;&nbsp;&nbsp;<a href="#" onclick="onRankClick()" style="color:#0366d6">Rank</a>
           &nbsp;&nbsp;&nbsp;<a href="#" onclick="onMapClick()" style="color:#0366d6">Map</a>
           &nbsp;&nbsp;&nbsp;<a href="https://www.flickr.com/photos/ajoumeow" style="color:#0366d6">Photos</a>
