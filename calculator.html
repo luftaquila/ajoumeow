@@ -10,7 +10,8 @@
     <form id="DATA">
       Status : <span id="status" style="color:#ffbf00">Loading Data...</span><br>
       <input id="timestamp" type="date" name="timestamp" value="" onchange="load();" disabled="true"/>
-      <input id="submit" type="submit" value="Confirm" disabled="true"/><br><span style="line-height:50%"><br></span>
+      <input id="submit" type="submit" value="Confirm" disabled="true"/>
+      <a href="#" onclick="onLogClick()" style="color:#0366d6;font-size: 0.8rem">LOG</a><br><span style="line-height:50%"><br></span>
       <label for='nonManual'><input type='radio' id='nonManual' name='isManual' value="normal" checked='checked' onclick="stdIn();" disabled="true">표준 입력</input></label>&nbsp;&nbsp;
       <label for='Manual'><input type='radio' id='Manual' name='isManual' value='manual' onclick="mnIn();" disabled="true">수동 입력</input></label><br><span style="line-height:50%"><br></span>
       <div id='stdWrapper'>
@@ -152,6 +153,9 @@
       function dataSize(s, b, i, c) { for(b = i = 0; c = s.charCodeAt(i++); b += c >> 11 ? 3 : c >> 7 ? 2 : 1); return b; }
       function stdIn() { $("#stdWrapper").show(); $("#mnWrapper").hide(); }
       function mnIn()  { $("#stdWrapper").hide(); $("#mnWrapper").show(); }
+      function onLogClick() { $('#logModal').css("display", "block"); }
+      function onLogCloseClick() { $('#logModal').css("display", "none"); }
+      window.onclick = function(event) { if (event.target == document.getElementById('logModal')) { $('#logModal').css("display", "none"); } }
       var dateFormat = function () {
         var	token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g,
             pad = function (val, len) {
@@ -183,5 +187,45 @@
       }();
       Date.prototype.format = function (mask, utc) { return dateFormat(this, mask, utc); };
       </script>
+      <style>
+        .modal {
+          display: none;
+          position: fixed;
+          z-index: 1;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgb(0,0,0);
+          background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+          background-color: #fefefe;
+          margin: 30% auto;
+          padding: 0.8rem;
+          border: 0.063rem solid #888;
+          width: 90%;
+          height: 20rem;
+          max-height: 90%;
+        }
+        .close {
+          color: #aaa;
+          float: right;
+          font-size: 28px;
+          font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+          color: black;
+          text-decoration: none;
+          cursor: pointer;
+        }
+      </style>
+      <div id="logModal" class="modal">
+        <div class="modal-content" style="position: relative; height: auto!important; margin: 5% auto!important;">
+          <span id="logSpanClose" class="close" onclick="onLogCloseClick();" style="position: absolute; right: 8; top: -3;">&times;<br></span>
+          <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTy8HCVMBZr1Dz1VYjmgUBNWBTd8Ic45W99vL81L4-sKmq1KZpAmRlEd94jiK3m35ZQmbiqFxEzvWS1/pubhtml?gid=779005898&amp;single=true&amp;widget=true&amp;headers=false"  width="100%" height="93%" scrolling="no" style="margin-top: 1rem"></iframe><br>
+        </div>
+      </div>
   </body>
 </html>
