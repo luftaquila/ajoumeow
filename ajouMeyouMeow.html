@@ -461,34 +461,34 @@
           </table>
         </div>
       </div>
-      <div id="tab-3" class="tab-content" style="width:100%; text-align:center">
-        <div id='form' style="width:100%; height:30%; text-align:center; margin:40 0 0 0">
+      <div id="tab-3" class="tab-content" style="width:100%; text-align:center;">
+        <div id='form' style="width:100%; text-align:center; margin:35 0 20 0">
           <form id="DATA">
-              이름 : <input id='submitName' type='text' style="width:100px" disabled="true"/><br><span style="line-height:50%"><br></span>
-              날짜 : <input id="submitDate" type="date" name="submitDate" value="" disabled="true"/><br><span style="line-height:50%"><br></span>
-              <label for='course_1st'><input type='radio' id='course_1st' name='course' value="1코스" disabled="true">1코스</input></label>&nbsp;
-              <label for='course_2nd'><input type='radio' id='course_2nd' name='course' value='2코스' disabled="true">2코스</input></label><br><br>
-              <input id="submit" type="submit" value="신청하기" disabled="true" style="padding: 0.3rem 0.8rem;"/>
+            이름 : <input id='submitName' type='text' style="width:100px" disabled="true"/><br><span style="line-height:50%"><br></span>
+            날짜 : <input id="submitDate" type="date" name="submitDate" value="" disabled="true"/><br><span style="line-height:50%"><br></span>
+            <label for='course_1st'><input type='radio' id='course_1st' name='course' value="1코스" disabled="true">1코스</input></label>&nbsp;
+            <label for='course_2nd'><input type='radio' id='course_2nd' name='course' value='2코스' disabled="true">2코스</input></label><br><br>
+            <input id="submit" type="submit" value="신청하기" disabled="true" style="padding: 0.3rem 0.8rem;"/>
           </form>
         </div>
-        <div id='logBox' style="width:90%; height:35%; border:1px solid; margin:0 0 20 0; padding:5; display:inline-block; font-size:0.8rem; text-align:left"></div>
+        <div id='logBox' style="width:96%; height:15rem; border:1px solid; margin:20 0 0 0; padding:5; display:inline-block; font-size:0.8rem; text-align:left"></div>
       </div>
-      <div id="latestUpdate" style="height:1rem; text-align:right; font-size:0.7rem; font-family:'Malgun Gothic';">Loading...</div>
-      <div style="text-align:center; font-size:0.813rem; font-family:'Malgun Gothic';">
-        <a href="/ajoumeyoumeow/statistics" style="color:#0366d6">Statistics</a>
-        &nbsp;&nbsp;&nbsp;<a href="#" onclick="onRankClick()" style="color:#0366d6">Rank</a>
-        &nbsp;&nbsp;&nbsp;<a href="#" onclick="onMapClick()" style="color:#0366d6">Map</a>
-        &nbsp;&nbsp;&nbsp;<a href="https://www.flickr.com/photos/ajoumeow" style="color:#0366d6">Photos</a>
-        &nbsp;&nbsp;&nbsp;<a href="#" onclick="onLogClick()" style="color:#0366d6">Log</a><br>
-        <span style="font-size:0.4rem"><br></span>©2018 LUFT - AQUILA.
-        &nbsp;<a class="ext" href="/ajoumeyoumeow/about.html" style="color:#0366d6">About</a>
-        <br>신청서 제출 후 표에 반영되기까지 최대 3분 정도 소요됩니다.
-      </div>
+        <div id="latestUpdate" style="height:1rem; text-align:right; font-size:0.7rem; font-family:'Malgun Gothic'; margin:5 0 0 0">Loading...</div>
+        <div id='bottomInfo' style="text-align:center; font-size:0.813rem; font-family:'Malgun Gothic'; margin:17 0 0 0">
+          <a href="/ajoumeyoumeow/statistics" style="color:#0366d6">Statistics</a>
+          &nbsp;&nbsp;&nbsp;<a href="#" onclick="onRankClick()" style="color:#0366d6">Rank</a>
+          &nbsp;&nbsp;&nbsp;<a href="#" onclick="onMapClick()" style="color:#0366d6">Map</a>
+          &nbsp;&nbsp;&nbsp;<a href="https://www.flickr.com/photos/ajoumeow" style="color:#0366d6">Photos</a>
+          &nbsp;&nbsp;&nbsp;<a href="#" onclick="onLogClick()" style="color:#0366d6">Log</a><br>
+          <span style="font-size:0.4rem"><br></span>©2018 LUFT - AQUILA.
+          &nbsp;<a class="ext" href="/ajoumeyoumeow/about.html" style="color:#0366d6">About</a>
+          <br>신청서 제출 후 표에 반영되기까지 최대 3분 정도 소요됩니다.
+        </div>
     </div>
     <div id="logModal" class="modal">
       <div class="modal-content" style="position: relative; height: auto!important; margin: 5% auto!important;">
         <span id="logSpanClose" class="close" style="position: absolute; right: 8; top: -3;">&times;<br></span>
-        <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTS42UTV58NdXxJMBIg3ARIVmnGLcMmok7gv0YjyIkH29t1Yk16OidImCYsrtuU1B7f42MhUNQA5kKA/pubhtml" width="100%" height="93%" scrolling="no" style="margin-top: 1rem"></iframe><br>
+        <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTS42UTV58NdXxJMBIg3ARIVmnGLcMmok7gv0YjyIkH29t1Yk16OidImCYsrtuU1B7f42MhUNQA5kKA/pubhtml?gid=850606151&single=true&widget=true&headers=false" width="100%" height="93%" scrolling="no" style="margin-top: 1rem"></iframe><br>
       </div>
     </div>
     <div id="mapModal" class="modal">
@@ -518,7 +518,7 @@
           3등(<span id='past_t_3'></span>점) : <span id='past_3'></span><br><span style="font-size: 0.5rem;"><br></span>
           <a href="#" onclick="onMileClick()" style="color:#0366d6;font-size: 0.8rem">이번 달 마일리지 현황</a>
         </div>
-        <div style="font-size: 0.8rem; position: absolute; right: 8; bottom: 5">``
+        <div style="font-size: 0.8rem; position: absolute; right: 8; bottom: 5">
           <label for="popupBlock">
             <input type="checkbox" id="popupBlock" onclick="popupBlocker();">앞으로 3일간 보지 않기
           </label>
