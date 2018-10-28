@@ -599,7 +599,7 @@
           });
           request.done(function() { logger('#15be00', '201 Transmitted. Ready.'); Cookies.set('fillName', $.trim($('#submitName').val()), {expires : 90}); });
           request.fail(function(jqXHR, textStatus, errorThrown) { logger('#da0000', 'Error - ' + textStatus + errorThrown); });
-          request.always(function() { $('input').attr('disabled', false); $('#submitDate').val(""); $("#radio").attr('checked', false) });
+          request.always(function() { $('input').attr('disabled', false); $('#submitDate').val(""); $(":radio").attr('checked', false) });
         }
         event.preventDefault();
       });
