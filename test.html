@@ -471,7 +471,7 @@
               <input id="submit" type="submit" value="신청하기" disabled="true" style="padding: 0.3rem 0.8rem;"/>
           </form>
         </div>
-        <div id='logBox' style="width:90%; height:15rem; border:1px solid; margin:0 0 20 0; padding:5; display:inline-block; font-size:0.8rem; text-align:left"></div>
+        <div id='logBox' style="width:90%; height:15rem; border:1px solid; margin:20 0; padding:5; display:inline-block; font-size:0.8rem; text-align:left"></div>
       </div>
       <div id='bottomInfo'>
         <div id="latestUpdate" style="height:1rem; text-align:right; font-size:0.7rem; font-family:'Malgun Gothic';">Loading...</div>
@@ -704,7 +704,7 @@
       }
       function logger(color, text) {
         log.push(new Date().format('yyyy.mm.dd HH:MM:ss') + '&nbsp;&nbsp;><span style="color:' + color + '">' + text + '</span><br>');
-        if(log.length > 14) { log.shift(); }
+        if(log.length > 13) { log.shift(); }
         $('#logBox').html(log);
       }
       function dataSize(s, b, i, c) { for(b = i = 0; c = s.charCodeAt(i++); b += c >> 11 ? 3 : c >> 7 ? 2 : 1); return b; }
