@@ -475,11 +475,12 @@
       </div>
         <div id="latestUpdate" style="height:1rem; text-align:right; font-size:0.7rem; font-family:'Malgun Gothic'; margin:5 0 0 0">Loading...</div>
         <div id='bottomInfo' style="text-align:center; font-size:0.813rem; font-family:'Malgun Gothic'; margin:17 0 0 0">
-          <a href="/ajoumeyoumeow/statistics" style="color:#0366d6">Statistics</a>
-          &nbsp;&nbsp;&nbsp;<a href="#" onclick="onRankClick()" style="color:#0366d6">Rank</a>
-          &nbsp;&nbsp;&nbsp;<a href="#" onclick="onMapClick()" style="color:#0366d6">Map</a>
+          <a id='onNoticeClick' href="#" style="color:#0366d6">Notice</a>
+          &nbsp;&nbsp;&nbsp;<a href="/ajoumeyoumeow/statistics" style="color:#0366d6">Statistics</a>
+          &nbsp;&nbsp;&nbsp;<a id='onRankClick' href="#" style="color:#0366d6">Rank</a>
+          &nbsp;&nbsp;&nbsp;<a id='onMapClick' href="#" style="color:#0366d6">Map</a>
           &nbsp;&nbsp;&nbsp;<a href="https://www.flickr.com/photos/ajoumeow" style="color:#0366d6">Photos</a>
-          &nbsp;&nbsp;&nbsp;<a href="#" onclick="onLogClick()" style="color:#0366d6">Log</a><br>
+          &nbsp;&nbsp;&nbsp;<a id='onLogClick' href="#" style="color:#0366d6">Log</a><br>
           <span style="font-size:0.4rem"><br></span>©2018 LUFT - AQUILA.
           &nbsp;<a class="ext" href="/ajoumeyoumeow/about.html" style="color:#0366d6">About</a>
           <br>신청서 제출 후 표에 반영되기까지 최대 3분 정도 소요됩니다.
@@ -516,12 +517,45 @@
           1등(<span id='past_t_1'></span>점) : <span id='past_1'></span><br>
           2등(<span id='past_t_2'></span>점) : <span id='past_2'></span><br>
           3등(<span id='past_t_3'></span>점) : <span id='past_3'></span><br><span style="font-size: 0.5rem;"><br></span>
-          <a href="#" onclick="onMileClick()" style="color:#0366d6;font-size: 0.8rem">이번 달 마일리지 현황</a>
+          <a href="#" onclick="onMileClick()" style="color:#0366d6;font-size: 0.8rem">마일리지 현황 보기</a>
         </div>
         <div style="font-size: 0.8rem; position: absolute; right: 8; bottom: 5">
-          <label for="popupBlock">
-            <input type="checkbox" id="popupBlock" onclick="popupBlocker();">앞으로 3일간 보지 않기
-          </label>
+          <label for="popupBlock"><input type="checkbox" id="popupBlock">앞으로 3일간 보지 않기</input></label>
+        </div>
+      </div>
+    </div>
+    <div id="noticeModal" class="modal">
+      <div class="modal-content" style="position: relative; text-align: center; margin: 10% auto; height: 80%">
+        <span id="noticeSpanClose" class="close" style="position: absolute; right: 8; top: -3;">&times;</span>
+        <div style="position: relative; height: 100%; font-size:0.8rem; margin: -20 0 0 0">
+          <p style="font-size: 1.3rem">☆공지사항☆</p>
+          [오늘의 사자성어]<br>
+          업대이투 (위태로울 업, 몹쓸 대, 이로울 이, 덮개 투)<br>
+          위태롭고 몹쓸 코드를 이로운 코드로 덮어씌우다.<br><br>
+          [급식신청 사이트 업데이트 안내]<br>
+          1. 더이상 신청 양식으로 구글 설문지를 사용하지 않습니다.<br>
+          2. 이제 사이트가 마지막으로 신청한 이름을 기억합니다.<br><br>
+             신청할 때마다 매번 이름을 타이핑하지 않아도 됩니다.<br>
+          3. 그 외 잡다한 버그를 때려잡았습니다.<br>
+          4. 아무도 몰랐겠지만 사이트 로딩 속도가 0.3초 정도 빨라졌습니다.<br><br>
+          [일부 기능 사용법 안내]<br>
+          사이트 하단 파란색 글씨로 써진 기능들의 사용법 안내입니다.<br><br>
+            Statistics<br>
+          	- 목록에서 이름을 선택하면 언제 활동했는지 기록을 보여줍니다.<br>
+            Rank<br>
+          	- 마일리지 순위표를 보여줍니다. 사이트 로딩 시 팝업으로도 나옵니다.<br>
+          	- 마일리지 현황을 누르면 현재 내 마일리지를 볼 수 있습니다.<br>
+          	- 3일간 보지 않기를 선택하면 3일동안 팝업이 나타나지 않습니다.<br>
+          	- 다시 Rank 버튼을 누르면 3일간 보지 않기가 해제됩니다.<br><br>
+            Map<br>
+          	- 코스가 가물가물할 때 급식 코스의 간단한 약도를 보여줍니다.<br><br>
+            Photos<br>
+          	- 학교 고양이 사진이 잔뜩 있습니다!<br><br>
+            Log<br>
+          	- 급식 신청 기록 로그입니다.<br><br>
+        </div>
+        <div style="font-size: 0.8rem; position: absolute; right: 8; bottom: 5">
+          <label for="noticeBlock"><input type="checkbox" id="noticeBlock">다시 보지 않기</input></label>
         </div>
       </div>
     </div>
@@ -657,6 +691,7 @@
           $("#past_t_" + i).html(parseFloat(rankArray[i - 1][3]));
         }
         if(Cookies.get('popup') != 'hidden') { $('#rankModal').css("display", "block"); }
+        if(Cookies.get('noticePop') != 'hidden') { $('#noticeModal').css("display", "block"); }
       }
       function yourNameIs(p1, p2, course, rank) {
         var week = new Date().getWeek();
@@ -706,28 +741,24 @@
         $('#logBox').html(log);
       }
       function dataSize(s, b, i, c) { for(b = i = 0; c = s.charCodeAt(i++); b += c >> 11 ? 3 : c >> 7 ? 2 : 1); return b; }
-      function onLogClick() { $('#logModal').css("display", "block"); }
-      function onMapClick() { $('#mapModal').css("display", "block"); }
-      function onMileClick() { $('#rankModal').css("display", "none"); $('#mileModal').css("display", "block"); }
-      function onRankClick() {
-        $('#rankModal').css("display", "block");
-        Cookies.remove('popup');
-        popupBlock.checked = false;
-      }
-      function popupBlocker() {
-        $('#rankModal').css("display", "none");
-        Cookies.set('popup', 'hidden', {expires : 3});
-      }
+      $('#onNoticeClick').click(function() { $('#noticeModal').css("display", "block"); Cookies.remove('noticePop'); noticeBlock.checked = false; });
+      $('#onMapClick').click(function() { $('#mapModal').css("display", "block"); });
+      $('#onMileClick').click(function() { $('#rankModal').css("display", "none"); $('#mileModal').css("display", "block"); });
+      $('#onRankClick').click(function() { $('#rankModal').css("display", "block"); Cookies.remove('popup'); popupBlock.checked = false; });
+      $('#popupBlock').click(function() { $('#rankModal').css("display", "none"); Cookies.set('popup', 'hidden', {expires : 3}); });
+      $('#noticeBlock').click(function() { $('#noticeModal').css("display", "none"); Cookies.set('noticePop', 'hidden', {expires : 30}); });
       window.onclick = function(event) {
         if (event.target == document.getElementById('logModal')) { $('#logModal').css("display", "none"); }
         if (event.target == document.getElementById('mapModal')) { $('#mapModal').css("display", "none"); }
         if (event.target == document.getElementById('rankModal')) { $('#rankModal').css("display", "none"); }
         if (event.target == document.getElementById('mileModal')) { $('#mileModal').css("display", "none"); }
+        if (event.target == document.getElementById('noticeModal')) { $('#noticeModal').css("display", "none"); }
       }
       $('#logSpanClose').click(function() { $('#logModal').css("display", "none"); });
       $('#mapSpanClose').click(function() { $('#mapModal').css("display", "none"); });
       $('#rankSpanClose').click(function() { $('#rankModal').css("display", "none"); });
       $('#mileSpanClose').click(function() { $('#mileModal').css("display", "none"); });
+      $('#noticeSpanClose').click(function() { $('#noticeModal').css("display", "none"); });
       $('ul.tabs li').click(function() {
         var tab_id = $(this).attr('data-tab');
         $('ul.tabs li').removeClass('current');
