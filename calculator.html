@@ -10,8 +10,10 @@
     <form id="DATA">
       Status : <span id="status" style="color:#ffbf00">Loading Data...</span><br>
       <input id="timestamp" type="date" name="timestamp" value="" onchange="load();" disabled="true"/>
-      <input id="submit" type="submit" value="Confirm" disabled="true"/>
-      <a id="log" href="#" onclick="onLogClick()" style="color:#0366d6;font-size: 0.8rem">LOG</a><br><span style="line-height:50%"><br></span>
+      <input id="submit" type="submit" value="Confirm" disabled="true"/><br><span style="line-height:25%"><br></span>
+      <a id="log" href="#" style="color:#0366d6;font-size: 0.8rem">Mileage Log</a>&nbsp;&nbsp;
+      <a id="rawLog" href="#" style="color:#0366d6;font-size: 0.8rem">Receiver Log</a>&nbsp;&nbsp;
+      <a id="reload" href="#" style="color:#0366d6;font-size: 0.8rem">Reload</a><br><span style="line-height:50%"><br></span>
       <label for='nonManual'><input type='radio' id='nonManual' name='isManual' value="normal" checked='checked' disabled="true">표준 입력</input></label>&nbsp;&nbsp;
       <label for='Manual'><input type='radio' id='Manual' name='isManual' value='manual' disabled="true">수동 입력</input></label><br><span style="line-height:50%"><br></span>
       <div id='stdWrapper'>
@@ -20,12 +22,17 @@
       </div>
       <div id='mnWrapper' style="display:none">
         이름 : <input id='mnName' type='text' style="width:100px" value=""></input><br><span style="line-height:50%"><br></span>
-        점수 : <input id='mnScore' type='number' style="width:100px" value=""></input>
+        점수 : <input id='mnScore' type='number' step='any' style="width:100px" value=""></input>
       </div>
     </form>
     <script>
-      $(function() {
+      isVerified = 0;
+      $(function() { onLoad(); });
+      function onLoad() {
         data = [], datum = [];
+        $('#status').css('color', '#ffbf00');
+        $('#status').text('Loading Data...');
+        $('input').attr('disabled', true);
         $.ajax({
           url: 'https://docs.google.com/spreadsheet/pub?key=1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A&single=true&gid=850606151&range=G2:I&output=csv',
           type: "GET",
@@ -37,72 +44,74 @@
             $('#status').css('color', '#15be00');
             $('#status').text('200 Ready. ' + (dataSize(response) / 1000).toFixed(1) + 'KB Loaded');
             $('input').attr('disabled', false);
-            setTimeout(function verify() {
-              var pwPosition = datum.length - 1, pwInput = prompt("Verification Required", "");
-              if(pwInput == datum[pwPosition][1] + datum[pwPosition][2]) { return; }
-              else if(pwInput == null) { window.location.href = 'https://luftaquila.github.io/ajoumeyoumeow'; }
-              else verify();
-            }, 50);
+            if(!isVerified) {
+              setTimeout(function verify() {
+                var pwPosition = datum.length - 1, pwInput = prompt("Verification Required", "");
+                if(pwInput == datum[pwPosition][1] + datum[pwPosition][2]) { isVerified = 1; return; }
+                else if(pwInput == null) { window.location.href = 'https://luftaquila.github.io/ajoumeyoumeow'; }
+                else verify();
+              }, 50);
+            }
           }
         });
-        $("#DATA").submit( function(event) {
-          $('input').attr('disabled', true);
-          var request;
-          if (request) { request.abort(); }
-          if($("#nonManual").prop('checked')) {
-            if(!/\d\d\d\d\-\d\d\-\d\d/g.test($("#timestamp").val())) {
-              $('#status').css('color', '#da0000');
-              $('#status').text('400 Error - Wrong Input');
-              $('input').attr('disabled', false);
-            }
-            else if($("#list").html() == "" || $("input:checkbox[name=namelist]:checked").length == 0) {
-              $('#status').css('color', '#da0000');
-              $('#status').text('400 Error - No Data');
-              $('input').attr('disabled', false);
-            }
-            else {
-              var count = 0;
-              $("input:checkbox[name=namelist]:checked").each(function() {
-                var nameSlicer = $.trim($(this).val()).split('/'), dateSlicer = $("#timestamp").val().split('-');
-                var date = new Date(dateSlicer[0], dateSlicer[1] - 1, dateSlicer[2]).format('yyyy. m. d');
-                data[count] = [];
-                data[count][0] = nameSlicer[0];
-                data[count][1] = date;
-                data[count][2] = nameSlicer[1];
-                count++;
-              });
-              for(var i = 1; i < 3; i++) { scoreProvider(data, i, $("#radio").prop('checked')); }
-              for(var i = 0; i < data.length; i++) {
-                var serializedData = "지급 일자=" + data[i][1] + "&이름=" + data[i][0] + "&코스=" + data[i][2] + "&점수=" + data[i][3];
-                transmitter(serializedData, count);
-              }
-            }
+      }
+      $("#DATA").submit( function(event) {
+        $('input').attr('disabled', true);
+        var request;
+        if (request) { request.abort(); }
+        if($("#nonManual").prop('checked')) {
+          if(!/\d\d\d\d\-\d\d\-\d\d/g.test($("#timestamp").val())) {
+            $('#status').css('color', '#da0000');
+            $('#status').text('400 Error - Wrong Input');
+            $('input').attr('disabled', false);
           }
-          else if($("#Manual").prop('checked')) {
-            if(!/\d\d\d\d\-\d\d\-\d\d/g.test($("#timestamp").val())) {
-              $('#status').css('color', '#da0000');
-              $('#status').text('400 Error - Wrong Input');
-              $('input').attr('disabled', false);
-            }
-            else if($.trim($("#mnName").val()) == "" || $.trim($("#mnScore").val()) == "") {
-              $('#status').css('color', '#da0000');
-              $('#status').text('400 Error - No Data');
-              $('input').attr('disabled', false);
-            }
-            else {
-              var dateSlicer = $("#timestamp").val().split('-');
+          else if($("#list").html() == "" || $("input:checkbox[name=namelist]:checked").length == 0) {
+            $('#status').css('color', '#da0000');
+            $('#status').text('400 Error - No Data');
+            $('input').attr('disabled', false);
+          }
+          else {
+            var count = 0;
+            $("input:checkbox[name=namelist]:checked").each(function() {
+              var nameSlicer = $.trim($(this).val()).split('/'), dateSlicer = $("#timestamp").val().split('-');
               var date = new Date(dateSlicer[0], dateSlicer[1] - 1, dateSlicer[2]).format('yyyy. m. d');
-              var serializedData = "지급 일자=" + date + "&이름=" + $.trim($("#mnName").val()) + "&코스=수동 입력&점수=" + $.trim($("#mnScore").val());
-              transmitter(serializedData, 1);
+              data[count] = [];
+              data[count][0] = nameSlicer[0];
+              data[count][1] = date;
+              data[count][2] = nameSlicer[1];
+              count++;
+            });
+            for(var i = 1; i < 3; i++) { scoreProvider(data, i, $("#radio").prop('checked')); }
+            for(var i = 0; i < data.length; i++) {
+              var serializedData = "지급 일자=" + data[i][1] + "&이름=" + data[i][0] + "&코스=" + data[i][2] + "&점수=" + data[i][3];
+              transmitter(serializedData, count);
             }
           }
-          $("#list").html("");
-          $("#isTest").html("");
-          $("#mnName").val("");
-          $("#mnScore").val("");
-          $("#timestamp").val("");
-          event.preventDefault();
-        });
+        }
+        else if($("#Manual").prop('checked')) {
+          if(!/\d\d\d\d\-\d\d\-\d\d/g.test($("#timestamp").val())) {
+            $('#status').css('color', '#da0000');
+            $('#status').text('400 Error - Wrong Input');
+            $('input').attr('disabled', false);
+          }
+          else if($.trim($("#mnName").val()) == "" || $.trim($("#mnScore").val()) == "") {
+            $('#status').css('color', '#da0000');
+            $('#status').text('400 Error - No Data');
+            $('input').attr('disabled', false);
+          }
+          else {
+            var dateSlicer = $("#timestamp").val().split('-');
+            var date = new Date(dateSlicer[0], dateSlicer[1] - 1, dateSlicer[2]).format('yyyy. m. d');
+            var serializedData = "지급 일자=" + date + "&이름=" + $.trim($("#mnName").val()) + "&코스=수동 입력&점수=" + $.trim($("#mnScore").val());
+            transmitter(serializedData, 1);
+          }
+        }
+        $("#list").html("");
+        $("#isTest").html("");
+        $("#mnName").val("");
+        $("#mnScore").val("");
+        $("#timestamp").val("");
+        event.preventDefault();
       });
       function scoreProvider(data, course, check) {
         var low = 1, mid = 1.5, high = 2;
@@ -126,7 +135,7 @@
           currentDate = new Date(dateSlicer[0], dateSlicer[1] - 1, dateSlicer[2]).format('yyyy. m. d');
           var i = j = 1;
           for(i = 0; i < datum.length - 1; i++) { if(currentDate == datum[i][1]) { str += '<label for="namelist_' + j + '">' + '<input type="checkbox" checked="checked" name="namelist" id="namelist_' + j + '" value=' + $.trim(datum[i][0]) + "/" + $.trim(datum[i][2]) + '>' + datum[i][0] + " / " + datum[i][2] + "</input></label><br>"; j++; } }
-          if(str != "") { $("#isTest").html("<label for='radio'><input type='checkbox' id='radio' value='test'>시험 기간 할증</input></label><hr style='width:130px;border-bottom:0px;text-align:left;margin-left:0px'>"); }
+          if(str != "") { $("#isTest").html("<label for='radio'><input type='checkbox' id='radio' value='test'>마일리지 할증</input></label><hr style='width:130px;border-bottom:0px;text-align:left;margin-left:0px'>"); }
           else { $("#isTest").html(""); }
           $("#list").html(str);
         }
@@ -152,10 +161,14 @@
       }
       function dataSize(s, b, i, c) { for(b = i = 0; c = s.charCodeAt(i++); b += c >> 11 ? 3 : c >> 7 ? 2 : 1); return b; }
       $('#log').click(function() { $('#logModal').css("display", "block"); });
-      $('#logSpanClose').click(function() { $('#logModal').css("display", "none"); });
+      $('#rawLog').click(function() { $('#rawLogModal').css("display", "block"); });
+      $('#reload').click(function () { onLoad(); });
       $('#nonManual').click(function() { $("#stdWrapper").show(); $("#mnWrapper").hide(); });
       $('#Manual').click(function() { $("#stdWrapper").hide(); $("#mnWrapper").show(); });
-      window.onclick = function(event) { if (event.target == document.getElementById('logModal')) { $('#logModal').css("display", "none"); } }
+      window.onclick = function(event) {
+        if (event.target == document.getElementById('logModal')) { $('#logModal').css("display", "none"); }
+        if (event.target == document.getElementById('rawLogModal')) { $('#rawLogModal').css("display", "none"); }
+      }
       var dateFormat = function () {
         var	token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g,
             pad = function (val, len) {
@@ -223,8 +236,12 @@
       </style>
       <div id="logModal" class="modal">
         <div class="modal-content" style="position: relative; height: auto!important; margin: 5% auto!important;">
-          <span id="logSpanClose" class="close" onclick="onLogCloseClick();" style="position: absolute; right: 8; top: -3;">&times;<br></span>
           <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTy8HCVMBZr1Dz1VYjmgUBNWBTd8Ic45W99vL81L4-sKmq1KZpAmRlEd94jiK3m35ZQmbiqFxEzvWS1/pubhtml?gid=779005898&amp;single=true&amp;widget=true&amp;headers=false"  width="100%" height="93%" scrolling="no" style="margin-top: 1rem"></iframe><br>
+        </div>
+      </div>
+      <div id="rawLogModal" class="modal">
+        <div class="modal-content" style="position: relative; height: auto!important; margin: 5% auto!important;">
+          <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTS42UTV58NdXxJMBIg3ARIVmnGLcMmok7gv0YjyIkH29t1Yk16OidImCYsrtuU1B7f42MhUNQA5kKA/pubhtml?gid=850606151&single=true&widget=true&headers=false" width="100%" height="93%" scrolling="no" style="margin-top: 1rem"></iframe><br>
         </div>
       </div>
   </body>
