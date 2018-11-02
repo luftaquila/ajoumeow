@@ -483,7 +483,7 @@
           &nbsp;&nbsp;&nbsp;<a id='onLogClick' href="#" style="color:#0366d6">Log</a><br>
           <span style="font-size:0.4rem"><br></span>©2018 LUFT - AQUILA.
           &nbsp;<a class="ext" href="/ajoumeyoumeow/about.html" style="color:#0366d6">About</a>
-          <br>신청서 제출 후 표에 반영되기까지 최대 3분 정도 소요됩니다.
+          <br>급식 신청 후 표에 반영되기까지 최대 3분 정도 소요됩니다.
         </div>
     </div>
     <div id="logModal" class="modal">
@@ -606,15 +606,15 @@
         var request, serializedData = "이름=" + $.trim($('#submitName').val()) + "&날짜=" + $('#submitDate').val() + "&코스=" + $(':input[name=course]:radio:checked').val();
         if (request) { request.abort(); }
         if(!/\d\d\d\d\-\d\d\-\d\d/g.test($("#submitDate").val())) {
-          logger('#da0000', '400 Error - Invaild Input : Date');
+          logger('#da0000', '400 Error - Invalid date input');
           $('input').attr('disabled', false);
         }
         else if($.trim($("#submitName").val()) == "") {
-          logger('#da0000', '400 Error - Invaild Input : Name');
+          logger('#da0000', '400 Error - Invalid name input');
           $('input').attr('disabled', false);
         }
         else if($(':input[name=course]:radio:checked').val() == undefined) {
-          logger('#da0000', '400 Error - Invaild Input : Course');
+          logger('#da0000', '400 Error - Invalid course input');
           $('input').attr('disabled', false);
         }
         else {
