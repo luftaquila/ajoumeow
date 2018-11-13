@@ -2,6 +2,8 @@
   <head>
     <title>아주대학교 고양이는 미유미유</title>
     <link rel="shortcut icon" type="image/x-icon" href="/ajoumeyoumeow/Icons/Resized/meyoumeow.ico" />
+    <link rel="stylesheet" href="/ajoumeyoumeow/Resources/alertify.core.css" />
+    <link rel="stylesheet" href="/ajoumeyoumeow/Resources/alertify.default.css" id="toggleCSS" />
     <meta charset="utf-8">
     <meta property="og:title" content="아주대학교 미유미유"/>
     <meta property="og:url" content="https://luftaquila.github.io/ajoumeyoumeow/"/>
@@ -471,7 +473,7 @@
             <input id="submit" type="submit" value="신청하기" disabled="true" style="padding: 0.3rem 0.8rem;"/>
           </form>
         </div>
-        <div id='logBox' style="width:96%; height:15rem; border:1px solid; margin:20 0 0 0; padding:5; display:inline-block; font-size:0.8rem; text-align:left"></div>
+        <div style="width:96%; height:16rem; margin:20 0 0 0; display:inline-block;"></div>
       </div>
         <div id="latestUpdate" style="height:1rem; text-align:right; font-size:0.7rem; font-family:'Malgun Gothic'; margin:5 0 0 0">Loading...</div>
         <div id='bottomInfo' style="text-align:center; font-size:0.813rem; font-family:'Malgun Gothic'; margin:17 0 0 0">
@@ -555,9 +557,10 @@
     </div>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+    <script src='/ajoumeyoumeow/Resources/alertify.min.js'></script>
     <script>
       $(function() {
-        log = [], isNotice = false;
+        isNotice = false;
         if(new Date().getDay() == 0 || new Date().getDay() == 6)
         {
           $('ul.tabs li').removeClass('current');
@@ -573,7 +576,7 @@
         $("#todayDate").html("작동 중...");
         $("#todayDateWeekEnd").html("작동 중...");
         $("#latestUpdate").html("Loading...");
-        logger('#ffbf00', 'Loading Data...');
+        alertify.log('Loading Data...');
         $.ajax({
           url: 'https://docs.google.com/spreadsheet/pub?key=1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A&single=true&gid=850606151&range=G2:I&output=csv',
           type: "GET",
@@ -594,7 +597,7 @@
                 setData();
                 $('input').attr('disabled', false);
                 download += dataSize(response);
-                logger('#15be00', '200 Ready. ' + (download / 1000).toFixed(1) + 'KB Loaded');
+                alertify.success('Ready. ' + (download / 1000).toFixed(1) + 'KB Loaded');
                 if(Cookies.get('fillName')) { $('#submitName').val(Cookies.get('fillName')); }
               }
             });
@@ -606,27 +609,27 @@
         var request, serializedData = "이름=" + $.trim($('#submitName').val()) + "&날짜=" + $('#submitDate').val() + "&코스=" + $(':input[name=course]:radio:checked').val();
         if (request) { request.abort(); }
         if(!/\d\d\d\d\-\d\d\-\d\d/g.test($("#submitDate").val())) {
-          logger('#da0000', '400 Error - Invalid date input');
+          alertify.error('Error - Invalid date input');
           $('input').attr('disabled', false);
         }
         else if($.trim($("#submitName").val()) == "") {
-          logger('#da0000', '400 Error - Invalid name input');
+          alertify.error('Error - Invalid name input');
           $('input').attr('disabled', false);
         }
         else if($(':input[name=course]:radio:checked').val() == undefined) {
-          logger('#da0000', '400 Error - Invalid course input');
+          alertify.error('Error - Invalid course input');
           $('input').attr('disabled', false);
         }
         else {
-          logger('#ffbf00', 'Sending ' + dataSize(encodeURI(serializedData)) + 'B Data...');
+          alertify.log('Sending ' + dataSize(encodeURI(serializedData)) + 'B Data...');
           console.log("DataSet : " + serializedData);
           request = $.ajax({
               type: 'POST',
               url: "https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec",
               data: encodeURI(serializedData)
           });
-          request.done(function() { logger('#15be00', '201 Transmitted. Ready.'); Cookies.set('fillName', $.trim($('#submitName').val()), {expires : 90}); });
-          request.fail(function(jqXHR, textStatus, errorThrown) { logger('#da0000', 'Error - ' + textStatus + errorThrown); });
+          request.done(function() { alertify.success('Data Transmitted.') Cookies.set('fillName', $.trim($('#submitName').val()), {expires : 90}); });
+          request.fail(function(jqXHR, textStatus, errorThrown) { alertify.error('Error - ' + textStatus + errorThrown); });
           request.always(function() { $('input').attr('disabled', false); $('#submitDate').val(""); $("input:radio").prop('checked', false); });
         }
         event.preventDefault();
@@ -728,11 +731,6 @@
           }
         }
         return " ";
-      }
-      function logger(color, text) {
-        log.push(new Date().format('yyyy.mm.dd HH:MM:ss') + '&nbsp;&nbsp;><span style="color:' + color + '">' + text + '</span><br>');
-        if(log.length > 13) { log.shift(); }
-        $('#logBox').html(log);
       }
       function dataSize(s, b, i, c) { for(b = i = 0; c = s.charCodeAt(i++); b += c >> 11 ? 3 : c >> 7 ? 2 : 1); return b; }
       $('#onLogClick').click(function() { $('#logModal').css("display", "block"); });
