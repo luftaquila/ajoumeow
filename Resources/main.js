@@ -1,7 +1,6 @@
 $(function() {
   isNotice = false;
-  if(new Date().getDay() == 0 || new Date().getDay() == 6)
-  {
+  if(new Date().getDay() == 0 || new Date().getDay() == 6) {
     $('ul.tabs li').removeClass('current');
     $('#tab-1').removeClass('current');
     $('#tab-2').addClass('current');
@@ -15,6 +14,7 @@ function load() {
   $("#todayDate").html("작동 중...");
   $("#todayDateWeekEnd").html("작동 중...");
   $("#latestUpdate").html("Loading...");
+  $('#info').attr('href', '/ajoumeyoumeow/about.html?' + $('#version').html() + '!' + $('#release').html());
   alertify.log('Loading Data...');
   $.ajax({
     url: 'https://docs.google.com/spreadsheet/pub?key=1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A&single=true&gid=850606151&range=G2:I&output=csv',

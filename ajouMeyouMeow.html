@@ -1,6 +1,8 @@
 <html>
   <head>
     <title>아주대학교 고양이는 미유미유</title>
+    <a id='version' style="display: none;">v3.5.0</a>
+    <a id='release' style="display: none;">2019-01-02 01:22 AM</a>
     <link rel="shortcut icon" type="image/x-icon" href="/ajoumeyoumeow/Icons/Resized/meyoumeow.ico" />
     <link rel="stylesheet" href="/ajoumeyoumeow/Resources/alertify/alertify.core.css" />
     <link rel="stylesheet" href="/ajoumeyoumeow/Resources/alertify/alertify.default.css" id="toggleCSS" />
@@ -353,7 +355,7 @@
         </div>
       </div>
       <div id="tab-3" class="tab-content" style="width:100%; text-align:center;">
-        <div id='form' style="width:100%; text-align:center; margin:50 0 20 0">
+        <div id='form' style="width:100%; text-align:center; margin: 0; padding: 50 0 0 0">
           <form id="DATA">
             이름 : <input id='submitName' type='text' style="width:100px" disabled="true"/><br><span style="line-height:50%"><br></span>
             날짜 : <input id="submitDate" type="date" name="submitDate" value="" disabled="true"/><br><span style="line-height:50%"><br></span>
@@ -362,7 +364,6 @@
             <input id="submit" type="submit" value="신청하기" disabled="true" style="padding: 0.3rem 0.8rem;"/>
           </form>
         </div>
-        <div style="width:96%; height:16rem; margin:20 0 0 0; display:inline-block;"></div>
       </div>
         <div id="latestUpdate" style="height:1rem; text-align:right; font-size:0.7rem; font-family:'Malgun Gothic'; margin:5 0 0 0">Loading...</div>
         <div id='bottomInfo' style="text-align:center; font-size:0.813rem; font-family:'Malgun Gothic'; margin:17 0 0 0">
@@ -373,30 +374,30 @@
           &nbsp;&nbsp;&nbsp;<a href="https://www.flickr.com/photos/ajoumeow" style="color:#0366d6">Photos</a>
           &nbsp;&nbsp;&nbsp;<a id='onLogClick' href="#" style="color:#0366d6">Log</a><br>
           <span style="font-size:0.4rem"><br></span>©2018 LUFT - AQUILA.
-          &nbsp;<a class="ext" href="/ajoumeyoumeow/about.html" style="color:#0366d6">About</a>
+          &nbsp;<a id='info' class="ext" href="#" style="color:#0366d6">About</a>
           <br>급식 신청 후 표에 반영되기까지 최대 3분 정도 소요됩니다.
         </div>
     </div>
     <div id="logModal" class="modal">
-      <div class="modal-content" style="position: relative; height: auto!important; margin: 5% auto!important;">
+      <div class="modal-content" style="position: relative; height: auto; margin: 5% auto;">
         <span id="logSpanClose" class="close" style="position: absolute; right: 8; top: -3;">&times;<br></span>
         <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTS42UTV58NdXxJMBIg3ARIVmnGLcMmok7gv0YjyIkH29t1Yk16OidImCYsrtuU1B7f42MhUNQA5kKA/pubhtml?gid=850606151&single=true&widget=true&headers=false" width="100%" height="93%" scrolling="no" style="margin-top: 1rem"></iframe><br>
       </div>
     </div>
     <div id="mapModal" class="modal">
-      <div class="modal-content" style="position: relative; text-align: center">
+      <div id='mapModalContent' class="modal-content" style="position: relative; height: auto; text-align: center">
         <span id="mapSpanClose" class="close" style="position: absolute; right: 8; top: -3;">&times;<br></span>
-        <img src="/ajoumeyoumeow/Icons/map.png" style="width:100%; height:100%">
+        <img id='map' src="/ajoumeyoumeow/Icons/map.png" style="width:100%; height:auto">
       </div>
     </div>
     <div id="mileModal" class="modal">
-      <div class="modal-content" style="position: relative; height: auto!important; margin: 5% auto!important;">
+      <div class="modal-content" style="position: relative; height: auto; margin: 5% auto;">
         <span id="mileSpanClose" class="close" style="position: absolute; right: 8; top: -3;">&times;<br></span>
         <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTy8HCVMBZr1Dz1VYjmgUBNWBTd8Ic45W99vL81L4-sKmq1KZpAmRlEd94jiK3m35ZQmbiqFxEzvWS1/pubhtml?gid=1900667290&amp;single=true&amp;widget=true&amp;headers=false" width="100%" height="93%" scrolling="no" style="margin-top: 1rem"></iframe><br>
       </div>
     </div>
     <div id="rankModal" class="modal">
-      <div class="modal-content" style="position: relative; text-align: center">
+      <div id='rankModalContent' class="modal-content" style="position: relative; height: 20rem; text-align: center">
         <span id="rankSpanClose" class="close" style="position: absolute; right: 8; top: -3;">&times;</span>
         <div style="position: absolute; height: 19rem; top: 0; bottom: 0; left: 0; right: 0; margin: auto;">
           <span style="font-size: 1.3rem">☆미유미유 마일리지 랭킹☆</span>
@@ -416,29 +417,28 @@
       </div>
     </div>
     <div id="noticeModal" class="modal">
-      <div class="modal-content" style="position: relative; text-align: center; margin: 10% auto; height:80%">
+      <div class="modal-content" style="position: relative; text-align: center; margin: 10% auto; height:auto">
         <span id="noticeSpanClose" class="close" style="position: absolute; right: 8; top: -3;">&times;</span>
-        <div style="position: relative; height: 100%; font-size:0.8rem; margin:5 0; display:inline-block">
-          <span style="font-size: 1.3rem; background-color:palegreen">☆공지사항☆</span><br><br>
+        <div style="position: relative; height: auto; font-size:0.8rem; margin:5 0; display:inline-block">
+          <span style="font-size: 1.3rem;">☆공지사항☆</span><br><br>
           <span style="background-color:aquamarine">[오늘의 사자성어]</span><br>
           <span style="background-color:lightcyan">업대이투</span> (위태로울 업, 몹쓸 대, 이로울 이, 덮개 투)<br>
           위태롭고 몹쓸 코드를 이로운 코드로 덮어씌우다.<br><span style="line-height:70%"><br></span>
-          <span style="background-color:aquamarine">[급식신청 사이트 업데이트 안내]</span><br><span style="line-height:50%"><br></span>
-          1. 이제 사이트가 마지막으로 신청한 이름을 기억합니다.<br>
-             &nbsp;&nbsp;&nbsp;<span>신청할 때마다 매번 이름을 타이핑하지 않아도 됩니다</span>.<br>
-          2. <span>아무도 몰랐겠지만 사이트 동작 속도가 0.3초 정도 빨라졌습니다</span>.<br>(뿌듯)<br>
-          3. 데스크톱 환경에서 팝업 하단부가 잘리는 현상을 해결했습니다.<br><span style="line-height:70%"><br></span>
+          <span style="background-color:aquamarine">[업데이트 안내]</span><br><span style="line-height:50%"><br></span>
+          1. 이제 사이트가 마지막 신청자의 이름을 기억합니다.<br>
+             &nbsp;&nbsp;&nbsp;<span>신청할 때마다 매번 이름을 입력하지 않아도 됩니다</span>.<br>
+          2. 데스크톱 환경에서의 사이트 레이아웃을 조정했습니다.<br><span style="line-height:70%"><br></span>
           <span style="background-color:aquamarine">[기능 사용법 안내]</span><br><span style="line-height:30%"><br></span>
             <span style="font-weight:bold">Statistics</span><br>
-          	목록에서 이름을 선택하면 언제 활동했는지 기록을 보여줍니다.<br><span style="line-height:50%"><br></span>
+          	목록에서 이름을 선택하면 활동 기록을 보여줍니다.<br><span style="line-height:50%"><br></span>
             <span style="font-weight:bold">Rank</span><br>
           	마일리지 순위표를 보여줍니다. 사이트 로딩 시 팝업됩니다.<br>
-          	마일리지 현황을 누르면 현재 내 마일리지를 볼 수 있습니다.<br><span style="line-height:50%"><br></span>
+          	마일리지 현황을 누르면 현재 내 마일리지를 보여줍니다.<br><span style="line-height:50%"><br></span>
             <span style="font-weight:bold">Map</span><br>
-          	코스가 가물가물할 때 급식 코스의 간단한 약도를 보여줍니다.<br><span style="line-height:50%"><br></span>
+          	코스가 가물가물할 때 급식 코스 약도를 보여줍니다.<br><span style="line-height:50%"><br></span>
             <span style="font-weight:bold">Notice</span> : 이 공지 창을 다시 띄워줍니다.<br>
             <span style="font-weight:bold">Photos</span> : 학교 고양이 사진이 잔뜩 있습니다!<br>
-            <span style="font-weight:bold">Log</span> : 급식 신청 기록 로그입니다.<br>
+            <span style="font-weight:bold">Log</span> : 급식 신청 기록 로그입니다.<br><br>
         </div>
         <div style="font-size: 0.8rem; position: absolute; right: 8; bottom: 5">
           <label for="noticeBlock"><input type="checkbox" id="noticeBlock">다시 보지 않기</input></label>
