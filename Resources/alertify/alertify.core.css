@@ -125,7 +125,7 @@
 @media only screen and (max-width: 680px) {
 	.alertify,
 	.alertify-logs {
-		width: 90%;
+		width: 70%;
 		-webkit-box-sizing: border-box;
 		   -moz-box-sizing: border-box;
 		        box-sizing: border-box;
