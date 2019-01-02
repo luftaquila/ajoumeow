@@ -146,7 +146,7 @@
         $('#status').text('Sending ' + dataSize(encodeURI(serializedData)) * count + 'B Data...');
         request = $.ajax({
             type: 'POST',
-            url: "https://script.google.com/macros/s/AKfycbwlIRS2mijHFMnA5222c6ZhB-EWKDswQSggGHERc1zShw1yGFM/exec",
+            url: "https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec",
             data: encodeURI(serializedData)
         });
         request.done(function() {
