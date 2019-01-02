@@ -26,7 +26,7 @@ function load() {
       datum.push(['18', '10', '09']);
       download += dataSize(response);
       $.ajax({
-        url: 'https://docs.google.com/spreadsheet/pub?key=1j41TAb8itKVq2X2c-pSpRgIpGeMrt-95ePrkAhe4Vec&single=true&gid=1900667290&sheet=Statistics&range=A3:E5&output=csv',
+        url: 'https://docs.google.com/spreadsheet/pub?key=1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A&single=true&gid=1034362398&sheet=Statistics&range=A3:E5&output=csv',
         type: "GET",
         dataType: 'text',
         cache: false,
