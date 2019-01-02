@@ -25,6 +25,16 @@
         점수 : <input id='mnScore' type='number' step='any' style="width:100px" value=""></input>
       </div>
     </form>
+    <div id="logModal" class="modal">
+      <div class="modal-content" style="position: relative; height: auto!important; margin: 5% auto!important;">
+        <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTS42UTV58NdXxJMBIg3ARIVmnGLcMmok7gv0YjyIkH29t1Yk16OidImCYsrtuU1B7f42MhUNQA5kKA/pubhtml?gid=1034362398&single=true"  width="100%" height="93%" scrolling="no" style="margin-top: 1rem"></iframe><br>
+      </div>
+    </div>
+    <div id="rawLogModal" class="modal">
+      <div class="modal-content" style="position: relative; height: auto!important; margin: 5% auto!important;">
+        <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTS42UTV58NdXxJMBIg3ARIVmnGLcMmok7gv0YjyIkH29t1Yk16OidImCYsrtuU1B7f42MhUNQA5kKA/pubhtml?gid=850606151&single=true" width="100%" height="93%" scrolling="no" style="margin-top: 1rem"></iframe><br>
+      </div>
+    </div>
     <script>
       isVerified = 0;
       $(function() { onLoad(); });
@@ -50,8 +60,9 @@
                 if(pwInput == datum[pwPosition][1] + datum[pwPosition][2]) { isVerified = 1; return; }
                 else if(pwInput == null) { alert("Access Denied"); window.location.href = 'https://luftaquila.github.io/ajoumeyoumeow'; }
                 else verify();
-              }, 50);
+              }, 100);
             }
+            load();
           }
         });
       }
@@ -234,15 +245,5 @@
           cursor: pointer;
         }
       </style>
-      <div id="logModal" class="modal">
-        <div class="modal-content" style="position: relative; height: auto!important; margin: 5% auto!important;">
-          <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTy8HCVMBZr1Dz1VYjmgUBNWBTd8Ic45W99vL81L4-sKmq1KZpAmRlEd94jiK3m35ZQmbiqFxEzvWS1/pubhtml?gid=779005898&amp;single=true&amp;widget=true&amp;headers=false"  width="100%" height="93%" scrolling="no" style="margin-top: 1rem"></iframe><br>
-        </div>
-      </div>
-      <div id="rawLogModal" class="modal">
-        <div class="modal-content" style="position: relative; height: auto!important; margin: 5% auto!important;">
-          <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTS42UTV58NdXxJMBIg3ARIVmnGLcMmok7gv0YjyIkH29t1Yk16OidImCYsrtuU1B7f42MhUNQA5kKA/pubhtml?gid=850606151&single=true&widget=true&headers=false" width="100%" height="93%" scrolling="no" style="margin-top: 1rem"></iframe><br>
-        </div>
-      </div>
   </body>
 </html>
