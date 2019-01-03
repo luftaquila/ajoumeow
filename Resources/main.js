@@ -46,55 +46,55 @@ $("#DATA").submit( function(event) {
   $('input').attr('disabled', true);
   var request, serializedData;
   if (request) { request.abort(); }
-  if($('input[name=mode]').val() == '수정') {
-    if(!/\d\d\d\d\-\d\d\-\d\d/g.test($("#editDate").val())) {
-      alertify.error('Error - Invalid date input');
-      $('input').attr('disabled', false);
-    }
-    else if($.trim($("#editName").val()) == "") {
-      alertify.error('Error - Invalid name input');
-      $('input').attr('disabled', false);
-    }
-    else if($(':input[name=edit_course]:radio:checked').val() == undefined) {
-      alertify.error('Error - Invalid course input');
-      $('input').attr('disabled', false);
-    }
+  if(!/\d\d\d\d\-\d\d\-\d\d/g.test($("#submitDate").val())) {
+    alertify.error('날짜를 입력하세요.');
+    $('input').attr('disabled', false);
+  }
+  else if($.trim($("#submitName").val()) == "") {
+    alertify.error('이름을 입력하세요.');
+    $('input').attr('disabled', false);
+  }
+  else if($(':input[name=course]:radio:checked').val() == undefined) {
+    alertify.error('코스를 입력하세요.');
+    $('input').attr('disabled', false);
+  }
+  else if($(':input[name=mode]:radio:checked').val() == '수정' && !/\d\d\d\d\-\d\d\-\d\d/g.test($("#editDate").val())) {
+    alertify.error('수정할 날짜를 입력하세요.');
+    $('input').attr('disabled', false);
+  }
+  else if($(':input[name=mode]:radio:checked').val() == '수정' && $.trim($("#editName").val()) == "") {
+    alertify.error('수정할 이름을 입력하세요.');
+    $('input').attr('disabled', false);
+  }
+  else if($(':input[name=mode]:radio:checked').val() == '수정' && $(':input[name=edit_course]:radio:checked').val() == undefined) {
+    alertify.error('수정할 코스를 입력하세요.');
+    $('input').attr('disabled', false);
+  }
+  else if($(':input[name=mode]:radio:checked').val() == '삭제' && $('#submitDate').val() == new Date().format('yyyy-mm-dd')) {
+    alertify.error('당일 취소는 불가능합니다.');
+    $('input').attr('disabled', false);
   }
   else {
-    if(!/\d\d\d\d\-\d\d\-\d\d/g.test($("#submitDate").val())) {
-      alertify.error('Error - Invalid date input');
-      $('input').attr('disabled', false);
+    if($(':input[name=mode]:radio:checked').val() == '신청') {
+      serializedData = "신청=신청&이름=" + $.trim($('#submitName').val()) + "&날짜=" + $('#submitDate').val() + "&코스=" + $(':input[name=course]:radio:checked').val();
     }
-    else if($.trim($("#submitName").val()) == "") {
-      alertify.error('Error - Invalid name input');
-      $('input').attr('disabled', false);
+    else if($(':input[name=mode]:radio:checked').val() == '수정') {
+      serializedData = "수정=수정&이름=" + $.trim($('#submitName').val()) + "&날짜=" + $('#submitDate').val() + "&코스=" + $(':input[name=course]:radio:checked').val() +
+                       "&수정 이름=" + $.trim($('#editName').val()) + "&수정 날짜=" + $('#editDate').val() + "&수정 코스=" + $(':input[name=edit_course]:radio:checked').val();
     }
-    else if($(':input[name=course]:radio:checked').val() == undefined) {
-      alertify.error('Error - Invalid course input');
-      $('input').attr('disabled', false);
+    else if($(':input[name=mode]:radio:checked').val() == '삭제') {
+      serializedData = "삭제=삭제&이름=" + $.trim($('#submitName').val()) + "&날짜=" + $('#submitDate').val() + "&코스=" + $(':input[name=course]:radio:checked').val();
     }
-    else {
-      if($('input[name=mode]').val() == '신청') {
-        serializedData = "신청=신청&이름=" + $.trim($('#submitName').val()) + "&날짜=" + $('#submitDate').val() + "&코스=" + $(':input[name=course]:radio:checked').val();
-      }
-      else if($('input[name=mode]').val() == '수정') {
-        serializedData = "수정=수정&이름=" + $.trim($('#submitName').val()) + "&날짜=" + $('#submitDate').val() + "&코스=" + $(':input[name=course]:radio:checked').val() +
-                         "수정 이름=" + $.trim($('#editName').val()) + "&수정 날짜=" + $('#editDate').val() + "&수정 코스=" + $(':input[name=edit_course]:radio:checked').val();
-      }
-      else if($('input[name=mode]').val() == '삭제') {
-        serializedData = "삭제=삭제&이름=" + $.trim($('#submitName').val()) + "&날짜=" + $('#submitDate').val() + "&코스=" + $(':input[name=course]:radio:checked').val();
-      }
-      alertify.log('Sending ' + dataSize(encodeURI(serializedData)) + 'B Data...');
-      console.log("DataSet : " + serializedData);
-      request = $.ajax({
-          type: 'POST',
-          url: "https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec",
-          data: encodeURI(serializedData)
-      });
-      request.done(function() { alertify.success('Data Transmitted.'); Cookies.set('fillName', $.trim($('#submitName').val()), {expires : 90}); });
-      request.fail(function(jqXHR, textStatus, errorThrown) { alertify.error('Error - ' + textStatus + errorThrown); });
-      request.always(function() { $('input').attr('disabled', false); $('#submitDate').val(""); $("input:radio").prop('checked', false); });
-    }
+    alertify.log('Sending ' + dataSize(encodeURI(serializedData)) + 'B Data...');
+    console.log("DataSet : " + serializedData);
+    request = $.ajax({
+        type: 'POST',
+        url: "https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec",
+        data: encodeURI(serializedData)
+    });
+    request.done(function() { alertify.success('Data Transmitted.'); Cookies.set('fillName', $.trim($('#submitName').val()), {expires : 90}); });
+    request.fail(function(jqXHR, textStatus, errorThrown) { alertify.error('Error - ' + textStatus + errorThrown); });
+    request.always(function() { $('input').attr('disabled', false); $('#submitDate').val(""); $('input:radio[name=course], input:radio[name=edit_course]').prop('checked', false); });
   }
   event.preventDefault();
 });
