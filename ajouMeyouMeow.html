@@ -353,17 +353,28 @@
         </div>
       </div>
       <div id="tab-3" class="tab-content" style="width:100%; text-align:center;">
-        <div id='form' style="width:100%; text-align:center; margin: 0; padding: 50 0 0 0">
+        <div id='form' style="width:100%; text-align:center; margin: 0; padding: 30 0 0 0">
           <form id="DATA">
-            이름 : <input id='submitName' type='text' style="width:100px" disabled="true"/><br><span style="line-height:50%"><br></span>
-            날짜 : <input id="submitDate" type="date" name="submitDate" value="" disabled="true"/><br><span style="line-height:50%"><br></span>
-            <label for='course_1st'><input type='radio' id='course_1st' name='course' value="1코스" disabled="true">1코스</input></label>&nbsp;
-            <label for='course_2nd'><input type='radio' id='course_2nd' name='course' value='2코스' disabled="true">2코스</input></label><br><br>
-            <input id="submit" type="submit" value="신청하기" disabled="true" style="padding: 0.3rem 0.8rem;"/>
+            <label for='modeAdd'><input type='radio' id='modeAdd' name='mode' value='신청' disabled='true' checked>신청</input></label>&nbsp;&nbsp;&nbsp;
+            <label for='modeEdit'><input type='radio' id='modeEdit' name='mode' value='수정' disabled='true'>수정</input></label>&nbsp;&nbsp;&nbsp;
+            <label for='modeDelete'><input type='radio' id='modeDelete' name='mode' value='삭제' disabled='true'>삭제</input></label><br><br>
+              이름 : <input id='submitName' type='text' style="width:100px" disabled="true"/><br><span style="line-height:50%"><br></span>
+              날짜 : <input id="submitDate" type="date" name="submitDate" value="" disabled="true"/><br><span style="line-height:50%"><br></span>
+              <label for='course_1st'><input type='radio' id='course_1st' name='course' value="1코스" disabled="true">1코스</input></label>&nbsp;
+              <label for='course_2nd'><input type='radio' id='course_2nd' name='course' value='2코스' disabled="true">2코스</input></label><br><br>
+              <div id='editBox' style="display: none">
+                <a id='textTwo'>↓</a><br><br>
+                이름 : <input id='editName' type='text' style="width:100px" disabled="true"/><br><span style="line-height:50%"><br></span>
+                날짜 : <input id="editDate" type="date" name="submitDate" value="" disabled="true"/><br><span style="line-height:50%"><br></span>
+                <label for='edit_course_1st'><input type='radio' id='edit_course_1st' name='edit_course' value="1코스" disabled="true">1코스</input></label>&nbsp;
+                <label for='edit_course_2nd'><input type='radio' id='edit_course_2nd' name='edit_course' value='2코스' disabled="true">2코스</input></label><br><br>
+              </div>
+              <a id='infoBox'></a>
+              <input id="submit" type="submit" value="신청하기" disabled="true" style="padding: 0.3rem 0.8rem;"/>
           </form>
         </div>
       </div>
-      <div id="latestUpdate" style="height:1rem; text-align:right; font-size:0.7rem; font-family:'Malgun Gothic'; margin:5 0 0 0">Loading...</div>
+      <div id="latestUpdate" style="height:1rem; text-align:right; font-size: 0.7rem; font-family:'Malgun Gothic'; margin:5 0 0 0">Loading...</div>
       <div id='bottomInfo' style="text-align:center; font-size:0.813rem; font-family:'Malgun Gothic'; margin:17 0 0 0">
         <a id='onNoticeClick' href="#" style="color:#0366d6">Notice</a>
         &nbsp;&nbsp;&nbsp;<a href="/ajoumeyoumeow/statistics" style="color:#0366d6">Statistics</a>
@@ -455,7 +466,7 @@
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
     <script src='/ajoumeyoumeow/Resources/alertify/alertify.min.js'></script>
-    <script src='/ajoumeyoumeow/Resources/main.min.js'></script>
+    <script src='/ajoumeyoumeow/Resources/main.js'></script>
     <script type="text/javascript" src="//wcs.naver.net/wcslog.js"></script>
     <script type="text/javascript">
       if(!wcs_add) var wcs_add = {};
