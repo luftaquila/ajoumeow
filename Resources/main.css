@@ -87,6 +87,11 @@ ul.tabs li.current {
   background: url(/ajoumeyoumeow/Icons/Resized/external.png) no-repeat left center;
   padding-left: 14px;
 }
+.popup {
+  color: #0366d6;
+  cursor: pointer;
+  text-decoration: underline;
+}
 .ritz .waffle a { color: inherit; }
 .ritz .waffle .s3{border-top:0.125rem SOLID #000000;border-bottom:0.125rem SOLID #000000;border-right:0.125rem SOLID #000000;border-left:0.125rem SOLID #000000;background-color:#ff9900;text-align:center;font-weight:bold;color:#ffffff;font-family:'Malgun Gothic';font-size:1.250rem;vertical-align:middle;white-space:nowrap;direction:ltr;padding:0.125rem 0.188rem 0.125rem 0.188rem;}
 .ritz .waffle .s5{border-bottom:0.063rem SOLID #000000;border-right:0.063rem SOLID #000000;border-left:0.125rem SOLID #000000;background-color:#b6d7a8;text-align:center;color:#000000;font-family:'Malgun Gothic';font-size:0.813rem;vertical-align:middle;white-space:nowrap;direction:ltr;padding:0.125rem 0.188rem 0.125rem 0.188rem;}

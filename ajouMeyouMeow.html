@@ -1,9 +1,9 @@
-<html>
+<html style='-ms-user-select: none; -moz-user-select: -moz-none; -webkit-user-select: none; -khtml-user-select: none; user-select:none;'>
   <head>
     <title>아주대학교 고양이는 미유미유</title>
-    <a id='version' style="display: none;">v3.7.2</a>
-    <a id='release' style="display: none;">2019-01-04 06:52 PM</a>
     <link rel="shortcut icon" type="image/x-icon" href="/ajoumeyoumeow/Icons/Resized/meyoumeow.ico" />
+    <a id='version' style="display: none;">v3.7.3</a>
+    <a id='release' style="display: none;">2019-01-04 07:40 PM</a>
     <link rel="stylesheet" href="/ajoumeyoumeow/Resources/alertify/alertify.core.css" />
     <link rel="stylesheet" href="/ajoumeyoumeow/Resources/alertify/alertify.default.css" id="toggleCSS" />
     <link rel="stylesheet" href="/ajoumeyoumeow/Resources/main.min.css" />
@@ -30,7 +30,7 @@
         <li class="tab-link current" data-tab="tab-1">평일</li>
         <li class="tab-link" data-tab="tab-2" id="tab_two">주말</li>
         <li class="tab-link" data-tab="tab-3">급식 신청</li>
-        <button onclick="load();" style="float: right; padding: 0.5rem 0.8rem; cursor: pointer; font-size: 0.9rem">새로고침</button>
+        <button id='refresh' style="float: right; padding: 0.5rem 0.8rem; cursor: pointer; font-size: 0.9rem">새로고침</button>
       </ul>
       <div id="tab-1" class="tab-content current">
         <div class="ritz grid-container" dir="ltr">
@@ -375,23 +375,23 @@
       </div>
       <div id="latestUpdate" style="height:1rem; text-align:right; font-size: 0.7rem; font-family:'Malgun Gothic'; margin:5 0 0 0">Loading...</div>
       <div id='bottomInfo' style="text-align:center; font-size:0.813rem; font-family:'Malgun Gothic'; margin:17 0 0 0">
-        <a id='onNoticeClick' href="#" style="color:#0366d6">Notice</a>
-        &nbsp;&nbsp;&nbsp;<a href="/ajoumeyoumeow/statistics.html" style="color:#0366d6">Statistics</a>
-        &nbsp;&nbsp;&nbsp;<a id='onRankClick' href="#" style="color:#0366d6">Rank</a>
-        &nbsp;&nbsp;&nbsp;<a id='onMapClick' href="#" style="color:#0366d6">Map</a>
-        &nbsp;&nbsp;&nbsp;<a href="/ajoumeyoumeow/history.html" style="color:#0366d6">History</a><br>
+        <span class='popup' id='onNoticeClick'>Notice</span>
+        &nbsp;&nbsp;&nbsp;<a href="/ajoumeyoumeow/statistics.html" style="color: #0366d6">Statistics</a>
+        &nbsp;&nbsp;&nbsp;<span class='popup' id='onRankClick'>Rank</span>
+        &nbsp;&nbsp;&nbsp;<span class='popup' id='onMapClick'>Map</span>
+        &nbsp;&nbsp;&nbsp;<a href="/ajoumeyoumeow/history.html" style="color: #0366d6">History</a><br>
         <span style="font-size:0.4rem"><br></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;©2018 LUFT - AQUILA.
-        &nbsp;<a id='info' class="ext" href="#" style="color:#0366d6">About</a>
-        &nbsp;<a id='info' class="ext" href="https://docs.google.com/spreadsheets/d/1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A/edit?usp=sharing" style="color:#0366d6">Sheet</a>&nbsp;&nbsp;
+        &nbsp;<a id='info' class="ext" href="" style="color: #0366d6;">About</a>
+        &nbsp;<a class="ext" target='_blank' href="https://docs.google.com/spreadsheets/d/1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A/edit?usp=sharing" style="color:#0366d6">Sheet</a>&nbsp;&nbsp;
         <ul class="menu" style="display: inline;">
           <li style="display: inline;">
-            <a href="#">▼</a>
+            <a href="javascript:;">▼</a>
         		<ul>
         			<li><a href="/ajoumeyoumeow/calculator.html">Calculator</a></li>
         		</ul>
           </li>
         </ul>
-        <br>v3.7.2 (190104) : 이제 신청 후 변동사항이 표에 즉시 반영됩니다.
+        <br>v3.7.3 (190104) : 이제 신청 후 변동사항이 표에 즉시 반영됩니다.
       </div>
     </div>
     <div id="mapModal" class="modal">
@@ -419,7 +419,7 @@
           1등(<span id='past_t_1'></span>점) : <span id='past_1'></span><br>
           2등(<span id='past_t_2'></span>점) : <span id='past_2'></span><br>
           3등(<span id='past_t_3'></span>점) : <span id='past_3'></span><br><span style="font-size: 0.5rem;"><br></span>
-          <a href="#" id="onMileClick" style="color:#0366d6;font-size: 0.8rem">마일리지 현황 보기</a>
+          <span class='popup' id="onMileClick" style="font-size: 0.8rem">마일리지 현황 보기</span>
         </div>
         <div style="font-size: 0.8rem; position: absolute; right: 8; bottom: 5">
           <label for="popupBlock"><input type="checkbox" id="popupBlock">앞으로 3일간 보지 않기</input></label>

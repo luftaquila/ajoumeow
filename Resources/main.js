@@ -1,4 +1,5 @@
 $(function() {
+  clickEventListener();
   isNotice = false;
   if(new Date().getDay() == 0 || new Date().getDay() == 6) {
     $('ul.tabs li').removeClass('current');
@@ -205,43 +206,46 @@ function yourNameIs(p1, p2, course, rank) {
   return " ";
 }
 function dataSize(s, b, i, c) { for(b = i = 0; c = s.charCodeAt(i++); b += c >> 11 ? 3 : c >> 7 ? 2 : 1); return b; }
-$('#onNoticeClick').click(function() { $('#noticeModal').css("display", "block"); Cookies.remove('noticePop'); noticeBlock.checked = false; });
-$('#onMapClick').click(function() { $('#mapModal').css("display", "block"); });
-$('#onMileClick').click(function() { $('#rankModal').css("display", "none"); $('#mileModal').css("display", "block"); });
-$('#onRankClick').click(function() { $('#rankModal').css("display", "block"); Cookies.remove('popup'); popupBlock.checked = false; });
-$('#popupBlock').click(function() { $('#rankModal').css("display", "none"); Cookies.set('popup', 'hidden', {expires : 3}); });
-$('#noticeBlock').click(function() { $('#noticeModal').css("display", "none"); Cookies.set('noticePop', 'hidden', {expires : 30}); });
-window.onclick = function(event) {
-  if (event.target == document.getElementById('logModal')) { $('#logModal').css("display", "none"); }
-  if (event.target == document.getElementById('mapModal')) { $('#mapModal').css("display", "none"); }
-  if (event.target == document.getElementById('rankModal')) { $('#rankModal').css("display", "none"); }
-  if (event.target == document.getElementById('mileModal')) { $('#mileModal').css("display", "none"); }
-  if (event.target == document.getElementById('noticeModal')) { $('#noticeModal').css("display", "none"); }
+function clickEventListener() {
+  $('#refresh').click(function() { load(); });
+  $('#onNoticeClick').click(function() { $('#noticeModal').css("display", "block"); Cookies.remove('noticePop'); noticeBlock.checked = false; });
+  $('#onMapClick').click(function() { $('#mapModal').css("display", "block"); });
+  $('#onMileClick').click(function() { $('#rankModal').css("display", "none"); $('#mileModal').css("display", "block"); });
+  $('#onRankClick').click(function() { $('#rankModal').css("display", "block"); Cookies.remove('popup'); popupBlock.checked = false; });
+  $('#popupBlock').click(function() { $('#rankModal').css("display", "none"); Cookies.set('popup', 'hidden', {expires : 3}); });
+  $('#noticeBlock').click(function() { $('#noticeModal').css("display", "none"); Cookies.set('noticePop', 'hidden', {expires : 30}); });
+  window.onclick = function(event) {
+    if (event.target == document.getElementById('logModal')) { $('#logModal').css("display", "none"); }
+    if (event.target == document.getElementById('mapModal')) { $('#mapModal').css("display", "none"); }
+    if (event.target == document.getElementById('rankModal')) { $('#rankModal').css("display", "none"); }
+    if (event.target == document.getElementById('mileModal')) { $('#mileModal').css("display", "none"); }
+    if (event.target == document.getElementById('noticeModal')) { $('#noticeModal').css("display", "none"); }
+  }
+  $('#logSpanClose').click(function() { $('#logModal').css("display", "none"); });
+  $('#mapSpanClose').click(function() { $('#mapModal').css("display", "none"); });
+  $('#rankSpanClose').click(function() { $('#rankModal').css("display", "none"); });
+  $('#mileSpanClose').click(function() { $('#mileModal').css("display", "none"); });
+  $('#noticeSpanClose').click(function() { $('#noticeModal').css("display", "none"); });
+  $('ul.tabs li').click(function() {
+    var tab_id = $(this).attr('data-tab');
+    $('ul.tabs li').removeClass('current');
+    $('.tab-content').removeClass('current');
+    $(this).addClass('current');
+    $("#"+tab_id).addClass('current');
+  });
+  $('#modeAdd').click(function() {
+    $('#editBox').css('display', 'none');
+    $('#submit').val('신청하기');
+  });
+  $('#modeEdit').click(function() {
+    $('#editBox').css('display', 'block');
+    $('#submit').val('수정하기');
+  });
+  $('#modeDelete').click(function() {
+    $('#editBox').css('display', 'none');
+    $('#submit').val('삭제하기');
+  });
 }
-$('#logSpanClose').click(function() { $('#logModal').css("display", "none"); });
-$('#mapSpanClose').click(function() { $('#mapModal').css("display", "none"); });
-$('#rankSpanClose').click(function() { $('#rankModal').css("display", "none"); });
-$('#mileSpanClose').click(function() { $('#mileModal').css("display", "none"); });
-$('#noticeSpanClose').click(function() { $('#noticeModal').css("display", "none"); });
-$('ul.tabs li').click(function() {
-  var tab_id = $(this).attr('data-tab');
-  $('ul.tabs li').removeClass('current');
-  $('.tab-content').removeClass('current');
-  $(this).addClass('current');
-  $("#"+tab_id).addClass('current');
-});
-$('#modeAdd').click(function() {
-  $('#editBox').css('display', 'none');
-  $('#submit').val('신청하기');
-});
-$('#modeEdit').click(function() {
-  $('#editBox').css('display', 'block');
-  $('#submit').val('수정하기');
-});
-$('#modeDelete').click(function() {
-  $('#editBox').css('display', 'none');
-  $('#submit').val('삭제하기');
-});
 var dateFormat = function () {
   var	token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g,
       timezone = /\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC)(?:[-+]\d{4})?)\b/g,
