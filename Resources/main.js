@@ -83,6 +83,10 @@ $("#DATA").submit( function(event) {
     alertify.error('당일 취소는 불가능합니다.');
     $('input').attr('disabled', false);
   }
+  else if($(':input[name=mode]:radio:checked').val() == '수정' && $('#submitDate').val() == new Date().format('yyyy-mm-dd') && $('#submitDate').val() != $("#editDate").val()) {
+    alertify.error('당일 날짜 변경은 불가능합니다.');
+    $('input').attr('disabled', false);
+  }
   else {
     if($(':input[name=mode]:radio:checked').val() == '신청') {
       serializedData = "신청=신청&이름=" + $.trim($('#submitName').val()) + "&날짜=" + $('#submitDate').val() + "&코스=" + $(':input[name=course]:radio:checked').val();
