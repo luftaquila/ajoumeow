@@ -197,7 +197,6 @@ function yourNameIs(p1, p2, course, rank) {
   return " ";
 }
 function dataSize(s, b, i, c) { for(b = i = 0; c = s.charCodeAt(i++); b += c >> 11 ? 3 : c >> 7 ? 2 : 1); return b; }
-$('#onLogClick').click(function() { $('#logModal').css("display", "block"); });
 $('#onNoticeClick').click(function() { $('#noticeModal').css("display", "block"); Cookies.remove('noticePop'); noticeBlock.checked = false; });
 $('#onMapClick').click(function() { $('#mapModal').css("display", "block"); });
 $('#onMileClick').click(function() { $('#rankModal').css("display", "none"); $('#mileModal').css("display", "block"); });
