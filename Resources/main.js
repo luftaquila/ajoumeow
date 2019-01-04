@@ -54,6 +54,10 @@ $("#DATA").submit( function(event) {
     alertify.error('이름을 입력하세요.');
     $('input').attr('disabled', false);
   }
+  else if($.trim($("#submitName").val()).indexOf(',') + 1) {
+    alertify.error('이름에 콤마(,)는 사용할 수 없습니다.');
+    $('input').attr('disabled', false);
+  }
   else if($(':input[name=course]:radio:checked').val() == undefined) {
     alertify.error('코스를 입력하세요.');
     $('input').attr('disabled', false);
@@ -68,6 +72,10 @@ $("#DATA").submit( function(event) {
   }
   else if($(':input[name=mode]:radio:checked').val() == '수정' && $(':input[name=edit_course]:radio:checked').val() == undefined) {
     alertify.error('수정할 코스를 입력하세요.');
+    $('input').attr('disabled', false);
+  }
+  else if($(':input[name=mode]:radio:checked').val() == '수정' && ($.trim($("#editName").val()).indexOf(',') + 1)) {
+    alertify.error('이름에 콤마(,)는 사용할 수 없습니다.');
     $('input').attr('disabled', false);
   }
   else if($(':input[name=mode]:radio:checked').val() == '삭제' && $('#submitDate').val() == new Date().format('yyyy-mm-dd')) {
