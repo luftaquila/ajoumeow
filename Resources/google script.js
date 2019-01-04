@@ -11,7 +11,14 @@ function handleResponse(e) {
     var headers = sheet.getRange(1, 1, 1, 4).getValues()[0];
     var nextRow = sheet.getLastRow() + 1;
     var row = [];
-    if(e.parameter['점수']) {
+    if(!e.parameter['점수'] && !e.parameter['신청'] && !e.parameter['수정'] && !e.parameter['삭제']) {
+      var data = doc.getSheetByName('Record').getRange('G2:I').getValues(), csv = "";
+      for (i in data) { csv += data[i][0] + ',' + Utilities.formatDate(data[i][1], "GMT+09:00", "yyyy. M. d") + ',' + data[i][2] + '\n'; }
+      return ContentService
+            .createTextOutput(csv)
+            .setMimeType(ContentService.MimeType.CSV);
+    }
+    else if(e.parameter['점수']) {
       for (i in headers) { row.push(e.parameter[headers[i]]); }
       sheet.getRange(nextRow, 1, 1, row.length).setValues([row]);
     }
@@ -28,7 +35,7 @@ function handleResponse(e) {
       }
       else if(e.parameter['수정']) {
         var data = sheet.getRange('B2:D').getValues();
-        for(var i = data.length - 1; i >= 0; i--) {
+        for (var i = data.length - 1; i >= 0; i--) {
           if(JSON.stringify(new Date(new Date(e.parameter['날짜']) - 32400000)) == JSON.stringify(data[i][1])) {
             if(e.parameter['이름'] == data[i][0]) {
               if(e.parameter['코스'] == data[i][2]) {
@@ -46,7 +53,7 @@ function handleResponse(e) {
       }
       else if(e.parameter['삭제']) {
         var data = sheet.getRange('B2:D').getValues();
-        for(var i = data.length - 1; i >= 0; i--) {
+        for (var i = data.length - 1; i >= 0; i--) {
           if(JSON.stringify(new Date(new Date(e.parameter['날짜']) - 32400000)) == JSON.stringify(data[i][1])) {
             if(e.parameter['이름'] == data[i][0]) {
               if(e.parameter['코스'] == data[i][2]) {
@@ -62,7 +69,7 @@ function handleResponse(e) {
       }
     }
     return ContentService
-          .createTextOutput(JSON.stringify({"result":"success", "row": nextRow}))
+          .createTextOutput(JSON.stringify({"result":"success", "row": nextRow, "data": e}))
           .setMimeType(ContentService.MimeType.JSON);
   }
   catch(e) {

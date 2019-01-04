@@ -16,7 +16,7 @@ function load() {
   $("#latestUpdate").html("Loading...");
   $('#info').attr('href', '/ajoumeyoumeow/about.html?' + $('#version').html() + '!' + $('#release').html());
   $.ajax({
-    url: 'https://docs.google.com/spreadsheet/pub?key=1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A&single=true&gid=850606151&range=G2:I&output=csv',
+    url: 'https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec',
     type: "GET",
     dataType: 'text',
     cache: false,
@@ -92,7 +92,7 @@ $("#DATA").submit( function(event) {
         url: "https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec",
         data: encodeURI(serializedData)
     });
-    request.done(function() { alertify.success('Data Transmitted.'); Cookies.set('fillName', $.trim($('#submitName').val()), {expires : 90}); });
+    request.done(function() { load(); alertify.success('Data Transmitted.'); Cookies.set('fillName', $.trim($('#submitName').val()), {expires : 90}); });
     request.fail(function(jqXHR, textStatus, errorThrown) { alertify.error('Error - ' + textStatus + errorThrown); });
     request.always(function() { $('input').attr('disabled', false); $('#submitDate').val(""); $('input:radio[name=course], input:radio[name=edit_course]').prop('checked', false); });
   }
