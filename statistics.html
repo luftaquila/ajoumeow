@@ -26,7 +26,7 @@
       $(function() {
         nameList = [], data = [], downloadSize = 0;
         $.ajax({
-          url: 'https://docs.google.com/spreadsheet/pub?key=1j41TAb8itKVq2X2c-pSpRgIpGeMrt-95ePrkAhe4Vec&single=true&gid=1900667290&sheet=Statistics&range=M3:M&output=csv',
+          url: 'https://docs.google.com/spreadsheet/pub?key=1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A&single=true&gid=1034362398&sheet=Statistics&range=P3:P&output=csv',
           type: "GET",
           dataType: 'text',
           cache: false,
@@ -34,7 +34,7 @@
             nameList = response.split('\n').map((line) => line.split(','));
             downloadSize += dataSize(response);
             $.ajax({
-              url: 'https://docs.google.com/spreadsheet/pub?key=1j41TAb8itKVq2X2c-pSpRgIpGeMrt-95ePrkAhe4Vec&single=true&gid=779005898&sheet=Authorized&range=A2:D&output=csv',
+              url: 'https://docs.google.com/spreadsheet/pub?key=1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A&single=true&gid=1034362398&sheet=Statistics&range=S3:V&output=csv',
               type: "GET",
               dataType: 'text',
               cache: false,
