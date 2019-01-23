@@ -15,6 +15,7 @@ function load() {
   $("#todayDate").html("작동 중...");
   $("#todayDateWeekEnd").html("작동 중...");
   $("#latestUpdate").html("Loading...");
+  $('svg').addClass('rotating');
   $('#info').attr('href', '/ajoumeyoumeow/about.html?' + $('#version').html() + '!' + $('#release').html());
   $.ajax({
     url: 'https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec',
@@ -34,6 +35,7 @@ function load() {
           rankArray = response.split('\n').map((line) => line.split(','));
           rankArray.forEach(function(value) { value.splice(2, 1); });
           setData();
+          $('svg').removeClass('rotating');
           $('input').attr('disabled', false);
           download += dataSize(response);
           console.log('Ready. ' + (download / 1000).toFixed(1) + 'KB Loaded');
@@ -211,7 +213,7 @@ function yourNameIs(p1, p2, course, rank) {
 }
 function dataSize(s, b, i, c) { for(b = i = 0; c = s.charCodeAt(i++); b += c >> 11 ? 3 : c >> 7 ? 2 : 1); return b; }
 function clickEventListener() {
-  $('#refresh').click(function() { load(); });
+  $('.reload').click(function() { load(); });
   $('#onNoticeClick').click(function() { $('#noticeModal').css("display", "block"); Cookies.remove('noticePop'); noticeBlock.checked = false; });
   $('#onMapClick').click(function() { $('#mapModal').css("display", "block"); });
   $('#onMileClick').click(function() { $('#rankModal').css("display", "none"); $('#mileModal').css("display", "block"); });
