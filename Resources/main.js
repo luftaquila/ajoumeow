@@ -5,7 +5,7 @@ $(function() {
     $('ul.tabs li').removeClass('current');
     $('#tab-1').removeClass('current');
     $('#tab-2').addClass('current');
-    $('#tab_two').addClass('current');
+    $('li[data-tab="tab-2"]').addClass('current');
   }
   load();
 });
@@ -107,9 +107,17 @@ $("#DATA").submit( function(event) {
         url: "https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec",
         data: encodeURI(serializedData)
     });
-    request.done(function() { load(); alertify.success('Data Transmitted.'); Cookies.set('fillName', $.trim($('#submitName').val()), {expires : 90}); });
+    request.done(function() {
+      load();
+      alertify.success('Data Transmitted.');
+      Cookies.set('fillName', $.trim($('#submitName').val()), {expires : 90});
+    });
     request.fail(function(jqXHR, textStatus, errorThrown) { alertify.error('Error - ' + textStatus + errorThrown); });
-    request.always(function() { $('input').attr('disabled', false); $('#submitDate').val(""); $('input:radio[name=course], input:radio[name=edit_course]').prop('checked', false); });
+    request.always(function() {
+      $('input').attr('disabled', false);
+      $('#submitDate').val("");
+      $('input:radio[name=course], input:radio[name=edit_course]').prop('checked', false);
+    });
   }
   event.preventDefault();
 });
