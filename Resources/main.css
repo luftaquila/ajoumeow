@@ -2,11 +2,13 @@
   table { width: 100%; }
   html { font-size: 15px; }
   #arrow { font-size: 17px; }
+  .reload {	transform: scale(0.5); }
 }
 @media (min-width:360px) and (max-width:760px) {
   table { width: 100%; }
   html { font-size: 17px; }
   #arrow { font-size: 20px; }
+  .reload {	transform: scale(0.8); }
 }
 @media (min-width:760px) {
   .modal-content { width: 740!important; }
@@ -203,3 +205,27 @@ ul.tabs li.current {
   border-bottom: 1px solid #353539;
 }
 .menu ul li:last-child a { border: none; }
+
+.reload {
+	transition: all 300ms;
+	box-shadow: 0px 2px 1px rgba( 0, 0, 0, 0.1 );
+	margin-left: -25px;
+  margin-top: -25px;
+	border-radius: 100%;
+	position: relative;
+	cursor: pointer;
+	height: 50px;
+	width: 50px;
+  top: 18px;
+  right: 5px;
+}
+svg {
+  transition: transform 500ms cubic-bezier(.85,-0.48,.26,.67);
+  height: 100%;
+  width: 100%;
+}
+@-webkit-keyframes rotating {
+    from{ -webkit-transform: rotate(0deg); }
+    to{ -webkit-transform: rotate(-180deg); }
+}
+.rotating { -webkit-animation: rotating 0.8s ease infinite; }
