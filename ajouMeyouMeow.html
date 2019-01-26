@@ -36,325 +36,267 @@
           </svg>
         </div>
       </ul>
+      <table style="margin: 0 auto; text-align: center">
+        <tr>
+          <td id='date' style="font-weight: bold" colspan="3" rowspan="2"></td>
+          <td id='icon' style="text-align: right;"colspan="1" rowspan="2"></td>
+          <td id='weather' style="text-align: left"></td>
+          <td style="text-align: right">기온 : </td>
+          <td id='temp'></td>
+        </tr>
+        <tr><td id='dust' colspan="3" style="font-size: 0.75rem">PM10 : 150㎍/㎥ / PM2.5 : 218㎍/㎥</td></tr>
+      </table>
       <div id="tab-1" class="tab-content current">
-        <div class="ritz grid-container" dir="ltr">
-          <table class="waffle" cellspacing="0" cellpadding="0" style="margin: 0 auto;">
-            <tbody>
-              <tr style='height:8px;'>
-                <th id="0R0" style="height: 8px;" class="row-headers-background"></th>
-              </tr>
-              <tr style='height:1.65rem;'>
-                <th id="0R1" style="height: 1.65rem;" class="row-headers-background"></th>
-                <td class="s3" dir="ltr" colspan="7" rowspan="2" id="todayDate">Loading...</td>
-              </tr>
-              <tr style='height:1.65rem;'>
-                <th id="0R2" style="height: 1.65rem;" class="row-headers-background"></th>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R3" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s5" dir="ltr" colspan="2">이번 주</td>
-                <td class="s6" id="thisWeek_1">00/00(월)</td>
-                <td class="s6" id="thisWeek_2">00/00(월)</td>
-                <td class="s6" id="thisWeek_3">00/00(월)</td>
-                <td class="s6" id="thisWeek_4">00/00(월)</td>
-                <td class="s7" id="thisWeek_5">00/00(월)</td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R4" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s5" dir="ltr" colspan="2" rowspan="2">1코스</td>
-                <td class="s8" dir="ltr" id="thisWeek_d1_1"></td>
-                <td class="s8" dir="ltr" id="thisWeek_d2_1"></td>
-                <td class="s8" dir="ltr" id="thisWeek_d3_1"></td>
-                <td class="s8" dir="ltr" id="thisWeek_d4_1"></td>
-                <td class="s9" dir="ltr" id="thisWeek_d5_1"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R5" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s10" dir="ltr" id="thisWeek_d1_2"></td>
-                <td class="s10" dir="ltr" id="thisWeek_d2_2"></td>
-                <td class="s10" dir="ltr" id="thisWeek_d3_2"></td>
-                <td class="s10" dir="ltr" id="thisWeek_d4_2"></td>
-                <td class="s11" dir="ltr" id="thisWeek_d5_2"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R6" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s12" dir="ltr" colspan="2" rowspan="2">2코스</td>
-                <td class="s8" dir="ltr" id="thisWeek_s1_1"></td>
-                <td class="s8" dir="ltr" id="thisWeek_s2_1"></td>
-                <td class="s8" dir="ltr" id="thisWeek_s3_1"></td>
-                <td class="s8" dir="ltr" id="thisWeek_s4_1"></td>
-                <td class="s9" dir="ltr" id="thisWeek_s5_1"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R7" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s13" dir="ltr" id="thisWeek_s1_2"></td>
-                <td class="s13" dir="ltr" id="thisWeek_s2_2"></td>
-                <td class="s13" dir="ltr" id="thisWeek_s3_2"></td>
-                <td class="s13" dir="ltr" id="thisWeek_s4_2"></td>
-                <td class="s14" dir="ltr" id="thisWeek_s5_2"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R8" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s15" dir="ltr" colspan="2">다음 주</td>
-                <td class="s16" id="nextWeek_1"></td>
-                <td class="s16" id="nextWeek_2"></td>
-                <td class="s16" id="nextWeek_3"></td>
-                <td class="s16" id="nextWeek_4"></td>
-                <td class="s17" id="nextWeek_5"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R9" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s15" dir="ltr" colspan="2" rowspan="2">1코스</td>
-                <td class="s8" dir="ltr" id="nextWeek_d1_1"></td>
-                <td class="s8" dir="ltr" id="nextWeek_d2_1"></td>
-                <td class="s8" dir="ltr" id="nextWeek_d3_1"></td>
-                <td class="s8" dir="ltr" id="nextWeek_d4_1"></td>
-                <td class="s9" dir="ltr" id="nextWeek_d5_1"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R10" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s10" dir="ltr" id="nextWeek_d1_2"></td>
-                <td class="s10" dir="ltr" id="nextWeek_d2_2"></td>
-                <td class="s10" dir="ltr" id="nextWeek_d3_2"></td>
-                <td class="s10" dir="ltr" id="nextWeek_d4_2"></td>
-                <td class="s11" dir="ltr" id="nextWeek_d5_2"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R11" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s18" dir="ltr" colspan="2" rowspan="2">2코스</td>
-                <td class="s8" dir="ltr" id="nextWeek_s1_1"></td>
-                <td class="s8" dir="ltr" id="nextWeek_s2_1"></td>
-                <td class="s8" dir="ltr" id="nextWeek_s3_1"></td>
-                <td class="s8" dir="ltr" id="nextWeek_s4_1"></td>
-                <td class="s9" dir="ltr" id="nextWeek_s5_1"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R12" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s13" dir="ltr" id="nextWeek_s1_2"></td>
-                <td class="s13" dir="ltr" id="nextWeek_s2_2"></td>
-                <td class="s13" dir="ltr" id="nextWeek_s3_2"></td>
-                <td class="s13" dir="ltr" id="nextWeek_s4_2"></td>
-                <td class="s14" dir="ltr" id="nextWeek_s5_2"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R13" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s19" dir="ltr" colspan="2">셋째 주</td>
-                <td class="s20" id="nextTwoWeek_1"></td>
-                <td class="s20" id="nextTwoWeek_2"></td>
-                <td class="s20" id="nextTwoWeek_3"></td>
-                <td class="s20" id="nextTwoWeek_4"></td>
-                <td class="s21" id="nextTwoWeek_5"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R14" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s19" dir="ltr" colspan="2" rowspan="2">1코스</td>
-                <td class="s8" dir="ltr" id="nextTwoWeek_d1_1"></td>
-                <td class="s8" dir="ltr" id="nextTwoWeek_d2_1"></td>
-                <td class="s8" dir="ltr" id="nextTwoWeek_d3_1"></td>
-                <td class="s8" dir="ltr" id="nextTwoWeek_d4_1"></td>
-                <td class="s9" dir="ltr" id="nextTwoWeek_d5_1"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R15" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s10" dir="ltr" id="nextTwoWeek_d1_2"></td>
-                <td class="s10" dir="ltr" id="nextTwoWeek_d2_2"></td>
-                <td class="s10" dir="ltr" id="nextTwoWeek_d3_2"></td>
-                <td class="s10" dir="ltr" id="nextTwoWeek_d4_2"></td>
-                <td class="s11" dir="ltr" id="nextTwoWeek_d5_2"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R16" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s22" dir="ltr" colspan="2" rowspan="2">2코스</td>
-                <td class="s8" dir="ltr" id="nextTwoWeek_s1_1"></td>
-                <td class="s8" dir="ltr" id="nextTwoWeek_s2_1"></td>
-                <td class="s8" dir="ltr" id="nextTwoWeek_s3_1"></td>
-                <td class="s8" dir="ltr" id="nextTwoWeek_s4_1"></td>
-                <td class="s9" dir="ltr" id="nextTwoWeek_s5_1"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R17" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s13" dir="ltr" id="nextTwoWeek_s1_2"></td>
-                <td class="s13" dir="ltr" id="nextTwoWeek_s2_2"></td>
-                <td class="s13" dir="ltr" id="nextTwoWeek_s3_2"></td>
-                <td class="s13" dir="ltr" id="nextTwoWeek_s4_2"></td>
-                <td class="s14" dir="ltr" id="nextTwoWeek_s5_2"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R18" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s23" dir="ltr" colspan="2">넷째 주</td>
-                <td class="s24" id="nextThreeWeek_1"></td>
-                <td class="s24" id="nextThreeWeek_2"></td>
-                <td class="s24" id="nextThreeWeek_3"></td>
-                <td class="s24" id="nextThreeWeek_4"></td>
-                <td class="s25" id="nextThreeWeek_5"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R19" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s23" colspan="2" rowspan="2">1코스</td>
-                <td class="s26" id="nextThreeWeek_d1_1"></td>
-                <td class="s26" id="nextThreeWeek_d2_1"></td>
-                <td class="s26" id="nextThreeWeek_d3_1"></td>
-                <td class="s26" id="nextThreeWeek_d4_1"></td>
-                <td class="s27" id="nextThreeWeek_d5_1"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R20" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s28" id="nextThreeWeek_d1_2"></td>
-                <td class="s28" id="nextThreeWeek_d2_2"></td>
-                <td class="s28" id="nextThreeWeek_d3_2"></td>
-                <td class="s28" id="nextThreeWeek_d4_2"></td>
-                <td class="s29" id="nextThreeWeek_d5_2"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R21" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s30" colspan="2" rowspan="2">2코스</td>
-                <td class="s26" id="nextThreeWeek_s1_1"></td>
-                <td class="s26" id="nextThreeWeek_s2_1"></td>
-                <td class="s26" id="nextThreeWeek_s3_1"></td>
-                <td class="s26" id="nextThreeWeek_s4_1"></td>
-                <td class="s27" id="nextThreeWeek_s5_1"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R22" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s31" id="nextThreeWeek_s1_2"></td>
-                <td class="s31" id="nextThreeWeek_s2_2"></td>
-                <td class="s31" id="nextThreeWeek_s3_2"></td>
-                <td class="s31" id="nextThreeWeek_s4_2"></td>
-                <td class="s32" id="nextThreeWeek_s5_2"></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <table class='waffle' cellspacing="0" cellpadding="0" style="margin: 0 auto;">
+          <tr>
+            <td class="s4" colspan="2">이번 주</td>
+            <td class="s6" id="thisWeek_1">00/00(월)</td>
+            <td class="s6" id="thisWeek_2">00/00(월)</td>
+            <td class="s6" id="thisWeek_3">00/00(월)</td>
+            <td class="s6" id="thisWeek_4">00/00(월)</td>
+            <td class="s7" id="thisWeek_5">00/00(월)</td>
+          </tr>
+          <tr>
+            <td class="s5" colspan="2" rowspan="2">1코스</td>
+            <td class="s8" id="thisWeek_d1_1"></td>
+            <td class="s8" id="thisWeek_d2_1"></td>
+            <td class="s8" id="thisWeek_d3_1"></td>
+            <td class="s8" id="thisWeek_d4_1"></td>
+            <td class="s9" id="thisWeek_d5_1"></td>
+          </tr>
+          <tr>
+            <td class="s10" id="thisWeek_d1_2"></td>
+            <td class="s10" id="thisWeek_d2_2"></td>
+            <td class="s10" id="thisWeek_d3_2"></td>
+            <td class="s10" id="thisWeek_d4_2"></td>
+            <td class="s11" id="thisWeek_d5_2"></td>
+          </tr>
+          <tr>
+            <td class="s12" colspan="2" rowspan="2">2코스</td>
+            <td class="s8" id="thisWeek_s1_1"></td>
+            <td class="s8" id="thisWeek_s2_1"></td>
+            <td class="s8" id="thisWeek_s3_1"></td>
+            <td class="s8" id="thisWeek_s4_1"></td>
+            <td class="s9" id="thisWeek_s5_1"></td>
+          </tr>
+          <tr>
+            <td class="s13" id="thisWeek_s1_2"></td>
+            <td class="s13" id="thisWeek_s2_2"></td>
+            <td class="s13" id="thisWeek_s3_2"></td>
+            <td class="s13" id="thisWeek_s4_2"></td>
+            <td class="s14" id="thisWeek_s5_2"></td>
+          </tr>
+          <tr>
+            <td class="s15" colspan="2">다음 주</td>
+            <td class="s16" id="nextWeek_1"></td>
+            <td class="s16" id="nextWeek_2"></td>
+            <td class="s16" id="nextWeek_3"></td>
+            <td class="s16" id="nextWeek_4"></td>
+            <td class="s17" id="nextWeek_5"></td>
+          </tr>
+          <tr>
+            <td class="s15" colspan="2" rowspan="2">1코스</td>
+            <td class="s8" id="nextWeek_d1_1"></td>
+            <td class="s8" id="nextWeek_d2_1"></td>
+            <td class="s8" id="nextWeek_d3_1"></td>
+            <td class="s8" id="nextWeek_d4_1"></td>
+            <td class="s9" id="nextWeek_d5_1"></td>
+          </tr>
+          <tr>
+            <td class="s10" id="nextWeek_d1_2"></td>
+            <td class="s10" id="nextWeek_d2_2"></td>
+            <td class="s10" id="nextWeek_d3_2"></td>
+            <td class="s10" id="nextWeek_d4_2"></td>
+            <td class="s11" id="nextWeek_d5_2"></td>
+          </tr>
+          <tr>
+            <td class="s18" colspan="2" rowspan="2">2코스</td>
+            <td class="s8" id="nextWeek_s1_1"></td>
+            <td class="s8" id="nextWeek_s2_1"></td>
+            <td class="s8" id="nextWeek_s3_1"></td>
+            <td class="s8" id="nextWeek_s4_1"></td>
+            <td class="s9" id="nextWeek_s5_1"></td>
+          </tr>
+          <tr>
+            <td class="s13" id="nextWeek_s1_2"></td>
+            <td class="s13" id="nextWeek_s2_2"></td>
+            <td class="s13" id="nextWeek_s3_2"></td>
+            <td class="s13" id="nextWeek_s4_2"></td>
+            <td class="s14" id="nextWeek_s5_2"></td>
+          </tr>
+          <tr>
+            <td class="s19" colspan="2">셋째 주</td>
+            <td class="s20" id="nextTwoWeek_1"></td>
+            <td class="s20" id="nextTwoWeek_2"></td>
+            <td class="s20" id="nextTwoWeek_3"></td>
+            <td class="s20" id="nextTwoWeek_4"></td>
+            <td class="s21" id="nextTwoWeek_5"></td>
+          </tr>
+          <tr>
+            <td class="s19" colspan="2" rowspan="2">1코스</td>
+            <td class="s8" id="nextTwoWeek_d1_1"></td>
+            <td class="s8" id="nextTwoWeek_d2_1"></td>
+            <td class="s8" id="nextTwoWeek_d3_1"></td>
+            <td class="s8" id="nextTwoWeek_d4_1"></td>
+            <td class="s9" id="nextTwoWeek_d5_1"></td>
+          </tr>
+          <tr>
+            <td class="s10" id="nextTwoWeek_d1_2"></td>
+            <td class="s10" id="nextTwoWeek_d2_2"></td>
+            <td class="s10" id="nextTwoWeek_d3_2"></td>
+            <td class="s10" id="nextTwoWeek_d4_2"></td>
+            <td class="s11" id="nextTwoWeek_d5_2"></td>
+          </tr>
+          <tr>
+            <td class="s22" colspan="2" rowspan="2">2코스</td>
+            <td class="s8" id="nextTwoWeek_s1_1"></td>
+            <td class="s8" id="nextTwoWeek_s2_1"></td>
+            <td class="s8" id="nextTwoWeek_s3_1"></td>
+            <td class="s8" id="nextTwoWeek_s4_1"></td>
+            <td class="s9" id="nextTwoWeek_s5_1"></td>
+          </tr>
+          <tr>
+            <td class="s13" id="nextTwoWeek_s1_2"></td>
+            <td class="s13" id="nextTwoWeek_s2_2"></td>
+            <td class="s13" id="nextTwoWeek_s3_2"></td>
+            <td class="s13" id="nextTwoWeek_s4_2"></td>
+            <td class="s14" id="nextTwoWeek_s5_2"></td>
+          </tr>
+          <tr>
+            <td class="s23" colspan="2">넷째 주</td>
+            <td class="s24" id="nextThreeWeek_1"></td>
+            <td class="s24" id="nextThreeWeek_2"></td>
+            <td class="s24" id="nextThreeWeek_3"></td>
+            <td class="s24" id="nextThreeWeek_4"></td>
+            <td class="s25" id="nextThreeWeek_5"></td>
+          </tr>
+          <tr>
+            <td class="s23" colspan="2" rowspan="2">1코스</td>
+            <td class="s8" id="nextThreeWeek_d1_1"></td>
+            <td class="s8" id="nextThreeWeek_d2_1"></td>
+            <td class="s8" id="nextThreeWeek_d3_1"></td>
+            <td class="s8" id="nextThreeWeek_d4_1"></td>
+            <td class="s9" id="nextThreeWeek_d5_1"></td>
+          </tr>
+          <tr>
+            <td class="s10" id="nextThreeWeek_d1_2"></td>
+            <td class="s10" id="nextThreeWeek_d2_2"></td>
+            <td class="s10" id="nextThreeWeek_d3_2"></td>
+            <td class="s10" id="nextThreeWeek_d4_2"></td>
+            <td class="s11" id="nextThreeWeek_d5_2"></td>
+          </tr>
+          <tr>
+            <td class="s26" colspan="2" rowspan="2">2코스</td>
+            <td class="s8" id="nextThreeWeek_s1_1"></td>
+            <td class="s8" id="nextThreeWeek_s2_1"></td>
+            <td class="s8" id="nextThreeWeek_s3_1"></td>
+            <td class="s8" id="nextThreeWeek_s4_1"></td>
+            <td class="s9" id="nextThreeWeek_s5_1"></td>
+          </tr>
+          <tr>
+            <td class="s13" id="nextThreeWeek_s1_2"></td>
+            <td class="s13" id="nextThreeWeek_s2_2"></td>
+            <td class="s13" id="nextThreeWeek_s3_2"></td>
+            <td class="s13" id="nextThreeWeek_s4_2"></td>
+            <td class="s14" id="nextThreeWeek_s5_2"></td>
+          </tr>
+        </table>
       </div>
       <div id="tab-2" class="tab-content">
-        <div class="ritz grid-container" dir="ltr">
-          <table class="waffle" cellspacing="0" cellpadding="0" style="margin: 0 auto;">
-            <tbody>
-              <tr style='height:8px;'>
-                <th id="0R0" style="height: 8px;" class="row-headers-background"></th>
-              </tr>
-              <tr style='height:1.65rem;'>
-                <th id="0R1" style="height: 1.65rem;" class="row-headers-background"></th>
-                <td class="s3" dir="ltr" colspan="7" rowspan="2" id="todayDateWeekEnd">Loading...</td>
-              </tr>
-              <tr style='height:1.65rem;'>
-                <th id="0R2" style="height: 1.65rem;" class="row-headers-background"></th>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R3" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s5" dir="ltr" colspan="2">이번 주</td>
-                <td class="s6" id="thisWeekEnd_1">00/00(월)</td>
-                <td class="s7" id="thisWeekEnd_2">00/00(월)</td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R4" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s5" dir="ltr" colspan="2" rowspan="2">1코스</td>
-                <td class="s8" dir="ltr" id="thisWeekEnd_d1_1"></td>
-                <td class="s9" dir="ltr" id="thisWeekEnd_d2_1"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R5" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s10" dir="ltr" id="thisWeekEnd_d1_2"></td>
-                <td class="s11" dir="ltr" id="thisWeekEnd_d2_2"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R6" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s12" dir="ltr" colspan="2" rowspan="2">2코스</td>
-                <td class="s8" dir="ltr" id="thisWeekEnd_s1_1"></td>
-                <td class="s9" dir="ltr" id="thisWeekEnd_s2_1"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R7" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s13" dir="ltr" id="thisWeekEnd_s1_2"></td>
-                <td class="s14" dir="ltr" id="thisWeekEnd_s2_2"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R8" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s15" dir="ltr" colspan="2">다음 주</td>
-                <td class="s16" id="nextWeekEnd_1"></td>
-                <td class="s17" id="nextWeekEnd_2"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R9" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s15" dir="ltr" colspan="2" rowspan="2">1코스</td>
-                <td class="s8" dir="ltr" id="nextWeekEnd_d1_1"></td>
-                <td class="s9" dir="ltr" id="nextWeekEnd_d2_1"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R10" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s10" dir="ltr" id="nextWeekEnd_d1_2"></td>
-                <td class="s11" dir="ltr" id="nextWeekEnd_d2_2"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R11" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s18" dir="ltr" colspan="2" rowspan="2">2코스</td>
-                <td class="s8" dir="ltr" id="nextWeekEnd_s1_1"></td>
-                <td class="s9" dir="ltr" id="nextWeekEnd_s2_1"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R12" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s13" dir="ltr" id="nextWeekEnd_s1_2"></td>
-                <td class="s14" dir="ltr" id="nextWeekEnd_s2_2"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R13" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s19" dir="ltr" colspan="2">셋째 주</td>
-                <td class="s20" id="nextTwoWeekEnd_1"></td>
-                <td class="s21" id="nextTwoWeekEnd_2"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R14" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s19" dir="ltr" colspan="2" rowspan="2">1코스</td>
-                <td class="s8" dir="ltr" id="nextTwoWeekEnd_d1_1"></td>
-                <td class="s9" dir="ltr" id="nextTwoWeekEnd_d2_1"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R15" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s10" dir="ltr" id="nextTwoWeekEnd_d1_2"></td>
-                <td class="s11" dir="ltr" id="nextTwoWeekEnd_d2_2"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R16" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s22" dir="ltr" colspan="2" rowspan="2">2코스</td>
-                <td class="s8" dir="ltr" id="nextTwoWeekEnd_s1_1"></td>
-                <td class="s9" dir="ltr" id="nextTwoWeekEnd_s2_1"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R17" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s13" dir="ltr" id="nextTwoWeekEnd_s1_2"></td>
-                <td class="s14" dir="ltr" id="nextTwoWeekEnd_s2_2"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R18" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s23" dir="ltr" colspan="2">넷째 주</td>
-                <td class="s24" id="nextThreeWeekEnd_1"></td>
-                <td class="s25" id="nextThreeWeekEnd_2"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R19" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s23" colspan="2" rowspan="2">1코스</td>
-                <td class="s26" id="nextThreeWeekEnd_d1_1"></td>
-                <td class="s27" id="nextThreeWeekEnd_d2_1"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R20" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s28" id="nextThreeWeekEnd_d1_2"></td>
-                <td class="s29" id="nextThreeWeekEnd_d2_2"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R21" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s30" colspan="2" rowspan="2">2코스</td>
-                <td class="s26" id="nextThreeWeekEnd_s1_1"></td>
-                <td class="s27" id="nextThreeWeekEnd_s2_1"></td>
-              </tr>
-              <tr style='height:1.3rem;'>
-                <th id="0R22" style="height: 1.3rem;" class="row-headers-background"></th>
-                <td class="s31" id="nextThreeWeekEnd_s1_2"></td>
-                <td class="s32" id="nextThreeWeekEnd_s2_2"></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <table class='waffle' cellspacing="0" cellpadding="0" style="margin: 0 auto;">
+          <tr>
+            <td class="s4" colspan="2">이번 주</td>
+            <td class="s6" id="thisWeekEnd_1">00/00(월)</td>
+            <td class="s7" id="thisWeekEnd_2">00/00(월)</td>
+          </tr>
+          <tr>
+            <td class="s5" colspan="2" rowspan="2">1코스</td>
+            <td class="s8" id="thisWeekEnd_d1_1"></td>
+            <td class="s9" id="thisWeekEnd_d2_1"></td>
+          </tr>
+          <tr>
+            <td class="s10" id="thisWeekEnd_d1_2"></td>
+            <td class="s11" id="thisWeekEnd_d2_2"></td>
+          </tr>
+          <tr>
+            <td class="s12" colspan="2" rowspan="2">2코스</td>
+            <td class="s8" id="thisWeekEnd_s1_1"></td>
+            <td class="s9" id="thisWeekEnd_s2_1"></td>
+          </tr>
+          <tr>
+            <td class="s13" id="thisWeekEnd_s1_2"></td>
+            <td class="s14" id="thisWeekEnd_s2_2"></td>
+          </tr>
+          <tr>
+            <td class="s15" colspan="2">다음 주</td>
+            <td class="s16" id="nextWeekEnd_1"></td>
+            <td class="s17" id="nextWeekEnd_2"></td>
+          </tr>
+          <tr>
+            <td class="s15" colspan="2" rowspan="2">1코스</td>
+            <td class="s8" id="nextWeekEnd_d1_1"></td>
+            <td class="s9" id="nextWeekEnd_d2_1"></td>
+          </tr>
+          <tr>
+            <td class="s10" id="nextWeekEnd_d1_2"></td>
+            <td class="s11" id="nextWeekEnd_d2_2"></td>
+          </tr>
+          <tr>
+            <td class="s18" colspan="2" rowspan="2">2코스</td>
+            <td class="s8" id="nextWeekEnd_s1_1"></td>
+            <td class="s9" id="nextWeekEnd_s2_1"></td>
+          </tr>
+          <tr>
+            <td class="s13" id="nextWeekEnd_s1_2"></td>
+            <td class="s14" id="nextWeekEnd_s2_2"></td>
+          </tr>
+          <tr>
+            <td class="s19" colspan="2">셋째 주</td>
+            <td class="s20" id="nextTwoWeekEnd_1"></td>
+            <td class="s21" id="nextTwoWeekEnd_2"></td>
+          </tr>
+          <tr>
+            <td class="s19" colspan="2" rowspan="2">1코스</td>
+            <td class="s8" id="nextTwoWeekEnd_d1_1"></td>
+            <td class="s9" id="nextTwoWeekEnd_d2_1"></td>
+          </tr>
+          <tr>
+            <td class="s10" id="nextTwoWeekEnd_d1_2"></td>
+            <td class="s11" id="nextTwoWeekEnd_d2_2"></td>
+          </tr>
+          <tr>
+            <td class="s22" colspan="2" rowspan="2">2코스</td>
+            <td class="s8" id="nextTwoWeekEnd_s1_1"></td>
+            <td class="s9" id="nextTwoWeekEnd_s2_1"></td>
+          </tr>
+          <tr>
+            <td class="s13" id="nextTwoWeekEnd_s1_2"></td>
+            <td class="s14" id="nextTwoWeekEnd_s2_2"></td>
+          </tr>
+          <tr>
+            <td class="s23" colspan="2">넷째 주</td>
+            <td class="s24" id="nextThreeWeekEnd_1"></td>
+            <td class="s25" id="nextThreeWeekEnd_2"></td>
+          </tr>
+          <tr>
+            <td class="s23" colspan="2" rowspan="2">1코스</td>
+            <td class="s8" id="nextThreeWeekEnd_d1_1"></td>
+            <td class="s9" id="nextThreeWeekEnd_d2_1"></td>
+          </tr>
+          <tr>
+            <td class="s10" id="nextThreeWeekEnd_d1_2"></td>
+            <td class="s11" id="nextThreeWeekEnd_d2_2"></td>
+          </tr>
+          <tr>
+            <td class="s26" colspan="2" rowspan="2">2코스</td>
+            <td class="s8" id="nextThreeWeekEnd_s1_1"></td>
+            <td class="s9" id="nextThreeWeekEnd_s2_1"></td>
+          </tr>
+          <tr>
+            <td class="s13" id="nextThreeWeekEnd_s1_2"></td>
+            <td class="s14" id="nextThreeWeekEnd_s2_2"></td>
+          </tr>
+        </table>
       </div>
       <div id="tab-3" class="tab-content" style="width:100%; text-align:center;">
         <div id='form' style="width:100%; text-align:center; margin: 0; padding: 30 0 0 0">
