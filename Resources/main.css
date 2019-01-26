@@ -21,6 +21,20 @@
   #mapModalContent { width: 500!important; margin: 5% auto; }
   #map { height: 100%; }
 }
+html {
+ -ms-user-select: none;
+ -moz-user-select: -moz-none;
+ -webkit-user-select: none;
+ -khtml-user-select: none;
+ user-select:none;
+ -webkit-tap-highlight-color: transparent;
+ -ms-overflow-style: none;
+}
+::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+    display: none;
+}
 body { font-family: 'Malgun Gothic', serif; }
 .container {
   width: 100%;
