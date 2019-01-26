@@ -32,6 +32,11 @@ $(function() {
     $('#pm10').html('PM10 : Error ㎍/㎥');
     $('#pm25').html('PM2.5 : Error ㎍/㎥');
   });
+  $.ajax({
+      type: 'POST',
+      url: "https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec",
+      data: encodeURI('로그=로그&이름=' + Cookies.get('fillName'))
+  });
   load();
 });
 function load() {
