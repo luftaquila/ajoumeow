@@ -7,7 +7,7 @@ $(function() {
     $('li[data-tab="tab-2"]').addClass('current');
   }
   $.ajax({
-    url: 'http://api.openweathermap.org/data/2.5/weather?id=1835553&APPID=714bbbb9ad184e11c835635e025e301d',
+    url: 'https://api.openweathermap.org/data/2.5/weather?id=1835553&APPID=714bbbb9ad184e11c835635e025e301d',
     type: "GET",
     dataType: 'json',
     cache: false,
