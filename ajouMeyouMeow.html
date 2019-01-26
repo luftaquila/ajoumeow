@@ -36,15 +36,17 @@
           </svg>
         </div>
       </ul>
-      <table style="margin: 0 auto; text-align: center">
+      <table style="margin: -5 auto 0; text-align: center">
         <tr>
-          <td id='date' style="font-weight: bold" colspan="3" rowspan="2"></td>
-          <td id='icon' style="text-align: right;"colspan="1" rowspan="2"></td>
-          <td id='weather' style="text-align: left"></td>
-          <td style="text-align: right">기온 : </td>
-          <td id='temp'></td>
+          <td id='date' style="text-align: left; font-size: 0.9rem; font-weight: bold" colspan="3" rowspan="2"></td>
+          <td id='icon' style="text-align: right;" rowspan="2"></td>
+          <td id='weather' style="text-align: left; font-weight: bold; padding: 15 0 0 0"></td>
+          <td id='pm10' style="text-align: right; font-size: 0.75rem; padding: 15 0 0 0">PM10 : 150㎍/㎥</td>
         </tr>
-        <tr><td id='dust' colspan="3" style="font-size: 0.75rem">PM10 : 150㎍/㎥ / PM2.5 : 218㎍/㎥</td></tr>
+        <tr>
+          <td id='temp' style="text-align: left; font-weight: bold"></td>
+          <td id='pm2.5' style="text-align: right; font-size: 0.75rem">PM2.5 : 218㎍/㎥</td>
+        </tr>
       </table>
       <div id="tab-1" class="tab-content current">
         <table class='waffle' cellspacing="0" cellpadding="0" style="margin: 0 auto;">
