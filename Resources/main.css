@@ -18,6 +18,7 @@
   html { font-size: 20px; }
   #tab-3 { height: 605; }
   #latestUpdate { width: 425; margin: 5 auto!important; }
+  #noticeModalContent { margin: 10% auto!important; }
   #rankModalContent { margin: 10% auto; }
   #mapModalContent { width: 500!important; margin: 5% auto; }
   #map { height: 100%; }
