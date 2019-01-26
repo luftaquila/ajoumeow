@@ -1,6 +1,5 @@
 $(function() {
   clickEventListener();
-  isNotice = false;
   if(new Date().getDay() == 0 || new Date().getDay() == 6) {
     $('ul.tabs li').removeClass('current');
     $('#tab-1').removeClass('current');
@@ -175,7 +174,10 @@ function setData() {
     $("#past_t_" + i).html(parseFloat(rankArray[i - 1][3]));
   }
   if(Cookies.get('popup') != 'hidden') { $('#rankModal').css("display", "block"); }
-  if(Cookies.get('noticePop') != 'hidden' && isNotice) { $('#noticeModal').css("display", "block"); }
+  if(Cookies.get('versionInfo') != $('#version').text()) {
+    Cookies.set('versionInfo', $('#version').text(), {expires : 30});
+    $('#noticeModal').css("display", "block");
+  }
 }
 function yourNameIs(p1, p2, course, rank) {
   var week = new Date().getWeek();
@@ -222,12 +224,11 @@ function yourNameIs(p1, p2, course, rank) {
 function dataSize(s, b, i, c) { for(b = i = 0; c = s.charCodeAt(i++); b += c >> 11 ? 3 : c >> 7 ? 2 : 1); return b; }
 function clickEventListener() {
   $('.reload').click(function() { load(); });
-  $('#onNoticeClick').click(function() { $('#noticeModal').css("display", "block"); Cookies.remove('noticePop'); noticeBlock.checked = false; });
+  $('#onNoticeClick').click(function() { $('#noticeModal').css("display", "block"); });
   $('#onMapClick').click(function() { $('#mapModal').css("display", "block"); });
   $('#onMileClick').click(function() { $('#rankModal').css("display", "none"); $('#mileModal').css("display", "block"); });
   $('#onRankClick').click(function() { $('#rankModal').css("display", "block"); Cookies.remove('popup'); popupBlock.checked = false; });
   $('#popupBlock').click(function() { $('#rankModal').css("display", "none"); Cookies.set('popup', 'hidden', {expires : 3}); });
-  $('#noticeBlock').click(function() { $('#noticeModal').css("display", "none"); Cookies.set('noticePop', 'hidden', {expires : 30}); });
   window.onclick = function(event) {
     if (event.target == document.getElementById('logModal')) { $('#logModal').css("display", "none"); }
     if (event.target == document.getElementById('mapModal')) { $('#mapModal').css("display", "none"); }
