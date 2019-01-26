@@ -18,15 +18,19 @@ $(function() {
       $('#icon').html('<image src="https://ssl.pstatic.net/static/weather/images/w_icon/w_' + weather[howsTheWeather(response.weather[0].id)] + '.gif" style=""></image>');
     }
   });
-  $.ajax({
+  var request = $.ajax({
     url: 'http://openapi.airkorea.or.kr/openapi/services/rest/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty?stationName=%EC%9D%B8%EA%B3%84%EB%8F%99&dataTerm=daily&pageNo=1&numOfRows=1&ServiceKey=2O%2BuM6vSRCF6GmbRLmsCMl38w0g%2F40UY5Vtd57XSnbhwJHPuasjf58ZnVHSSPul0o8aixY7Zkvpg42TtOzQqeQ%3D%3D&ver=1.3',
     type: "GET",
     dataType: 'text',
     cache: false,
     success: function (response) {
-      console.log(response);
-      console.log(typeof(response));
+      $('#pm10').html('PM10 : ' + response.item.pm10Value + '㎍/㎥');
+      $('#pm25').html('PM2.5 : ' + response.item.pm25Value + '㎍/㎥');
     }
+  });
+  request.fail(function() {
+    $('#pm10').html('PM10 : Error ㎍/㎥');
+    $('#pm25').html('PM2.5 : Error ㎍/㎥');
   });
   load();
 });
@@ -289,6 +293,16 @@ function clickEventListener() {
   $('#modeDelete').click(function() {
     $('#editBox').css('display', 'none');
     $('#submit').val('삭제하기');
+  });
+  $('#toggle').click(function() {
+    if($('#toggle').html() == '▼ 업데이트 로그 보기') {
+      $('#more').css('display', 'block');
+      $('#toggle').html('▲ 업데이트 로그 접기');
+    }
+    else {
+      $('#more').css('display', 'none');
+      $('#toggle').html('▼ 업데이트 로그 보기');
+    }
   });
 }
 var dateFormat = function () {
