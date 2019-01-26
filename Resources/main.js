@@ -6,13 +6,33 @@ $(function() {
     $('#tab-2').addClass('current');
     $('li[data-tab="tab-2"]').addClass('current');
   }
+  $.ajax({
+    url: 'http://api.openweathermap.org/data/2.5/weather?id=1835553&APPID=714bbbb9ad184e11c835635e025e301d',
+    type: "GET",
+    dataType: 'json',
+    cache: false,
+    success: function (response) {
+      $('#weather').html('&nbsp;' + howsTheWeather(response.weather[0].id));
+      $('#temp').html((response.main.temp - 273.15).toFixed(1) + '°C');
+      $('#date').html(new Date().format('m월 d일 dddd'));
+      $('#icon').html('<image src="https://ssl.pstatic.net/static/weather/images/w_icon/w_' + weather[howsTheWeather(response.weather[0].id)] + '.gif" style=""></image>');
+    }
+  });
+  $.ajax({
+    url: 'http://openapi.airkorea.or.kr/openapi/services/rest/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty?stationName=%EC%9D%B8%EA%B3%84%EB%8F%99&dataTerm=daily&pageNo=1&numOfRows=1&ServiceKey=2O%2BuM6vSRCF6GmbRLmsCMl38w0g%2F40UY5Vtd57XSnbhwJHPuasjf58ZnVHSSPul0o8aixY7Zkvpg42TtOzQqeQ%3D%3D&ver=1.3',
+    type: "GET",
+    dataType: 'text',
+    cache: false,
+    success: function (response) {
+      console.log(response);
+      console.log(typeof(response));
+    }
+  });
   load();
 });
 function load() {
   datum = [], rankArray = [], download = 0;
   $('input').attr('disabled', true);
-  $("#todayDate").html("작동 중...");
-  $("#todayDateWeekEnd").html("작동 중...");
   $("#latestUpdate").html("Loading...");
   $('svg').addClass('rotating');
   $('#info').attr('href', '/ajoumeyoumeow/about.html?' + $('#version').html() + '!' + $('#release').html());
@@ -123,8 +143,6 @@ $("#DATA").submit( function(event) {
 function setData() {
   var week = new Date().getWeek();
   var year = new Date().getFullYear();
-  $("#todayDate").html(new Date().format("m월 d일 dddd"));
-  $("#todayDateWeekEnd").html(new Date().format("m월 d일 dddd"));
   $("#latestUpdate").html("Latest Update : " + new Date().format("TT hh시 MM분 ss초"));
   if(new Date().getDay() == 0) $("#thisWeekEnd_2").css("backgroundColor", "greenyellow");
   if(new Date().getDay() == 6) $("#thisWeekEnd_1").css("backgroundColor", "greenyellow");
@@ -220,6 +238,18 @@ function yourNameIs(p1, p2, course, rank) {
     }
   }
   return " ";
+}
+function howsTheWeather(id) {
+  if(id >= 200 && id < 300) return '뇌우';
+  else if(id >= 300 && id < 400 || id == 500 || id == 501 || id == 511) return '비';
+  else if(id >= 502 && id <= 504 || id >= 520 && id <= 531) return '소나기';
+  else if(id >= 600 && id < 700) return '눈';
+  else if(id >= 700 && id <= 721 || id == 741) return '안개';
+  else if(id == 731 || id == 751 || id == 761) return '황사';
+  else if(id == 800) return '맑음';
+  else if(id == 801 || id == 802) return '구름 많음';
+  else if(id == 803 || id == 804) return '흐림';
+  else return 'Error';
 }
 function dataSize(s, b, i, c) { for(b = i = 0; c = s.charCodeAt(i++); b += c >> 11 ? 3 : c >> 7 ? 2 : 1); return b; }
 function clickEventListener() {
@@ -343,4 +373,15 @@ Date.prototype.format = function (mask, utc) { return dateFormat(this, mask, utc
 Date.prototype.getWeek = function() {
   var calc = new Date(this.getFullYear(), 0, 1);
   return Math.ceil((((this - calc) / 86400000) + calc.getDay() - 1) / 7);
+}
+weather = {
+  맑음 : 'l1',
+  흐림 : 'l3',
+  비 : 'l4',
+  눈 : 'l5',
+  소나기 : 'l7',
+  안개 : 'l9',
+  뇌우 : 'l10',
+  '구름 많음' : 'l21',
+  황사 : 'l22'
 }
