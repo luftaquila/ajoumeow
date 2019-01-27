@@ -2,8 +2,8 @@
   <head>
     <title>아주대학교 고양이는 미유미유</title>
     <link rel="shortcut icon" type="image/x-icon" href="/ajoumeyoumeow/Icons/Resized/meyoumeow.ico" />
-    <a id='version' style="display: none;">v4.0.0</a>
-    <a id='release' style="display: none;">2019-01-27 06:09 AM</a>
+    <a id='version' style="display: none;">v4.0.1</a>
+    <a id='release' style="display: none;">2019-01-27 10:19 PM</a>
     <link rel="stylesheet" href="/ajoumeyoumeow/Resources/alertify/alertify.core.css" />
     <link rel="stylesheet" href="/ajoumeyoumeow/Resources/alertify/alertify.default.css" id="toggleCSS" />
     <link rel="stylesheet" href="/ajoumeyoumeow/Resources/main.min.css" />
@@ -38,13 +38,13 @@
       </ul>
       <table style="margin: -5 auto 0; text-align: center">
         <tr>
-          <td id='date' style="text-align: left; font-size: 0.9rem; font-weight: bold" colspan="3" rowspan="2"></td>
-          <td id='icon' style="text-align: right;" rowspan="2"></td>
-          <td id='weather' style="text-align: left; font-weight: bold; padding: 15 0 0 0"></td>
-          <td id='pm10' style="text-align: right; font-size: 0.75rem; padding: 15 0 0 0"></td>
+          <td id='date' style="text-align: left; font-size: 0.9rem; font-weight: bold; padding: 5 0 0" colspan="3" rowspan="2"></td>
+          <td id='icon' rowspan="2"></td>
+          <td id='weather' style="text-align: left; font-weight: bold; padding: 15 0 0"></td>
+          <td id='pm10' style="text-align: right; color: #fff; font-size: 0.75rem; padding: 15 0 0;">PM10 : 00㎍/㎥</td>
         </tr>
         <tr>
-          <td id='temp' style="text-align: left; font-weight: bold"></td>
+          <td id='temp' style="text-align: left; font-weight: bold; padding: 0 15 0 0"></td>
           <td id='pm25' style="text-align: right; font-size: 0.75rem"></td>
         </tr>
       </table>
@@ -339,7 +339,7 @@
         		</ul>
           </li>
         </ul>
-        <br>v4.0.0 (190127) : 윗부분을 좀 바꿔봤습니다.
+        <br>v4.0.1 (190127) : 페이지 상단에 기상 정보를 표시합니다.
       </div>
     </div>
     <div id="mapModal" class="modal">
@@ -383,11 +383,13 @@
             <span style="background-color: lightcyan;">[오늘의 사자성어]</span>
             <br>업대이투 (위태로울 업, 몹쓸 대, 이로울 이, 덮개 투)<br>
             위태롭고 몹쓸 코드를 이로운 코드로 덮어씌우다.</span>
-          <span style="font-size: 0.9rem">없<del>업</del>데이트 알림</span>
+          <span style="font-size: 0.9rem">업데이트 알림</span>
           <br><span style="line-height:70%"><br></span>
-          <span style="font-weight:bold">v4.0.0 : 2019-01-27</span><br>
-            상단에 좀 더 쓸모있는 정보를 넣어봤습니다...만<br>
-            아직 미세먼지 정보가 제대로 동작하지 않습니다. ㅠㅠ<br><span style="line-height:50%"><br></span>
+          <span style="font-weight:bold">v4.0.1 : 2019-01-27</span><br>
+            상단에 날씨 정보를 추가하고 몇몇 코드를 최적화했습니다.<br><br>
+            날씨와 기온은 수원시 인계동 데이터고, 미세먼지 정보는<br>
+            아주대에서 제일 가까운 수원시청 관측소 데이터입니다.<br>
+            날씨는 매 10분마다, 미세먼지는 매 1시간마다 갱신됩니다.<br><span style="line-height:50%"><br></span>
           <span id='toggle' style="color:#0366d6">▼ 업데이트 로그 보기</span>
           <div id='more' style="display: none">
             <span style="font-weight:bold">v3.7.x : 2019-01-23</span><br>
