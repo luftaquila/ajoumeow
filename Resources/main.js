@@ -18,19 +18,16 @@ $(function() {
       $('#icon').html('<image src="https://ssl.pstatic.net/static/weather/images/w_icon/w_' + weather[howsTheWeather(response.weather[0].id)] + '.gif" style=""></image>');
     }
   });
-  var request = $.ajax({
-    url: 'http://openapi.airkorea.or.kr/openapi/services/rest/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty?stationName=%EC%9D%B8%EA%B3%84%EB%8F%99&dataTerm=daily&pageNo=1&numOfRows=1&ServiceKey=2O%2BuM6vSRCF6GmbRLmsCMl38w0g%2F40UY5Vtd57XSnbhwJHPuasjf58ZnVHSSPul0o8aixY7Zkvpg42TtOzQqeQ%3D%3D&ver=1.3',
+  $.ajax({
+    url: 'https://cors-anywhere.herokuapp.com/http://openapi.airkorea.or.kr/openapi/services/rest/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty?stationName=%EC%9D%B8%EA%B3%84%EB%8F%99&dataTerm=daily&pageNo=1&numOfRows=1&ServiceKey=2O%2BuM6vSRCF6GmbRLmsCMl38w0g%2F40UY5Vtd57XSnbhwJHPuasjf58ZnVHSSPul0o8aixY7Zkvpg42TtOzQqeQ%3D%3D&ver=1.3',
     type: "GET",
     dataType: 'text',
     cache: false,
     success: function (response) {
-      $('#pm10').html('PM10 : ' + response.item.pm10Value + '㎍/㎥');
-      $('#pm25').html('PM2.5 : ' + response.item.pm25Value + '㎍/㎥');
+      $('#pm10').css('color', '#000');
+      $('#pm10').html('PM10 : ' + $($.parseXML(response)).find('pm10Value').text() + '㎍/㎥');
+      $('#pm25').html('PM2.5 : ' + $($.parseXML(response)).find('pm25Value').text() + '㎍/㎥');
     }
-  });
-  request.fail(function() {
-    $('#pm10').html('PM10 : Error ㎍/㎥');
-    $('#pm25').html('PM2.5 : Error ㎍/㎥');
   });
   $.ajax({
       type: 'POST',
@@ -402,5 +399,6 @@ weather = {
   안개 : 'l9',
   뇌우 : 'l10',
   '구름 많음' : 'l21',
-  황사 : 'l22'
+  황사 : 'l22',
+  Error : 'Error'
 }
