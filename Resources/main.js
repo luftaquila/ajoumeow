@@ -24,9 +24,12 @@ $(function() {
     dataType: 'text',
     cache: false,
     success: function (response) {
+      var pm10 = $($.parseXML(response)).find('pm10Value').text(), pm25 = $($.parseXML(response)).find('pm25Value').text();
       $('#pm10').css('color', '#000');
-      $('#pm10').html('PM10 : ' + $($.parseXML(response)).find('pm10Value').text() + '㎍/㎥');
-      $('#pm25').html('PM2.5 : ' + $($.parseXML(response)).find('pm25Value').text() + '㎍/㎥');
+      $('#pm10').html('PM10 : ' + '<span id="pm10val">' + pm10 + '</span>' + '㎍/㎥');
+      $('#pm25').html('PM2.5 : ' + '<span id="pm25val">' + pm25 + '</span>' + '㎍/㎥');
+      $('#pm10val').css('color', pm10 > 30 ? pm10 > 80 ? pm10 > 150 ? '#ff5959' : '#fd9b5a' : '#00c73c' : '#32a1ff');
+      $('#pm25val').css('color', pm25 > 15 ? pm25 > 35 ? pm25 > 75 ? '#ff5959' : '#fd9b5a' : '#00c73c' : '#32a1ff');
     }
   });
   $.ajax({
