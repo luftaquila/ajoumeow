@@ -11,62 +11,75 @@ function handleResponse(e) {
     var headers = sheet.getRange(1, 1, 1, 4).getValues()[0];
     var nextRow = sheet.getLastRow() + 1;
     var row = [];
-    if(!e.parameter['점수'] && !e.parameter['신청'] && !e.parameter['수정'] && !e.parameter['삭제']) {
+    if(e.parameter['점수']) {
+      for (i in headers) { row.push(e.parameter[headers[i]]); }
+      sheet.getRange(nextRow, 1, 1, row.length).setValues([row]);
+    }
+    else if(e.parameter['로그'] && e.parameter['이름'] != '오병준') {
+      doc.getSheetByName('Logger').getRange(doc.getSheetByName('Logger').getLastRow() + 1, 1, 1, 2).setValues([[new Date(), e.parameter['이름']]]);
+    }
+    else if(e.parameter['신청']) {
+      for (i in headers) {
+        if(i == 0) {
+          row.push(new Date());
+          continue;
+        }
+        row.push(e.parameter[headers[i]]);
+      }
+      sheet.getRange(nextRow, 1, 1, row.length).setValues([row]);
+    }
+    else if(e.parameter['수정']) {
+      var data = sheet.getRange('B2:D').getValues();
+      for (var i = data.length - 1; i >= 0; i--) {
+        if(JSON.stringify(new Date(new Date(e.parameter['날짜']) - 32400000)) == JSON.stringify(data[i][1])) {
+          if(e.parameter['이름'] == data[i][0]) {
+            if(e.parameter['코스'] == data[i][2]) {
+              sheet.getRange('B' + (i + 2)).setValue(e.parameter['수정 이름']);
+              sheet.getRange('C' + (i + 2)).setValue(e.parameter['수정 날짜']);
+              sheet.getRange('D' + (i + 2)).setValue(e.parameter['수정 코스']);
+              var log = [ new Date(), '수정', e.parameter['이름'], e.parameter['날짜'], e.parameter['코스'], e.parameter['수정 이름'], e.parameter['수정 날짜'], e.parameter['수정 코스'] ];
+              doc.getSheetByName('Edit Log').getRange(doc.getSheetByName('Edit Log').getLastRow() + 1, 1, 1, 8).setValues([log]);
+              doc.getSheetByName('Edit Log').getRange('A:H').setHorizontalAlignment('center');
+              break;
+            } else continue;
+          } else continue;
+        } else continue;
+      }
+    }
+    else if(e.parameter['삭제']) {
+      var data = sheet.getRange('B2:D').getValues();
+      for (var i = data.length - 1; i >= 0; i--) {
+        if(JSON.stringify(new Date(new Date(e.parameter['날짜']) - 32400000)) == JSON.stringify(data[i][1])) {
+          if(e.parameter['이름'] == data[i][0]) {
+            if(e.parameter['코스'] == data[i][2]) {
+              sheet.deleteRow(i + 2);
+              var log = [ new Date(), '삭제', e.parameter['이름'], e.parameter['날짜'], e.parameter['코스'] ];
+              doc.getSheetByName('Edit Log').getRange(doc.getSheetByName('Edit Log').getLastRow() + 1, 1, 1, 5).setValues([log]);
+              doc.getSheetByName('Edit Log').getRange('A:H').setHorizontalAlignment('center');
+              break;
+            } else continue;
+          } else continue;
+        } else continue;
+      }
+    }
+    else if(e.parameter['인증']) {
       var data = doc.getSheetByName('Record').getRange('G2:I').getValues(), csv = "";
       for (i in data) { csv += data[i][0] + ',' + Utilities.formatDate(data[i][1], "GMT+09:00", "yyyy. M. d") + ',' + data[i][2] + '\n'; }
       return ContentService
             .createTextOutput(csv)
             .setMimeType(ContentService.MimeType.CSV);
     }
-    else if(e.parameter['점수']) {
-      for (i in headers) { row.push(e.parameter[headers[i]]); }
-      sheet.getRange(nextRow, 1, 1, row.length).setValues([row]);
-    }
     else {
-      if(e.parameter['신청']) {
-        for (i in headers) {
-          if(i == 0) {
-            row.push(new Date());
-            continue;
-          }
-          row.push(e.parameter[headers[i]]);
-        }
-        sheet.getRange(nextRow, 1, 1, row.length).setValues([row]);
-      }
-      else if(e.parameter['수정']) {
-        var data = sheet.getRange('B2:D').getValues();
-        for (var i = data.length - 1; i >= 0; i--) {
-          if(JSON.stringify(new Date(new Date(e.parameter['날짜']) - 32400000)) == JSON.stringify(data[i][1])) {
-            if(e.parameter['이름'] == data[i][0]) {
-              if(e.parameter['코스'] == data[i][2]) {
-                sheet.getRange('B' + (i + 2)).setValue(e.parameter['수정 이름']);
-                sheet.getRange('C' + (i + 2)).setValue(e.parameter['수정 날짜']);
-                sheet.getRange('D' + (i + 2)).setValue(e.parameter['수정 코스']);
-                var log = [ new Date(), '수정', e.parameter['이름'], e.parameter['날짜'], e.parameter['코스'], e.parameter['수정 이름'], e.parameter['수정 날짜'], e.parameter['수정 코스'] ];
-                doc.getSheetByName('Edit Log').getRange(doc.getSheetByName('Edit Log').getLastRow() + 1, 1, 1, 8).setValues([log]);
-                doc.getSheetByName('Edit Log').getRange('A:H').setHorizontalAlignment('center');
-                break;
-              } else continue;
-            } else continue;
-          } else continue;
+      var data = doc.getSheetByName('Record').getRange('G2:I').getValues(), csv = "";
+      var week = new Date().getWeek(), year = new Date().getFullYear();
+      for (i in data) {
+        if((data[i][1] >= new Date(year, 0, 1 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay())) && (data[i][1] <= new Date(year, 0, 1 + ((week + 3) * 7) - new Date(year, 0, (week * 7)).getDay()))) {
+          csv += data[i][0] + ',' + Utilities.formatDate(data[i][1], "GMT+09:00", "yyyy. M. d") + ',' + data[i][2] + '\n';
         }
       }
-      else if(e.parameter['삭제']) {
-        var data = sheet.getRange('B2:D').getValues();
-        for (var i = data.length - 1; i >= 0; i--) {
-          if(JSON.stringify(new Date(new Date(e.parameter['날짜']) - 32400000)) == JSON.stringify(data[i][1])) {
-            if(e.parameter['이름'] == data[i][0]) {
-              if(e.parameter['코스'] == data[i][2]) {
-                sheet.deleteRow(i + 2);
-                var log = [ new Date(), '삭제', e.parameter['이름'], e.parameter['날짜'], e.parameter['코스'] ];
-                doc.getSheetByName('Edit Log').getRange(doc.getSheetByName('Edit Log').getLastRow() + 1, 1, 1, 5).setValues([log]);
-                doc.getSheetByName('Edit Log').getRange('A:H').setHorizontalAlignment('center');
-                break;
-              } else continue;
-            } else continue;
-          } else continue;
-        }
-      }
+      return ContentService
+            .createTextOutput(csv)
+            .setMimeType(ContentService.MimeType.CSV);
     }
     return ContentService
           .createTextOutput(JSON.stringify({"result":"success", "row": nextRow, "data": e}))
@@ -85,4 +98,8 @@ function handleResponse(e) {
 function setup() {
     var doc = SpreadsheetApp.getActiveSpreadsheet();
     SCRIPT_PROP.setProperty("key", doc.getId());
+}
+Date.prototype.getWeek = function() {
+  var calc = new Date(this.getFullYear(), 0, 1);
+  return Math.ceil((((this - calc) / 86400000) + calc.getDay() - 1) / 7);
 }
