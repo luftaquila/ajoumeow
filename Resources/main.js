@@ -32,11 +32,13 @@ $(function() {
       $('#pm25val').css('color', pm25 > 15 ? pm25 > 35 ? pm25 > 75 ? '#ff5959' : '#fd9b5a' : '#00c73c' : '#32a1ff');
     }
   });
-  $.ajax({
-      type: 'POST',
-      url: "https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec",
-      data: encodeURI('로그=로그&이름=' + Cookies.get('fillName'))
-  });
+  if(Cookies.get('fillName')) {
+    $.ajax({
+        type: 'POST',
+        url: "https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec",
+        data: encodeURI('로그=로그&이름=' + Cookies.get('fillName'))
+    });
+  }
   load();
 });
 function load() {
@@ -67,7 +69,22 @@ function load() {
           $('input').attr('disabled', false);
           download += dataSize(response);
           console.log('Ready. ' + (download / 1000).toFixed(1) + 'KB Loaded');
-          if(Cookies.get('fillName')) { $('#submitName').val(Cookies.get('fillName')); }
+          if(Cookies.get('fillName')) {
+            $('#submitName').val(Cookies.get('fillName'));
+          }
+          else {
+            alertify.prompt("이름을 알려주세요", function(e, str) {
+              if(e) {
+                Cookies.set('fillName', $.trim(str), {expires : 365});
+                $('#submitName').val(Cookies.get('fillName'));
+                $.ajax({
+                    type: 'POST',
+                    url: "https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec",
+                    data: encodeURI('로그=로그&이름=' + Cookies.get('fillName'))
+                });
+              }
+            }, "");
+          }
         }
       });
     }
@@ -138,7 +155,7 @@ $("#DATA").submit( function(event) {
     request.done(function() {
       load();
       alertify.success('Data Transmitted.');
-      Cookies.set('fillName', $.trim($('#submitName').val()), {expires : 90});
+      Cookies.set('fillName', $.trim($('#submitName').val()), {expires : 365});
     });
     request.fail(function(jqXHR, textStatus, errorThrown) { alertify.error('Error - ' + textStatus + errorThrown); });
     request.always(function() {
@@ -150,8 +167,7 @@ $("#DATA").submit( function(event) {
   event.preventDefault();
 });
 function setData() {
-  var week = new Date().getWeek();
-  var year = new Date().getFullYear();
+  var week = new Date().getWeek(), year = new Date().getFullYear();
   $("#latestUpdate").html("Latest Update : " + new Date().format("TT hh시 MM분 ss초"));
   if(new Date().getDay() == 0) $("#thisWeekEnd_2").css("backgroundColor", "greenyellow");
   if(new Date().getDay() == 6) $("#thisWeekEnd_1").css("backgroundColor", "greenyellow");

@@ -247,3 +247,5 @@ svg {
     to{ -webkit-transform: rotate(-180deg); }
 }
 .rotating { -webkit-animation: rotating 0.8s ease infinite; }
+
+#alertify-cancel { display: none; }
