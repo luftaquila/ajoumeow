@@ -77,6 +77,7 @@ function load() {
               if(e) {
                 Cookies.set('fillName', $.trim(str), {expires : 365});
                 $('#submitName').val(Cookies.get('fillName'));
+                if(Cookies.get('fillName') == "") { Cookies.remove('fillName'); }
                 $.ajax({
                     type: 'POST',
                     url: "https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec",
@@ -221,6 +222,8 @@ function setData() {
     Cookies.set('versionInfo', $('#version').text(), {expires : 30});
     $('#noticeModal').css("display", "block");
   }
+  document.evaluate("//td[text()='3/4(월)']", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.classList.add('dogriver');
+  $(".dogriver").text("★개강★");
 }
 function yourNameIs(p1, p2, course, rank) {
   var week = new Date().getWeek();
