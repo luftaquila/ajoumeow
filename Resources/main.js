@@ -73,7 +73,7 @@ function load() {
             $('#submitName').val(Cookies.get('fillName'));
           }
           else {
-            alertify.prompt("이름을 알려주세요", function(e, str) {
+            alertify.prompt("이름을 알려주세요\n이름 자동완성 기능을 위한 것으로, 최초 1회만 물어봅니다.", function(e, str) {
               if(e) {
                 Cookies.set('fillName', $.trim(str), {expires : 365});
                 $('#submitName').val(Cookies.get('fillName'));
