@@ -62,21 +62,9 @@ function handleResponse(e) {
         } else continue;
       }
     }
-    else if(e.parameter['인증']) {
-      var data = doc.getSheetByName('Record').getRange('G2:I').getValues(), csv = "";
-      for (i in data) { csv += data[i][0] + ',' + Utilities.formatDate(data[i][1], "GMT+09:00", "yyyy. M. d") + ',' + data[i][2] + '\n'; }
-      return ContentService
-            .createTextOutput(csv)
-            .setMimeType(ContentService.MimeType.CSV);
-    }
     else {
       var data = doc.getSheetByName('Record').getRange('G2:I').getValues(), csv = "";
-      var week = new Date().getWeek(), year = new Date().getFullYear();
-      for (i in data) {
-        if((data[i][1] >= new Date(year, 0, 1 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay())) && (data[i][1] <= new Date(year, 0, 1 + ((week + 3) * 7) - new Date(year, 0, (week * 7)).getDay()))) {
-          csv += data[i][0] + ',' + Utilities.formatDate(data[i][1], "GMT+09:00", "yyyy. M. d") + ',' + data[i][2] + '\n';
-        }
-      }
+      for (i in data) { csv += data[i][0] + ',' + Utilities.formatDate(data[i][1], "GMT+09:00", "yyyy. M. d") + ',' + data[i][2] + '\n'; }
       return ContentService
             .createTextOutput(csv)
             .setMimeType(ContentService.MimeType.CSV);
