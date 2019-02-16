@@ -228,9 +228,13 @@ function setData() {
 }
 function setCalendar(targetDate, targetText, isRainbow) {
   calendarCount += 1;
-  if(isRainbow) { document.evaluate("//td[text()='" + targetDate + "']", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.classList.add('dogriver'); }
-  document.evaluate("//td[text()='" + targetDate + "']", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.classList.add('cal' + calendarCount);
-  $('.cal' + calendarCount).html(targetText);
+  try {
+    if(isRainbow) { document.evaluate("//td[text()='" + targetDate + "']", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.classList.add('dogriver'); }
+    document.evaluate("//td[text()='" + targetDate + "']", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.classList.add('cal' + calendarCount);
+    $('.cal' + calendarCount).html(targetText);
+  }
+  catch (e) { }
+  finally { }
 }
 function yourNameIs(p1, p2, course, rank) {
   var week = new Date().getWeek();
