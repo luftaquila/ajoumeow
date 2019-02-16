@@ -222,8 +222,15 @@ function setData() {
     Cookies.set('versionInfo', $('#version').text(), {expires : 30});
     $('#noticeModal').css("display", "block");
   }
-  document.evaluate("//td[text()='3/4(월)']", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.classList.add('dogriver');
-  $(".dogriver").text("★개강★");
+  calendarCount = 0;
+  setCalendar('3/4(월)', '★개강★', 1);
+  setCalendar('3/13(수)', '★개총★', 1);
+}
+function setCalendar(targetDate, targetText, isRainbow) {
+  calendarCount += 1;
+  if(isRainbow) { document.evaluate("//td[text()='" + targetDate + "']", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.classList.add('dogriver'); }
+  document.evaluate("//td[text()='" + targetDate + "']", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.classList.add('cal' + calendarCount);
+  $('.cal' + calendarCount).html(targetText);
 }
 function yourNameIs(p1, p2, course, rank) {
   var week = new Date().getWeek();
