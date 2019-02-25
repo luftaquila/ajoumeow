@@ -222,14 +222,18 @@ function setData() {
     Cookies.set('versionInfo', $('#version').text(), {expires : 30});
     $('#noticeModal').css("display", "block");
   }
-  calendarCount = 0;
-  setCalendar('3/4(월)', '★개강★', 1);
-  setCalendar('3/13(수)', '★개총★', 1);
+  calendarCount = 0, rainbowCount = 0;
+  setCalendar('3/4(월)', '★개강★', true);
+  setCalendar('3/13(수)', '★개총★', true);
+  if(rainbowCount) $('#rainbowBlockBox').css('display', 'block');
 }
 function setCalendar(targetDate, targetText, isRainbow) {
   calendarCount += 1;
   try {
-    if(isRainbow) { document.evaluate("//td[text()='" + targetDate + "']", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.classList.add('dogriver'); }
+    if(isRainbow) {
+      rainbowCount += 1;
+      document.evaluate("//td[text()='" + targetDate + "']", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.classList.add('dogriver');
+    }
     document.evaluate("//td[text()='" + targetDate + "']", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.classList.add('cal' + calendarCount);
     $('.cal' + calendarCount).html(targetText);
   }
@@ -337,6 +341,16 @@ function clickEventListener() {
     else {
       $('#more').css('display', 'none');
       $('#toggle').html('▼ 업데이트 로그 보기');
+    }
+  });
+  $('#rainbowBlock').click(function() {
+    if($('#rainbowBlock').prop('checked')) {
+      $('.dogriver').removeClass('dogriver');
+    }
+    else {
+      for(var i = 0; i <= calendarCount; i++ ) {
+        $('.cal' + i).addClass('dogriver');
+      }
     }
   });
 }
