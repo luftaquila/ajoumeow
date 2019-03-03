@@ -54,7 +54,7 @@ function load() {
     cache: false,
     success: function (response) {
       datum = response.split('\n').map((line) => line.split(','));
-      datum.push(['18', '10', '09']);
+      datum.push(['11', '11', '11']);
       download += dataSize(response);
       $.ajax({
         url: 'https://docs.google.com/spreadsheet/pub?key=1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A&single=true&gid=1034362398&sheet=Statistics&range=A3:E5&output=csv',
