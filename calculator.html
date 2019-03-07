@@ -52,7 +52,7 @@
           cache: false,
           success: function (response) {
             datum = response.split('\n').map((line) => line.split(','));
-            datum.push(['18', '10', '09']);
+            datum.push(['11', '11', '11']);
             $('#status').css('color', '#15be00');
             $('#status').text('200 Ready. ' + (dataSize(response) / 1000).toFixed(1) + 'KB Loaded');
             $('input').attr('disabled', false);
