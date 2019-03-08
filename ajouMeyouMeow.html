@@ -2,8 +2,8 @@
   <head>
     <title>아주대학교 고양이는 미유미유</title>
     <link rel="shortcut icon" type="image/x-icon" href="/ajoumeyoumeow/Icons/Resized/meyoumeow.ico" />
-    <a id='version' style="display: none;">v4.0.3</a>
-    <a id='release' style="display: none;">2019-02-26 02:36 AM</a>
+    <a id='version' style="display: none;">v4.0.4</a>
+    <a id='release' style="display: none;">2019-03-08 09:00 PM</a>
     <link rel="stylesheet" href="/ajoumeyoumeow/Resources/alertify/alertify.core.css" />
     <link rel="stylesheet" href="/ajoumeyoumeow/Resources/alertify/alertify.default.css" id="toggleCSS" />
     <link rel="stylesheet" href="/ajoumeyoumeow/Resources/main.min.css" />
@@ -22,6 +22,24 @@
       function gtag(){ dataLayer.push(arguments); }
       gtag('js', new Date());
       gtag('config', 'UA-119383265-1');
+      if(browserVersionCheck().version > 0 && browserVersionCheck().version < 12) {
+        alert('지원하지 않는 오래된 브라우저를 사용하고 계십니다.\n웹사이트가 정상적으로 동작하지 않습니다.');
+      }
+      function browserVersionCheck() {
+        var word;
+        var agent = navigator.userAgent.toLowerCase();
+        var info = {  name: "N/A" , version: -1  };
+        if (navigator.appName == "Microsoft Internet Explorer") word = "msie ";
+        else if ( agent.search( "trident" ) > -1 ) word = "trident/.*rv:";
+        else if ( agent.search( "edge/" ) > -1  ) word = "edge/";
+        else return info;
+        var reg = new RegExp( word + "([0-9]{1,})(\\.{0,}[0-9]{0,1})" );
+        if (  reg.exec( agent ) != null  ){
+          info.version = parseFloat( RegExp.$1 + RegExp.$2 );
+          info.name = ( word == "edge/" ) ? "Edge" : "IE";
+        }
+        return info;
+      }
     </script>
   </head>
   <body>
@@ -342,7 +360,7 @@
         		</ul>
           </li>
         </ul>
-        <br>v4.0.3 (190226) : 반짝이는 개강날★
+        <br>v4.0.4 (190308) : 성능 개선
       </div>
     </div>
     <div id="mapModal" class="modal">
@@ -388,6 +406,8 @@
             위태롭고 몹쓸 코드를 이로운 코드로 덮어씌우다.</span>
           <span style="font-size: 0.9rem">업데이트 알림</span>
           <br><span style="line-height:70%"><br></span>
+          <span style="font-weight:bold">v4.0.4 : 2019-03-08</span><br>
+            이제 웹 대신 로컬에서 소스를 로드합니다. 성능을 개선했습니다.<br><span style="line-height:50%"><br></span>
           <span style="font-weight:bold">v4.0.3 : 2019-02-26</span><br>
             안구 통증을 호소하시는 분들을 위해<br>무지개를 끌 수 있는 옵션을 추가했습니다.<br><span style="line-height:50%"><br></span>
           <span style="font-weight:bold">v4.0.2 : 2019-02-15</span><br>
@@ -421,8 +441,8 @@
         </div>
       </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+    <script src='/ajoumeyoumeow/Resources/jquery-3.3.1.min.js'></script>
+    <script src='/ajoumeyoumeow/Resources/js.cookie.min.js'></script>
     <script src='/ajoumeyoumeow/Resources/alertify/alertify.min.js'></script>
     <script src='/ajoumeyoumeow/Resources/main.min.js'></script>
     <script type="text/javascript" src="//wcs.naver.net/wcslog.js"></script>
