@@ -179,17 +179,20 @@ function setData() {
     $("#thisWeek_" + i).html(new Date(year, 0, i + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)"));
     $("#nextWeek_" + i).html(new Date(year, 0, i + (week * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)"));
     $("#nextTwoWeek_" + i).html(new Date(year, 0, i + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)"));
-    $("#nextThreeWeek_" + i).html(new Date(year, 0, i + ((week + 2) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)"));
+    //$("#nextThreeWeek_" + i).html(new Date(year, 0, i + ((week + 2) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)"));
     for(var j = 1; j <= 2; j++)
     {
       $("#thisWeek_d" + i + "_" + j).html(yourNameIs(0, i - 1, 1, j));
       $("#thisWeek_s" + i + "_" + j).html(yourNameIs(0, i - 1, 2, j));
+      $("#thisWeek_t" + i + "_" + j).html(yourNameIs(0, i - 1, 3, j));
       $("#nextWeek_d" + i + "_" + j).html(yourNameIs(1, i - 1, 1, j));
       $("#nextWeek_s" + i + "_" + j).html(yourNameIs(1, i - 1, 2, j));
+      $("#nextWeek_t" + i + "_" + j).html(yourNameIs(1, i - 1, 3, j));
       $("#nextTwoWeek_d" + i + "_" + j).html(yourNameIs(2, i - 1, 1, j));
       $("#nextTwoWeek_s" + i + "_" + j).html(yourNameIs(2, i - 1, 2, j));
-      $("#nextThreeWeek_d" + i + "_" + j).html(yourNameIs(3, i - 1, 1, j));
-      $("#nextThreeWeek_s" + i + "_" + j).html(yourNameIs(3, i - 1, 2, j));
+      $("#nextTwoWeek_t" + i + "_" + j).html(yourNameIs(2, i - 1, 3, j));
+      //$("#nextThreeWeek_d" + i + "_" + j).html(yourNameIs(3, i - 1, 1, j));
+      //$("#nextThreeWeek_s" + i + "_" + j).html(yourNameIs(3, i - 1, 2, j));
     }
   }
   for(var i = 1; i <= 2; i++)
@@ -198,17 +201,20 @@ function setData() {
     $("#thisWeekEnd_" + i).html(new Date(year, 0, i + 5 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)"));
     $("#nextWeekEnd_" + i).html(new Date(year, 0, i + 5 + ((week + 0) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)"));
     $("#nextTwoWeekEnd_" + i).html(new Date(year, 0, i + 5 + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)"));
-    $("#nextThreeWeekEnd_" + i).html(new Date(year, 0, i + 5 + ((week + 2) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)"));
+    //$("#nextThreeWeekEnd_" + i).html(new Date(year, 0, i + 5 + ((week + 2) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)"));
     for(var j = 1; j <= 2; j++)
     {
       $('#thisWeekEnd_d' + i + "_" + j).html(yourNameIs(0, i + 4, 1, j));
       $('#thisWeekEnd_s' + i + "_" + j).html(yourNameIs(0, i + 4, 2, j));
+      $('#thisWeekEnd_t' + i + "_" + j).html(yourNameIs(0, i + 4, 3, j));
       $('#nextWeekEnd_d' + i + "_" + j).html(yourNameIs(1, i + 4, 1, j));
       $('#nextWeekEnd_s' + i + "_" + j).html(yourNameIs(1, i + 4, 2, j));
+      $('#nextWeekEnd_t' + i + "_" + j).html(yourNameIs(1, i + 4, 3, j));
       $('#nextTwoWeekEnd_d' + i + "_" + j).html(yourNameIs(2, i + 4, 1, j));
       $('#nextTwoWeekEnd_s' + i + "_" + j).html(yourNameIs(2, i + 4, 2, j));
-      $('#nextThreeWeekEnd_d' + i + "_" + j).html(yourNameIs(3, i + 4, 1, j));
-      $('#nextThreeWeekEnd_s' + i + "_" + j).html(yourNameIs(3, i + 4, 2, j));
+      $('#nextTwoWeekEnd_t' + i + "_" + j).html(yourNameIs(2, i + 4, 3, j));
+      //$('#nextThreeWeekEnd_d' + i + "_" + j).html(yourNameIs(3, i + 4, 1, j));
+      //$('#nextThreeWeekEnd_s' + i + "_" + j).html(yourNameIs(3, i + 4, 2, j));
     }
   }
   for(var i = 1; i <= 3; i++) {
@@ -223,7 +229,6 @@ function setData() {
     $('#noticeModal').css("display", "block");
   }
   calendarCount = 0, rainbowCount = 0;
-  setCalendar('3/4(월)', '★개강★', true);
   setCalendar('3/13(수)', '★개총★', true);
   if(rainbowCount) $('#rainbowBlockBox').css('display', 'block');
 }
@@ -251,6 +256,8 @@ function yourNameIs(p1, p2, course, rank) {
           return datum[i][0];
         else if((course == 2) && (datum[i][2].includes("2코스")))
           return datum[i][0];
+        else if((course == 3) && (datum[i][2].includes("3코스")))
+          return datum[i][0];
       }
     }
     else if(rank == 2) {
@@ -270,6 +277,17 @@ function yourNameIs(p1, p2, course, rank) {
           for(var j = 1; result == datum[i + j][1]; j++)
           {
             if((course == 2) && (datum[i + j][2].includes("2코스"))) {
+              if(datum[i][0] == datum[i + j][0])
+                continue;
+              else
+                return datum[i + j][0];
+            }
+          }
+        }
+        else if((course == 3) && (datum[i][2].includes("3코스"))) {
+          for(var j = 1; result == datum[i + j][1]; j++)
+          {
+            if((course == 3) && (datum[i + j][2].includes("3코스"))) {
               if(datum[i][0] == datum[i + j][0])
                 continue;
               else
