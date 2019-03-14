@@ -229,7 +229,7 @@ function setData() {
     $('#noticeModal').css("display", "block");
   }
   calendarCount = 0, rainbowCount = 0;
-  setCalendar('3/13(수)', '★개총★', true);
+  //setCalendar('3/13(수)', '★개총★', true);
   if(rainbowCount) $('#rainbowBlockBox').css('display', 'block');
 }
 function setCalendar(targetDate, targetText, isRainbow) {
