@@ -12,10 +12,18 @@ $(function() {
     dataType: 'json',
     cache: false,
     success: function (response) {
-      $('#weather').html('&nbsp;' + howsTheWeather(response.weather[0].id));
       $('#temp').html((response.main.temp - 273.15).toFixed(1) + '°C');
       $('#date').html('&nbsp;&nbsp;' + new Date().format('m월 d일 dddd'));
-      $('#icon').html('<image src="https://ssl.pstatic.net/static/weather/images/w_icon/w_' + weather[howsTheWeather(response.weather[0].id)] + '.gif" style=""></image>');
+    }
+  });
+  $.ajax({
+    url:'https://cors-anywhere.herokuapp.com/http://www.kma.go.kr/wid/queryDFSRSS.jsp?zone=4111755000',
+    type: "GET",
+    dataType: 'text',
+    cache: false,
+    success: function (response) {
+      $('#weather').html('&nbsp;' + $($.parseXML(response)).find('wfKor').first().text());
+      $('#icon').html('<image src="https://ssl.pstatic.net/static/weather/images/w_icon/w_' + weather[$($.parseXML(response)).find('wfKor').first().text()] + '.gif" style=""></image>');
     }
   });
   $.ajax({
@@ -300,7 +308,7 @@ function yourNameIs(p1, p2, course, rank) {
   }
   return " ";
 }
-function howsTheWeather(id) {
+/*function howsTheWeather(id) {
   if(id >= 200 && id < 300) return '뇌우';
   else if(id >= 300 && id < 400 || id == 500 || id == 501 || id == 511) return '비';
   else if(id >= 502 && id <= 504 || id >= 520 && id <= 531) return '소나기';
@@ -311,7 +319,7 @@ function howsTheWeather(id) {
   else if(id == 801 || id == 802) return '구름 많음';
   else if(id == 803 || id == 804) return '흐림';
   else return 'Error';
-}
+}*/
 function dataSize(s, b, i, c) { for(b = i = 0; c = s.charCodeAt(i++); b += c >> 11 ? 3 : c >> 7 ? 2 : 1); return b; }
 function clickEventListener() {
   $('.reload').click(function() { load(); });
@@ -457,13 +465,11 @@ Date.prototype.getWeek = function() {
 }
 weather = {
   맑음 : 'l1',
-  흐림 : 'l3',
-  비 : 'l4',
+  '구름 많음' : 'l3',
   눈 : 'l5',
-  소나기 : 'l7',
-  안개 : 'l9',
-  뇌우 : 'l10',
-  '구름 많음' : 'l21',
-  황사 : 'l22',
+  비 : 'l7',
+  흐림 : 'l9',
+  '눈/비' : 'l10',
+  '구름 조금' : 'l21',
   Error : 'Error'
 }
