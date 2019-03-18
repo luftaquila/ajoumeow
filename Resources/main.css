@@ -9,21 +9,56 @@
   html { font-size: 17px; }
   #arrow { font-size: 20px; }
   .reload {	transform: scale(0.8); }
+
+  #spot_1-1 { top: 25; left: 157; }
+  #spot_1-2 { top: 150; left: 128; }
+  #spot_1-3 { top: 186; left: 111; }
+  #spot_1-4 { top: 203; left: 44; }
+
+  #spot_2-1 { top: 171; left: 175; }
+  #spot_2-2 { top: 215; left: 140; }
+  #spot_2-3 { top: 249; left: 129; }
+  #spot_2-4 { top: 324; left: 211; }
+
+  #spot_3-1 { top: 93; left: 165; }
+  #spot_3-2 { top: 123; left: 208; }
+  #spot_3-3 { top: 147; left: 217; }
+  #spot_3-4 { top: 100; left: 234; }
+  #spot_3-5 { top: 120; left: 305; }
 }
 @media (min-width:760px) {
   .modal-content { width: 740!important; }
-  ul.tabs { width: 425!important; margin: 30 auto 5!important;}
+  ul.tabs { width: 425!important; margin: 30 auto 5!important; }
   table { width : 425; }
   .waffle { height: 605; }
   html { font-size: 20px; }
   #tab-3 { height: 605; }
   #latestUpdate { width: 425; margin: 5 auto!important; }
   #rainbowBlockBox { width: 425; margin: 5 auto!important; }
-  #noticeModalContent { margin: 10% auto!important; }
-  #rankModalContent { margin: 10% auto; }
-  #mapModalContent { width: 500!important; margin: 5% auto; }
-  #map { height: 100%; }
+
+  #spot_1-1 { top: 30; left: 197; }
+  #spot_1-2 { top: 183; left: 160; }
+  #spot_1-3 { top: 230; left: 139; }
+  #spot_1-4 { top: 252; left: 56; }
+
+  #spot_2-1 { top: 213; left: 220; }
+  #spot_2-2 { top: 265; left: 174; }
+  #spot_2-3 { top: 307; left: 161; }
+  #spot_2-4 { top: 403; left: 262; }
+
+  #spot_3-1 { top: 115; left: 207; }
+  #spot_3-2 { top: 152; left: 260; }
+  #spot_3-3 { top: 182; left: 270; }
+  #spot_3-4 { top: 125; left: 294; }
+  #spot_3-5 { top: 149; left: 382; }
 }
+.spot {
+  position: absolute;
+  line-height: 1;
+}
+.first { color: #0366d6 }
+.second {color: #5cf442 }
+.third {color: #f44242 }
 html {
  -ms-user-select: none;
  -moz-user-select: -moz-none;
@@ -113,87 +148,6 @@ ul.tabs li.current {
 .s24{border-bottom:0.063rem SOLID #000000;border-right:0.063rem SOLID #999999;background-color:#d5a6bd;color:#000000;}
 .s25{border-bottom:0.063rem SOLID #000000;border-right:0.125rem SOLID #000000;background-color:#d5a6bd;color:#000000;}
 .s26{border-bottom:0.125rem SOLID #000000;border-right:0.063rem SOLID #000000;border-left:0.125rem SOLID #000000;background-color:#d5a6bd;color:#000000;}
-
-.menu,
-.menu ul,
-.menu li,
-.menu a {
-  margin: 0;
-  padding: 0;
-  border: none;
-  outline: none;
-}
-.menu li {
-  position: relative;
-  list-style: none;
-  display: inline;
-  height: 40px;
-}
-.menu li a {
-  display: inline;
-  padding: 0;
-  margin: 0;
-  line-height: 28px;
-  text-decoration: none;
-  border-left: 1px solid #393942;
-  border-right: 1px solid #4f5058;
-  font-family: Helvetica, Arial, sans-serif;
-  font-weight: bold;
-  font-size: 13px;
-  color: #f3f3f3;
-  text-shadow: 1px 1px 1px rgba(0,0,0,.6);
-  -webkit-transition: color .2s ease-in-out;
-  -moz-transition: color .2s ease-in-out;
-  -o-transition: color .2s ease-in-out;
-  -ms-transition: color .2s ease-in-out;
-  transition: color .2s ease-in-out;
-}
-.menu li:first-child a { border-left: none; }
-.menu li:last-child a{ border-right: none; }
-.menu li:hover > a { color: #8fde62; }
-.menu ul {
-  display: inline;
-  position: absolute;
-  top: 25;
-  left: 0;
-  opacity: 0;
-  background: #1f2024;
-  -webkit-border-radius: 0 0 5px 5px;
-  -moz-border-radius: 0 0 5px 5px;
-  border-radius: 0 0 5px 5px;
-  -webkit-transition: opacity .25s ease .1s;
-  -moz-transition: opacity .25s ease .1s;
-  -o-transition: opacity .25s ease .1s;
-  -ms-transition: opacity .25s ease .1s;
-  transition: opacity .25s ease .1s;
-}
-.menu li:hover > ul { opacity: 1; }
-.menu ul li {
-  display: inline;
-  height: 0;
-  overflow: hidden;
-  padding: 0;
-  -webkit-transition: height .25s ease .1s;
-  -moz-transition: height .25s ease .1s;
-  -o-transition: height .25s ease .1s;
-  -ms-transition: height .25s ease .1s;
-  transition: height .25s ease .1s;
-}
-.menu li:hover > ul li {
-  display: inline;
-  height: 36px;
-  overflow: visible;
-  padding: 0;
-}
-.menu ul li a {
-  display: inline;
-  width: 100px;
-  padding: 4 0;
-  margin: 10;
-  border: none;
-  border-bottom: 1px solid #353539;
-}
-.menu ul li:last-child a { border: none; }
 
 .reload {
 	transition: all 300ms;

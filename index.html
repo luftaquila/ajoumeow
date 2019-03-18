@@ -2,8 +2,8 @@
   <head>
     <title>아주대학교 고양이는 미유미유</title>
     <link rel="shortcut icon" type="image/x-icon" href="/ajoumeyoumeow/Icons/Resized/meyoumeow.ico" />
-    <a id='version' style="display: none;">v5.1.1</a>
-    <a id='release' style="display: none;">2019-03-18 11:24 AM</a>
+    <a id='version' style="display: none;">v5.1.2</a>
+    <a id='release' style="display: none;">2019-03-18 01:00 PM</a>
     <link rel="stylesheet" href="/ajoumeyoumeow/Resources/alertify/alertify.core.css" />
     <link rel="stylesheet" href="/ajoumeyoumeow/Resources/alertify/alertify.default.css" id="toggleCSS" />
     <link rel="stylesheet" href="/ajoumeyoumeow/Resources/micromodal/micromodal.min.css" />
@@ -55,7 +55,7 @@
           </svg>
         </div>
       </ul>
-      <table style="margin: -5 auto 0; text-align: center">
+      <table style="margin: -5 auto 0; text-align: center;">
         <tr>
           <td id='date' style="text-align: center; font-size: 0.9rem; font-weight: bold; padding: 5 0 0" colspan="3" rowspan="2"></td>
           <td id='icon' rowspan="2"></td>
@@ -433,28 +433,21 @@
           </form>
         </div><br><br>
       </div>
-      <div id="latestUpdate" style="height:1rem; text-align:right; font-size: 0.7rem; font-family:'Malgun Gothic'; margin:5 0 0 0">Loading...</div>
+      <div id="latestUpdate" style="height:1rem; text-align:right; font-size: 0.7rem; font-family:'Malgun Gothic'; margin:5 0 0 0;">Loading...</div>
       <div id='rainbowBlockBox' style="height:1rem; text-align:right; font-size: 0.7rem; font-family:'Malgun Gothic'; margin:5 0 0 0; display: none">
         <label for="rainbowBlock"><input type="checkbox" id="rainbowBlock">무지개가 눈 아파요!</input></label>
       </div>
-      <div id='bottomInfo' style="text-align:center; font-size:0.813rem; font-family:'Malgun Gothic'; margin:17 0 0 0">
+      <div id='bottomInfo' style="text-align:center; font-size:0.813rem; font-family:'Malgun Gothic'; margin:17 0 0 0;">
         <span class='popup' id='onNoticeClick'>Notice</span>
         &nbsp;&nbsp;&nbsp;<a href="/ajoumeyoumeow/statistics.html" style="color: #0366d6">Statistics</a>
         &nbsp;&nbsp;&nbsp;<span class='popup' id='onRankClick'>Rank</span>
         &nbsp;&nbsp;&nbsp;<span class='popup' id='onMapClick'>Map</span>
         &nbsp;&nbsp;&nbsp;<a href="/ajoumeyoumeow/history.html" style="color: #0366d6">History</a><br>
-        <span style="font-size:0.4rem"><br></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;©2018 LUFT - AQUILA.
+        <span style="font-size:0.4rem"><br></span>&nbsp;&nbsp;©2018 LUFT - AQUILA.
         &nbsp;<a id='info' class="ext" href="" style="color: #0366d6;">About</a>
-        &nbsp;<a class="ext" target='_blank' href="https://docs.google.com/spreadsheets/d/1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A/edit?usp=sharing" style="color:#0366d6">Sheet</a>&nbsp;&nbsp;
-        <ul class="menu" style="display: inline;">
-          <li style="display: inline;">
-            <a href="javascript:;">▼</a>
-        		<ul>
-        			<li><a href="/ajoumeyoumeow/calculator.html">Calculator</a></li>
-        		</ul>
-          </li>
-        </ul>
-        <br>v5.1.1 (190318) : 모달(팝업)창 디자인 개선
+        &nbsp;<a class="ext" target='_blank' href="https://docs.google.com/spreadsheets/d/1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A/edit?usp=sharing" style="color:#0366d6">Sheet</a>
+        &nbsp;<a class="ext" href="/ajoumeyoumeow/calculator.html" style="color: #0366d6;">Calc</a><br><span style="font-size:0.4rem"><br></span>
+        v5.1.1 (190318) : 모달(팝업)창 디자인 개선
       </div>
     </div>
     <div class="modal micromodal-slide" id="askName" aria-hidden="true">
@@ -482,7 +475,22 @@
             <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
           </header>
           <main class="modal__content" id="mapModal-content">
-            <img id='map' src="/ajoumeyoumeow/Icons/map.png" style="width:100%; height:auto">
+            <div style="position: relative">
+              <img id='map' src="/ajoumeyoumeow/Icons/map.png" style="width:100%; height:auto">
+              <span class='spot first' id='spot_1-1'>★</span>
+              <span class='spot first' id='spot_1-2'>★</span>
+              <span class='spot first' id='spot_1-3'>★</span>
+              <span class='spot first' id='spot_1-4'>★</span>
+              <span class='spot second' id='spot_2-1'>★</span>
+              <span class='spot second' id='spot_2-2'>★</span>
+              <span class='spot second' id='spot_2-3'>★</span>
+              <span class='spot second' id='spot_2-4'>★</span>
+              <span class='spot third' id='spot_3-1'>★</span>
+              <span class='spot third' id='spot_3-2'>★</span>
+              <span class='spot third' id='spot_3-3'>★</span>
+              <span class='spot third' id='spot_3-4'>★</span>
+              <span class='spot third' id='spot_3-5'>★</span>
+            </div>
           </main>
         </div>
       </div>
@@ -539,6 +547,8 @@
               <br>업대이투 (위태로울 업, 몹쓸 대, 이로울 이, 덮개 투)<br>
               위태롭고 몹쓸 코드를 이로운 코드로 덮어씌우다.</span>
             <div id='noticeContainer' style="font-size: 0.9rem; text-align: center">
+              <span style="font-weight:bold">v5.1.2 : 2019-03-18</span><br>
+                지도에 별 추가<br><span style="line-height:50%"><br></span>
               <span style="font-weight:bold">v5.1.1 : 2019-03-18</span><br>
                 모달(팝업)창 디자인 개선<br><span style="line-height:50%"><br></span>
               <span style="font-weight:bold">v5.1.0 : 2019-03-17</span><br>
