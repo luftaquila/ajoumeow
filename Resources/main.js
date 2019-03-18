@@ -6,13 +6,6 @@ $(function() {
     $('#tab-2').addClass('current');
     $('li[data-tab="tab-2"]').addClass('current');
   }
-  if(Cookies.get('fillName')) {
-    $.ajax({
-        type: 'POST',
-        url: "https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec",
-        data: encodeURI('로그=로그&이름=' + Cookies.get('fillName'))
-    });
-  }
   loadWeather();
   load();
 });
@@ -182,6 +175,11 @@ function setData() {
   if(Cookies.get('fillName')) {
     if(Cookies.get('popup') != 'hidden') { MicroModal.show('rankModal'); }
     $('#submitName').val(Cookies.get('fillName'));
+    $.ajax({
+        type: 'POST',
+        url: "https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec",
+        data: encodeURI('로그=로그&이름=' + Cookies.get('fillName'))
+    });
   }
   else {
     MicroModal.show('askName');
