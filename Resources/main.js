@@ -6,40 +6,6 @@ $(function() {
     $('#tab-2').addClass('current');
     $('li[data-tab="tab-2"]').addClass('current');
   }
-  $.ajax({
-    url: 'https://api.openweathermap.org/data/2.5/weather?id=1835553&APPID=714bbbb9ad184e11c835635e025e301d',
-    type: "GET",
-    dataType: 'json',
-    cache: false,
-    success: function (response) {
-      $('#temp').html((response.main.temp - 273.15).toFixed(1) + '°C');
-      $('#date').html('&nbsp;&nbsp;' + new Date().format('m월 d일 dddd'));
-    }
-  });
-  $.ajax({
-    url:'https://cors-anywhere.herokuapp.com/http://www.kma.go.kr/wid/queryDFSRSS.jsp?zone=4111755000',
-    type: "GET",
-    dataType: 'text',
-    cache: false,
-    success: function (response) {
-      $('#weather').html('&nbsp;' + $($.parseXML(response)).find('wfKor').first().text());
-      $('#icon').html('<image src="https://ssl.pstatic.net/static/weather/images/w_icon/w_' + weather[$($.parseXML(response)).find('wfKor').first().text()] + '.gif" style=""></image>');
-    }
-  });
-  $.ajax({
-    url: 'https://cors-anywhere.herokuapp.com/http://openapi.airkorea.or.kr/openapi/services/rest/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty?stationName=%EC%9D%B8%EA%B3%84%EB%8F%99&dataTerm=daily&pageNo=1&numOfRows=1&ServiceKey=2O%2BuM6vSRCF6GmbRLmsCMl38w0g%2F40UY5Vtd57XSnbhwJHPuasjf58ZnVHSSPul0o8aixY7Zkvpg42TtOzQqeQ%3D%3D&ver=1.3',
-    type: "GET",
-    dataType: 'text',
-    cache: false,
-    success: function (response) {
-      var pm10 = $($.parseXML(response)).find('pm10Value').text(), pm25 = $($.parseXML(response)).find('pm25Value').text();
-      $('#pm10').css('color', '#000');
-      $('#pm10').html('PM10 : ' + '<span id="pm10val">' + pm10 + '</span>' + '㎍/㎥');
-      $('#pm25').html('PM2.5 : ' + '<span id="pm25val">' + pm25 + '</span>' + '㎍/㎥');
-      $('#pm10val').css('color', pm10 > 30 ? pm10 > 80 ? pm10 > 150 ? '#ff5959' : '#fd9b5a' : '#00c73c' : '#32a1ff');
-      $('#pm25val').css('color', pm25 > 15 ? pm25 > 35 ? pm25 > 75 ? '#ff5959' : '#fd9b5a' : '#00c73c' : '#32a1ff');
-    }
-  });
   if(Cookies.get('fillName')) {
     $.ajax({
         type: 'POST',
@@ -47,6 +13,7 @@ $(function() {
         data: encodeURI('로그=로그&이름=' + Cookies.get('fillName'))
     });
   }
+  loadWeather();
   load();
 });
 function load() {
@@ -77,23 +44,6 @@ function load() {
           $('input').attr('disabled', false);
           download += dataSize(response);
           console.log('Ready. ' + (download / 1000).toFixed(1) + 'KB Loaded');
-          if(Cookies.get('fillName')) {
-            $('#submitName').val(Cookies.get('fillName'));
-          }
-          else {
-            alertify.prompt("이름을 알려주세요.<br><span style='font-size:0.7rem'><br>이름 자동완성에 사용되며,<br>최초 1회만 물어봅니다.</span>", function(e, str) {
-              if(e) {
-                Cookies.set('fillName', $.trim(str), {expires : 365});
-                $('#submitName').val(Cookies.get('fillName'));
-                if(Cookies.get('fillName') == "") { Cookies.remove('fillName'); }
-                $.ajax({
-                    type: 'POST',
-                    url: "https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec",
-                    data: encodeURI('로그=로그&이름=' + Cookies.get('fillName'))
-                });
-              }
-            }, "");
-          }
         }
       });
     }
@@ -187,7 +137,6 @@ function setData() {
     $("#thisWeek_" + i).html(new Date(year, 0, i + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)"));
     $("#nextWeek_" + i).html(new Date(year, 0, i + (week * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)"));
     $("#nextTwoWeek_" + i).html(new Date(year, 0, i + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)"));
-    //$("#nextThreeWeek_" + i).html(new Date(year, 0, i + ((week + 2) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)"));
     for(var j = 1; j <= 2; j++)
     {
       $("#thisWeek_d" + i + "_" + j).html(yourNameIs(0, i - 1, 1, j));
@@ -199,8 +148,6 @@ function setData() {
       $("#nextTwoWeek_d" + i + "_" + j).html(yourNameIs(2, i - 1, 1, j));
       $("#nextTwoWeek_s" + i + "_" + j).html(yourNameIs(2, i - 1, 2, j));
       $("#nextTwoWeek_t" + i + "_" + j).html(yourNameIs(2, i - 1, 3, j));
-      //$("#nextThreeWeek_d" + i + "_" + j).html(yourNameIs(3, i - 1, 1, j));
-      //$("#nextThreeWeek_s" + i + "_" + j).html(yourNameIs(3, i - 1, 2, j));
     }
   }
   for(var i = 1; i <= 2; i++)
@@ -209,7 +156,6 @@ function setData() {
     $("#thisWeekEnd_" + i).html(new Date(year, 0, i + 5 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)"));
     $("#nextWeekEnd_" + i).html(new Date(year, 0, i + 5 + ((week + 0) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)"));
     $("#nextTwoWeekEnd_" + i).html(new Date(year, 0, i + 5 + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)"));
-    //$("#nextThreeWeekEnd_" + i).html(new Date(year, 0, i + 5 + ((week + 2) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)"));
     for(var j = 1; j <= 2; j++)
     {
       $('#thisWeekEnd_d' + i + "_" + j).html(yourNameIs(0, i + 4, 1, j));
@@ -221,8 +167,6 @@ function setData() {
       $('#nextTwoWeekEnd_d' + i + "_" + j).html(yourNameIs(2, i + 4, 1, j));
       $('#nextTwoWeekEnd_s' + i + "_" + j).html(yourNameIs(2, i + 4, 2, j));
       $('#nextTwoWeekEnd_t' + i + "_" + j).html(yourNameIs(2, i + 4, 3, j));
-      //$('#nextThreeWeekEnd_d' + i + "_" + j).html(yourNameIs(3, i + 4, 1, j));
-      //$('#nextThreeWeekEnd_s' + i + "_" + j).html(yourNameIs(3, i + 4, 2, j));
     }
   }
   for(var i = 1; i <= 3; i++) {
@@ -231,10 +175,27 @@ function setData() {
     $("#this_t_" + i).html(parseFloat(rankArray[i - 1][1]));
     $("#past_t_" + i).html(parseFloat(rankArray[i - 1][3]));
   }
-  if(Cookies.get('popup') != 'hidden') { $('#rankModal').css("display", "block"); }
   if(Cookies.get('versionInfo') != $('#version').text()) {
     Cookies.set('versionInfo', $('#version').text(), {expires : 30});
-    $('#noticeModal').css("display", "block");
+    MicroModal.show('noticeModal');
+  }
+  if(Cookies.get('fillName')) {
+    if(Cookies.get('popup') != 'hidden') { MicroModal.show('rankModal'); }
+    $('#submitName').val(Cookies.get('fillName'));
+  }
+  else {
+    MicroModal.show('askName');
+    $('#nameSubmit').click( function() {
+      Cookies.set('fillName', $.trim($('#name').val()), {expires : 365});
+      $('#submitName').val(Cookies.get('fillName'));
+      if(Cookies.get('fillName') == "") { Cookies.remove('fillName'); }
+      $.ajax({
+          type: 'POST',
+          url: "https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec",
+          data: encodeURI('로그=로그&이름=' + Cookies.get('fillName'))
+      });
+      MicroModal.close('askName');
+    });
   }
   calendarCount = 0, rainbowCount = 0;
   //setCalendar('3/13(수)', '★개총★', true);
@@ -308,38 +269,14 @@ function yourNameIs(p1, p2, course, rank) {
   }
   return " ";
 }
-/*function howsTheWeather(id) {
-  if(id >= 200 && id < 300) return '뇌우';
-  else if(id >= 300 && id < 400 || id == 500 || id == 501 || id == 511) return '비';
-  else if(id >= 502 && id <= 504 || id >= 520 && id <= 531) return '소나기';
-  else if(id >= 600 && id < 700) return '눈';
-  else if(id >= 700 && id <= 721 || id == 741) return '안개';
-  else if(id == 731 || id == 751 || id == 761) return '황사';
-  else if(id == 800) return '맑음';
-  else if(id == 801 || id == 802) return '구름 많음';
-  else if(id == 803 || id == 804) return '흐림';
-  else return 'Error';
-}*/
 function dataSize(s, b, i, c) { for(b = i = 0; c = s.charCodeAt(i++); b += c >> 11 ? 3 : c >> 7 ? 2 : 1); return b; }
 function clickEventListener() {
   $('.reload').click(function() { load(); });
-  $('#onNoticeClick').click(function() { $('#noticeModal').css("display", "block"); });
-  $('#onMapClick').click(function() { $('#mapModal').css("display", "block"); });
-  $('#onMileClick').click(function() { $('#rankModal').css("display", "none"); $('#mileModal').css("display", "block"); });
-  $('#onRankClick').click(function() { $('#rankModal').css("display", "block"); Cookies.remove('popup'); popupBlock.checked = false; });
-  $('#popupBlock').click(function() { $('#rankModal').css("display", "none"); Cookies.set('popup', 'hidden', {expires : 3}); });
-  window.onclick = function(event) {
-    if (event.target == document.getElementById('logModal')) { $('#logModal').css("display", "none"); }
-    if (event.target == document.getElementById('mapModal')) { $('#mapModal').css("display", "none"); }
-    if (event.target == document.getElementById('rankModal')) { $('#rankModal').css("display", "none"); }
-    if (event.target == document.getElementById('mileModal')) { $('#mileModal').css("display", "none"); }
-    if (event.target == document.getElementById('noticeModal')) { $('#noticeModal').css("display", "none"); }
-  }
-  $('#logSpanClose').click(function() { $('#logModal').css("display", "none"); });
-  $('#mapSpanClose').click(function() { $('#mapModal').css("display", "none"); });
-  $('#rankSpanClose').click(function() { $('#rankModal').css("display", "none"); });
-  $('#mileSpanClose').click(function() { $('#mileModal').css("display", "none"); });
-  $('#noticeSpanClose').click(function() { $('#noticeModal').css("display", "none"); });
+  $('#onNoticeClick').click(function() { MicroModal.show('noticeModal'); });
+  $('#onMapClick').click(function() { MicroModal.show('mapModal'); });
+  $('#onMileClick').click(function() { MicroModal.close('rankModal'); MicroModal.show('mileModal'); });
+  $('#onRankClick').click(function() { MicroModal.show('rankModal'); Cookies.remove('popup'); popupBlock.checked = false; });
+  $('#popupBlock').click(function() { MicroModal.close('rankModal'); Cookies.set('popup', 'hidden', {expires : 3}); });
   $('ul.tabs li').click(function() {
     var tab_id = $(this).attr('data-tab');
     $('ul.tabs li').removeClass('current');
@@ -377,6 +314,42 @@ function clickEventListener() {
       for(var i = 0; i <= calendarCount; i++ ) {
         $('.cal' + i).addClass('dogriver');
       }
+    }
+  });
+}
+function loadWeather() {
+  $.ajax({
+    url: 'https://api.openweathermap.org/data/2.5/weather?id=1835553&APPID=714bbbb9ad184e11c835635e025e301d',
+    type: "GET",
+    dataType: 'json',
+    cache: false,
+    success: function (response) {
+      $('#temp').html('&nbsp;' + (response.main.temp - 273.15).toFixed(1) + '°C');
+      $('#date').html('&nbsp;&nbsp;' + new Date().format('m월 d일 dddd'));
+    }
+  });
+  $.ajax({
+    url:'https://cors-anywhere.herokuapp.com/http://www.kma.go.kr/wid/queryDFSRSS.jsp?zone=4111755000',
+    type: "GET",
+    dataType: 'text',
+    cache: false,
+    success: function (response) {
+      $('#weather').html('&nbsp;' + $($.parseXML(response)).find('wfKor').first().text());
+      $('#icon').html('<image src="https://ssl.pstatic.net/static/weather/images/w_icon/w_' + weather[$($.parseXML(response)).find('wfKor').first().text()] + '.gif" style=""></image>');
+    }
+  });
+  $.ajax({
+    url: 'https://cors-anywhere.herokuapp.com/http://openapi.airkorea.or.kr/openapi/services/rest/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty?stationName=%EC%9D%B8%EA%B3%84%EB%8F%99&dataTerm=daily&pageNo=1&numOfRows=1&ServiceKey=2O%2BuM6vSRCF6GmbRLmsCMl38w0g%2F40UY5Vtd57XSnbhwJHPuasjf58ZnVHSSPul0o8aixY7Zkvpg42TtOzQqeQ%3D%3D&ver=1.3',
+    type: "GET",
+    dataType: 'text',
+    cache: false,
+    success: function (response) {
+      var pm10 = $($.parseXML(response)).find('pm10Value').text(), pm25 = $($.parseXML(response)).find('pm25Value').text();
+      $('#pm10').css('color', '#000');
+      $('#pm10').html('PM10 : ' + '<span id="pm10val">' + pm10 + '</span>' + '㎍/㎥');
+      $('#pm25').html('PM2.5 : ' + '<span id="pm25val">' + pm25 + '</span>' + '㎍/㎥');
+      $('#pm10val').css('color', pm10 > 30 ? pm10 > 80 ? pm10 > 150 ? '#ff5959' : '#fd9b5a' : '#00c73c' : '#32a1ff');
+      $('#pm25val').css('color', pm25 > 15 ? pm25 > 35 ? pm25 > 75 ? '#ff5959' : '#fd9b5a' : '#00c73c' : '#32a1ff');
     }
   });
 }

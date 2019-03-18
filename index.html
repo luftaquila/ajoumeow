@@ -2,10 +2,11 @@
   <head>
     <title>아주대학교 고양이는 미유미유</title>
     <link rel="shortcut icon" type="image/x-icon" href="/ajoumeyoumeow/Icons/Resized/meyoumeow.ico" />
-    <a id='version' style="display: none;">v5.1.0</a>
-    <a id='release' style="display: none;">2019-03-17 05:15 AM</a>
+    <a id='version' style="display: none;">v5.1.1</a>
+    <a id='release' style="display: none;">2019-03-18 11:24 AM</a>
     <link rel="stylesheet" href="/ajoumeyoumeow/Resources/alertify/alertify.core.css" />
     <link rel="stylesheet" href="/ajoumeyoumeow/Resources/alertify/alertify.default.css" id="toggleCSS" />
+    <link rel="stylesheet" href="/ajoumeyoumeow/Resources/micromodal/micromodal.min.css" />
     <link rel="stylesheet" href="/ajoumeyoumeow/Resources/main.css" />
     <meta charset="utf-8">
     <meta property="og:title" content="아주대학교 미유미유"/>
@@ -56,13 +57,13 @@
       </ul>
       <table style="margin: -5 auto 0; text-align: center">
         <tr>
-          <td id='date' style="text-align: left; font-size: 0.9rem; font-weight: bold; padding: 5 0 0" colspan="3" rowspan="2"></td>
+          <td id='date' style="text-align: center; font-size: 0.9rem; font-weight: bold; padding: 5 0 0" colspan="3" rowspan="2"></td>
           <td id='icon' rowspan="2"></td>
-          <td id='weather' style="text-align: left; font-weight: bold; padding: 15 15 0 0"></td>
+          <td id='weather' style="text-align: center; font-weight: bold; padding: 15 15 0 0"></td>
           <td id='pm10' style="text-align: right; color: #fff; font-size: 0.75rem; padding: 15 0 0;">PM10 : 00㎍/㎥</td>
         </tr>
         <tr>
-          <td id='temp' style="text-align: left; font-weight: bold; padding: 0 15 0 0"></td>
+          <td id='temp' style="text-align: center; font-weight: bold; padding: 0 15 0 0"></td>
           <td id='pm25' style="text-align: right; font-size: 0.75rem"></td>
         </tr>
       </table>
@@ -453,88 +454,132 @@
         		</ul>
           </li>
         </ul>
-        <br>v5.1.0 (190317) : 기상청 날씨 예보 적용
+        <br>v5.1.1 (190318) : 모달(팝업)창 디자인 개선
       </div>
     </div>
-    <div id="mapModal" class="modal">
-      <div id='mapModalContent' class="modal-content" style="position: relative; height: auto; text-align: center">
-        <span id="mapSpanClose" class="close" style="position: absolute; right: 8; top: -3;">&times;<br></span>
-        <img id='map' src="/ajoumeyoumeow/Icons/map.png" style="width:100%; height:auto">
-      </div>
-    </div>
-    <div id="mileModal" class="modal">
-      <div class="modal-content" style="position: relative; height: auto; margin: 5% auto;">
-        <span id="mileSpanClose" class="close" style="position: absolute; right: 8; top: -3;">&times;<br></span>
-        <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTS42UTV58NdXxJMBIg3ARIVmnGLcMmok7gv0YjyIkH29t1Yk16OidImCYsrtuU1B7f42MhUNQA5kKA/pubhtml?gid=1034362398&single=true"  width="100%" height="93%" scrolling="no" style="margin-top: 1rem"></iframe><br>
-      </div>
-    </div>
-    <div id="rankModal" class="modal">
-      <div id='rankModalContent' class="modal-content" style="position: relative; height: 20rem; text-align: center">
-        <span id="rankSpanClose" class="close" style="position: absolute; right: 8; top: -3;">&times;</span>
-        <div style="position: absolute; height: 19rem; top: 0; bottom: 0; left: 0; right: 0; margin: auto;">
-          <span style="font-size: 1.3rem">☆미유미유 마일리지 랭킹☆</span>
-          <br><br>이번 달 현재까지<br>
-          1등(<span id='this_t_1'></span>점) : <span id='this_1'></span><br>
-          2등(<span id='this_t_2'></span>점) : <span id='this_2'></span><br>
-          3등(<span id='this_t_3'></span>점) : <span id='this_3'></span><br><span style="font-size: 0.5rem;"><br></span>
-          지난 달<br>
-          1등(<span id='past_t_1'></span>점) : <span id='past_1'></span><br>
-          2등(<span id='past_t_2'></span>점) : <span id='past_2'></span><br>
-          3등(<span id='past_t_3'></span>점) : <span id='past_3'></span><br><span style="font-size: 0.5rem;"><br></span>
-          <span class='popup' id="onMileClick" style="font-size: 0.8rem">마일리지 현황 보기</span>
-        </div>
-        <div style="font-size: 0.8rem; position: absolute; right: 8; bottom: 5">
-          <label for="popupBlock"><input type="checkbox" id="popupBlock">앞으로 3일간 보지 않기</input></label>
+    <div class="modal micromodal-slide" id="askName" aria-hidden="true">
+      <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+        <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="askName-title">
+          <header class="modal__header">
+            <h2 class="modal__title" id="askName-title">이름을 알려주세요</h2>
+            <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+          </header>
+          <main class="modal__content" id="askName-content">
+            <span style='font-size:0.7rem'>이름 자동 완성에 사용되며,<br>최초 1회 이후 물어보지 않습니다.</span><br><br>
+            <input id="name" type="text" style="font-size: 1rem">
+          </main>
+          <footer class="modal__footer">
+            <input type="button" id='nameSubmit' class="modal__btn modal__btn-primary" value="확인">&nbsp;
+          </footer>
         </div>
       </div>
     </div>
-    <div id="noticeModal" class="modal">
-      <div id='noticeModalContent' class="modal-content" style="position: relative; text-align: center; margin: 30% auto; height:20rem">
-        <span id="noticeSpanClose" class="close" style="position: absolute; right: 8; top: -3;">&times;</span>
-        <div style="position: relative; height: 88%; font-size:0.8rem; margin:5 0; display:inline-block; overflow-x: hidden; overflow-y: auto">
-          <span style="font-size: 1.3rem;">☆공지사항☆</span><br><span style="line-height:50%"><br></span>
-          <span style="font-size: 0.9rem; display:none">
-            <span style="background-color: lightcyan;">[오늘의 사자성어]</span>
-            <br>업대이투 (위태로울 업, 몹쓸 대, 이로울 이, 덮개 투)<br>
-            위태롭고 몹쓸 코드를 이로운 코드로 덮어씌우다.</span>
-          <span style="font-size: 0.9rem">업데이트 알림</span>
-          <br><span style="line-height:70%"><br></span>
-          <span style="font-weight:bold">v5.1.0 : 2019-03-17</span><br>
-            이제 날씨 정보를 3시간 단위 예보로 기상청에서 받아옵니다.<br><span style="line-height:50%"><br></span>
-          <span style="font-weight:bold">v5.0.x : 2019-03-11</span><br>
-            3코스를 추가했습니다.<br><span style="line-height:50%"><br></span>
-          <span id='toggle' style="color:#0366d6">▼ 업데이트 로그 보기</span>
-          <div id='more' style="display: none">
-            <span style="font-weight:bold">v4.0.x : 2019-03-08</span><br>
-              페이지 상단에 날씨와 미세먼지 정보를 추가했습니다.<br>
-              날씨는 매 10분마다, 미세먼지는 매 1시간마다 갱신됩니다.<br><span style="line-height:50%"><br></span>
-              모든 소스 파일을 로컬에서 로드하여 속도를 높였습니다.<br>
-              무지갯빛으로 반짝이는 일정 추가 기능을 삽입했습니다.<br><span style="line-height:50%"><br></span>
-            <span style="font-weight:bold">v3.7.x : 2019-01-23</span><br>
-              새로고침 아이콘을 약간 멋지게 바꿔봤습니다.<br>
-              이제 급식 신청 변동사항이 표에 즉시 반영됩니다.<br><span style="line-height:50%"><br></span>
-            <span style="font-weight:bold">v3.6.x : 2019-01-03</span><br>
-              신청한 급식에 대한 수정 및 삭제가 가능해졌습니다.<br><span style="line-height:50%"><br></span>
-            <span style="font-weight:bold">v3.5.x : 2019-01-02</span><br>
-              데스크톱 환경에서의 사이트 레이아웃을 개선했습니다.<br>
-              DB 통합으로 인한 약간의 수정이 있었습니다.<br><span style="line-height:50%"><br></span>
-            <span style="font-weight:bold">v3.4.x : 2018-12-12</span><br>
-              소스코드 압축으로 데이터 사용량을 줄였습니다.<br><span style="line-height:50%"><br></span>
-            <span style="font-weight:bold">v3.3.x : 2018-11-29</span><br>
-              모달(팝업)창 동작을 개선했습니다.<br><span style="line-height:50%"><br></span>
-            <span style="font-weight:bold">v3.2.x : 2018-11-13</span><br>
-              Alertify 라이브러리 적용<br><span style="line-height:50%"><br></span>
-            <span style="font-weight:bold">v3.1.x : 2018-10-29</span><br>
-              알고리즘 개선으로 사이트 동작 속도를 높였습니다.<br><span style="line-height:50%"><br></span>
-            <span style="font-weight:bold">v3.0.x : 2018-10-29</span><br>
-              이제 사이트가 마지막으로 신청한 이름을 기억합니다.<br><span style="line-height:70%"><br></span>
-          </div>
+    <div class="modal micromodal-slide" id="mapModal" aria-hidden="true">
+      <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+        <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="mapModal-title">
+          <header class="modal__header">
+            <h2 class="modal__title" id="mapModal-title">지도</h2>
+            <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+          </header>
+          <main class="modal__content" id="mapModal-content">
+            <img id='map' src="/ajoumeyoumeow/Icons/map.png" style="width:100%; height:auto">
+          </main>
+        </div>
+      </div>
+    </div>
+    <div class="modal micromodal-slide" id="mileModal" aria-hidden="true">
+      <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+        <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="mileModal-title">
+          <header class="modal__header">
+            <h2 class="modal__title" id="mileModal-title">마일리지</h2>
+            <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+          </header>
+          <main class="modal__content" id="mileModal-content">
+            <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTS42UTV58NdXxJMBIg3ARIVmnGLcMmok7gv0YjyIkH29t1Yk16OidImCYsrtuU1B7f42MhUNQA5kKA/pubhtml?gid=1034362398&single=true"  width="100%" height="93%" scrolling="no" style="margin-top: 1rem"></iframe><br>
+          </main>
+        </div>
+      </div>
+    </div>
+    <div class="modal micromodal-slide" id="rankModal" aria-hidden="true">
+      <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+        <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="rankModal-title">
+          <header class="modal__header">
+            <h2 class="modal__title" id="rankModal-title">☆미유미유 마일리지 랭킹☆&nbsp;</h2>
+            <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+          </header>
+          <main class="modal__content" id="rankModal-content" style="text-align:center">
+            이번 달 현재까지<br>
+            1등(<span id='this_t_1'></span>점) : <span id='this_1'></span><br>
+            2등(<span id='this_t_2'></span>점) : <span id='this_2'></span><br>
+            3등(<span id='this_t_3'></span>점) : <span id='this_3'></span><br><span style="font-size: 0.5rem;"><br></span>
+            지난 달<br>
+            1등(<span id='past_t_1'></span>점) : <span id='past_1'></span><br>
+            2등(<span id='past_t_2'></span>점) : <span id='past_2'></span><br>
+            3등(<span id='past_t_3'></span>점) : <span id='past_3'></span><br><span style="font-size: 0.5rem;"><br></span>
+            <span class='popup' id="onMileClick" style="font-size: 0.8rem">마일리지 현황 보기</span>
+          </main>
+          <footer>
+            <div style="font-size: 0.8rem; position: absolute; right: 8; bottom: 5">
+              <label for="popupBlock"><input type="checkbox" id="popupBlock">앞으로 3일간 보지 않기</input></label>
+            </div>
+          </footer>
+        </div>
+      </div>
+    </div>
+    <div class="modal micromodal-slide" id="noticeModal" aria-hidden="true">
+      <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+        <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="noticeModal-title">
+          <header class="modal__header">
+            <h2 class="modal__title" id="noticeModal-title">공지사항</h2>
+            <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+          </header>
+          <main class="modal__content" id="noticeModal-content">
+            <span style="font-size: 0.9rem; display:none">
+              <span style="background-color: lightcyan;">[오늘의 사자성어]</span>
+              <br>업대이투 (위태로울 업, 몹쓸 대, 이로울 이, 덮개 투)<br>
+              위태롭고 몹쓸 코드를 이로운 코드로 덮어씌우다.</span>
+            <div id='noticeContainer' style="font-size: 0.9rem; text-align: center">
+              <span style="font-weight:bold">v5.1.1 : 2019-03-18</span><br>
+                모달(팝업)창 디자인 개선<br><span style="line-height:50%"><br></span>
+              <span style="font-weight:bold">v5.1.0 : 2019-03-17</span><br>
+                날씨 정보를 3시간 단위 예보로 기상청에서 받아옵니다.<br><span style="line-height:50%"><br></span>
+              <span style="font-weight:bold">v5.0.x : 2019-03-11</span><br>
+                3코스를 추가했습니다.<br><span style="line-height:50%"><br></span>
+              <span id='toggle' style="color:#0366d6">▼ 업데이트 로그 보기</span><br>
+              <div id='more' style="display: none">
+                <span style="font-weight:bold">v4.0.x : 2019-03-08</span><br>
+                  페이지 상단에 날씨와 미세먼지 정보를 추가했습니다.<br>
+                  날씨는 매 10분마다, 미세먼지는 매 1시간마다 갱신됩니다.<br><span style="line-height:50%"><br></span>
+                  모든 소스 파일을 로컬에서 로드하여 속도를 높였습니다.<br>
+                  무지갯빛으로 반짝이는 일정 추가 기능을 삽입했습니다.<br><span style="line-height:50%"><br></span>
+                <span style="font-weight:bold">v3.7.x : 2019-01-23</span><br>
+                  새로고침 아이콘을 약간 멋지게 바꿔봤습니다.<br>
+                  이제 급식 신청 변동사항이 표에 즉시 반영됩니다.<br><span style="line-height:50%"><br></span>
+                <span style="font-weight:bold">v3.6.x : 2019-01-03</span><br>
+                  신청한 급식에 대한 수정 및 삭제가 가능해졌습니다.<br><span style="line-height:50%"><br></span>
+                <span style="font-weight:bold">v3.5.x : 2019-01-02</span><br>
+                  데스크톱 환경에서의 사이트 레이아웃을 개선했습니다.<br>
+                  DB 통합으로 인한 약간의 수정이 있었습니다.<br><span style="line-height:50%"><br></span>
+                <span style="font-weight:bold">v3.4.x : 2018-12-12</span><br>
+                  소스코드 압축으로 데이터 사용량을 줄였습니다.<br><span style="line-height:50%"><br></span>
+                <span style="font-weight:bold">v3.3.x : 2018-11-29</span><br>
+                  모달(팝업)창 동작을 개선했습니다.<br><span style="line-height:50%"><br></span>
+                <span style="font-weight:bold">v3.2.x : 2018-11-13</span><br>
+                  Alertify 라이브러리 적용<br><span style="line-height:50%"><br></span>
+                <span style="font-weight:bold">v3.1.x : 2018-10-29</span><br>
+                  알고리즘 개선으로 사이트 동작 속도를 높였습니다.<br><span style="line-height:50%"><br></span>
+                <span style="font-weight:bold">v3.0.x : 2018-10-29</span><br>
+                  이제 사이트가 마지막으로 신청한 이름을 기억합니다.<br><span style="line-height:70%"><br></span>
+              </div>
+            </div>
+          </main>
         </div>
       </div>
     </div>
     <script src='/ajoumeyoumeow/Resources/jquery-3.3.1.min.js'></script>
     <script src='/ajoumeyoumeow/Resources/js.cookie.min.js'></script>
     <script src='/ajoumeyoumeow/Resources/alertify/alertify.min.js'></script>
+    <script src='/ajoumeyoumeow/Resources/micromodal/micromodal.min.js'></script>
     <script src='/ajoumeyoumeow/Resources/main.js'></script>
     <script type="text/javascript" src="//wcs.naver.net/wcslog.js"></script>
     <script type="text/javascript">
