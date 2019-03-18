@@ -9,22 +9,6 @@
   html { font-size: 17px; }
   #arrow { font-size: 20px; }
   .reload {	transform: scale(0.8); }
-
-  #spot_1-1 { top: 25; left: 157; }
-  #spot_1-2 { top: 150; left: 128; }
-  #spot_1-3 { top: 186; left: 111; }
-  #spot_1-4 { top: 203; left: 44; }
-
-  #spot_2-1 { top: 171; left: 175; }
-  #spot_2-2 { top: 215; left: 140; }
-  #spot_2-3 { top: 249; left: 129; }
-  #spot_2-4 { top: 324; left: 211; }
-
-  #spot_3-1 { top: 93; left: 165; }
-  #spot_3-2 { top: 123; left: 208; }
-  #spot_3-3 { top: 147; left: 217; }
-  #spot_3-4 { top: 100; left: 234; }
-  #spot_3-5 { top: 120; left: 305; }
 }
 @media (min-width:760px) {
   .modal-content { width: 740!important; }
@@ -35,22 +19,6 @@
   #tab-3 { height: 605; }
   #latestUpdate { width: 425; margin: 5 auto!important; }
   #rainbowBlockBox { width: 425; margin: 5 auto!important; }
-
-  #spot_1-1 { top: 30; left: 197; }
-  #spot_1-2 { top: 183; left: 160; }
-  #spot_1-3 { top: 230; left: 139; }
-  #spot_1-4 { top: 252; left: 56; }
-
-  #spot_2-1 { top: 213; left: 220; }
-  #spot_2-2 { top: 265; left: 174; }
-  #spot_2-3 { top: 307; left: 161; }
-  #spot_2-4 { top: 403; left: 262; }
-
-  #spot_3-1 { top: 115; left: 207; }
-  #spot_3-2 { top: 152; left: 260; }
-  #spot_3-3 { top: 182; left: 270; }
-  #spot_3-4 { top: 125; left: 294; }
-  #spot_3-5 { top: 149; left: 382; }
 }
 .spot {
   position: absolute;
