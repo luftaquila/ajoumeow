@@ -1,17 +1,17 @@
 <html>
   <head>
     <title>아주대학교 고양이는 미유미유</title>
-    <link rel="shortcut icon" type="image/x-icon" href="/ajoumeyoumeow/Icons/Resized/meyoumeow.ico" />
-    <a id='version' style="display: none;">v5.1.3</a>
-    <a id='release' style="display: none;">2019-03-18 02:58 PM</a>
-    <link rel="stylesheet" href="/ajoumeyoumeow/Resources/alertify/alertify.core.css" />
-    <link rel="stylesheet" href="/ajoumeyoumeow/Resources/alertify/alertify.default.css" id="toggleCSS" />
-    <link rel="stylesheet" href="/ajoumeyoumeow/Resources/micromodal/micromodal.min.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="/ajoumeyoumeow/Resources/Images/Resized/meyoumeow.ico" />
+    <a id='version' style="display: none;">v5.1.4</a>
+    <a id='release' style="display: none;">2019-03-19 09:24 AM</a>
+    <link rel="stylesheet" href="/ajoumeyoumeow/Resources/Libraries/alertify/alertify.core.css" />
+    <link rel="stylesheet" href="/ajoumeyoumeow/Resources/Libraries/alertify/alertify.default.css" id="toggleCSS" />
+    <link rel="stylesheet" href="/ajoumeyoumeow/Resources/Libraries/micromodal/micromodal.min.css" />
     <link rel="stylesheet" href="/ajoumeyoumeow/Resources/main.css" />
     <meta charset="utf-8">
     <meta property="og:title" content="아주대학교 미유미유"/>
     <meta property="og:url" content="https://luftaquila.github.io/ajoumeyoumeow/"/>
-    <meta property="og:image" content="https://luftaquila.github.io/ajoumeyoumeow/Icons/%EB%AF%B8%EC%9C%A0%EB%AF%B8%EC%9C%A0.png"/>
+    <meta property="og:image" content="https://luftaquila.github.io/ajoumeyoumeow/Resources/Images/%EB%AF%B8%EC%9C%A0%EB%AF%B8%EC%9C%A0.png"/>
     <meta property="og:description" content="아주대학교 고양이는 미유미유"/>
     <meta name="google-site-verification" content="LdumQ1csatc-sergk4eQ5nBhKjcnisZ18Bo8RjRBxKo"/>
     <meta name="naver-site-verification" content="f3183dc84e33039873fc22ec89ee6b402fe3c54d"/>
@@ -55,15 +55,15 @@
           </svg>
         </div>
       </ul>
-      <table style="margin: -5 auto 0; text-align: center;">
+      <table id='weatherInfo' style="margin: -5 auto 0; text-align: center;">
         <tr>
-          <td id='date' style="text-align: center; font-size: 0.9rem; font-weight: bold; padding: 5 0 0" colspan="3" rowspan="2"></td>
-          <td id='icon' rowspan="2"></td>
-          <td id='weather' style="text-align: center; font-weight: bold; padding: 15 15 0 0"></td>
+          <td id='date' style="text-align: center; font-size: 0.85rem; font-weight: bold; padding: 5 0 0" colspan="3" rowspan="2"></td>
+          <td id='icon' rowspan="2" style="padding: 10 0 0"></td>
+          <td id='weather' style="text-align: center; font-weight: bold; padding: 15 0 0"></td>
           <td id='pm10' style="text-align: right; color: #fff; font-size: 0.75rem; padding: 15 0 0;">PM10 : 00㎍/㎥</td>
         </tr>
         <tr>
-          <td id='temp' style="text-align: center; font-weight: bold; padding: 0 15 0 0"></td>
+          <td id='temp' style="text-align: center; font-weight: bold;"></td>
           <td id='pm25' style="text-align: right; font-size: 0.75rem"></td>
         </tr>
       </table>
@@ -446,17 +446,18 @@
         <span style="font-size:0.4rem"><br></span>&nbsp;&nbsp;©2018 LUFT - AQUILA.
         &nbsp;<a id='info' class="ext" href="" style="color: #0366d6;">About</a>
         &nbsp;<a class="ext" target='_blank' href="https://docs.google.com/spreadsheets/d/1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A/edit?usp=sharing" style="color:#0366d6">Sheet</a>
-        &nbsp;<a class="ext" href="/ajoumeyoumeow/calculator.html" style="color: #0366d6;">Calc</a>
+        &nbsp;<a class="ext" href="/ajoumeyoumeow/calculator.html" style="color: #0366d6;">Calc</a><br>
+
       </div>
     </div>
     <div id='modals'></div>
     <div id='courseImages'></div>
-    <script src='/ajoumeyoumeow/Resources/jquery-3.3.1.min.js'></script>
-    <script src='/ajoumeyoumeow/Resources/js.cookie.min.js'></script>
-    <script src='/ajoumeyoumeow/Resources/alertify/alertify.min.js'></script>
-    <script src='/ajoumeyoumeow/Resources/micromodal/micromodal.min.js'></script>
-    <script src='/ajoumeyoumeow/Resources/jquery.rwdImageMaps.min.js'></script>
-    <script src='/ajoumeyoumeow/Resources/lazyload.min.js'></script>
+    <script src='/ajoumeyoumeow/Resources/Libraries/jquery-3.3.1.min.js'></script>
+    <script src='/ajoumeyoumeow/Resources/Libraries/js.cookie.min.js'></script>
+    <script src='/ajoumeyoumeow/Resources/Libraries/alertify/alertify.min.js'></script>
+    <script src='/ajoumeyoumeow/Resources/Libraries/micromodal/micromodal.min.js'></script>
+    <script src='/ajoumeyoumeow/Resources/Libraries/jquery.rwdImageMaps.min.js'></script>
+    <script src='/ajoumeyoumeow/Resources/Libraries/lazyload.min.js'></script>
     <script src='/ajoumeyoumeow/Resources/main.js'></script>
     <script type="text/javascript" src="//wcs.naver.net/wcslog.js"></script>
     <script type="text/javascript">

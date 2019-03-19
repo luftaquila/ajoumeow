@@ -1,6 +1,6 @@
 $(function() {
-  $('#courseImages').load('/ajoumeyoumeow/Resources/courseImages.html');
-  $('#modals').load('/ajoumeyoumeow/Resources/modals.html');
+  $('#courseImages').load('/ajoumeyoumeow/Resources/Htmls/courseImages.html');
+  $('#modals').load('/ajoumeyoumeow/Resources/Htmls/modals.html');
   $("img.lazyload").lazyload();
   clickEventListener();
   if(new Date().getDay() == 0 || new Date().getDay() == 6) {
@@ -271,13 +271,13 @@ function yourNameIs(p1, p2, course, rank) {
   return " ";
 }
 function dataSize(s, b, i, c) { for(b = i = 0; c = s.charCodeAt(i++); b += c >> 11 ? 3 : c >> 7 ? 2 : 1); return b; }
+function popupBlocker() { console.log('click'); MicroModal.close('rankModal'); Cookies.set('popup', 'hidden', {expires : 3}); }
+function mileageDisplayer() { MicroModal.close('rankModal'); MicroModal.show('mileModal'); }
 function clickEventListener() {
   $('.reload').click(function() { load(); });
   $('#onNoticeClick').click(function() { MicroModal.show('noticeModal'); });
   $('#onMapClick').click(function() { $('img[usemap]').rwdImageMaps(); MicroModal.show('mapModal'); });
-  $('#onMileClick').click(function() { MicroModal.close('rankModal'); MicroModal.show('mileModal'); });
   $('#onRankClick').click(function() { MicroModal.show('rankModal'); Cookies.remove('popup'); popupBlock.checked = false; });
-  $('#popupBlock').click(function() { MicroModal.close('rankModal'); Cookies.set('popup', 'hidden', {expires : 3}); });
   $('ul.tabs li').click(function() {
     var tab_id = $(this).attr('data-tab');
     $('ul.tabs li').removeClass('current');
