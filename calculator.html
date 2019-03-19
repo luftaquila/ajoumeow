@@ -1,11 +1,9 @@
 <html>
   <head>
     <title>미유미유 급식인증기</title>
-    <link rel="shortcut icon" type="image/x-icon" href="/ajoumeyoumeow/Icons/Resized/meyoumeow.ico" />
+    <link rel="shortcut icon" type="image/x-icon" href="/ajoumeyoumeow/Images/Resized/meyoumeow.ico" />
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   </head>
   <body style="-ms-user-select: none; -moz-user-select: -moz-none; -webkit-user-select: none; -khtml-user-select: none; user-select:none;">
     <form id="DATA">
@@ -37,6 +35,8 @@
         <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTS42UTV58NdXxJMBIg3ARIVmnGLcMmok7gv0YjyIkH29t1Yk16OidImCYsrtuU1B7f42MhUNQA5kKA/pubhtml?gid=850606151&single=true" width="100%" height="93%" scrolling="no" style="margin-top: 1rem"></iframe><br>
       </div>
     </div>
+    <script src='/ajoumeyoumeow/Resources/Libraries/jquery-3.3.1.min.js'></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script>
       isVerified = 0;
       $(function() { onLoad(); });
@@ -94,7 +94,7 @@
               data[count][2] = nameSlicer[1];
               count++;
             });
-            for(var i = 1; i < 3; i++) { scoreProvider(data, i, $("#radio").prop('checked')); }
+            for(var i = 1; i < 4; i++) { scoreProvider(data, i, $("#radio").prop('checked')); }
             for(var i = 0; i < data.length; i++) {
               var serializedData = "지급 일자=" + data[i][1] + "&이름=" + data[i][0] + "&코스=" + data[i][2] + "&점수=" + data[i][3];
               transmitter(serializedData, count);

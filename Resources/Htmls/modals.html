@@ -28,7 +28,7 @@
         2코스 : <span style='color: #5cf442;'>★</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         3코스 : <span style='color: #f44242;'>★</span>
         <div style="position: relative">
-          <img src="/ajoumeyoumeow/Icons/map.png" usemap="#Map" style="width:100%; height:auto">
+          <img src="/ajoumeyoumeow/Resources/Images/map.png" usemap="#Map" style="width:100%; height:auto">
           <map name='Map' id='Map'>
             <area shape='circle' coords="468,93,20" id='area_spot_1-1' href='javascript:MicroModal.show("spot_1-1")'>
             <area shape='circle' coords="386,442,20" id='area_spot_1-2' href='javascript:MicroModal.show("spot_1-2")'>
@@ -51,13 +51,13 @@
 </div>
 <div class="modal micromodal-slide" id="mileModal" aria-hidden="true">
   <div class="modal__overlay" tabindex="-1" data-micromodal-close>
-    <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="mileModal-title">
+    <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="mileModal-title" style="width: 100%">
       <header class="modal__header">
         <h2 class="modal__title" id="mileModal-title">마일리지</h2>
         <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
       </header>
       <main class="modal__content" id="mileModal-content">
-        <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTS42UTV58NdXxJMBIg3ARIVmnGLcMmok7gv0YjyIkH29t1Yk16OidImCYsrtuU1B7f42MhUNQA5kKA/pubhtml?gid=1034362398&single=true"  width="100%" height="93%" scrolling="no" style="margin-top: 1rem"></iframe><br>
+        <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTS42UTV58NdXxJMBIg3ARIVmnGLcMmok7gv0YjyIkH29t1Yk16OidImCYsrtuU1B7f42MhUNQA5kKA/pubhtml?gid=1034362398&single=true" width='100%' height="70%" scrolling="no"></iframe><br>
       </main>
     </div>
   </div>
@@ -66,7 +66,7 @@
   <div class="modal__overlay" tabindex="-1" data-micromodal-close>
     <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="rankModal-title">
       <header class="modal__header">
-        <h2 class="modal__title" id="rankModal-title">☆미유미유 마일리지 랭킹☆&nbsp;</h2>
+        <h2 class="modal__title" id="rankModal-title">☆미유미유 마일리지 랭킹☆&nbsp;&nbsp;</h2>
         <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
       </header>
       <main class="modal__content" id="rankModal-content" style="text-align:center">
@@ -78,11 +78,11 @@
         1등(<span id='past_t_1'></span>점) : <span id='past_1'></span><br>
         2등(<span id='past_t_2'></span>점) : <span id='past_2'></span><br>
         3등(<span id='past_t_3'></span>점) : <span id='past_3'></span><br><span style="font-size: 0.5rem;"><br></span>
-        <span class='popup' id="onMileClick" style="font-size: 0.8rem">마일리지 현황 보기</span>
+        <span class='popup' id="onMileClick" style="font-size: 0.8rem" onclick="mileageDisplayer()">마일리지 현황 보기</span>
       </main>
       <footer>
         <div style="font-size: 0.8rem; position: absolute; right: 8; bottom: 5">
-          <label for="popupBlock"><input type="checkbox" id="popupBlock">앞으로 3일간 보지 않기</input></label>
+          <label for="popupBlock"><input type="checkbox" id="popupBlock" onclick="popupBlocker()">앞으로 3일간 보지 않기</input></label>
         </div>
       </footer>
     </div>
@@ -96,21 +96,23 @@
         <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
       </header>
       <main class="modal__content" id="noticeModal-content">
-        <span style="font-size: 0.9rem; display:none">
-          <span style="background-color: lightcyan;">[오늘의 사자성어]</span>
-          <br>업대이투 (위태로울 업, 몹쓸 대, 이로울 이, 덮개 투)<br>
-          위태롭고 몹쓸 코드를 이로운 코드로 덮어씌우다.</span>
-        <div id='noticeContainer' style="font-size: 0.9rem; text-align: center">
+        <span style="font-size: 0.9rem;">
+        </span>
+        <div id='noticeContainer' style="font-size: 0.8rem; text-align: center">
+          <span style="font-size: 0.9rem">
+          사료 보관 사물함은 구학 우체국 옆 357, 358번입니다.<br>
+          사물함 비밀번호는 180218입니다.</span><br><br>
+          <span style='font-weight:bold; font-size: 0.9rem'>업데이트 알림<br></span>
+          <span style="font-weight:bold">v5.1.4 : 2019-03-19</span><br>
+            Bugfix & Resource reorganized
           <span style="font-weight:bold">v5.1.3 : 2019-03-18</span><br>
             지도에서 급식소가 있는 위치(★)를 누르면<br>
             해당 급식소의 실제 사진이 나옵니다.<br>
             이미지는 아직 준비중입니다.<br><span style="line-height:50%"><br></span>
-          <span style="font-weight:bold">v5.1.2 : 2019-03-18</span><br>
-            지도에 별 추가<br><span style="line-height:50%"><br></span>
-          <span style="font-weight:bold">v5.1.1 : 2019-03-18</span><br>
-            모달(팝업)창 디자인 개선<br><span style="line-height:50%"><br></span>
-          <span style="font-weight:bold">v5.1.0 : 2019-03-17</span><br>
-            날씨 정보를 3시간 단위 예보로 기상청에서 받아옵니다.<br><span style="line-height:50%"><br></span>
+          <span style="font-weight:bold">v5.1.x : 2019-03-18</span><br>
+            모달(팝업)창 디자인 개선<br>
+            날씨 정보를 가져오는 곳을 기상청으로 바꿨습니다.<br>
+            페이지에 현재 날씨가 아니라 3시간 단위 예보가 표시됩니다.<br><span style="line-height:50%"><br></span>
           <span style="font-weight:bold">v5.0.x : 2019-03-11</span><br>
             3코스를 추가했습니다.<br><span style="line-height:50%"><br></span>
           <span id='toggle' style="color:#0366d6">▼ 업데이트 로그 보기</span><br>
