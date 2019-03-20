@@ -87,6 +87,14 @@ $("#DATA").submit( function(event) {
     alertify.error('당일 날짜 변경은 불가능합니다.');
     $('input').attr('disabled', false);
   }
+  else if($(':input[name=mode]:radio:checked').val() == '신청' && (new Date(new Date($('#submitDate').val()) - 1000 * 3600 * 9) < new Date(new Date() - 1000 * 3600 * 24) || new Date(new Date($('#submitDate').val()) - 1000 * 3600 * 9) > new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 21 - new Date().getDay()))) {
+    alertify.error('신청은 오늘부터 3주 이내로만 가능합니다.');
+    $('input').attr('disabled', false);
+  }
+  else if($(':input[name=mode]:radio:checked').val() == '수정' && (new Date(new Date($('#editDate').val()) - 1000 * 3600 * 9) < new Date(new Date() - 1000 * 3600 * 24) || new Date(new Date($('#editDate').val()) - 1000 * 3600 * 9) > new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 21 - new Date().getDay()))) {
+    alertify.error('수정은 오늘부터 3주 이내로만 가능합니다.');
+    $('input').attr('disabled', false);
+  }
   else {
     if($(':input[name=mode]:radio:checked').val() == '신청') {
       serializedData = "신청=신청&이름=" + $.trim($('#submitName').val()) + "&날짜=" + $('#submitDate').val() + "&코스=" + $(':input[name=course]:radio:checked').val();
