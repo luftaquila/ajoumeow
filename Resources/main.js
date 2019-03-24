@@ -87,11 +87,11 @@ $("#DATA").submit( function(event) {
     alertify.error('당일 날짜 변경은 불가능합니다.');
     $('input').attr('disabled', false);
   }
-  else if($(':input[name=mode]:radio:checked').val() == '신청' && (new Date(new Date($('#submitDate').val()) - 1000 * 3600 * 9) < new Date(new Date() - 1000 * 3600 * 24) || new Date(new Date($('#submitDate').val()) - 1000 * 3600 * 9) > new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 21 - new Date().getDay()))) {
+  else if($(':input[name=mode]:radio:checked').val() == '신청' && (new Date(new Date($('#submitDate').val()) - 1000 * 3600 * 9) < new Date(new Date() - 1000 * 3600 * 24) || new Date(new Date($('#submitDate').val()) - 1000 * 3600 * 9) > new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 14 + new Date().getDay() || 7))) {
     alertify.error('신청은 오늘부터 3주 이내로만 가능합니다.');
     $('input').attr('disabled', false);
   }
-  else if($(':input[name=mode]:radio:checked').val() == '수정' && (new Date(new Date($('#editDate').val()) - 1000 * 3600 * 9) < new Date(new Date() - 1000 * 3600 * 24) || new Date(new Date($('#editDate').val()) - 1000 * 3600 * 9) > new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 21 - new Date().getDay()))) {
+  else if($(':input[name=mode]:radio:checked').val() == '수정' && (new Date(new Date($('#editDate').val()) - 1000 * 3600 * 9) < new Date(new Date() - 1000 * 3600 * 24) || new Date(new Date($('#editDate').val()) - 1000 * 3600 * 9) > new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 14 + new Date().getDay() || 7))) {
     alertify.error('수정은 오늘부터 3주 이내로만 가능합니다.');
     $('input').attr('disabled', false);
   }
@@ -179,24 +179,24 @@ function setData() {
   }
   if(Cookies.get('fillName')) {
     if(Cookies.get('popup') != 'hidden') { MicroModal.show('rankModal'); }
-    $('#submitName').val(Cookies.get('fillName'));
+    $('#submitName').val(Cookies.get('fillName'));/*
     $.ajax({
         type: 'POST',
         url: "https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec",
         data: encodeURI('로그=로그&이름=' + Cookies.get('fillName'))
-    });
+    });*/
   }
   else {
     MicroModal.show('askName');
     $('#nameSubmit').click( function() {
       Cookies.set('fillName', $.trim($('#name').val()), {expires : 365});
       $('#submitName').val(Cookies.get('fillName'));
-      if(Cookies.get('fillName') == "") { Cookies.remove('fillName'); }
+      if(Cookies.get('fillName') == "") { Cookies.remove('fillName'); }/*
       $.ajax({
           type: 'POST',
           url: "https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec",
           data: encodeURI('로그=로그&이름=' + Cookies.get('fillName'))
-      });
+      });*/
       MicroModal.close('askName');
     });
   }
