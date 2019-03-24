@@ -10,6 +10,7 @@
       Status : <span id="status" style="color:#ffbf00">Loading Data...</span><br>
       <input id="timestamp" type="date" name="timestamp" value="" onchange="load();" disabled="true"/>
       <input id="submit" type="submit" value="Confirm" disabled="true"/><br><span style="line-height:25%"><br></span>
+      <span id='latestConfirm' style="font-size: 0.9rem">마지막 인증 날짜 : Loading...</span><br><span style="line-height:25%"><br></span>
       <a id="log" href="#" style="color:#0366d6;font-size: 0.8rem">Mileage Log</a>&nbsp;&nbsp;
       <a id="rawLog" href="#" style="color:#0366d6;font-size: 0.8rem">Receiver Log</a>&nbsp;&nbsp;
       <a id="reload" href="#" style="color:#0366d6;font-size: 0.8rem">Reload</a>&nbsp;&nbsp;
@@ -64,6 +65,16 @@
                 else verify();
               }, 100);
             }
+            $.ajax({
+              url: 'https://docs.google.com/spreadsheet/pub?key=1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A&single=true&gid=513873447&sheet=Receiver&range=A:D&output=csv',
+              type: "GET",
+              dataType: 'text',
+              cache: false,
+              success: function (response) {
+                var name = response.split('\n').map((line) => line.split(','));
+                $('#latestConfirm').text('마지막 인증 날짜 : ' + name[name.length - 1][0]);
+              }
+            });
             load();
           }
         });
