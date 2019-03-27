@@ -87,7 +87,7 @@ $("#DATA").submit( function(event) {
     alertify.error('전일 오후 6시 이후 취소 혹은 수정은 불가능합니다.');
     $('input').attr('disabled', false);
   }
-  else if((submitType == '신청' || submitType == '수정') && (new Date(new Date($('#' + (submitType == '신청' ? 'submitDate' : 'editDate')).val()) - 1000 * 3600 * 9) < new Date(new Date(new Date().format('yyyy-mm-dd')) - 1000 * 3600 * 9)) || (new Date(new Date($('#' + (submitType == '신청' ? 'submitDate' : 'editDate')).val()) - 1000 * 3600 * 9) > new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 13 + new Date().getDay() || 7))) {
+  else if((submitType == '신청' || submitType == '수정') && (new Date(new Date($('#' + (submitType == '신청' ? 'submitDate' : 'editDate')).val()) - 1000 * 3600 * 9) < new Date(new Date(new Date().format('yyyy-mm-dd')) - 1000 * 3600 * 9)) || (new Date(new Date($('#' + (submitType == '신청' ? 'submitDate' : 'editDate')).val()) - 1000 * 3600 * 9) > new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 20 + new Date().getDay() || 7))) {
     alertify.error('신청 및 수정은 급식표 표시 범위 내에서만 가능합니다.');
     $('input').attr('disabled', false);
   }
@@ -187,7 +187,7 @@ function setData() {
     });
   }
   calendarCount = 0, rainbowCount = 0;
-  //setCalendar('3/13(수)', '★개총★', true);
+  setCalendar('4/1(월)', '만우절', true);
   if(rainbowCount) $('#rainbowBlockBox').css('display', 'block');
 }
 function setCalendar(targetDate, targetText, isRainbow) {
