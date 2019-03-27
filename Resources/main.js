@@ -45,17 +45,17 @@ function load() {
 }
 $("#DATA").submit( function(event) {
   $('input').attr('disabled', true);
-  var request, serializedData;
+  var request, serializedData, submitType = $(':input[name=mode]:radio:checked').val();
   if (request) { request.abort(); }
   if(!/\d\d\d\d\-\d\d\-\d\d/g.test($("#submitDate").val())) {
     alertify.error('날짜를 입력하세요.');
     $('input').attr('disabled', false);
   }
-  else if($.trim($("#submitName").val()) == "") {
+  else if($.trim($("#" + (submitType == '수정' ? 'editName' : 'submitName')).val()) == "") {
     alertify.error('이름을 입력하세요.');
     $('input').attr('disabled', false);
   }
-  else if($.trim($("#submitName").val()).indexOf(',') + 1) {
+  else if($.trim($("#" + (submitType == '수정' ? 'editName' : 'submitName')).val()).indexOf(',') + 1) {
     alertify.error('이름에 콤마(,)는 사용할 수 없습니다.');
     $('input').attr('disabled', false);
   }
@@ -63,47 +63,43 @@ $("#DATA").submit( function(event) {
     alertify.error('코스를 입력하세요.');
     $('input').attr('disabled', false);
   }
-  else if($(':input[name=mode]:radio:checked').val() == '수정' && !/\d\d\d\d\-\d\d\-\d\d/g.test($("#editDate").val())) {
+  else if(submitType == '수정' && !/\d\d\d\d\-\d\d\-\d\d/g.test($("#editDate").val())) {
     alertify.error('수정할 날짜를 입력하세요.');
     $('input').attr('disabled', false);
   }
-  else if($(':input[name=mode]:radio:checked').val() == '수정' && $.trim($("#editName").val()) == "") {
-    alertify.error('수정할 이름을 입력하세요.');
-    $('input').attr('disabled', false);
-  }
-  else if($(':input[name=mode]:radio:checked').val() == '수정' && $(':input[name=edit_course]:radio:checked').val() == undefined) {
+  else if(submitType == '수정' && $(':input[name=edit_course]:radio:checked').val() == undefined) {
     alertify.error('수정할 코스를 입력하세요.');
     $('input').attr('disabled', false);
   }
-  else if($(':input[name=mode]:radio:checked').val() == '수정' && ($.trim($("#editName").val()).indexOf(',') + 1)) {
-    alertify.error('이름에 콤마(,)는 사용할 수 없습니다.');
+  else if(submitType == '삭제' && (new Date(new Date($('#submitDate').val()) - 1000 * 3600 * 9) < new Date(new Date().format('yyyy-mm-dd')))) {
+    alertify.error('당일 및 지난 날짜에 대한 삭제는 불가능합니다.');
     $('input').attr('disabled', false);
   }
-  else if($(':input[name=mode]:radio:checked').val() == '삭제' && $('#submitDate').val() == new Date().format('yyyy-mm-dd')) {
-    alertify.error('당일 취소는 불가능합니다.');
-    $('input').attr('disabled', false);
-  }
-  else if($(':input[name=mode]:radio:checked').val() == '수정' && $('#submitDate').val() == new Date().format('yyyy-mm-dd') && $('#submitDate').val() != $("#editDate").val()) {
+  else if(submitType == '수정' && $('#submitDate').val() == new Date().format('yyyy-mm-dd') && $('#submitDate').val() != $("#editDate").val()) {
     alertify.error('당일 날짜 변경은 불가능합니다.');
     $('input').attr('disabled', false);
   }
-  else if($(':input[name=mode]:radio:checked').val() == '신청' && (new Date(new Date($('#submitDate').val()) - 1000 * 3600 * 9) < new Date(new Date() - 1000 * 3600 * 24) || new Date(new Date($('#submitDate').val()) - 1000 * 3600 * 9) > new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 14 + new Date().getDay() || 7))) {
-    alertify.error('신청은 오늘부터 3주 이내로만 가능합니다.');
+  else if(submitType == '수정' && (new Date(new Date($('#submitDate').val()) - 1000 * 3600 * 9) < new Date(new Date().format('yyyy-mm-dd')) - 1000 * 3600 * 24)) {
+    alertify.error('지난 날짜에 대한 수정은 불가능합니다.');
     $('input').attr('disabled', false);
   }
-  else if($(':input[name=mode]:radio:checked').val() == '수정' && (new Date(new Date($('#editDate').val()) - 1000 * 3600 * 9) < new Date(new Date() - 1000 * 3600 * 24) || new Date(new Date($('#editDate').val()) - 1000 * 3600 * 9) > new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 14 + new Date().getDay() || 7))) {
-    alertify.error('수정은 오늘부터 3주 이내로만 가능합니다.');
+  else if((submitType == '삭제' || submitType == '수정') && $('#submitDate').val() == new Date(new Date(new Date().format('yyyy-mm-dd')) - 1000 * 3600 * 15 * -1).format('yyyy-mm-dd') && new Date().getHours() > 17) {
+    alertify.error('전일 오후 6시 이후 취소 혹은 수정은 불가능합니다.');
+    $('input').attr('disabled', false);
+  }
+  else if((submitType == '신청' || submitType == '수정') && (new Date(new Date($('#' + (submitType == '신청' ? 'submitDate' : 'editDate')).val()) - 1000 * 3600 * 9) < new Date(new Date(new Date().format('yyyy-mm-dd')) - 1000 * 3600 * 9)) || (new Date(new Date($('#' + (submitType == '신청' ? 'submitDate' : 'editDate')).val()) - 1000 * 3600 * 9) > new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 13 + new Date().getDay() || 7))) {
+    alertify.error('신청 및 수정은 급식표 표시 범위 내에서만 가능합니다.');
     $('input').attr('disabled', false);
   }
   else {
-    if($(':input[name=mode]:radio:checked').val() == '신청') {
+    if(submitType == '신청') {
       serializedData = "신청=신청&이름=" + $.trim($('#submitName').val()) + "&날짜=" + $('#submitDate').val() + "&코스=" + $(':input[name=course]:radio:checked').val();
     }
-    else if($(':input[name=mode]:radio:checked').val() == '수정') {
+    else if(submitType == '수정') {
       serializedData = "수정=수정&이름=" + $.trim($('#submitName').val()) + "&날짜=" + $('#submitDate').val() + "&코스=" + $(':input[name=course]:radio:checked').val() +
                        "&수정 이름=" + $.trim($('#editName').val()) + "&수정 날짜=" + $('#editDate').val() + "&수정 코스=" + $(':input[name=edit_course]:radio:checked').val();
     }
-    else if($(':input[name=mode]:radio:checked').val() == '삭제') {
+    else if(submitType == '삭제') {
       serializedData = "삭제=삭제&이름=" + $.trim($('#submitName').val()) + "&날짜=" + $('#submitDate').val() + "&코스=" + $(':input[name=course]:radio:checked').val();
     }
     alertify.log('Sending ' + dataSize(encodeURI(serializedData)) + 'B Data...');
@@ -179,24 +175,14 @@ function setData() {
   }
   if(Cookies.get('fillName')) {
     if(Cookies.get('popup') != 'hidden') { MicroModal.show('rankModal'); }
-    $('#submitName').val(Cookies.get('fillName'));/*
-    $.ajax({
-        type: 'POST',
-        url: "https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec",
-        data: encodeURI('로그=로그&이름=' + Cookies.get('fillName'))
-    });*/
+    $('#submitName').val(Cookies.get('fillName'));
   }
   else {
     MicroModal.show('askName');
     $('#nameSubmit').click( function() {
       Cookies.set('fillName', $.trim($('#name').val()), {expires : 365});
       $('#submitName').val(Cookies.get('fillName'));
-      if(Cookies.get('fillName') == "") { Cookies.remove('fillName'); }/*
-      $.ajax({
-          type: 'POST',
-          url: "https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec",
-          data: encodeURI('로그=로그&이름=' + Cookies.get('fillName'))
-      });*/
+      if(Cookies.get('fillName') == "") { Cookies.remove('fillName'); }
       MicroModal.close('askName');
     });
   }
