@@ -10,7 +10,8 @@
 
 > 본 시스템은 Github Pages를 통해 호스팅되고 있지만, 데이터베이스로 Google Spreadsheet를 사용합니다.  
 또한 Google Apps Script 서비스를 DB 수정 및 CORS정책 우회를 위한 프록시 서버로 사용하고 있습니다.  
-[데이터베이스 시트](https://docs.google.com/spreadsheets/d/1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A/edit?usp=sharing) 또는 [스크립트 프로젝트](https://script.google.com/d/1TPa1Y82h5m5IQqZAvVxKipTICYfSxSup2qCbqFhavFd0m50G9TRQymbV/edit) 접근 권한이 필요한 경우 위 연락처로 연락하세요.
+[데이터베이스 시트](https://docs.google.com/spreadsheets/d/1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A/edit?usp=sharing) 또는 [스크립트 프로젝트](https://script.google.com/d/1TPa1Y82h5m5IQqZAvVxKipTICYfSxSup2qCbqFhavFd0m50G9TRQymbV/edit) 접근 권한이 필요한 경우 위 연락처로 연락하세요.  
+Google Apps Script 코드는 [/Resources/Apps Script.gs](https://github.com/luftaquila/ajoumeyoumeow/blob/master/Resources/Apps Script.gs)에 사본이 저장되어 있습니다.
 
 ## 0. 페이지 최초 방문
 페이지를 현재 브라우저에서 처음 방문했을 경우 이름을 묻는 팝업이 출력됩니다.
@@ -75,18 +76,18 @@ ex) 16시 30분에 페이지를 방문하면 표시되는 날씨는 18시 00분 
 1. 날짜 미입력
     * `신청`, `수정`, `삭제` 메뉴에서 날짜를 선택하지 않으면 **날짜를 입력하세요.** 에러를 출력합니다.
     * `수정` 메뉴에서 화살표 아래 필드의 날짜를 선택하지 않으면 **수정할 날짜를 입력하세요.** 에러를 출력합니다.  
-    
+
 2. 이름 미입력
     * 이름 입력 필드가 비어 있거나 공백만 존재할 경우 **이름을 입력하세요.** 에러를 출력합니다.
-    
+
 3. 이름에 금지된 문자 사용  
 콤마(,)는 이름 입력 필드에 사용할 수 없습니다.
     * 콤마 입력 시 **이름에 콤마(,)는 사용할 수 없습니다.** 에러를 출력합니다.
-    
+
 4. 코스 미입력
     * `신청`, `수정`, `삭제` 메뉴에서 코스를 선택하지 않으면 **코스를 입력하세요.** 에러를 출력합니다.
     * `수정` 메뉴에서 화살표 아래 필드의 코스를 선택하지 않으면 **수정할 코스를 입력하세요.** 에러를 출력합니다.  
-    
+
 5. 당일 및 과거에 대한 내용 삭제 시도  
 갑작스런 취소로 인한 급식 동행자의 불편을 막기 위해 급식 당일에 신청 내용의 삭제는 불가합니다.
     * 과거 신청 기록에 대한 삭제 시도도 거부됩니다.
@@ -166,7 +167,7 @@ ex) 16시 30분에 페이지를 방문하면 표시되는 날씨는 18시 00분 
     + **I2** 셀에서 이번 학기 종료일을 선택합니다.
     + **O1** 셀에서 저번 학기 시작일을 선택합니다.
     + **O2** 셀에서 저번 학기 종료일을 선택합니다.
-    
+
 * `NameList` 시트는 회원 목록을 표시합니다.
 
 ### 9. 급식인증기
