@@ -8,17 +8,16 @@
 * [Facebook](http://www.facebook.com/luftaquila)  
 * <luftaquila@protonmail.ch>  
 
-> 본 시스템은 Github Pages를 통해 호스팅되고 있지만, 데이터베이스로 Google Spreadsheet를 사용합니다.  
-또한 Google Apps Script 서비스를 DB 수정 및 CORS정책 우회를 위한 프록시 서버로 사용하고 있습니다.  
+## 0. 개요
+> 본 시스템은 Google Spreadsheet를 데이터베이스로, [Google Apps Script](https://github.com/luftaquila/ajoumeyoumeow/blob/master/Resources/Apps%20Script.gs) 서비스를 DB 수정 및 CORS정책 우회를 위한 프록시 서버로 사용하고 있습니다.
 [데이터베이스 시트](https://docs.google.com/spreadsheets/d/1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A/edit?usp=sharing) 또는 [스크립트 프로젝트](https://script.google.com/d/1TPa1Y82h5m5IQqZAvVxKipTICYfSxSup2qCbqFhavFd0m50G9TRQymbV/edit) 접근 권한이 필요한 경우 위 연락처로 연락하세요.  
-Google Apps Script 코드는 [/Resources/Apps Script.gs](https://github.com/luftaquila/ajoumeyoumeow/blob/master/Resources/Apps Script.gs)에 사본이 저장되어 있습니다.
 
-## 0. 페이지 최초 방문
+## 1. 페이지 최초 방문
 페이지를 현재 브라우저에서 처음 방문했을 경우 이름을 묻는 팝업이 출력됩니다.
 * 입력한 이름은 신청 시 이름 자동완성에 사용되며 365일간 쿠키로 개별 디바이스에 저장됩니다.
 * 쿠키는 이후 신청서 제출시마다 새로 저장되어 마지막으로 신청한 이름을 기억합니다.
 
-## 1. 페이지 상단 고정 메뉴
+## 2. 페이지 상단 고정 메뉴
 ### 1. 탭 선택
 `평일`, `주말`, `급식 신청` 세 개의 탭이 존재합니다.  
 * `평일`과 `주말` 탭은 3주간의 급식 일정표를 표시합니다.
@@ -43,7 +42,7 @@ ex) 16시 30분에 페이지를 방문하면 표시되는 날씨는 18시 00분 
 
 * `미세먼지 농도`는 [에어코리아](https://www.airkorea.or.kr/index)가 제공하는 수원시청 관측소의 PM10과 PM2.5정보를 표시합니다. 매 1시간마다 갱신됩니다.
 
-## 2. 급식 신청, 수정 및 삭제
+## 3. 급식 신청, 수정 및 삭제
 ### 0. 주의사항
 * 급식을 하신 분은 반드시 해당일에 신청이 되어 있어야 마일리지 지급이 가능합니다.
 * 해당일에 신청이 되어 있어도 급식 인증에 이름이 없으면 마일리지가 지급되지 않습니다.  
@@ -109,7 +108,7 @@ ex) 16시 30분에 페이지를 방문하면 표시되는 날씨는 18시 00분 
 급식 기회의 공정한 배분을 위해 급식표에 표시되지 않는 날짜의 선점은 불가능합니다.
     * 시도 시 **신청 및 수정은 급식표 표시 범위 내에서만 가능합니다.** 에러를 출합니다.
 
-## 3. 페이지 하단 고정 메뉴
+## 4. 페이지 하단 고정 메뉴
 ### 1. 업데이트 시간
 * 마지막으로 급식표가 새로고침된 시간을 TT hh시 MM분 ss초 형식으로 표시합니다.  
 
