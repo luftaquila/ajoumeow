@@ -836,20 +836,20 @@ body {
   animation: 700s fall-subject linear 10s;
 }
 #weatherInfo {
-  animation: 700s fall-header linear 12s;
+  animation: 700s fall-header linear 10.5s;
 }
 #latestUpdate {
-  animation: 700s fall-writer linear 14s;
+  animation: 700s fall-writer linear 11s;
 }
 #bottomInfo {
-  animation: 700s fall-search_box linear 16s;
+  animation: 700s fall-search_box linear 11.5s;
 }
 table {
-  animation: 1000s spin linear 17s;
+  animation: 1000s spin linear 12s;
 }
 .modal__overlay {
   background-color: transparent;
 }
 .modal__container {
-  animation: 700s fall-subject linear 1s!important;
+  animation: 700s fall-subject linear 5s!important;
 }

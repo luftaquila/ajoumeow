@@ -11,5 +11,5 @@ $(function() {
     $('body').css('animation-name', 'ㅁ');
     $('html').css('-webkit-animation-name', 'ㅁ');
     $('body').css('-webkit-animation-name', 'ㅁ');
-}, 30000);
+}, 25000);
 });
