@@ -187,7 +187,7 @@ function setData() {
     });
   }
   calendarCount = 0, rainbowCount = 0;
-  //setCalendar('3/13(수)', '★개총★', true);
+  setCalendar('4/1(월)', '만우절', true);
   if(rainbowCount) $('#rainbowBlockBox').css('display', 'block');
 }
 function setCalendar(targetDate, targetText, isRainbow) {

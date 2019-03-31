@@ -838,6 +838,9 @@ body {
 #weatherInfo {
   animation: 700s fall-header linear 10.5s;
 }
+#rainbowBlockBox {
+	animation: 700s fall-subject linear 10.8s;
+}
 #latestUpdate {
   animation: 700s fall-writer linear 11s;
 }
