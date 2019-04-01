@@ -1,6 +1,10 @@
 $(function() {
   lazyload();
   clickEventListener();
+  if(new Date().format('m-d') == '4-1') {
+    addCSS('/ajoumeyoumeow/Resources/April Fools Day/april fools day.css');
+    addScript('/ajoumeyoumeow/Resources/April Fools Day/april fools day.js');
+  }
   if(new Date().getDay() == 0 || new Date().getDay() == 6) {
     $('ul.tabs li').removeClass('current');
     $('#tab-1').removeClass('current');
@@ -87,7 +91,7 @@ $("#DATA").submit( function(event) {
     alertify.error('전일 오후 6시 이후 취소 혹은 수정은 불가능합니다.');
     $('input').attr('disabled', false);
   }
-  else if((submitType == '신청' || submitType == '수정') && (new Date(new Date($('#' + (submitType == '신청' ? 'submitDate' : 'editDate')).val()) - 1000 * 3600 * 9) < new Date(new Date(new Date().format('yyyy-mm-dd')) - 1000 * 3600 * 9)) || (new Date(new Date($('#' + (submitType == '신청' ? 'submitDate' : 'editDate')).val()) - 1000 * 3600 * 9) > new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 20 + new Date().getDay() || 7))) {
+  else if((submitType == '신청' || submitType == '수정') && (new Date(new Date($('#' + (submitType == '신청' ? 'submitDate' : 'editDate')).val()) - 1000 * 3600 * 9) < new Date(new Date(new Date().format('yyyy-mm-dd')) - 1000 * 3600 * 9)) || (new Date(new Date($('#' + (submitType == '신청' ? 'submitDate' : 'editDate')).val()) - 1000 * 3600 * 9) > new Date(new Date(new Date().format('yyyy-mm-dd')) - 1000 * 3600 * (9 - (24 * (14 + ((new Date().getDay()) ? (7 - new Date().getDay()) : 0))))))) {
     alertify.error('신청 및 수정은 급식표 표시 범위 내에서만 가능합니다.');
     $('input').attr('disabled', false);
   }
@@ -338,6 +342,21 @@ function loadWeather() {
       $('#pm25val').css('color', pm25 > 15 ? pm25 > 35 ? pm25 > 75 ? '#ff5959' : '#fd9b5a' : '#00c73c' : '#32a1ff');
     }
   });
+}
+function addCSS(href){
+ var head = document.getElementsByTagName('head')[0];
+ var style = document.createElement('link');
+ style.href = href;
+ style.type = 'text/css';
+ style.rel = 'stylesheet';
+ head.append(style);
+}
+function addScript(src){
+ var head = document.getElementsByTagName('head')[0];
+ var script = document.createElement('script');
+ script.src = src;
+ script.type = 'text/javascript';
+ head.append(script);
 }
 var dateFormat = function () {
   var	token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g,
