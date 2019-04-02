@@ -26,7 +26,7 @@
       $(function() {
         nameList = [], data = [], downloadSize = 0;
         $.ajax({
-          url: 'https://docs.google.com/spreadsheet/pub?key=1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A&single=true&gid=1034362398&sheet=Statistics&range=AD3:AD&output=csv',
+          url: 'https://docs.google.com/spreadsheet/pub?key=1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A&single=true&gid=1034362398&sheet=Statistics&range=AH4:Ah&output=csv',
           type: "GET",
           dataType: 'text',
           cache: false,
@@ -34,7 +34,7 @@
             nameList = response.split('\n').map((line) => line.split(','));
             downloadSize += dataSize(response);
             $.ajax({
-              url: 'https://docs.google.com/spreadsheet/pub?key=1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A&single=true&gid=1034362398&sheet=Statistics&range=AG3:AJ&output=csv',
+              url: 'https://docs.google.com/spreadsheet/pub?key=1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A&single=true&gid=1034362398&sheet=Statistics&range=AK4:AN&output=csv',
               type: "GET",
               dataType: 'text',
               cache: false,
@@ -64,7 +64,7 @@
       function genDropDown() {
         var str = "", isSelected = "";
         nameList.forEach(function(value) {
-          if(value[0].includes(Cookies.get('name'))) { console.log("selected"); isSelected = " selected" }
+          if(value[0].includes(Cookies.get('name'))) { isSelected = " selected" }
           str += '<option value=' + value + isSelected + '>' + value + '</option>';
           isSelected = "";
         });
