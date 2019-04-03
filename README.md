@@ -10,7 +10,7 @@
 
 ## 0. 개요
 > 본 시스템은 Google Spreadsheet를 데이터베이스로, [Google Apps Script](https://github.com/luftaquila/ajoumeyoumeow/blob/master/Resources/Apps%20Script.gs) 서비스를 DB 수정 및 CORS정책 우회를 위한 프록시 서버로 사용하고 있습니다.
-[데이터베이스 시트](https://docs.google.com/spreadsheets/d/1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A/edit?usp=sharing) 또는 [스크립트 프로젝트](https://script.google.com/d/1TPa1Y82h5m5IQqZAvVxKipTICYfSxSup2qCbqFhavFd0m50G9TRQymbV/edit) 접근 권한이 필요한 경우 위 연락처로 연락하세요.  
+[DB 시트](https://docs.google.com/spreadsheets/d/1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A/edit?usp=sharing) 또는 [스크립트 프로젝트](https://script.google.com/d/1TPa1Y82h5m5IQqZAvVxKipTICYfSxSup2qCbqFhavFd0m50G9TRQymbV/edit) 접근 권한이 필요한 경우 위 연락처로 연락하세요.  
 
 ## 1. 페이지 최초 방문
 페이지를 현재 브라우저에서 처음 방문했을 경우 이름을 묻는 팝업이 출력됩니다.
@@ -34,8 +34,8 @@
 * `날짜` 는 해당일의 날짜를 m월 d일 dddd 형식으로 표시합니다. dddd는 해당 요일의 풀네임입니다.  
 ex) 5월 12일 수요일
 
-* `맑음`, `구름 조금`, `구름 많음`, `눈`, `비`, `흐림`, `눈/비` 의 7개 날씨 상태와 아이콘이 존재합니다.  
-`날씨 아이콘` 및 `날씨`는 페이지를 보는 시점의 날씨가 아닌, 3시간 단위의 **수원시 영통구 원천동** 기상청 예보 데이터입니다.  
+* `날씨 아이콘` 및 `날씨`는 페이지를 보는 시점의 날씨가 아닌, 3시간 단위의 **수원시 영통구 원천동** 기상청 예보 데이터입니다.  
+`맑음`, `구름 조금`, `구름 많음`, `눈`, `비`, `흐림`, `눈/비` 의 7개 날씨 상태와 아이콘이 존재합니다.  
 ex) 16시 30분에 페이지를 방문하면 표시되는 날씨는 18시 00분 예보 데이터입니다.  
 
 * `기온`은 [OpenWeatherMap](https://openweathermap.org/city/1835553)에서 가져온 수원시 기온을 섭씨 단위로 표시합니다. 매 10분마다 갱신됩니다.
