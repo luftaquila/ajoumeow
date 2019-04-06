@@ -19,6 +19,7 @@ function load() {
   $('input').attr('disabled', true);
   $("#latestUpdate").html("Loading...");
   $('svg').addClass('rotating');
+  $('#recentUpdate').text($('#version').text() + ' : ' + $('#release').text().substr(0, 10));
   $('#info').attr('href', '/ajoumeyoumeow/about.html?' + $('#version').html() + '!' + $('#release').html());
   $.ajax({
     url: 'https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec',
@@ -197,12 +198,14 @@ function setData() {
 function setCalendar(targetDate, targetText, isRainbow) {
   calendarCount += 1;
   try {
-    if(isRainbow) {
-      rainbowCount += 1;
-      document.evaluate("//td[text()='" + targetDate + "']", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.classList.add('dogriver');
+    if(new Date(new Date().getFullYear(), targetDate.substr(0, 1) - 1, targetDate.substr(2, 1)) > new Date()) {
+      if(isRainbow) {
+        rainbowCount += 1;
+        document.evaluate("//td[text()='" + targetDate + "']", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.classList.add('dogriver');
+      }
+      document.evaluate("//td[text()='" + targetDate + "']", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.classList.add('cal' + calendarCount);
+      $('.cal' + calendarCount).html(targetText);
     }
-    document.evaluate("//td[text()='" + targetDate + "']", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.classList.add('cal' + calendarCount);
-    $('.cal' + calendarCount).html(targetText);
   }
   catch (e) { }
   finally { }
