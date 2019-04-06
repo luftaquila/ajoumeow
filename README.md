@@ -11,6 +11,7 @@
 ## 0. 개요
 > 본 시스템은 Google Spreadsheet를 데이터베이스로, [Google Apps Script](https://github.com/luftaquila/ajoumeyoumeow/blob/master/Resources/Apps%20Script.gs) 서비스를 DB 수정 및 CORS정책 우회를 위한 프록시 서버로 사용하고 있습니다.
 [데이터베이스](https://docs.google.com/spreadsheets/d/1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A/edit?usp=sharing) 또는 [스크립트 프로젝트](https://script.google.com/d/1TPa1Y82h5m5IQqZAvVxKipTICYfSxSup2qCbqFhavFd0m50G9TRQymbV/edit) 접근 권한이 필요한 경우 위 연락처로 연락하세요.  
+사이트 동작 알고리즘은 [main.js](https://github.com/luftaquila/ajoumeyoumeow/tree/master/Resources/README.md) 문서를 참조하세요.
 
 ## 1. 페이지 최초 방문
 페이지를 현재 브라우저에서 처음 방문했을 경우 이름을 묻는 팝업이 출력됩니다.
@@ -140,15 +141,20 @@ ex) 16시 30분에 페이지를 방문하면 표시되는 날씨는 18시 00분 
 * ~~[History]()를 눌러 이동합니다.~~  
 * ~~연 / 월을 선택합니다.~~
 
-### 7. 사용설명서
+### 7. 사진
+미유미유 플리커 사진 저장소로 이동합니다.
+* [Photos](https://www.flickr.com/photos/ajoumeow/)을 눌러 이동합니다.
+* PC 환경에서 사진 선택 후 사진 우측 하단의 다운로드 버튼을 누르면 원본 이미지를 다운로드할 수 있습니다.
+
+### 8. 사용설명서
 본 사용설명서 페이지로 이동합니다.
 * [Manual](https://github.com/luftaquila/ajoumeyoumeow)을 눌러 이동합니다.
 
-### 8. About
+### 9. About
 버전 정보 및 페이지 개발자 정보를 표시합니다.
 * [About](https://luftaquila.github.io/ajoumeyoumeow/about.html)을 눌러 이동합니다.
 
-### 9. 구글 스프레드시트 데이터베이스
+### 10. 구글 스프레드시트 데이터베이스
 [Sheet]()를 눌러 데이터베이스로 사용하는 구글 스프레드시트로 이동합니다.  
 `Record`, `Receiver`, `Edit Log`, `Statistics`, `NameList` 시트가 존재합니다.
 * `Record` 시트는 급식 신청 내역을 기록하는 시트입니다.
@@ -179,19 +185,24 @@ ex) 16시 30분에 페이지를 방문하면 표시되는 날씨는 18시 00분 
 
 * `NameList` 시트는 회원 목록을 표시합니다.
 
-### 10. 급식인증기
-마일리지를 지급하는 관리자 전용 페이지입니다.
+### 11. 급식인증기
+마일리지를 지급하는 관리자 전용 페이지입니다.  
+상세 동작 알고리즘은 [calculator.js](https://github.com/luftaquila/ajoumeyoumeow/tree/master/calculator/README.md) 문서를 확인하세요.  
+
 #### 1. 표준 입력
 1. [Calc](https://luftaquila.github.io/ajoumeyoumeow/calculator)을 눌러 이동합니다.
 1. 데이터 로딩이 완료되면 관리자 비밀번호를 입력합니다.
 1. 날짜 선택 필드에서 날짜를 선택하면 해당일의 신청자가 모두 표시됩니다.
-1. **급식 인증에 이름이 있는 회원만** 체크박스가 선택된 상태로 둔 후, `Confirm` 버튼을 눌러 전송합니다.
+1. **급식 인증에 이름이 있는 회원만** 체크박스가 선택된 상태로 합니다.
+1. 시험 기간일 경우 `마일리지 할증` 체크박스를 선택한 후, `Confirm` 버튼을 눌러 전송합니다.
+    * 평일 2인 이상은 1점, 평일 1인 및 주말 2인 이상은 1.5점, 주말 1인은 2점이 지급됩니다.
+    * 할증이 체크된 경우 1점 -> 1.5점, 1.5점 -> 2점, 2점 -> 3점으로 점수가 상향됩니다.
 
-    * [Mileage Log]() 버튼은 스프레드시트의 `Receiver` 시트를 표시합니다.
-    * [Receiver Log]() 버튼은 스프레드시트의 `Record` 시트를 표시합니다.
-    * [Reload]() 버튼은 신청자 정보를 다시 로드합니다.
-    * [Home]() 버튼을 누르면 신청 페이지로 이동합니다.
-    * *마지막 인증 날짜* 는 `Receiver` 시트의 마지막 셀의 날짜를 표시합니다.
+      * [Mileage Log]() 버튼은 스프레드시트의 `Receiver` 시트를 표시합니다.
+      * [Receiver Log]() 버튼은 스프레드시트의 `Record` 시트를 표시합니다.
+      * [Reload]() 버튼은 신청자 정보를 다시 로드합니다.
+      * [Home]() 버튼을 누르면 신청 페이지로 이동합니다.
+      * *마지막 인증 날짜* 는 `Receiver` 시트의 마지막 셀의 날짜를 표시합니다.
 
 #### 2. 수동 입력
 동아리박람회, 봉사활동 등 별도 마일리지 지급이 필요할 때 사용하는 수동 지급 메뉴입니다.
