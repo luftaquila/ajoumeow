@@ -186,7 +186,9 @@ ex) 16시 30분에 페이지를 방문하면 표시되는 날씨는 18시 00분 
 * `NameList` 시트는 회원 목록을 표시합니다.
 
 ### 11. 급식인증기
-마일리지를 지급하는 관리자 전용 페이지입니다.
+마일리지를 지급하는 관리자 전용 페이지입니다.  
+상세 동작 알고리즘은 [calculator.js](https://github.com/luftaquila/ajoumeyoumeow/tree/master/calculator) 문서를 확인하세요.  
+
 #### 1. 표준 입력
 1. [Calc](https://luftaquila.github.io/ajoumeyoumeow/calculator)을 눌러 이동합니다.
 1. 데이터 로딩이 완료되면 관리자 비밀번호를 입력합니다.
@@ -195,7 +197,6 @@ ex) 16시 30분에 페이지를 방문하면 표시되는 날씨는 18시 00분 
 1. 시험 기간일 경우 `마일리지 할증` 체크박스를 선택한 후, `Confirm` 버튼을 눌러 전송합니다.
     * 평일 2인 이상은 1점, 평일 1인 및 주말 2인 이상은 1.5점, 주말 1인은 2점이 지급됩니다.
     * 할증이 체크된 경우 1점 -> 1.5점, 1.5점 -> 2점, 2점 -> 3점으로 점수가 상향됩니다.
-    * 세부 알고리즘은 [calculator.js](https://github.com/luftaquila/ajoumeyoumeow/tree/master/calculator) 문서 확인  
 
       * [Mileage Log]() 버튼은 스프레드시트의 `Receiver` 시트를 표시합니다.
       * [Receiver Log]() 버튼은 스프레드시트의 `Record` 시트를 표시합니다.
