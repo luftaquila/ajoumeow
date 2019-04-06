@@ -140,15 +140,19 @@ ex) 16시 30분에 페이지를 방문하면 표시되는 날씨는 18시 00분 
 * ~~[History]()를 눌러 이동합니다.~~  
 * ~~연 / 월을 선택합니다.~~
 
-### 7. 사용설명서
+### 7. 사진
+미유미유 플리커 사진 저장소로 이동합니다.
+* [Photos](https://www.flickr.com/photos/ajoumeow/)을 눌러 이동합니다.
+
+### 8. 사용설명서
 본 사용설명서 페이지로 이동합니다.
 * [Manual](https://github.com/luftaquila/ajoumeyoumeow)을 눌러 이동합니다.
 
-### 8. About
+### 9. About
 버전 정보 및 페이지 개발자 정보를 표시합니다.
 * [About](https://luftaquila.github.io/ajoumeyoumeow/about.html)을 눌러 이동합니다.
 
-### 9. 구글 스프레드시트 데이터베이스
+### 10. 구글 스프레드시트 데이터베이스
 [Sheet]()를 눌러 데이터베이스로 사용하는 구글 스프레드시트로 이동합니다.  
 `Record`, `Receiver`, `Edit Log`, `Statistics`, `NameList` 시트가 존재합니다.
 * `Record` 시트는 급식 신청 내역을 기록하는 시트입니다.
@@ -179,7 +183,7 @@ ex) 16시 30분에 페이지를 방문하면 표시되는 날씨는 18시 00분 
 
 * `NameList` 시트는 회원 목록을 표시합니다.
 
-### 10. 급식인증기
+### 11. 급식인증기
 마일리지를 지급하는 관리자 전용 페이지입니다.
 #### 1. 표준 입력
 1. [Calc](https://luftaquila.github.io/ajoumeyoumeow/calculator)을 눌러 이동합니다.
