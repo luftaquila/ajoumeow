@@ -1,4 +1,4 @@
-main.js
+[main.js](https://github.com/luftaquila/ajoumeyoumeow/blob/master/Resources/main.js)
 =============
 사이트의 전반적인 동작을 제어하는 스크립트 파일입니다.
 
