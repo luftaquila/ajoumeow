@@ -129,6 +129,7 @@ $("#DATA").submit( function(event) {
   event.preventDefault();
 });
 function setData() {
+  newYourNameIs();
   var week = new Date().getWeek(), year = new Date().getFullYear();
   $("#latestUpdate").html("Latest Update : " + new Date().format("TT hh시 MM분 ss초"));
   if(new Date().getDay() == 0) $("#thisWeekEnd_2").css("backgroundColor", "greenyellow");
@@ -195,20 +196,28 @@ function setData() {
   setCalendar('4/1(월)', '만우절', true);
   if(rainbowCount) $('#rainbowBlockBox').css('display', 'block');
 }
-function setCalendar(targetDate, targetText, isRainbow) {
-  calendarCount += 1;
-  try {
-    if(new Date(new Date().getFullYear(), targetDate.substr(0, 1) - 1, targetDate.substr(2, 1)) > new Date()) {
-      if(isRainbow) {
-        rainbowCount += 1;
-        document.evaluate("//td[text()='" + targetDate + "']", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.classList.add('dogriver');
+function newYourNameIs() {
+  var startIndex, table = Array(21).fill('').map(x => Array(6).fill(''));
+  var week = new Date().getWeek(), year = new Date().getFullYear();
+  for(var i = 0; i < 21; i++) {
+    var day = new Date(year, 0, 1 + (i % 7) + ((week + Math.floor(i / 7) - 1) * 7) - new Date(year, 0, week * 7).getDay()).format("yyyy. m. d");
+    if(!i) {
+      for(var index in datum) {
+        if(day == datum[index][1]) {
+          startIndex = index; break;
+        }
       }
-      document.evaluate("//td[text()='" + targetDate + "']", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.classList.add('cal' + calendarCount);
-      $('.cal' + calendarCount).html(targetText);
+    }
+    while(datum[startIndex][1] == day) {
+      for(var j = 1; j <= 3; j++) {
+        if(datum[startIndex][2].includes(String(j))) {
+          if(!table[i][2 * (j - 1)]) table[i][2 * (j - 1)] = datum[startIndex][0];
+          else if(!table[i][2 * (j - 1) + 1] && !(datum[startIndex][0] == table[i][2 * (j - 1)])) table[i][2 * (j - 1) + 1] = datum[startIndex][0];
+        }
+      }
+      startIndex++;
     }
   }
-  catch (e) { }
-  finally { }
 }
 function yourNameIs(p1, p2, course, rank) {
   var week = new Date().getWeek();
@@ -261,6 +270,21 @@ function yourNameIs(p1, p2, course, rank) {
     }
   }
   return " ";
+}
+function setCalendar(targetDate, targetText, isRainbow) {
+  calendarCount += 1;
+  try {
+    if(new Date(new Date().getFullYear(), targetDate.substr(0, 1) - 1, targetDate.substr(2, 1)) > new Date()) {
+      if(isRainbow) {
+        rainbowCount += 1;
+        document.evaluate("//td[text()='" + targetDate + "']", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.classList.add('dogriver');
+      }
+      document.evaluate("//td[text()='" + targetDate + "']", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.classList.add('cal' + calendarCount);
+      $('.cal' + calendarCount).html(targetText);
+    }
+  }
+  catch (e) { }
+  finally { }
 }
 function dataSize(s, b, i, c) { for(b = i = 0; c = s.charCodeAt(i++); b += c >> 11 ? 3 : c >> 7 ? 2 : 1); return b; }
 function popupBlocker() { MicroModal.close('rankModal'); Cookies.set('popup', 'hidden', {expires : 3}); }
