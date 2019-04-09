@@ -114,6 +114,32 @@ $("#DATA").submit( function(event) {
   }
   event.preventDefault();
 });
+function newYourNameIs(response) {
+  var datum = response.split('\n').map((line) => line.split(','))
+  var table = Array(21).fill('').map(x => Array(6).fill(''));
+  var startIndex, week = new Date().getWeek(), year = new Date().getFullYear();
+  for(var i = 0; i < 21; i++) {
+    var day = new Date(year, 0, 1 + (i % 7) + ((week + Math.floor(i / 7) - 1) * 7) - new Date(year, 0, week * 7).getDay()).format("yyyy. m. d");
+    if(!i) {
+      for(var index in datum) {
+        if(day == datum[index][1]) {
+          startIndex = index; break;
+        }
+      }
+    }
+    while(datum[startIndex][1] == day) {
+      for(var j = 1; j <= 3; j++) {
+        if(datum[startIndex][2].includes(String(j))) {
+          if(!table[i][2 * (j - 1)]) table[i][2 * (j - 1)] = datum[startIndex][0];
+          else if(!table[i][2 * (j - 1) + 1] && !(datum[startIndex][0] == table[i][2 * (j - 1)])) table[i][2 * (j - 1) + 1] = datum[startIndex][0];
+        }
+      }
+      startIndex++;
+    }
+  }
+  setData(table);
+  console.log('Ready. ' + (dataSize(response) / 1000).toFixed(1) + 'KB Loaded');
+}
 function setData(table) {
   $("#latestUpdate").html("Latest Update : " + new Date().format("TT hh시 MM분 ss초"));
   var week = new Date().getWeek(), year = new Date().getFullYear();
@@ -141,32 +167,6 @@ function setData(table) {
   setCalendar('4/1(월)', '만우절', true);
   $('svg').removeClass('rotating');
   $('input').attr('disabled', false);
-}
-function newYourNameIs(response) {
-  var datum = response.split('\n').map((line) => line.split(','))
-  var table = Array(21).fill('').map(x => Array(6).fill(''));
-  var startIndex, week = new Date().getWeek(), year = new Date().getFullYear();
-  for(var i = 0; i < 21; i++) {
-    var day = new Date(year, 0, 1 + (i % 7) + ((week + Math.floor(i / 7) - 1) * 7) - new Date(year, 0, week * 7).getDay()).format("yyyy. m. d");
-    if(!i) {
-      for(var index in datum) {
-        if(day == datum[index][1]) {
-          startIndex = index; break;
-        }
-      }
-    }
-    while(datum[startIndex][1] == day) {
-      for(var j = 1; j <= 3; j++) {
-        if(datum[startIndex][2].includes(String(j))) {
-          if(!table[i][2 * (j - 1)]) table[i][2 * (j - 1)] = datum[startIndex][0];
-          else if(!table[i][2 * (j - 1) + 1] && !(datum[startIndex][0] == table[i][2 * (j - 1)])) table[i][2 * (j - 1) + 1] = datum[startIndex][0];
-        }
-      }
-      startIndex++;
-    }
-  }
-  setData(table);
-  console.log('Ready. ' + (dataSize(response) / 1000).toFixed(1) + 'KB Loaded');
 }
 function setCalendar(targetDate, targetText, isRainbow) {
   calendarCount += 1;
