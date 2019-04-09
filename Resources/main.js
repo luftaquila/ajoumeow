@@ -1,21 +1,10 @@
 $(function() {
   lazyload();
   clickEventListener();
-  if(new Date().format('m-d') == '4-1') {
-    addCSS('/ajoumeyoumeow/Resources/April Fools Day/april fools day.css');
-    addScript('/ajoumeyoumeow/Resources/April Fools Day/april fools day.js');
-  }
-  if(new Date().getDay() == 0 || new Date().getDay() == 6) {
-    $('ul.tabs li').removeClass('current');
-    $('#tab-1').removeClass('current');
-    $('#tab-2').addClass('current');
-    $('li[data-tab="tab-2"]').addClass('current');
-  }
   loadWeather();
   load();
 });
 function load() {
-  datum = [], rankArray = [], download = 0;
   $('input').attr('disabled', true);
   $("#latestUpdate").html("Loading...");
   $('svg').addClass('rotating');
@@ -26,25 +15,22 @@ function load() {
     type: "GET",
     dataType: 'text',
     cache: false,
+    success: newYourNameIs
+  });
+  $.ajax({
+    url: 'https://docs.google.com/spreadsheet/pub?key=1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A&single=true&gid=1034362398&sheet=Statistics&range=A4:E6&output=csv',
+    type: "GET",
+    dataType: 'text',
+    cache: false,
     success: function (response) {
-      datum = response.split('\n').map((line) => line.split(','));
-      datum.push(['11', '11', '11']);
-      download += dataSize(response);
-      $.ajax({
-        url: 'https://docs.google.com/spreadsheet/pub?key=1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A&single=true&gid=1034362398&sheet=Statistics&range=A4:E6&output=csv',
-        type: "GET",
-        dataType: 'text',
-        cache: false,
-        success: function (response) {
-          rankArray = response.split('\n').map((line) => line.split(','));
-          rankArray.forEach(function(value) { value.splice(2, 1); });
-          setData();
-          $('svg').removeClass('rotating');
-          $('input').attr('disabled', false);
-          download += dataSize(response);
-          console.log('Ready. ' + (download / 1000).toFixed(1) + 'KB Loaded');
-        }
-      });
+      var rankArray = response.split('\n').map((line) => line.split(','));
+      rankArray.forEach(function(value) { value.splice(2, 1); });
+      for(var i = 1; i <= 3; i++) {
+        $("#this_" + i).html(rankArray[i - 1][0]);
+        $("#past_" + i).html(rankArray[i - 1][2]);
+        $("#this_t_" + i).html(parseFloat(rankArray[i - 1][1]));
+        $("#past_t_" + i).html(parseFloat(rankArray[i - 1][3]));
+      }
     }
   });
 }
@@ -128,77 +114,39 @@ $("#DATA").submit( function(event) {
   }
   event.preventDefault();
 });
-function setData() {
-  newYourNameIs();
-  var week = new Date().getWeek(), year = new Date().getFullYear();
+function setData(table) {
   $("#latestUpdate").html("Latest Update : " + new Date().format("TT hh시 MM분 ss초"));
-  if(new Date().getDay() == 0) $("#thisWeekEnd_2").css("backgroundColor", "greenyellow");
-  if(new Date().getDay() == 6) $("#thisWeekEnd_1").css("backgroundColor", "greenyellow");
-  for(var i = 1; i <= 5; i++) {
-    if(new Date().getDay() == i) $("#thisWeek_" + i).css("backgroundColor", "greenyellow");
-    $("#thisWeek_" + i).css("color", "#000000");
-    $("#thisWeek_" + i).html(new Date(year, 0, i + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)"));
-    $("#nextWeek_" + i).html(new Date(year, 0, i + (week * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)"));
-    $("#nextTwoWeek_" + i).html(new Date(year, 0, i + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)"));
-    for(var j = 1; j <= 2; j++) {
-      $("#thisWeek_d" + i + "_" + j).html(yourNameIs(0, i - 1, 1, j));
-      $("#thisWeek_s" + i + "_" + j).html(yourNameIs(0, i - 1, 2, j));
-      $("#thisWeek_t" + i + "_" + j).html(yourNameIs(0, i - 1, 3, j));
-      $("#nextWeek_d" + i + "_" + j).html(yourNameIs(1, i - 1, 1, j));
-      $("#nextWeek_s" + i + "_" + j).html(yourNameIs(1, i - 1, 2, j));
-      $("#nextWeek_t" + i + "_" + j).html(yourNameIs(1, i - 1, 3, j));
-      $("#nextTwoWeek_d" + i + "_" + j).html(yourNameIs(2, i - 1, 1, j));
-      $("#nextTwoWeek_s" + i + "_" + j).html(yourNameIs(2, i - 1, 2, j));
-      $("#nextTwoWeek_t" + i + "_" + j).html(yourNameIs(2, i - 1, 3, j));
-    }
+  var week = new Date().getWeek(), year = new Date().getFullYear();
+  for(var i = 0; i < 21; i++) {
+    var day = new Date(year, 0, 1 + (i % 7) + ((week + Math.floor(i / 7) - 1) * 7) - new Date(year, 0, week * 7).getDay());
+    $('#dateCell_' + i).text(day.format('m/d(ddd)'));
+    for(var j = 0; j < 6; j++) $('#nameCell_' + i + '_' + j).text(table[i][j]);
   }
-  for(var i = 1; i <= 2; i++) {
-    $("#thisWeekEnd_" + i).css("color", "#000000");
-    $("#thisWeekEnd_" + i).html(new Date(year, 0, i + 5 + ((week - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)"));
-    $("#nextWeekEnd_" + i).html(new Date(year, 0, i + 5 + ((week + 0) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)"));
-    $("#nextTwoWeekEnd_" + i).html(new Date(year, 0, i + 5 + ((week + 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("m/d(ddd)"));
-    for(var j = 1; j <= 2; j++) {
-      $('#thisWeekEnd_d' + i + "_" + j).html(yourNameIs(0, i + 4, 1, j));
-      $('#thisWeekEnd_s' + i + "_" + j).html(yourNameIs(0, i + 4, 2, j));
-      $('#thisWeekEnd_t' + i + "_" + j).html(yourNameIs(0, i + 4, 3, j));
-      $('#nextWeekEnd_d' + i + "_" + j).html(yourNameIs(1, i + 4, 1, j));
-      $('#nextWeekEnd_s' + i + "_" + j).html(yourNameIs(1, i + 4, 2, j));
-      $('#nextWeekEnd_t' + i + "_" + j).html(yourNameIs(1, i + 4, 3, j));
-      $('#nextTwoWeekEnd_d' + i + "_" + j).html(yourNameIs(2, i + 4, 1, j));
-      $('#nextTwoWeekEnd_s' + i + "_" + j).html(yourNameIs(2, i + 4, 2, j));
-      $('#nextTwoWeekEnd_t' + i + "_" + j).html(yourNameIs(2, i + 4, 3, j));
-    }
-  }
-  for(var i = 1; i <= 3; i++) {
-    $("#this_" + i).html(rankArray[i - 1][0]);
-    $("#past_" + i).html(rankArray[i - 1][2]);
-    $("#this_t_" + i).html(parseFloat(rankArray[i - 1][1]));
-    $("#past_t_" + i).html(parseFloat(rankArray[i - 1][3]));
-  }
+  $('td:contains(' + new Date().format('m/d(ddd)') + ')').css('backgroundColor', 'greenyellow');
+  for(var i = 0; i < 7; i++) $("#dateCell_" + i).css("color", "#000000");
   if(Cookies.get('versionInfo') != $('#version').text()) {
     Cookies.set('versionInfo', $('#version').text(), {expires : 30});
     MicroModal.show('noticeModal');
   }
-  if(Cookies.get('fillName')) {
-    if(Cookies.get('popup') != 'hidden') { MicroModal.show('rankModal'); }
-    $('#submitName').val(Cookies.get('fillName'));
-  }
+  if(Cookies.get('fillName')) $('#submitName').val(Cookies.get('fillName'));
   else {
     MicroModal.show('askName');
     $('#nameSubmit').click( function() {
       Cookies.set('fillName', $.trim($('#name').val()), {expires : 365});
       $('#submitName').val(Cookies.get('fillName'));
-      if(Cookies.get('fillName') == "") { Cookies.remove('fillName'); }
       MicroModal.close('askName');
     });
   }
   calendarCount = 0, rainbowCount = 0;
   setCalendar('4/1(월)', '만우절', true);
   if(rainbowCount) $('#rainbowBlockBox').css('display', 'block');
+  $('svg').removeClass('rotating');
+  $('input').attr('disabled', false);
 }
-function newYourNameIs() {
-  var startIndex, table = Array(21).fill('').map(x => Array(6).fill(''));
-  var week = new Date().getWeek(), year = new Date().getFullYear();
+function newYourNameIs(response) {
+  var datum = response.split('\n').map((line) => line.split(','))
+  var table = Array(21).fill('').map(x => Array(6).fill(''));
+  var startIndex, week = new Date().getWeek(), year = new Date().getFullYear();
   for(var i = 0; i < 21; i++) {
     var day = new Date(year, 0, 1 + (i % 7) + ((week + Math.floor(i / 7) - 1) * 7) - new Date(year, 0, week * 7).getDay()).format("yyyy. m. d");
     if(!i) {
@@ -218,58 +166,8 @@ function newYourNameIs() {
       startIndex++;
     }
   }
-}
-function yourNameIs(p1, p2, course, rank) {
-  var week = new Date().getWeek();
-  var year = new Date().getFullYear();
-  var result = new Date(year, 0, 1 + p2 + ((week + p1 - 1) * 7) - new Date(year, 0, (week * 7)).getDay()).format("yyyy. m. d");
-  for (var i = 0; i < datum.length - 1; i++) {
-    if(rank == 1) {
-      if(result == datum[i][1]) {
-        if((course == 1) && (datum[i][2].includes("1코스")))
-          return datum[i][0];
-        else if((course == 2) && (datum[i][2].includes("2코스")))
-          return datum[i][0];
-        else if((course == 3) && (datum[i][2].includes("3코스")))
-          return datum[i][0];
-      }
-    }
-    else if(rank == 2) {
-      if(result == datum[i][1]) {
-        if((course == 1) && (datum[i][2].includes("1코스"))) {
-          for(var j = 1; result == datum[i + j][1]; j++) {
-            if((course == 1) && (datum[i + j][2].includes("1코스"))) {
-              if(datum[i][0] == datum[i + j][0])
-                continue;
-              else
-                return datum[i + j][0];
-            }
-          }
-        }
-        else if((course == 2) && (datum[i][2].includes("2코스"))) {
-          for(var j = 1; result == datum[i + j][1]; j++) {
-            if((course == 2) && (datum[i + j][2].includes("2코스"))) {
-              if(datum[i][0] == datum[i + j][0])
-                continue;
-              else
-                return datum[i + j][0];
-            }
-          }
-        }
-        else if((course == 3) && (datum[i][2].includes("3코스"))) {
-          for(var j = 1; result == datum[i + j][1]; j++) {
-            if((course == 3) && (datum[i + j][2].includes("3코스"))) {
-              if(datum[i][0] == datum[i + j][0])
-                continue;
-              else
-                return datum[i + j][0];
-            }
-          }
-        }
-      }
-    }
-  }
-  return " ";
+  setData(table);
+  console.log('Ready. ' + (dataSize(response) / 1000).toFixed(1) + 'KB Loaded');
 }
 function setCalendar(targetDate, targetText, isRainbow) {
   calendarCount += 1;
@@ -287,7 +185,6 @@ function setCalendar(targetDate, targetText, isRainbow) {
   finally { }
 }
 function dataSize(s, b, i, c) { for(b = i = 0; c = s.charCodeAt(i++); b += c >> 11 ? 3 : c >> 7 ? 2 : 1); return b; }
-function popupBlocker() { MicroModal.close('rankModal'); Cookies.set('popup', 'hidden', {expires : 3}); }
 function mileageDisplayer() { MicroModal.close('rankModal'); MicroModal.show('mileModal'); }
 function updateLogDisplayer() {
   if($('#toggle').html() == '▼ 업데이트 로그 보기') {
@@ -300,10 +197,20 @@ function updateLogDisplayer() {
   }
 }
 function clickEventListener() {
+  if(new Date().format('m-d') == '4-1') {
+    addCSS('/ajoumeyoumeow/Resources/April Fools Day/april fools day.css');
+    addScript('/ajoumeyoumeow/Resources/April Fools Day/april fools day.js');
+  }
+  if(new Date().getDay() == 0 || new Date().getDay() == 6) {
+    $('ul.tabs li').removeClass('current');
+    $('#tab-1').removeClass('current');
+    $('#tab-2').addClass('current');
+    $('li[data-tab="tab-2"]').addClass('current');
+  }
   $('.reload').click(function() { load(); });
   $('#onNoticeClick').click(function() { MicroModal.show('noticeModal'); });
+  $('#onRankClick').click(function() { MicroModal.show('rankModal'); });
   $('#onMapClick').click(function() { $('img[usemap]').rwdImageMaps(); MicroModal.show('mapModal'); });
-  $('#onRankClick').click(function() { MicroModal.show('rankModal'); Cookies.remove('popup'); popupBlock.checked = false; });
   $('ul.tabs li').click(function() {
     var tab_id = $(this).attr('data-tab');
     $('ul.tabs li').removeClass('current');
