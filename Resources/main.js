@@ -137,9 +137,8 @@ function setData(table) {
       MicroModal.close('askName');
     });
   }
-  calendarCount = 0, rainbowCount = 0;
+  calendarCount = 0;
   setCalendar('4/1(월)', '만우절', true);
-  if(rainbowCount) $('#rainbowBlockBox').css('display', 'block');
   $('svg').removeClass('rotating');
   $('input').attr('disabled', false);
 }
@@ -174,10 +173,10 @@ function setCalendar(targetDate, targetText, isRainbow) {
   try {
     if(new Date(new Date().getFullYear(), targetDate.substr(0, 1) - 1, targetDate.substr(2, 1)) > new Date()) {
       if(isRainbow) {
-        rainbowCount += 1;
-        document.evaluate("//td[text()='" + targetDate + "']", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.classList.add('dogriver');
+        $('#rainbowBlockBox').css('display', 'block');
+        $('td:contains(' + targetDate + ')').addClass('dogriver');
       }
-      document.evaluate("//td[text()='" + targetDate + "']", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.classList.add('cal' + calendarCount);
+      $('td:contains(' + targetDate + ')').addClass('cal' + calendarCount);
       $('.cal' + calendarCount).html(targetText);
     }
   }
