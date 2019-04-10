@@ -11,6 +11,7 @@
   .reload {	transform: scale(0.8); }
 }
 @media (min-width:760px) {
+  .container { width : 30%!important }
   .modal-content { width: 740!important; }
   ul.tabs { width: 425!important; margin: 30 auto 5!important; }
   table { width : 425; }
