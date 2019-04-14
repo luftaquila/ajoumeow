@@ -205,11 +205,9 @@ function updateLogDisplayer() {
   }
 }
 function clickEventListener() {
-  $('#icon').mousedown(function() {
-    setTimeout(function() {
-      if($('#adminActive').css('display') == 'inline') $('#adminActive').css('display', 'none');
-      else $('#adminActive').css('display', 'inline');
-    }, 2000);
+  $('#icon').click(function() {
+    if($('#adminActive').css('display') == 'inline') $('#adminActive').css('display', 'none');
+    else $('#adminActive').css('display', 'inline');
   });
   if(new Date().format('m-d') == '4-1') {
     addCSS('/ajoumeyoumeow/Resources/April Fools Day/april fools day.css');
