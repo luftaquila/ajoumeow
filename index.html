@@ -2,8 +2,8 @@
   <head>
     <title>아주대학교 고양이는 미유미유</title>
     <link rel="shortcut icon" type="image/x-icon" href="/ajoumeyoumeow/Resources/Images/Resized/meyoumeow.ico" />
-    <a id='version' style="display: none;">v5.3.0</a>
-    <a id='release' style="display: none;">2019-04-09 01:37 PM</a>
+    <a id='version' style="display: none;">v5.3.1</a>
+    <a id='release' style="display: none;">2019-04-14 07:57 PM</a>
     <link rel="stylesheet" href="/ajoumeyoumeow/Resources/Libraries/alertify/alertify.core.css" />
     <link rel="stylesheet" href="/ajoumeyoumeow/Resources/Libraries/alertify/alertify.default.css" id="toggleCSS" />
     <link rel="stylesheet" href="/ajoumeyoumeow/Resources/Libraries/micromodal/micromodal.min.css" />
@@ -17,13 +17,6 @@
     <meta name="naver-site-verification" content="f3183dc84e33039873fc22ec89ee6b402fe3c54d"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta http-equiv="Content-Type" content="text/html">
-    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-    <script>
-         (adsbygoogle = window.adsbygoogle || []).push({
-              google_ad_client: "ca-pub-7125803081319468",
-              enable_page_level_ads: true
-         });
-    </script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119383265-1"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -356,7 +349,8 @@
                 <label for='edit_course_2nd'><input type='radio' id='edit_course_2nd' name='edit_course' value='2코스' disabled="true">2코스</input></label>&nbsp;
                 <label for='edit_course_3rd'><input type='radio' id='edit_course_3rd' name='edit_course' value='3코스' disabled="true">3코스</input></label><br><br>
               </div>
-              <input id="submit" type="submit" value="신청하기" disabled="true" style="padding: 0.3rem 0.8rem;"/>
+              <input id="submit" type="submit" value="신청하기" disabled="true" style="padding: 0.3rem 0.8rem;"/><br><br>
+              <div id='adminActive' style="display:none; font-size: 0.8rem">관리자 모드 활성화 : <input id='admin' type='text' style="width:60px" disabled='true'/></div>
           </form>
         </div><br><br>
       </div>
@@ -376,16 +370,6 @@
         <a class="ext" target='_blank' href="https://docs.google.com/spreadsheets/d/1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A/edit?usp=sharing" style="color:#0366d6">Sheet</a>&nbsp;&nbsp;
         <a class="ext" href="/ajoumeyoumeow/calculator" style="color: #0366d6;">Calc</a><br><span style="font-size:0.4rem"><br></span>
         사물함 번호 357, 358번 / 비밀번호 180218<br>
-        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-7125803081319468"
-             data-ad-slot="3350614859"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
-        <script>
-        (adsbygoogle = window.adsbygoogle || []).push({});
-        </script>
       </div>
     </div>
     <div id='modals'>
@@ -490,6 +474,11 @@
                 <span style='font-weight:bold; font-size: 0.9rem'>업데이트 알림<br></span>
                 <span id='recentUpdate' style="font-weight:bold"></span><br>
                 <span id='recentUpdateContent'>
+                  Bugfix<br>
+                </span><span style="line-height:50%"><br><br></span>
+                <span id='toggle' style="color:#0366d6" onclick="updateLogDisplayer()">▼ 업데이트 로그 보기</span><br><span style="line-height:50%"><br></span>
+                <div id='more' style="display: none">
+                  <span style="font-weight:bold">v5.3.x : 2019-04-07</span><br>
                   데이터 검색 및 배치 알고리즘과 스크립트 구조를<br>모두 다시 재설계했습니다.
                   <ul style="text-align: left">
                     <li>
@@ -501,10 +490,6 @@
                       최초 로딩 시간을 약 2.5초 가량 단축합니다.
                     </li>
                   </ul>
-                    <span style="line-height:50%"><br><br></span>
-                </span>
-                <span id='toggle' style="color:#0366d6" onclick="updateLogDisplayer()">▼ 업데이트 로그 보기</span><br><span style="line-height:50%"><br></span>
-                <div id='more' style="display: none">
                   <span style="font-weight:bold">v5.2.x : 2019-03-18</span><br>
                     지도에서 급식소 상세보기 기능을 추가했습니다.<br>
                     CORS정책 우회를 위한 프록시 서버 변경.<br>
