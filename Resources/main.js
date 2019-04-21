@@ -173,7 +173,8 @@ function setData(table) {
     });
   }
   calendarCount = 0;
-  setCalendar('4/1(월)', '만우절', true);
+  setCalendar('5/6(월)', '총무생일', true);
+  setCalendar('5/12(일)', '회장생일', true);
   $('svg').removeClass('rotating');
   $('input').attr('disabled', false);
 }
