@@ -140,8 +140,8 @@ svg {
     to{ -webkit-transform: rotate(-180deg); }
 }
 .rotating { -webkit-animation: rotating 0.8s ease infinite; }
-
 #alertify-cancel { display: none; }
+.focusing { background-color: #ffffaa }
 .dogriver { animation-duration: 1s; animation-name: rainbowLink; animation-iteration-count: infinite; }
 @keyframes rainbowLink {
  0% { background-color: #ff2a2a; color: #43ff2a; }
@@ -153,3 +153,25 @@ svg {
  90% { background-color: #6b2aff; color: #ff7a2a; }
  100% { background-color: #e82aff; color: #ffc52a; }
 }
+.context-menu-icon-check {
+  margin: 0 0 0 17;
+  text-align: center;
+  background: url(/ajoumeyoumeow/Resources/Images/check.svg) no-repeat;
+  background-size: 13%;
+  background-position: 1.4rem;
+}
+.context-menu-icon-del {
+  margin: 0 0 0 17;
+  text-align: center;
+  background: url(/ajoumeyoumeow/Resources/Images/del.svg) no-repeat;
+  background-size: 13%;
+  background-position: 1.4rem;
+}
+.context-menu-icon-mod {
+  margin: 0 0 0 17;
+  text-align: center;
+  background: url(/ajoumeyoumeow/Resources/Images/mod.svg) no-repeat;
+  background-size: 13%;
+  background-position: 1.4rem;
+}
+input { margin: 0 0 0 10 }

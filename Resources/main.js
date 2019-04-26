@@ -1,5 +1,6 @@
 $(function() {
   lazyload();
+  contextLoader();
   clickEventListener();
   loadWeather();
   load();
@@ -34,94 +35,16 @@ function load() {
     }
   });
 }
-$("#DATA").submit( function(event) {
-  var submitType = $(':input[name=mode]:radio:checked').val();
-  if($('#adminActive').css('display') == 'inline' && $('#admin').val() == '0512') {
-    transmitter(submitType);
-    event.preventDefault();
-    return;
-  }
-  if(!/\d\d\d\d\-\d\d\-\d\d/g.test($("#submitDate").val())) {
-    alertify.error('날짜를 입력하세요.');
-    $('input').attr('disabled', false);
-  }
-  else if($(':input[name=course]:radio:checked').val() == undefined) {
-    alertify.error('코스를 입력하세요.');
-    $('input').attr('disabled', false);
-  }
-  else if($.trim($("#" + (submitType == '수정' ? 'editName' : 'submitName')).val()) == "") {
-    alertify.error('이름을 입력하세요.');
-    $('input').attr('disabled', false);
-  }
-  else if($.trim($("#" + (submitType == '수정' ? 'editName' : 'submitName')).val()).indexOf(',') + 1) {
-    alertify.error('이름에 콤마(,)는 사용할 수 없습니다.');
-    $('input').attr('disabled', false);
-  }
-  else if(submitType == '수정' && !/\d\d\d\d\-\d\d\-\d\d/g.test($("#editDate").val())) {
-    alertify.error('수정할 날짜를 입력하세요.');
-    $('input').attr('disabled', false);
-  }
-  else if(submitType == '수정' && $(':input[name=edit_course]:radio:checked').val() == undefined) {
-    alertify.error('수정할 코스를 입력하세요.');
-    $('input').attr('disabled', false);
-  }
-  else if(submitType == '삭제' && (new Date(new Date($('#submitDate').val()) - 1000 * 3600 * 9) < new Date(new Date().format('yyyy-mm-dd')))) {
-    alertify.error('당일 및 지난 날짜에 대한 삭제는 불가능합니다.');
-    $('input').attr('disabled', false);
-  }
-  else if((submitType == '삭제') && $('#submitDate').val() == new Date(new Date(new Date().format('yyyy-mm-dd')) - 1000 * 3600 * 15 * -1).format('yyyy-mm-dd') && new Date().getHours() > 17) {
-    alertify.error('전일 오후 6시 이후 취소는 불가능합니다.');
-    $('input').attr('disabled', false);
-  }
-  else if(submitType == '수정' && $('#submitDate').val() == new Date().format('yyyy-mm-dd') && $('#submitDate').val() != $("#editDate").val()) {
-    alertify.error('당일 날짜 변경은 불가능합니다.');
-    $('input').attr('disabled', false);
-  }
-  else if(submitType == '수정' && (new Date(new Date($('#submitDate').val()) - 1000 * 3600 * 9) < new Date(new Date().format('yyyy-mm-dd')) - 1000 * 3600 * 24)) {
-    alertify.error('지난 날짜에 대한 수정은 불가능합니다.');
-    $('input').attr('disabled', false);
-  }
-  else if((submitType == '수정') && $('#submitDate').val() == new Date(new Date(new Date().format('yyyy-mm-dd')) - 1000 * 3600 * 15 * -1).format('yyyy-mm-dd') && new Date().getHours() > 17 && $('#submitDate').val() != $("#editDate").val()) {
-    alertify.error('전일 오후 6시 이후 다른 날짜로의 수정은 불가능합니다.');
-    $('input').attr('disabled', false);
-  }
-  else if((submitType == '신청' || submitType == '수정') && (new Date(new Date($('#' + (submitType == '신청' ? 'submitDate' : 'editDate')).val()) - 1000 * 3600 * 9) < new Date(new Date(new Date().format('yyyy-mm-dd')) - 1000 * 3600 * 9)) || (new Date(new Date($('#' + (submitType == '신청' ? 'submitDate' : 'editDate')).val()) - 1000 * 3600 * 9) > new Date(new Date(new Date().format('yyyy-mm-dd')) - 1000 * 3600 * (9 - (24 * (14 + ((new Date().getDay()) ? (7 - new Date().getDay()) : 0))))))) {
-    alertify.error('신청 및 수정은 급식표 표시 범위 내에서만 가능합니다.');
-    $('input').attr('disabled', false);
-  }
-  else transmitter(submitType);
-  event.preventDefault();
-});
-function transmitter(submitType) {
-  $('input').attr('disabled', true);
-  if(submitType == '신청') {
-    serializedData = "신청=신청&이름=" + $.trim($('#submitName').val()) + "&날짜=" + $('#submitDate').val() + "&코스=" + $(':input[name=course]:radio:checked').val();
-  }
-  else if(submitType == '수정') {
-    serializedData = "수정=수정&이름=" + $.trim($('#submitName').val()) + "&날짜=" + $('#submitDate').val() + "&코스=" + $(':input[name=course]:radio:checked').val() +
-                     "&수정 이름=" + $.trim($('#editName').val()) + "&수정 날짜=" + $('#editDate').val() + "&수정 코스=" + $(':input[name=edit_course]:radio:checked').val();
-  }
-  else if(submitType == '삭제') {
-    serializedData = "삭제=삭제&이름=" + $.trim($('#submitName').val()) + "&날짜=" + $('#submitDate').val() + "&코스=" + $(':input[name=course]:radio:checked').val();
-  }
-  alertify.log('Sending ' + dataSize(encodeURI(serializedData)) + 'B Data...');
-  console.log("DataSet : " + serializedData);
-  request = $.ajax({
-      type: 'POST',
-      url: "https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec",
-      data: encodeURI(serializedData)
-  });
-  request.done(function() {
-    load();
-    alertify.success('Data Transmitted.');
-    Cookies.set('fillName', $.trim($('#submitName').val()), {expires : 365});
-  });
-  request.fail(function(jqXHR, textStatus, errorThrown) { alertify.error('Error - ' + textStatus + errorThrown); });
-  request.always(function() {
-    $('input').attr('disabled', false);
-    $('#submitDate').val("");
-    $('input:radio[name=course], input:radio[name=edit_course]').prop('checked', false);
-  });
+function transmitter(operationType, targetID, targetName) {
+  var locatorReturn = locator(targetID);
+  var targetDay = locatorReturn[0], targetCourse = locatorReturn[1];
+  var serializedData =
+  //if(operationType == '신청')
+}
+function locator(targetID) {
+  var targetDay = targetID.substr(9, 1), targetCourse = targetID.substr(11, 1);
+  targetDay = new Date(year, 0, 1 + (targetDay % 7) + ((week + Math.floor(targetDay / 7) - 1) * 7) - new Date(year, 0, week * 7).getDay()).format('yyyy. mm. dd');
+  return [targetDay, targetCourse];
 }
 function newYourNameIs(response) {
   var datum = response.split('\n').map((line) => line.split(','))
@@ -155,7 +78,11 @@ function setData(table) {
   for(var i = 0; i < 21; i++) {
     var day = new Date(year, 0, 1 + (i % 7) + ((week + Math.floor(i / 7) - 1) * 7) - new Date(year, 0, week * 7).getDay());
     $('#dateCell_' + i).text(day.format('m/d(ddd)'));
-    for(var j = 0; j < 6; j++) $('#nameCell_' + i + '_' + j).text(table[i][j]);
+    for(var j = 0; j < 6; j++) {
+      if(table[i][j]) $('#nameCell_' + i + '_' + j).addClass('reserved');
+      else $('#nameCell_' + i + '_' + j).addClass('notReserved');
+      $('#nameCell_' + i + '_' + j).text(table[i][j]);
+    }
   }
   $('td:contains(' + new Date().format('m/d(ddd)') + ')').css('backgroundColor', 'greenyellow');
   for(var i = 0; i < 7; i++) $("#dateCell_" + i).css("color", "#000000");
@@ -287,6 +214,72 @@ function loadWeather() {
       $('#pm25').html('PM2.5 : ' + '<span id="pm25val">' + pm25 + '</span>' + '㎍/㎥');
       $('#pm10val').css('color', pm10 > 30 ? pm10 > 80 ? pm10 > 150 ? '#ff5959' : '#fd9b5a' : '#00c73c' : '#32a1ff');
       $('#pm25val').css('color', pm25 > 15 ? pm25 > 35 ? pm25 > 75 ? '#ff5959' : '#fd9b5a' : '#00c73c' : '#32a1ff');
+    }
+  });
+}
+function contextLoader() {
+  $.contextMenu({
+    selector: '.notReserved',
+    trigger: 'left',
+    items: {
+      addName: {
+        name: '이름',
+        type: 'text',
+      },
+      add: {
+        name: '신청',
+        icon: 'check',
+        callback: function(itemKey, opt, e) {
+          var targetID = $('.focusing').attr('id');
+          var targetName = $.contextMenu.getInputValues(opt, this.data()).addName;
+          transmitter('신청', targetID, targetName);
+          $(this).removeClass('focusing');
+        }
+      }
+    },
+    events: {
+      show: function() {
+        $(this).addClass('focusing');
+        setTimeout(function() { $('input[name=context-menu-input-addName]').focus(); }, 1);
+      },
+      hide: function() { $(this).removeClass('focusing'); }
+    }
+  });
+  $.contextMenu({
+    selector: '.reserved',
+    trigger: 'left',
+    items: {
+      modName: {
+        name: '이름',
+        type: 'text',
+      },
+      mod: {
+        name: '수정',
+        icon: 'mod',
+        callback: function(itemKey, opt, e) {
+          var targetID = $('.focusing').attr('id');
+          var targetName = $.contextMenu.getInputValues(opt, this.data()).modName;
+          transmitter('수정', targetID, targetName);
+          $(this).removeClass('focusing');
+        }
+      },
+      sep: '-----',
+      del: {
+        name: '삭제',
+        icon: 'del',
+        callback: function(itemKey, opt, e) {
+          var targetID = $('.focusing').attr('id');
+          transmitter('삭제', targetID);
+          $(this).removeClass('focusing');
+        }
+      }
+    },
+    events: {
+      show: function() {
+        $(this).addClass('focusing');
+        setTimeout(function() { $('input[name=context-menu-input-modName]').focus(); }, 1);
+      },
+      hide: function() { $(this).removeClass('focusing'); }
     }
   });
 }
