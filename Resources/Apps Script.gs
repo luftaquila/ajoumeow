@@ -15,10 +15,7 @@ function handleResponse(e) {
       for (i in headers) { row.push(e.parameter[headers[i]]); }
       sheet.getRange(nextRow, 1, 1, row.length).setValues([row]);
     }
-    else if(e.parameter['로그'] && e.parameter['이름'] != '오병준') {
-      doc.getSheetByName('Logger').getRange(doc.getSheetByName('Logger').getLastRow() + 1, 1, 1, 2).setValues([[new Date(), e.parameter['이름']]]);
-    }
-    else if(e.parameter['신청']) {
+    else if(e.parameter['타입'] == '신청') {
       for (i in headers) {
         if(i == 0) {
           row.push(new Date());
@@ -28,17 +25,15 @@ function handleResponse(e) {
       }
       sheet.getRange(nextRow, 1, 1, row.length).setValues([row]);
     }
-    else if(e.parameter['수정']) {
+    else if(e.parameter['타입'] == '수정') {
       var data = sheet.getRange('B2:D').getValues();
       for (var i = data.length - 1; i >= 0; i--) {
         if(JSON.stringify(new Date(new Date(e.parameter['날짜']) - 32400000)) == JSON.stringify(data[i][1])) {
           if(e.parameter['이름'] == data[i][0]) {
             if(e.parameter['코스'] == data[i][2]) {
               sheet.getRange('B' + (i + 2)).setValue(e.parameter['수정 이름']);
-              sheet.getRange('C' + (i + 2)).setValue(e.parameter['수정 날짜']);
-              sheet.getRange('D' + (i + 2)).setValue(e.parameter['수정 코스']);
-              var log = [ new Date(), '수정', e.parameter['이름'], e.parameter['날짜'], e.parameter['코스'], e.parameter['수정 이름'], e.parameter['수정 날짜'], e.parameter['수정 코스'] ];
-              doc.getSheetByName('Edit Log').getRange(doc.getSheetByName('Edit Log').getLastRow() + 1, 1, 1, 8).setValues([log]);
+              var log = [ new Date(), '수정', e.parameter['이름'], e.parameter['날짜'], e.parameter['코스'], e.parameter['수정 이름'] ];
+              doc.getSheetByName('Edit Log').getRange(doc.getSheetByName('Edit Log').getLastRow() + 1, 1, 1, 6).setValues([log]);
               doc.getSheetByName('Edit Log').getRange('A:H').setHorizontalAlignment('center');
               break;
             } else continue;
@@ -46,7 +41,7 @@ function handleResponse(e) {
         } else continue;
       }
     }
-    else if(e.parameter['삭제']) {
+    else if(e.parameter['타입'] == '삭제') {
       var data = sheet.getRange('B2:D').getValues();
       for (var i = data.length - 1; i >= 0; i--) {
         if(JSON.stringify(new Date(new Date(e.parameter['날짜']) - 32400000)) == JSON.stringify(data[i][1])) {
