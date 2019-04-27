@@ -1,18 +1,18 @@
 <html>
   <head>
     <title>아주대학교 고양이는 미유미유</title>
-    <link rel="shortcut icon" type="image/x-icon" href="/ajoumeyoumeow/Resources/Images/Resized/meyoumeow.ico" />
-    <a id='version' style="display: none;">v5.3.1</a>
-    <a id='release' style="display: none;">2019-04-14 07:57 PM</a>
-    <link rel="stylesheet" href="/ajoumeyoumeow/Resources/Libraries/alertify/alertify.core.css" />
-    <link rel="stylesheet" href="/ajoumeyoumeow/Resources/Libraries/alertify/alertify.default.css" id="toggleCSS" />
-    <link rel="stylesheet" href="/ajoumeyoumeow/Resources/Libraries/micromodal/micromodal.min.css" />
-    <link rel="stylesheet" href="/ajoumeyoumeow/Resources/Libraries/contextMenu/jquery.contextMenu.min.css" />
-    <link rel="stylesheet" href="/ajoumeyoumeow/Resources/main.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="/ajoumeow/Resources/Images/Resized/meyoumeow.ico" />
+    <a id='version' style="display: none;">v6.0.0</a>
+    <a id='release' style="display: none;">2019-04-27 06:00 AM</a>
+    <link rel="stylesheet" href="/ajoumeow/Resources/Libraries/alertify/alertify.core.css" />
+    <link rel="stylesheet" href="/ajoumeow/Resources/Libraries/alertify/alertify.default.css" id="toggleCSS" />
+    <link rel="stylesheet" href="/ajoumeow/Resources/Libraries/micromodal/micromodal.min.css" />
+    <link rel="stylesheet" href="/ajoumeow/Resources/Libraries/contextMenu/jquery.contextMenu.min.css" />
+    <link rel="stylesheet" href="/ajoumeow/Resources/main.css" />
     <meta charset="utf-8">
     <meta property="og:title" content="아주대학교 미유미유"/>
-    <meta property="og:url" content="https://luftaquila.github.io/ajoumeyoumeow/"/>
-    <meta property="og:image" content="https://luftaquila.github.io/ajoumeyoumeow/Resources/Images/%EB%AF%B8%EC%9C%A0%EB%AF%B8%EC%9C%A0.png"/>
+    <meta property="og:url" content="https://luftaquila.github.io/ajoumeow/"/>
+    <meta property="og:image" content="https://luftaquila.github.io/ajoumeow/Resources/Images/%EB%AF%B8%EC%9C%A0%EB%AF%B8%EC%9C%A0.png"/>
     <meta property="og:description" content="아주대학교 고양이는 미유미유"/>
     <meta name="google-site-verification" content="LdumQ1csatc-sergk4eQ5nBhKjcnisZ18Bo8RjRBxKo"/>
     <meta name="naver-site-verification" content="f3183dc84e33039873fc22ec89ee6b402fe3c54d"/>
@@ -49,7 +49,6 @@
       <ul class="tabs">
         <li class="tab-link current" data-tab="tab-1">평일</li>
         <li class="tab-link" data-tab="tab-2">주말</li>
-        <li class="tab-link" data-tab="tab-3">급식 신청</li>
           <div class="reload" style="display: inline; float: right">
           <svg x="0px" y="0px" width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">
             <path fill-rule="evenodd" clip-rule="evenodd" d="M12.011 20c0-0.002 0-0.003 0-0.005 0-4.421 3.578-8.005 7.991-8.005 2.683 0 5.051 1.329 6.5 3.361l1.26-1.644c-1.834-2.254-4.627-3.696-7.76-3.696 -5.519 0-9.994 4.471-10.001 9.989H8.013l3.018 4.013L13.987 20H12.011zM32 20l-2.969-3.985L26 20h1.992c-0.003 4.419-3.579 8.001-7.99 8.001 -2.716 0-5.111-1.36-6.555-3.435l-1.284 1.644c1.832 2.314 4.66 3.803 7.84 3.803 5.524 0 10.001-4.478 10.001-10.001 0-0.004-0.001-0.008-0.001-0.012H32z"/>
@@ -331,45 +330,21 @@
           </tr>
         </table>
       </div>
-      <div id="tab-3" class="tab-content" style="width:100%; text-align:center;">
-        <div id='form' style="width:100%; text-align:center; margin: 0; padding: 30 0 0 0">
-          <form id="DATA">
-            <label for='modeAdd'><input type='radio' id='modeAdd' name='mode' value='신청' disabled='true' checked>신청</input></label>&nbsp;&nbsp;&nbsp;
-            <label for='modeEdit'><input type='radio' id='modeEdit' name='mode' value='수정' disabled='true'>수정</input></label>&nbsp;&nbsp;&nbsp;
-            <label for='modeDelete'><input type='radio' id='modeDelete' name='mode' value='삭제' disabled='true'>삭제</input></label><br><br>
-              이름 : <input id='submitName' type='text' style="width:100px" disabled="true"/><br><span style="line-height:50%"><br></span>
-              날짜 : <input id="submitDate" type="date" name="submitDate" value="" disabled="true"/><br><span style="line-height:50%"><br></span>
-              <label for='course_1st'><input type='radio' id='course_1st' name='course' value="1코스" disabled="true">1코스</input></label>&nbsp;
-              <label for='course_2nd'><input type='radio' id='course_2nd' name='course' value='2코스' disabled="true">2코스</input></label>&nbsp;
-              <label for='course_3rd'><input type='radio' id='course_3rd' name='course' value='3코스' disabled="true">3코스</input></label><br><br>
-              <div id='editBox' style="display: none">
-                <a id='arrow'>↓</a><br><br>
-                이름 : <input id='editName' type='text' style="width:100px" disabled="true"/><br><span style="line-height:50%"><br></span>
-                날짜 : <input id="editDate" type="date" name="submitDate" value="" disabled="true"/><br><span style="line-height:50%"><br></span>
-                <label for='edit_course_1st'><input type='radio' id='edit_course_1st' name='edit_course' value="1코스" disabled="true">1코스</input></label>&nbsp;
-                <label for='edit_course_2nd'><input type='radio' id='edit_course_2nd' name='edit_course' value='2코스' disabled="true">2코스</input></label>&nbsp;
-                <label for='edit_course_3rd'><input type='radio' id='edit_course_3rd' name='edit_course' value='3코스' disabled="true">3코스</input></label><br><br>
-              </div>
-              <input id="submit" type="submit" value="신청하기" disabled="true" style="padding: 0.3rem 0.8rem;"/><br><br>
-              <div id='adminActive' style="display:none; font-size: 0.8rem">관리자 모드 활성화 : <input id='admin' type='text' style="width:60px" disabled='true'/></div>
-          </form>
-        </div><br><br>
-      </div>
       <div id="latestUpdate" style="height:1rem; text-align:right; font-size: 0.7rem; font-family:'Malgun Gothic'; margin:5 0 0 0;">Loading...</div>
       <div id='rainbowBlockBox' style="height:1rem; text-align:right; font-size: 0.7rem; font-family:'Malgun Gothic'; margin:5 0 0 0; display: none">
         <label for="rainbowBlock"><input type="checkbox" id="rainbowBlock">무지개가 눈 아파요!</input></label>
       </div>
       <div id='bottomInfo' style="text-align:center; font-size:0.813rem; font-family:'Malgun Gothic'; margin:17 0 0 0;">
         <span class='popup' id='onNoticeClick'>Notice</span>&nbsp;&nbsp;&nbsp;
-        <a href="/ajoumeyoumeow/statistics" style="color: #0366d6">Statistics</a>&nbsp;&nbsp;&nbsp;
+        <a href="/ajoumeow/statistics" style="color: #0366d6">Statistics</a>&nbsp;&nbsp;&nbsp;
         <span class='popup' id='onRankClick'>Rank</span>&nbsp;&nbsp;&nbsp;
         <span class='popup' id='onMapClick'>Map</span>&nbsp;&nbsp;&nbsp;
         <a href="https://www.flickr.com/photos/ajoumeow/" style="color: #0366d6">Photos</a>&nbsp;&nbsp;&nbsp;
-        <a href="https://github.com/luftaquila/ajoumeyoumeow" style="color: #0366d6">Manual</a><br><span style="font-size:0.4rem"><br></span>
+        <a href="https://github.com/luftaquila/ajoumeow" style="color: #0366d6">Manual</a><br><span style="font-size:0.4rem"><br></span>
         &nbsp;©2018 LUFT - AQUILA.&nbsp;
         <a id='info' class="ext" href="" style="color: #0366d6;">About</a>&nbsp;&nbsp;
         <a class="ext" target='_blank' href="https://docs.google.com/spreadsheets/d/1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A/edit?usp=sharing" style="color:#0366d6">Sheet</a>&nbsp;&nbsp;
-        <a class="ext" href="/ajoumeyoumeow/calculator" style="color: #0366d6;">Calc</a><br><span style="font-size:0.4rem"><br></span>
+        <a class="ext" href="/ajoumeow/calculator" style="color: #0366d6;">Calc</a><br><span style="font-size:0.4rem"><br></span>
         사물함 번호 357, 358번 / 비밀번호 180218<br>
       </div>
     </div>
@@ -383,10 +358,43 @@
             </header>
             <main class="modal__content" id="askName-content">
               <span style='font-size:0.7rem'>이름 자동 완성에 사용되며,<br>최초 1회 이후 물어보지 않습니다.</span><br><br>
-              <input id="name" type="text" style="font-size: 1rem">
+              <input id="name" type="text" style="font-size: 1rem; margin:0">
             </main>
-            <footer class="modal__footer">
+            <footer class="modal__footer" style="text-align:right">
               <input type="button" id='nameSubmit' class="modal__btn modal__btn-primary" value="확인">&nbsp;
+            </footer>
+          </div>
+        </div>
+      </div>
+      <div class="modal micromodal-slide" id="deleteConfirm" aria-hidden="true">
+        <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+          <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="deleteConfirm-title">
+            <header class="modal__header">
+              <h2 class="modal__title" id="deleteConfirm-title">삭제 확인</h2>
+              <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+            </header>
+            <main class="modal__content" id="deleteConfirm-content" style="text-align:center">
+              <span id='deleteInfo' style='font-size:0.9rem;'></span>
+            </main>
+            <footer class="modal__footer" style="text-align:right">
+              <input type="button" id='delete' class="modal__btn modal__btn-primary" value="확인">&nbsp;
+            </footer>
+          </div>
+        </div>
+      </div>
+      <div class="modal micromodal-slide" id="admin" aria-hidden="true">
+        <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+          <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="admin-title">
+            <header class="modal__header">
+              <h2 class="modal__title" id="admin-title">관리자 모드 활성화</h2>
+              <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+            </header>
+            <main class="modal__content" id="admin-content">
+              <span style='font-size:0.7rem'>관리자 비밀번호를 입력하십시오.</span><br><br>
+              <input id="adminPW" type="text" style="font-size: 1rem; margin:0">
+            </main>
+            <footer class="modal__footer" style="text-align:right">
+              <input type="button" id='confirmAdmin' class="modal__btn modal__btn-primary" value="확인">&nbsp;
             </footer>
           </div>
         </div>
@@ -404,7 +412,7 @@
               2코스 : <span style='color: #5cf442;'>★</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
               3코스 : <span style='color: #f44242;'>★</span>
               <div style="position: relative">
-                <img src="/ajoumeyoumeow/Resources/Images/map.png" usemap="#Map" style="width:100%; height:auto">
+                <img src="/ajoumeow/Resources/Images/map.png" usemap="#Map" style="width:100%; height:auto">
                 <map name='Map' id='Map'>
                   <area shape='circle' coords="468,93,30" id='area_spot_1-1' href='javascript:MicroModal.show("spot_1-1")'>
                   <area shape='circle' coords="386,442,30" id='area_spot_1-2' href='javascript:MicroModal.show("spot_1-2")'>
@@ -471,11 +479,14 @@
               </span>
               <div id='noticeContainer' style="font-size: 0.8rem; text-align: center">
                 <span style="font-size: 0.9rem">
-                  <a href="https://github.com/luftaquila/ajoumeyoumeow" style="color: #0366d6">사용설명서</a></span><br><br>
+                  <a href="https://github.com/luftaquila/ajoumeow" style="color: #0366d6">사용설명서</a></span><br><br>
                 <span style='font-weight:bold; font-size: 0.9rem'>업데이트 알림<br></span>
                 <span id='recentUpdate' style="font-weight:bold"></span><br>
                 <span id='recentUpdateContent'>
-                  Bugfix<br>
+                  UI를 보다 직관적으로 이용할 수 있도록 개선했습니다.<br>
+                  이에 따라 급식 신청 방식이 변경되었습니다.<br>
+                  <a href="https://github.com/luftaquila/ajoumeow/blob/master/README.md#3-%EA%B8%89%EC%8B%9D-%EC%8B%A0%EC%B2%AD-%EC%88%98%EC%A0%95-%EB%B0%8F-%EC%82%AD%EC%A0%9C" style="color: #0366d6">사용설명서 - 3. 급식 신청, 수정 및 삭제</a><br><br>
+                  기존의 급식 신청 탭은 제거했습니다.
                 </span><span style="line-height:50%"><br><br></span>
                 <span id='toggle' style="color:#0366d6" onclick="updateLogDisplayer()">▼ 업데이트 로그 보기</span><br><span style="line-height:50%"><br></span>
                 <div id='more' style="display: none">
@@ -541,7 +552,7 @@
             </header>
             <main class="modal__content" id="spot_1-1-content">
               <div style="position: relative">
-                <img class='lazyload' data-src="/ajoumeyoumeow/Resources/Images/Map/spot_1-1.jpg" style="width:100%;">
+                <img class='lazyload' data-src="/ajoumeow/Resources/Images/Map/spot_1-1.jpg" style="width:100%;">
               </div>
             </main>
           </div>
@@ -556,8 +567,8 @@
             </header>
             <main class="modal__content" id="spot_1-2-content">
               <div style="position: relative">
-                <img class='lazyload' data-src="/ajoumeyoumeow/Resources/Images/Map/spot_1-2-1.jpg" style="width:100%; height:auto">
-                <img class='lazyload' data-src="/ajoumeyoumeow/Resources/Images/Map/spot_1-2-2.jpg" style="width:100%; height:auto">
+                <img class='lazyload' data-src="/ajoumeow/Resources/Images/Map/spot_1-2-1.jpg" style="width:100%; height:auto">
+                <img class='lazyload' data-src="/ajoumeow/Resources/Images/Map/spot_1-2-2.jpg" style="width:100%; height:auto">
               </div>
             </main>
           </div>
@@ -572,7 +583,7 @@
             </header>
             <main class="modal__content" id="spot_1-3-content">
               <div style="position: relative">
-                <img class='lazyload' data-src="/ajoumeyoumeow/Resources/Images/Map/spot_1-3.jpg" style="width:100%; height:auto">
+                <img class='lazyload' data-src="/ajoumeow/Resources/Images/Map/spot_1-3.jpg" style="width:100%; height:auto">
               </div>
             </main>
           </div>
@@ -587,7 +598,7 @@
             </header>
             <main class="modal__content" id="spot_1-4-content">
               <div style="position: relative">
-                <img class='lazyload' data-src="/ajoumeyoumeow/Resources/Images/Map/spot_1-4.jpg" style="width:100%; height:auto">
+                <img class='lazyload' data-src="/ajoumeow/Resources/Images/Map/spot_1-4.jpg" style="width:100%; height:auto">
               </div>
             </main>
           </div>
@@ -602,7 +613,7 @@
             </header>
             <main class="modal__content" id="spot_2-1-content">
               <div style="position: relative">
-                <img class='lazyload' data-src="/ajoumeyoumeow/Resources/Images/Map/spot_2-1.jpg" style="width:100%; height:auto">
+                <img class='lazyload' data-src="/ajoumeow/Resources/Images/Map/spot_2-1.jpg" style="width:100%; height:auto">
               </div>
             </main>
           </div>
@@ -617,7 +628,7 @@
             </header>
             <main class="modal__content" id="spot_2-2-content">
               <div style="position: relative">
-                <img class='lazyload' data-src="/ajoumeyoumeow/Resources/Images/Map/spot_2-2.jpg" style="width:100%; height:auto">
+                <img class='lazyload' data-src="/ajoumeow/Resources/Images/Map/spot_2-2.jpg" style="width:100%; height:auto">
               </div>
             </main>
           </div>
@@ -632,7 +643,7 @@
             </header>
             <main class="modal__content" id="spot_2-3-content">
               <div style="position: relative">
-                <img class='lazyload' data-src="/ajoumeyoumeow/Resources/Images/Map/spot_2-3.jpg" style="width:100%; height:auto">
+                <img class='lazyload' data-src="/ajoumeow/Resources/Images/Map/spot_2-3.jpg" style="width:100%; height:auto">
               </div>
             </main>
           </div>
@@ -647,7 +658,7 @@
             </header>
             <main class="modal__content" id="spot_2-4-content">
               <div style="position: relative">
-                <img class='lazyload' data-src="/ajoumeyoumeow/Resources/Images/Map/spot_2-4.jpg" style="width:100%; height:auto">
+                <img class='lazyload' data-src="/ajoumeow/Resources/Images/Map/spot_2-4.jpg" style="width:100%; height:auto">
               </div>
             </main>
           </div>
@@ -662,7 +673,7 @@
             </header>
             <main class="modal__content" id="spot_3-1-content">
               <div style="position: relative">
-                <img class='lazyload' data-src="/ajoumeyoumeow/Resources/Images/Map/spot_3-1.jpg" style="width:100%; height:auto">
+                <img class='lazyload' data-src="/ajoumeow/Resources/Images/Map/spot_3-1.jpg" style="width:100%; height:auto">
               </div>
             </main>
           </div>
@@ -677,7 +688,7 @@
             </header>
             <main class="modal__content" id="spot_3-2-content">
               <div style="position: relative">
-                <img class='lazyload' data-src="/ajoumeyoumeow/Resources/Images/Map/spot_3-2.jpg" style="width:100%; height:auto">
+                <img class='lazyload' data-src="/ajoumeow/Resources/Images/Map/spot_3-2.jpg" style="width:100%; height:auto">
               </div>
             </main>
           </div>
@@ -692,7 +703,7 @@
             </header>
             <main class="modal__content" id="spot_3-3-content">
               <div style="position: relative">
-                <img class='lazyload' data-src="/ajoumeyoumeow/Resources/Images/Map/spot_3-3.jpg" style="width:100%; height:auto">
+                <img class='lazyload' data-src="/ajoumeow/Resources/Images/Map/spot_3-3.jpg" style="width:100%; height:auto">
               </div>
             </main>
           </div>
@@ -707,7 +718,7 @@
             </header>
             <main class="modal__content" id="spot_3-4-content">
               <div style="position: relative">
-                <img class='lazyload' data-src="/ajoumeyoumeow/Resources/Images/Map/spot_3-4.jpg" style="width:100%; height:auto">
+                <img class='lazyload' data-src="/ajoumeow/Resources/Images/Map/spot_3-4.jpg" style="width:100%; height:auto">
               </div>
             </main>
           </div>
@@ -722,22 +733,22 @@
             </header>
             <main class="modal__content" id="spot_3-5-content">
               <div style="position: relative">
-                <img class='lazyload' data-src="/ajoumeyoumeow/Resources/Images/Map/spot_3-5.jpg" style="width:100%; height:auto">
+                <img class='lazyload' data-src="/ajoumeow/Resources/Images/Map/spot_3-5.jpg" style="width:100%; height:auto">
               </div>
             </main>
           </div>
         </div>
       </div>
     </div>
-    <script src='/ajoumeyoumeow/Resources/Libraries/jquery-3.3.1.min.js'></script>
-    <script src='/ajoumeyoumeow/Resources/Libraries/js.cookie.min.js'></script>
-    <script src='/ajoumeyoumeow/Resources/Libraries/alertify/alertify.min.js'></script>
-    <script src='/ajoumeyoumeow/Resources/Libraries/micromodal/micromodal.min.js'></script>
-    <script src='/ajoumeyoumeow/Resources/Libraries/jquery.rwdImageMaps.min.js'></script>
-    <script src='/ajoumeyoumeow/Resources/Libraries/lazyload.min.js'></script>
-    <script src='/ajoumeyoumeow/Resources/Libraries/contextMenu/jquery.contextMenu.min.js'></script>
-    <script src='/ajoumeyoumeow/Resources/Libraries/contextMenu/jquery.ui.position.min.js'></script>
-    <script src='/ajoumeyoumeow/Resources/main.js'></script>
+    <script src='/ajoumeow/Resources/Libraries/jquery-3.3.1.min.js'></script>
+    <script src='/ajoumeow/Resources/Libraries/js.cookie.min.js'></script>
+    <script src='/ajoumeow/Resources/Libraries/alertify/alertify.min.js'></script>
+    <script src='/ajoumeow/Resources/Libraries/micromodal/micromodal.min.js'></script>
+    <script src='/ajoumeow/Resources/Libraries/jquery.rwdImageMaps.min.js'></script>
+    <script src='/ajoumeow/Resources/Libraries/lazyload.min.js'></script>
+    <script src='/ajoumeow/Resources/Libraries/contextMenu/jquery.contextMenu.min.js'></script>
+    <script src='/ajoumeow/Resources/Libraries/contextMenu/jquery.ui.position.min.js'></script>
+    <script src='/ajoumeow/Resources/main.js'></script>
     <script type="text/javascript" src="//wcs.naver.net/wcslog.js"></script>
     <script type="text/javascript">
       if(!wcs_add) var wcs_add = {};

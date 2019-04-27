@@ -1,4 +1,4 @@
-[calculator.js](https://github.com/luftaquila/ajoumeyoumeow/blob/master/calculator/calculator.js)
+[calculator.js](https://github.com/luftaquila/ajoumeow/blob/master/calculator/calculator.js)
 =============
 급식인증기 동작을 제어하는 스크립트 파일입니다.
 

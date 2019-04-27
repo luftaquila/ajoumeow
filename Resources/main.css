@@ -85,7 +85,7 @@ ul.tabs li.current {
 }
 
 .ext {
-  background: url(/ajoumeyoumeow/Resources/Images/Resized/external.png) no-repeat left center;
+  background: url(/ajoumeow/Resources/Images/Resized/external.png) no-repeat left center;
   padding-left: 14px;
 }
 .popup {
@@ -156,21 +156,21 @@ svg {
 .context-menu-icon-check {
   margin: 0 0 0 17;
   text-align: center;
-  background: url(/ajoumeyoumeow/Resources/Images/check.svg) no-repeat;
+  background: url(/ajoumeow/Resources/Images/check.svg) no-repeat;
   background-size: 13%;
   background-position: 1.4rem;
 }
 .context-menu-icon-del {
   margin: 0 0 0 17;
   text-align: center;
-  background: url(/ajoumeyoumeow/Resources/Images/del.svg) no-repeat;
+  background: url(/ajoumeow/Resources/Images/del.svg) no-repeat;
   background-size: 13%;
   background-position: 1.4rem;
 }
 .context-menu-icon-mod {
   margin: 0 0 0 17;
   text-align: center;
-  background: url(/ajoumeyoumeow/Resources/Images/mod.svg) no-repeat;
+  background: url(/ajoumeow/Resources/Images/mod.svg) no-repeat;
   background-size: 13%;
   background-position: 1.4rem;
 }

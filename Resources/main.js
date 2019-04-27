@@ -10,7 +10,7 @@ function load() {
   $("#latestUpdate").html("Loading...");
   $('svg').addClass('rotating');
   $('#recentUpdate').text($('#version').text() + ' : ' + $('#release').text().substr(0, 10));
-  $('#info').attr('href', '/ajoumeyoumeow/about.html?' + $('#version').html() + '!' + $('#release').html());
+  $('#info').attr('href', '/ajoumeow/about.html?' + $('#version').html() + '!' + $('#release').html());
   $.ajax({
     url: 'https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec',
     type: "GET",
@@ -34,17 +34,6 @@ function load() {
       }
     }
   });
-}
-function transmitter(operationType, targetID, targetName) {
-  var locatorReturn = locator(targetID);
-  var targetDay = locatorReturn[0], targetCourse = locatorReturn[1];
-  var serializedData =
-  //if(operationType == '신청')
-}
-function locator(targetID) {
-  var targetDay = targetID.substr(9, 1), targetCourse = targetID.substr(11, 1);
-  targetDay = new Date(year, 0, 1 + (targetDay % 7) + ((week + Math.floor(targetDay / 7) - 1) * 7) - new Date(year, 0, week * 7).getDay()).format('yyyy. mm. dd');
-  return [targetDay, targetCourse];
 }
 function newYourNameIs(response) {
   var datum = response.split('\n').map((line) => line.split(','))
@@ -74,14 +63,28 @@ function newYourNameIs(response) {
 }
 function setData(table) {
   $("#latestUpdate").html("Latest Update : " + new Date().format("TT hh시 MM분 ss초"));
+  $('#confirmAdmin').click(function() {
+    if($('#adminPW').val() == '0512') {
+      for(var i = 0; i < 21; i++) {
+        for(var j = 0; j < 6; j++) {
+          if(table[i][j]) $('#nameCell_' + i + '_' + j).addClass('reserved');
+          else $('#nameCell_' + i + '_' + j).addClass('notReserved');
+        }
+      }
+      $('#date').text('관리자 모드');
+    }
+    MicroModal.close('admin');
+  });
   var week = new Date().getWeek(), year = new Date().getFullYear();
   for(var i = 0; i < 21; i++) {
     var day = new Date(year, 0, 1 + (i % 7) + ((week + Math.floor(i / 7) - 1) * 7) - new Date(year, 0, week * 7).getDay());
     $('#dateCell_' + i).text(day.format('m/d(ddd)'));
     for(var j = 0; j < 6; j++) {
-      if(table[i][j]) $('#nameCell_' + i + '_' + j).addClass('reserved');
-      else $('#nameCell_' + i + '_' + j).addClass('notReserved');
-      $('#nameCell_' + i + '_' + j).text(table[i][j]);
+      $('#nameCell_' + i + '_' + j).removeClass('reserved notReserved').text(table[i][j]);
+      if(i > (new Date().getDay() || 7) - 2) {
+        if(table[i][j]) $('#nameCell_' + i + '_' + j).addClass('reserved');
+        else $('#nameCell_' + i + '_' + j).addClass('notReserved');
+      }
     }
   }
   $('td:contains(' + new Date().format('m/d(ddd)') + ')').css('backgroundColor', 'greenyellow');
@@ -90,12 +93,10 @@ function setData(table) {
     Cookies.set('versionInfo', $('#version').text(), {expires : 30});
     MicroModal.show('noticeModal');
   }
-  if(Cookies.get('fillName')) $('#submitName').val(Cookies.get('fillName'));
-  else {
+  if(!Cookies.get('fillName')) {
     MicroModal.show('askName');
     $('#nameSubmit').click( function() {
       Cookies.set('fillName', $.trim($('#name').val()), {expires : 365});
-      $('#submitName').val(Cookies.get('fillName'));
       MicroModal.close('askName');
     });
   }
@@ -105,15 +106,57 @@ function setData(table) {
   $('svg').removeClass('rotating');
   $('input').attr('disabled', false);
 }
-function setCalendar(targetDate, targetText, isRainbow) {
+function validator(operationType, targetID, targetName, originalName) {
+  var tomorrow = new Date();
+  tomorrow.setDate(new Date().getDate() + 1);
+  var locatorReturn = locator(targetID), serializedData;
+  var targetDate = locatorReturn[0], targetCourse = locatorReturn[1];
+  if($('#date').text() == '관리자 모드') { transmitter(operationType, targetName, targetDate, targetCourse, originalName); return; }
+  if(targetName == "") alertify.error('이름을 입력하세요.');
+  else if(targetName.indexOf(',') + 1) alertify.error('이름에 콤마(,)는 사용할 수 없습니다.');
+  else if(operationType == '삭제' && targetDate == new Date().format('yyyy-mm-dd'))
+    alertify.error('당일 삭제는 불가능합니다.');
+  else if(operationType == '삭제' && targetDate == tomorrow.format('yyyy-mm-dd') && new Date().getHours() > 17)
+      alertify.error('급식 전일 오후 6시 이후 취소는 불가능합니다.');
+  else transmitter(operationType, targetName, targetDate, targetCourse, originalName);
+}
+function transmitter(operationType, targetName, targetDate, targetCourse, originalName) {
+  $('input').attr('disabled', true);
+  if(originalName) serializedData = "타입=수정&이름=" + originalName + "&날짜=" + targetDate + "&코스=" + targetCourse + "코스&수정 이름=" + $.trim(targetName);
+  else serializedData = "타입=" + operationType + "&이름=" + $.trim(targetName) + "&날짜=" + targetDate + "&코스=" + targetCourse + '코스';
+  alertify.log(operationType + ' 요청 중...');
+  console.log(dataSize(encodeURI(serializedData)) + "B DataSet : " + serializedData);
+  request = $.ajax({
+      type: 'POST',
+      url: "https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec",
+      data: encodeURI(serializedData)
+  });
+  request.done(function() {
+    load();
+    alertify.success('Data Transmitted.');
+    if(operationType == '신청') Cookies.set('fillName', $.trim(targetName), {expires : 365});
+  });
+  request.fail(function(jqXHR, textStatus, errorThrown) { alertify.error('Error - ' + textStatus + errorThrown); });
+  request.always(function() {
+    $('input').attr('disabled', false);
+  });
+}
+function locator(targetID) {
+  var week = new Date().getWeek(), year = new Date().getFullYear();
+  var targetDate = new RegExp(/(?<=\_)[0-9]{1,}(?=\_)/g).exec(targetID);
+  var targetCourse = Math.floor(Number(targetID.substr(targetID.length - 1)) / 2) + 1;
+  targetDate = new Date(year, 0, 1 + (targetDate % 7) + ((week + Math.floor(targetDate / 7) - 1) * 7) - new Date(year, 0, week * 7).getDay()).format('yyyy-mm-dd');
+  return [targetDate, targetCourse];
+}
+function setCalendar(targetDay, targetText, isRainbow) {
   calendarCount += 1;
   try {
-    if(new Date(new Date().getFullYear(), targetDate.substr(0, 1) - 1, targetDate.substr(2, 1)) > new Date()) {
+    if(new Date(new Date().getFullYear(), targetDay.substr(0, 1) - 1, targetDay.substr(2, 1)) > new Date()) {
       if(isRainbow) {
         $('#rainbowBlockBox').css('display', 'block');
-        $('td:contains(' + targetDate + ')').addClass('dogriver');
+        $('td:contains(' + targetDay + ')').addClass('dogriver');
       }
-      $('td:contains(' + targetDate + ')').addClass('cal' + calendarCount);
+      $('td:contains(' + targetDay + ')').addClass('cal' + calendarCount);
       $('.cal' + calendarCount).html(targetText);
     }
   }
@@ -133,20 +176,16 @@ function updateLogDisplayer() {
   }
 }
 function clickEventListener() {
-  $('#icon').click(function() {
-    if($('#adminActive').css('display') == 'inline') $('#adminActive').css('display', 'none');
-    else $('#adminActive').css('display', 'inline');
-  });
-  if(new Date().format('m-d') == '4-1') {
-    addCSS('/ajoumeyoumeow/Resources/April Fools Day/april fools day.css');
-    addScript('/ajoumeyoumeow/Resources/April Fools Day/april fools day.js');
-  }
   if(new Date().getDay() == 0 || new Date().getDay() == 6) {
     $('ul.tabs li').removeClass('current');
     $('#tab-1').removeClass('current');
     $('#tab-2').addClass('current');
     $('li[data-tab="tab-2"]').addClass('current');
   }
+  $('#icon').click(function() {
+    $('#adminPW').val('');
+    MicroModal.show('admin');
+  });
   $('.reload').click(function() { load(); });
   $('#onNoticeClick').click(function() { MicroModal.show('noticeModal'); });
   $('#onRankClick').click(function() { MicroModal.show('rankModal'); });
@@ -158,18 +197,6 @@ function clickEventListener() {
     $(this).addClass('current');
     $("#"+tab_id).addClass('current');
   });
-  $('#modeAdd').click(function() {
-    $('#editBox').css('display', 'none');
-    $('#submit').val('신청하기');
-  });
-  $('#modeEdit').click(function() {
-    $('#editBox').css('display', 'block');
-    $('#submit').val('수정하기');
-  });
-  $('#modeDelete').click(function() {
-    $('#editBox').css('display', 'none');
-    $('#submit').val('삭제하기');
-  });
   $('#rainbowBlock').click(function() {
     if($('#rainbowBlock').prop('checked')) {
       $('.dogriver').removeClass('dogriver');
@@ -179,6 +206,10 @@ function clickEventListener() {
         $('.cal' + i).addClass('dogriver');
       }
     }
+  });
+  $('#delete').click( function() {
+    validator('삭제', deleteData[0], deleteData[1]);
+    MicroModal.close('deleteConfirm');
   });
 }
 function loadWeather() {
@@ -230,9 +261,8 @@ function contextLoader() {
         name: '신청',
         icon: 'check',
         callback: function(itemKey, opt, e) {
-          var targetID = $('.focusing').attr('id');
-          var targetName = $.contextMenu.getInputValues(opt, this.data()).addName;
-          transmitter('신청', targetID, targetName);
+          var targetID = $('.focusing').attr('id'), targetName = $.contextMenu.getInputValues(opt, this.data()).addName;
+          validator('신청', targetID, targetName);
           $(this).removeClass('focusing');
         }
       }
@@ -240,7 +270,7 @@ function contextLoader() {
     events: {
       show: function() {
         $(this).addClass('focusing');
-        setTimeout(function() { $('input[name=context-menu-input-addName]').focus(); }, 1);
+        setTimeout(function() { $('input[name=context-menu-input-addName]').val(Cookies.get('fillName')); }, 1);
       },
       hide: function() { $(this).removeClass('focusing'); }
     }
@@ -257,9 +287,9 @@ function contextLoader() {
         name: '수정',
         icon: 'mod',
         callback: function(itemKey, opt, e) {
-          var targetID = $('.focusing').attr('id');
-          var targetName = $.contextMenu.getInputValues(opt, this.data()).modName;
-          transmitter('수정', targetID, targetName);
+          var targetID = $('.focusing').attr('id'), targetName = $.contextMenu.getInputValues(opt, this.data()).modName;
+          var originalName =  $('.focusing').text();
+          validator('수정', targetID, targetName, originalName);
           $(this).removeClass('focusing');
         }
       },
@@ -268,35 +298,21 @@ function contextLoader() {
         name: '삭제',
         icon: 'del',
         callback: function(itemKey, opt, e) {
-          var targetID = $('.focusing').attr('id');
-          transmitter('삭제', targetID);
-          $(this).removeClass('focusing');
+          var targetID = $('.focusing').attr('id'), targetName =  $('.focusing').text();
+          $('#deleteInfo').html('다음 신청 내역을 삭제합니다.<br><br>' + new Date(locator(targetID)[0]).format('m월 d일 dddd ') + locator(targetID)[1] + '코스<br>' + targetName + ' 회원님');
+          MicroModal.show('deleteConfirm');
+          deleteData = [targetID, targetName];
         }
       }
     },
     events: {
       show: function() {
         $(this).addClass('focusing');
-        setTimeout(function() { $('input[name=context-menu-input-modName]').focus(); }, 1);
+        //setTimeout(function() { $('input[name=context-menu-input-modName]').focus(); }, 1);
       },
       hide: function() { $(this).removeClass('focusing'); }
     }
   });
-}
-function addCSS(href){
- var head = document.getElementsByTagName('head')[0];
- var style = document.createElement('link');
- style.href = href;
- style.type = 'text/css';
- style.rel = 'stylesheet';
- head.append(style);
-}
-function addScript(src){
- var head = document.getElementsByTagName('head')[0];
- var script = document.createElement('script');
- script.src = src;
- script.type = 'text/javascript';
- head.append(script);
 }
 var dateFormat = function () {
   var	token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g,
