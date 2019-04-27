@@ -20,7 +20,7 @@ function onLoad() {
         setTimeout(function verify() {
           var pwPosition = datum.length - 1, pwInput = prompt("Verification Required", "");
           if(pwInput == datum[pwPosition][1] + datum[pwPosition][2]) { isVerified = 1; return; }
-          else if(pwInput == null) { alert("Access Denied"); window.location.href = 'https://luftaquila.github.io/ajoumeyoumeow'; }
+          else if(pwInput == null) { alert("Access Denied"); window.location.href = 'https://luftaquila.github.io/ajoumeow'; }
           else verify();
         }, 100);
       }
