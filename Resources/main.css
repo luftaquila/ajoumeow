@@ -175,3 +175,4 @@ svg {
   background-position: 1.4rem;
 }
 input { margin: 0 0 0 10 }
+#confirmAdmin, #nameSubmit, #icon, .reload, #onNoticeClick, #onRankClick, #onMapClick, #rainbowBlock, #delete, .notReserved, .reserved { cursor: pointer; }
