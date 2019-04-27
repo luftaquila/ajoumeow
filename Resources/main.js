@@ -143,7 +143,7 @@ function transmitter(operationType, targetName, targetDate, targetCourse, origin
 }
 function locator(targetID) {
   var week = new Date().getWeek(), year = new Date().getFullYear();
-  var targetDate = new RegExp(/(?<=\_)[0-9]{1,}(?=\_)/g).exec(targetID);
+  var targetDate = new RegExp(/\d+/).exec(targetID);
   var targetCourse = Math.floor(Number(targetID.substr(targetID.length - 1)) / 2) + 1;
   targetDate = new Date(year, 0, 1 + (targetDate % 7) + ((week + Math.floor(targetDate / 7) - 1) * 7) - new Date(year, 0, week * 7).getDay()).format('yyyy-mm-dd');
   return [targetDate, targetCourse];
