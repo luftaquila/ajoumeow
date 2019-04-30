@@ -149,7 +149,9 @@ function locator(targetID) {
 function setCalendar(targetDay, targetText, isRainbow) {
   calendarCount += 1;
   try {
-    if(new Date(new Date().getFullYear(), targetDay.substr(0, 1) - 1, targetDay.substr(2, 1)) > new Date()) {
+    targetDayNum = targetDay.substr(2, 2);
+    var cel = new Date(new Date().getFullYear(), targetDay.substr(0, 1) - 1, Number(targetDayNum) ? targetDayNum : targetDayNum.substr(0, 1));
+    if(cel > new Date()) {
       if(isRainbow) {
         $('#rainbowBlockBox').css('display', 'block');
         $('td:contains(' + targetDay + ')').addClass('dogriver');
