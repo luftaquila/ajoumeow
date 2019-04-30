@@ -1,0 +1,56 @@
+#thanos { cursor: pointer; }
+.div-hidden {
+  transition: opacity 1.75s ease 0s;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.div-show {
+  transition: opacity 1.5s ease 0s;
+  opacity: 1;
+  visibility: visible;
+}
+
+.div-overlay {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  animation-iteration-count: 1;
+  animation-duration: 1.5s;
+  visibility: hidden;
+}
+
+.div-overlay-left {
+  animation-name: slide-left;
+}
+
+.div-overlay-right {
+  animation-name: slide-right;
+}
+
+@keyframes slide-left {
+  from {
+    left: 0;
+    opacity: 1;
+    visibility: visible;
+  }
+  to {
+    left: -30px;
+    opacity: 0;
+  }
+}
+
+@keyframes slide-right {
+  from {
+    left: 0;
+    opacity: 1;
+    visibility: visible;
+  }
+  to {
+    left: 30px;
+    opacity: 0;
+  }
+}
