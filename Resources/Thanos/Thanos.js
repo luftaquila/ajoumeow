@@ -18,11 +18,15 @@ $(function() {
           }
         }
         var disappearArray = $(document).xpath('//div/table/tbody/tr/td[contains(@class, "disappear")]');
-        for(x in disappearArray) {
-          content = disappearArray[x].innerText;
-          overlayHTML = "<div class=\"div-overlay div-overlay-left\">" + content + "</div>" + "<div class=\"div-overlay div-overlay-right\">" + content + "</div>";
-          disappearArray[x].innerHTML = '<div style="position: relative"><div class="div-hidden">' + content + '</div><div class="div-overlay">' + overlayHTML + '</div></div>';
-        }
+        (function loop(x) {
+          setTimeout(function() {
+            content = disappearArray[disappearArray.length - x - 1].innerText;
+            overlayHTML = "<div class=\"div-overlay div-overlay-left\">" + content + "</div>" + "<div class=\"div-overlay div-overlay-right\">" + content + "</div>";
+            disappearArray[disappearArray.length - x - 1].innerHTML = '<div style="position: relative"><div class="div-hidden">' + content + '</div><div class="div-overlay">' + overlayHTML + '</div></div>';
+
+            if(--x) loop(x);
+          }, 100);
+        })(disappearArray.length - 1);
       }, 2000);
     }
     else {
