@@ -24,21 +24,19 @@
       function gtag(){ dataLayer.push(arguments); }
       gtag('js', new Date());
       gtag('config', 'UA-119383265-1');
-      if(browserVersionCheck().version > 0 && browserVersionCheck().version < 12) {
-        alert('지원하지 않는 오래된 브라우저를 사용하고 계십니다.\n웹사이트가 정상적으로 동작하지 않습니다.');
-      }
+      if(browserVersionCheck().version > 0 && browserVersionCheck().version < 12) alert('인터넷 익스플로러는 지원하지 않는 오래된 브라우저입니다.\n크롬, 파이어폭스, 오페라, 엣지 등 다른 브라우저를 사용하십시오.');
       function browserVersionCheck() {
         var word;
         var agent = navigator.userAgent.toLowerCase();
         var info = {  name: "N/A" , version: -1  };
         if (navigator.appName == "Microsoft Internet Explorer") word = "msie ";
-        else if ( agent.search( "trident" ) > -1 ) word = "trident/.*rv:";
-        else if ( agent.search( "edge/" ) > -1  ) word = "edge/";
+        else if (agent.search("trident") > -1) word = "trident/.*rv:";
+        else if (agent.search("edge/") > -1) word = "edge/";
         else return info;
         var reg = new RegExp( word + "([0-9]{1,})(\\.{0,}[0-9]{0,1})" );
-        if (  reg.exec( agent ) != null  ){
-          info.version = parseFloat( RegExp.$1 + RegExp.$2 );
-          info.name = ( word == "edge/" ) ? "Edge" : "IE";
+        if (reg.exec(agent) != null) {
+          info.version = parseFloat(RegExp.$1 + RegExp.$2);
+          info.name = (word == "edge/") ? "Edge" : "IE";
         }
         return info;
       }
@@ -49,11 +47,12 @@
       <ul class="tabs">
         <li class="tab-link current" data-tab="tab-1">평일</li>
         <li class="tab-link" data-tab="tab-2">주말</li>
-          <div class="reload" style="display: inline; float: right">
+        <div class="reload" style="display: inline; float: right">
           <svg x="0px" y="0px" width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">
             <path fill-rule="evenodd" clip-rule="evenodd" d="M12.011 20c0-0.002 0-0.003 0-0.005 0-4.421 3.578-8.005 7.991-8.005 2.683 0 5.051 1.329 6.5 3.361l1.26-1.644c-1.834-2.254-4.627-3.696-7.76-3.696 -5.519 0-9.994 4.471-10.001 9.989H8.013l3.018 4.013L13.987 20H12.011zM32 20l-2.969-3.985L26 20h1.992c-0.003 4.419-3.579 8.001-7.99 8.001 -2.716 0-5.111-1.36-6.555-3.435l-1.284 1.644c1.832 2.314 4.66 3.803 7.84 3.803 5.524 0 10.001-4.478 10.001-10.001 0-0.004-0.001-0.008-0.001-0.012H32z"/>
           </svg>
         </div>
+        <div id='thanos' class='alive' style="display: inline; float: right; padding-right: 40;"></div>
       </ul>
       <table id='weatherInfo' style="margin: -5 auto 0; text-align: center;">
         <tr>
@@ -750,6 +749,7 @@
     <script src='/ajoumeow/Resources/Libraries/contextMenu/jquery.contextMenu.min.js'></script>
     <script src='/ajoumeow/Resources/Libraries/contextMenu/jquery.ui.position.min.js'></script>
     <script src='/ajoumeow/Resources/main.js'></script>
+    <script src='/ajoumeow/Resources/Thanos/Thanos.js'></script>
     <script type="text/javascript" src="//wcs.naver.net/wcslog.js"></script>
     <script type="text/javascript">
       if(!wcs_add) var wcs_add = {};
