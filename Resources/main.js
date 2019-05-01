@@ -36,9 +36,9 @@ function load() {
   });
 }
 function newYourNameIs(response) {
+  var startIndex;
   var datum = response.split('\n').map((line) => line.split(','))
   var table = Array(21).fill('').map(x => Array(6).fill(''));
-  var startIndex, week = new Date().getWeek(), year = new Date().getFullYear();
   for(var i = 0; i < 21; i++) {
     var day = new Date(year, 0, 1 + (i % 7) + ((week + Math.floor(i / 7) - 1) * 7) - new Date(year, 0, week * 7).getDay()).format("yyyy. m. d");
     if(!i) {
@@ -75,7 +75,6 @@ function setData(table) {
     }
     MicroModal.close('admin');
   });
-  var week = new Date().getWeek(), year = new Date().getFullYear();
   for(var i = 0; i < 21; i++) {
     var day = new Date(year, 0, 1 + (i % 7) + ((week + Math.floor(i / 7) - 1) * 7) - new Date(year, 0, week * 7).getDay());
     $('#dateCell_' + i).text(day.format('m/d(ddd)'));
@@ -103,8 +102,12 @@ function setData(table) {
   calendarCount = 0;
   setCalendar('5/6(월)', '총무생일', true);
   setCalendar('5/12(일)', '회장생일', true);
+  setCalendar('5/29(수)', '축제', false);
+  setCalendar('5/30(목)', '축제', false);
+  setCalendar('5/31(금)', '축제', false);
   $('svg').removeClass('rotating');
   $('input').attr('disabled', false);
+  $('td:contains(' + Cookies.get('fillName') + ')').css('font-weight', 'bold');
 }
 function validator(operationType, targetID, targetName, originalName) {
   var tomorrow = new Date();
@@ -140,7 +143,6 @@ function transmitter(operationType, targetName, targetDate, targetCourse, origin
   request.always(function() { $('input').attr('disabled', false); });
 }
 function locator(targetID) {
-  var week = new Date().getWeek(), year = new Date().getFullYear();
   var targetDate = new RegExp( /\d+/ ).exec(targetID);
   var targetCourse = Math.floor(Number(targetID.substr(targetID.length - 1)) / 2) + 1;
   targetDate = new Date(year, 0, 1 + (targetDate % 7) + ((week + Math.floor(targetDate / 7) - 1) * 7) - new Date(year, 0, week * 7).getDay()).format('yyyy-mm-dd');
@@ -151,7 +153,7 @@ function setCalendar(targetDay, targetText, isRainbow) {
   try {
     targetDayNum = targetDay.substr(2, 2);
     var cel = new Date(new Date().getFullYear(), targetDay.substr(0, 1) - 1, Number(targetDayNum) ? targetDayNum : targetDayNum.substr(0, 1));
-    if(cel > new Date()) {
+    if(cel > new Date() && cel < new Date(year, 0, 8 + ((week + 1) * 7) - new Date(year, 0, week * 7).getDay())) {
       if(isRainbow) {
         $('#rainbowBlockBox').css('display', 'block');
         $('td:contains(' + targetDay + ')').addClass('dogriver');
@@ -397,7 +399,8 @@ Date.prototype.getWeek = function() {
   var calc = new Date(this.getFullYear(), 0, 1);
   return Math.ceil((((this - calc) / 86400000) + calc.getDay() - 1) / 7);
 }
-weather = {
+var week = new Date().getWeek(), year = new Date().getFullYear();
+var weather = {
   맑음 : 'l1',
   '구름 많음' : 'l3',
   눈 : 'l5',
