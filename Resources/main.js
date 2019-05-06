@@ -152,8 +152,8 @@ function setCalendar(targetDay, targetText, isRainbow) {
   calendarCount += 1;
   try {
     targetDayNum = targetDay.substr(2, 2);
-    var cel = new Date(new Date().getFullYear(), targetDay.substr(0, 1) - 1, Number(targetDayNum) ? targetDayNum : targetDayNum.substr(0, 1));
-    if(cel > new Date() && cel < new Date(year, 0, 8 + ((week + 1) * 7) - new Date(year, 0, week * 7).getDay())) {
+    var cel = new Date(year, targetDay.substr(0, 1) - 1, Number(targetDayNum) ? targetDayNum : targetDayNum.substr(0, 1));
+    if(cel >= new Date(new Date(new Date().format('yyyy-mm-dd')) - 9 * 3600 * 1000) && cel < new Date(year, 0, 8 + ((week + 1) * 7) - new Date(year, 0, week * 7).getDay())) {
       if(isRainbow) {
         $('#rainbowBlockBox').css('display', 'block');
         $('td:contains(' + targetDay + ')').addClass('dogriver');
