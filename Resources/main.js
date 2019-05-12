@@ -41,13 +41,7 @@ function newYourNameIs(response) {
   var table = Array(21).fill('').map(x => Array(6).fill(''));
   for(var i = 0; i < 21; i++) {
     var day = new Date(year, 0, 1 + (i % 7) + ((week + Math.floor(i / 7) - 1) * 7) - new Date(year, 0, week * 7).getDay()).format("yyyy. m. d");
-    if(!i) {
-      for(var index in datum) {
-        if(day == datum[index][1]) {
-          startIndex = index; break;
-        }
-      }
-    }
+    if(!i) { for(var index in datum) { if(day == datum[index][1]) { startIndex = index; break; } } }
     while(datum[startIndex][1] == day) {
       for(var j = 1; j <= 3; j++) {
         if(datum[startIndex][2].includes(String(j))) {

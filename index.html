@@ -2,8 +2,8 @@
   <head>
     <title>아주대학교 고양이는 미유미유</title>
     <link rel="shortcut icon" type="image/x-icon" href="/ajoumeow/Resources/Images/Resized/meyoumeow.ico" />
-    <a id='version' style="display: none;">v7.0.0 β</a>
-    <a id='release' style="display: none;">2019-05-11 03:10 AM</a>
+    <a id='version' style="display: none;">v7.0.0</a>
+    <a id='release' style="display: none;">2019-05-12 03:05 PM</a>
     <link rel="stylesheet" href="/ajoumeow/Resources/Libraries/alertify/alertify.core.css" />
     <link rel="stylesheet" href="/ajoumeow/Resources/Libraries/alertify/alertify.default.css" id="toggleCSS" />
     <link rel="stylesheet" href="/ajoumeow/Resources/Libraries/micromodal/micromodal.min.css" />
@@ -55,7 +55,7 @@
         </div>
         <div id='thanos' class='alive' style="display: inline; float: right; padding-right: 40;"></div>
       </ul>
-      <table id='weatherInfo' style="margin: -1 auto 10; text-align: center;">
+      <table id='weatherInfo' style="margin: -1 auto 3; text-align: center;">
         <tr>
           <td id='date' style="text-align: center; font-size: 0.85rem; font-weight: bold; padding: 5 0 0" colspan="3" rowspan="2"></td>
           <td id='icon' oncontextmenu="return false" rowspan="2" style="-webkit-touch-callout:none; padding: 10 0 0"></td>
@@ -353,9 +353,7 @@
         <a id='info' class="ext" href="" style="color: #0366d6;">About</a>&nbsp;&nbsp;
         <a class="ext" target='_blank' href="https://docs.google.com/spreadsheets/d/1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A/edit?usp=sharing" style="color:#0366d6">Sheet</a>&nbsp;&nbsp;
         <a class="ext" href="/ajoumeow/calculator" style="color: #0366d6;">Calc</a><br><span style="font-size:0.4rem"><br></span>
-        주말/평일 표를 전환하려면 좌우로 슬라이드하세요.<br><span style="line-height: 50%"><br></span>
-        사이트 관리자를 상시 모집합니다.<br>
-        야! 나도 할 수 있다! 사이트 관리자!
+        주말/평일 표를 전환하려면 좌우로 슬라이드하세요.
       </div>
     </div>
     <div id='modals'>
@@ -490,11 +488,14 @@
               <div id='noticeContainer' style="font-size: 0.8rem; text-align: center">
                 <span style="font-size: 0.9rem">
                   <a href="https://github.com/luftaquila/ajoumeow" style="color: #0366d6">사용설명서</a>
+                  <br>사이트 관리자를 상시 모집합니다.<br>
+                  야! 나도 할 수 있다! 사이트 관리자!
                 </span><br><br>
                 <span style='font-weight:bold; font-size: 0.9rem'>업데이트 알림<br></span>
                 <span id='recentUpdate' style="font-weight:bold"></span><br>
                 <span id='recentUpdateContent'>
-                  BETA RELEASE v7.0.0
+                  평일/주말 탭을 하나로 합쳤습니다.<br>
+                  급식 탭에서 좌우로 스와이프하면 표가 전환됩니다.
                 </span><span style="line-height:50%"><br><br></span>
                 <span id='toggle' style="color:#0366d6" onclick="updateLogDisplayer()">▼ 업데이트 로그 보기</span><br><span style="line-height:50%"><br></span>
                 <div id='more' style="display: none">
