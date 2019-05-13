@@ -74,13 +74,13 @@ function setData(table) {
     $('#dateCell_' + i).text(day.format('m/d(ddd)'));
     for(var j = 0; j < 6; j++) {
       $('#nameCell_' + i + '_' + j).removeClass('reserved notReserved').text(table[i][j]);
-      if(i > (new Date().getDay() || 7) - 2) {
+      if(i > (today.getDay() || 7) - 2) {
         if(table[i][j]) $('#nameCell_' + i + '_' + j).addClass('reserved');
         else $('#nameCell_' + i + '_' + j).addClass('notReserved');
       }
     }
   }
-  $('td:contains(' + new Date().format('m/d(ddd)') + ')').css('backgroundColor', 'greenyellow');
+  $('td:contains(' + today.format('m/d(ddd)') + ')').css('backgroundColor', 'greenyellow');
   for(var i = 0; i < 7; i++) $("#dateCell_" + i).css("color", "#000000");
   if(Cookies.get('versionInfo') != $('#version').text()) {
     Cookies.set('versionInfo', $('#version').text(), {expires : 30});
@@ -111,7 +111,7 @@ function validator(operationType, targetID, targetName, originalName) {
   if($('#date').text() == '관리자 모드') { transmitter(operationType, targetName, targetDate, targetCourse, originalName); return; }
   if(targetName == "") alertify.error('이름을 입력하세요.');
   else if(targetName.indexOf(',') + 1) alertify.error('이름에 콤마(,)는 사용할 수 없습니다.');
-  else if(operationType == '삭제' && targetDate == new Date().format('yyyy-mm-dd'))
+  else if(operationType == '삭제' && targetDate == today.format('yyyy-mm-dd'))
     alertify.error('당일 삭제는 불가능합니다.');
   else if(operationType == '삭제' && targetDate == tomorrow.format('yyyy-mm-dd') && new Date().getHours() > 17)
       alertify.error('급식 전일 오후 6시 이후 취소는 불가능합니다.');
@@ -147,7 +147,7 @@ function setCalendar(targetDay, targetText, isRainbow) {
   try {
     targetDayNum = targetDay.substr(2, 2);
     var cel = new Date(year, targetDay.substr(0, 1) - 1, Number(targetDayNum) ? targetDayNum : targetDayNum.substr(0, 1));
-    if(cel >= new Date(new Date(new Date().format('yyyy-mm-dd')) - 9 * 3600 * 1000) && cel < new Date(year, 0, 8 + ((week + 1) * 7) - new Date(year, 0, week * 7).getDay())) {
+    if(cel >= new Date(new Date(today.format('yyyy-mm-dd')) - 9 * 3600 * 1000) && cel < new Date(year, 0, 8 + ((week + 1) * 7) - new Date(year, 0, week * 7).getDay())) {
       if(isRainbow) {
         $('#rainbowBlockBox').css('display', 'block');
         $('td:contains(' + targetDay + ')').addClass('dogriver');
@@ -172,7 +172,7 @@ function updateLogDisplayer() {
   }
 }
 function eventListener() {
-  if(new Date().getDay() == 0 || new Date().getDay() == 6) {
+  if(today.getDay() == 0 || today.getDay() == 6) {
     $('#weekDays').addClass('table-leave-left').removeClass('table-show');
     $('#weekEnds').addClass('table-enter-right').addClass('table-show');
     setTimeout(function() {
@@ -239,7 +239,7 @@ function loadWeather() {
     cache: false,
     success: function (response) {
       $('#temp').html('&nbsp;' + (response.main.temp - 273.15).toFixed(1) + '°C');
-      $('#date').html('&nbsp;&nbsp;' + new Date().format('m월 d일 dddd'));
+      $('#date').html('&nbsp;&nbsp;' + today.format('m월 d일 dddd'));
     }
   });
   $.ajax({
@@ -416,7 +416,7 @@ Date.prototype.getWeek = function() {
   var calc = new Date(this.getFullYear(), 0, 1);
   return Math.ceil((((this - calc) / 86400000) + calc.getDay() - 1) / 7);
 }
-var week = new Date().getWeek(), year = new Date().getFullYear();
+var today = new Date(), week = new Date().getWeek(), year = new Date().getFullYear();
 var weather = {
   맑음 : 'l1',
   '구름 많음' : 'l3',
