@@ -1,7 +1,7 @@
 아주대학교 고양이는 미유미유
 =================
 
-미유미유 급식일정관리 시스템 간단 사용설명서
+미유미유 급식일정관리 시스템 간단 사용설명서  
 상세 사용설명서는 [MANUAL.md](https://github.com/luftaquila/ajoumeow/blob/master/Markdown/MANUAL.md)를 참조하세요.
 
 ## 1. 급식표 사용하기
