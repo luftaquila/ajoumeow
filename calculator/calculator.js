@@ -12,7 +12,7 @@ function onLoad() {
     cache: false,
     success: function (response) {
       datum = response.split('\n').map((line) => line.split(','));
-      datum.push(['11', '11', '11']);
+      datum.push(['99', '05', '12']);
       $('#status').css('color', '#15be00');
       $('#status').text('200 Ready. ' + (dataSize(response) / 1000).toFixed(1) + 'KB Loaded');
       $('input').attr('disabled', false);
