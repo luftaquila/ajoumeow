@@ -176,7 +176,6 @@ svg {
 }
 
 input { margin: 0 0 0 10 }
-#confirmAdmin, #nameSubmit, #icon, #onNoticeClick, #onRankClick, #onMapClick, #rainbowBlock, #delete, .notReserved, .reserved, .reload, { cursor: pointer; }
 
 .feedTable {
   position: absolute;
