@@ -10,7 +10,7 @@ function volunteerMaker() {
 
   var dataArray = [], nameAssigned = ['start'];
 
-  volSheet.deleteRows(3, volSheet.getLastRow() - 2);
+  volSheet.deleteRows(4, volSheet.getLastRow() - 3);
 
   for(i in receiverData) {
     if(Number(Utilities.formatDate(receiverData[i][0], "GMT+09:00", "yyyy. MM. dd").substring(0, 4)) == targetYear && Number(Utilities.formatDate(receiverData[i][0], "GMT+09:00", "yyyy. MM. dd").substring(6, 8)) == targetMonth && receiverData[i][2] != "수동 입력") {
@@ -37,8 +37,8 @@ function volunteerMaker() {
     }
 
     if(flag) {
-      volSheet.getRange('D' + (2 + flag)).setValue(dataArray[i][1]);
-      volSheet.getRange(2 + flag, 5 + targetDate).setValue(Number(volSheet.getRange(2 + flag, 5 + targetDate).getValue()) + 1);
+      volSheet.getRange('D' + (3 + flag)).setValue(dataArray[i][1]);
+      volSheet.getRange(3 + flag, 5 + targetDate).setValue(Number(volSheet.getRange(3 + flag, 5 + targetDate).getValue()) + 1);
     }
     else {
       var targetRow = volSheet.getLastRow() + 1;
@@ -49,7 +49,7 @@ function volunteerMaker() {
   }
 
   var nameList = doc.getSheetByName(volSheet.getRange('AE1').getValue()).getRange('D2:G').getValues();
-  volSheet.getRange('E3:E').setNumberFormat('@');
+  volSheet.getRange('E4:E').setNumberFormat('@');
 
   for(i in nameAssigned) {
     var flag;
@@ -62,21 +62,21 @@ function volunteerMaker() {
     }
     if(Number(i) && flag) {
       var scoreSum = 0;
-      var scoreBoard = volSheet.getRange(2 + Number(i), 6, 1, 31).getValues()[0];
+      var scoreBoard = volSheet.getRange(3 + Number(i), 6, 1, 31).getValues()[0];
       for(var j in scoreBoard) {
         scoreSum += Number(scoreBoard[j]);
       }
-      volSheet.getRange('AK' + (2 + Number(i))).setValue(scoreSum);
-      volSheet.getRange('C' + (2 + Number(i))).setValue(nameList[flag - 1][3]);
-      volSheet.getRange('E' + (2 + Number(i))).setValue(nameList[flag - 1][2]);
+      volSheet.getRange('AK' + (3 + Number(i))).setValue(scoreSum);
+      volSheet.getRange('C' + (3 + Number(i))).setValue(nameList[flag - 1][3]);
+      volSheet.getRange('E' + (3 + Number(i))).setValue(nameList[flag - 1][2]);
     }
   }
 
-  var isAssigned = volSheet.getRange('C3:C').getValues();
+  var isAssigned = volSheet.getRange('C4:C').getValues();
 
   for(i in isAssigned) {
-    volSheet.getRange('B' + (3 + Number(i))).setValue((isAssigned[i] != "") ? 'O' : 'X');
-    volSheet.getRange('A' + (3 + Number(i))).setValue(Number(i) + 1);
+    volSheet.getRange('B' + (4 + Number(i))).setValue((isAssigned[i] != "") ? 'O' : 'X');
+    volSheet.getRange('A' + (4 + Number(i))).setValue(Number(i) + 1);
   }
 
   volSheet.appendRow(['상기와 같이 ' + targetYear + ' 년도 ' + targetMonth + '월 봉사활동을 하였음을 확인합니다.']);
