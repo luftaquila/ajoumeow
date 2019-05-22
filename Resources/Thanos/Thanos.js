@@ -11,7 +11,7 @@ $(function() {
       $('#guntlet').attr('src', '/ajoumeow/Resources/Thanos/alive.gif');
       setTimeout(function() {
         $('#guntlet').attr('src', '/ajoumeow/Resources/Thanos/preview.png');
-        for(var i = 0; i < 21; i++) {
+        for(var i = 0; i < 14; i++) {
           for(var j = 0; j < 3; j++) {
             $('#nameCell_' + i + '_' + Math.floor(Math.random() * 7)).removeClass('appear').addClass('disappear');
           }
