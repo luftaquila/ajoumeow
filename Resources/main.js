@@ -38,8 +38,8 @@ function load() {
 function newYourNameIs(response) {
   var startIndex;
   var datum = response.split('\n').map((line) => line.split(','))
-  var table = Array(21).fill('').map(x => Array(6).fill(''));
-  for(var i = 0; i < 21; i++) {
+  var table = Array(14).fill('').map(x => Array(6).fill(''));
+  for(var i = 0; i < 14; i++) {
     var day = new Date(year, 0, 1 + (i % 7) + ((week + Math.floor(i / 7) - 1) * 7) - new Date(year, 0, week * 7).getDay()).format("yyyy. m. d");
     if(!i) { for(var index in datum) { if(day == datum[index][1]) { startIndex = index; break; } } }
     while(datum[startIndex][1] == day) {
@@ -59,7 +59,7 @@ function setData(table) {
   $("#latestUpdate").html("Latest Update : " + new Date().format("TT hh시 MM분 ss초"));
   $('#confirmAdmin').click(function() {
     if($('#adminPW').val() == '0512') {
-      for(var i = 0; i < 21; i++) {
+      for(var i = 0; i < 14; i++) {
         for(var j = 0; j < 6; j++) {
           if(table[i][j]) $('#nameCell_' + i + '_' + j).addClass('reserved');
           else $('#nameCell_' + i + '_' + j).addClass('notReserved');
@@ -69,7 +69,7 @@ function setData(table) {
     }
     MicroModal.close('admin');
   });
-  for(var i = 0; i < 21; i++) {
+  for(var i = 0; i < 14; i++) {
     var day = new Date(year, 0, 1 + (i % 7) + ((week + Math.floor(i / 7) - 1) * 7) - new Date(year, 0, week * 7).getDay());
     $('#dateCell_' + i).text(day.format('m/d(ddd)'));
     for(var j = 0; j < 6; j++) {
