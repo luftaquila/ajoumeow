@@ -45,8 +45,8 @@
   <body>
     <div class="container">
       <ul class="tabs">
-        <li class="tab-link current" data-tab="tab-1">급식</li>
-        <li class="tab-link" data-tab="tab-2">마음의 소리</li>
+        <li class="tab-link current" data-tab="tab-1">평일</li>
+        <li class="tab-link" data-tab="tab-2">주말</li>
         <div class="reload" style="display: inline; float: right">
           <svg x="0px" y="0px" width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">
             <path fill-rule="evenodd" clip-rule="evenodd" d="M12.011 20c0-0.002 0-0.003 0-0.005 0-4.421 3.578-8.005 7.991-8.005 2.683 0 5.051 1.329 6.5 3.361l1.26-1.644c-1.834-2.254-4.627-3.696-7.76-3.696 -5.519 0-9.994 4.471-10.001 9.989H8.013l3.018 4.013L13.987 20H12.011zM32 20l-2.969-3.985L26 20h1.992c-0.003 4.419-3.579 8.001-7.99 8.001 -2.716 0-5.111-1.36-6.555-3.435l-1.284 1.644c1.832 2.314 4.66 3.803 7.84 3.803 5.524 0 10.001-4.478 10.001-10.001 0-0.004-0.001-0.008-0.001-0.012H32z"/>
@@ -67,7 +67,7 @@
         </tr>
       </table>
       <div id='tab-1' class="tab-content current" style="position:relative">
-        <div id="weekDays" class="feedTable table-show">
+        <div id="weekDays">
           <table class='waffle' cellspacing="0" cellpadding="0" style="margin: 0 auto;">
             <tr>
               <td class="s4" colspan="2" style="width: 15%">이번 주</td>
@@ -177,7 +177,9 @@
             </tr>
           </table>
         </div>
-        <div id="weekEnds" class="feedTable">
+      </div>
+      <div id='tab-2' class="tab-content" style="text-align:center">
+        <div id="weekEnds">
           <table class='waffle' cellspacing="0" cellpadding="0" style="margin: 0 auto;">
             <tr>
               <td class="s4" colspan="2" style="width: 25%">이번 주</td>
@@ -245,13 +247,10 @@
             </tr>
           </table>
         </div>
-        <div id="latestUpdate" style="height:1rem; text-align:right; font-size: 0.7rem; font-family:'Malgun Gothic'; margin:5 0 0 0;">Loading...</div>
-        <div id='rainbowBlockBox' style="height:1rem; text-align:right; font-size: 0.7rem; font-family:'Malgun Gothic'; margin:5 0 0 0; display: none">
-          <label for="rainbowBlock"><input type="checkbox" id="rainbowBlock">무지개가 눈 아파요!</input></label>
-        </div>
       </div>
-      <div id='tab-2' class="tab-content" style="text-align:center">
-        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfsUhEn1iNYkJ7PXUf5VQRO47puwH2lVTN9ugkywY7Oz6PZ0g/viewform?embedded=true" frameborder="0" style="height: 570; margin:20 0 -50">로드 중...</iframe>
+      <div id="latestUpdate" style="height:1rem; text-align:right; font-size: 0.7rem; font-family:'Malgun Gothic'; margin:5 0 0 0;">Loading...</div>
+      <div id='rainbowBlockBox' style="height:1rem; text-align:right; font-size: 0.7rem; font-family:'Malgun Gothic'; margin:5 0 0 0; display: none">
+        <label for="rainbowBlock"><input type="checkbox" id="rainbowBlock">무지개가 눈 아파요!</input></label>
       </div>
       <div id='bottomInfo' style="text-align:center; font-size:0.813rem; font-family:'Malgun Gothic'; margin:10 0 0;">
         <span class='popup' id='onNoticeClick'>Notice</span>&nbsp;&nbsp;&nbsp;
@@ -264,9 +263,8 @@
         <a id='info' class="ext" href="" style="color: #0366d6;">About</a>&nbsp;&nbsp;
         <a class="ext" target='_blank' href="https://docs.google.com/spreadsheets/d/1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A/edit?usp=sharing" style="color:#0366d6">Sheet</a>&nbsp;&nbsp;
         <a class="ext" href="/ajoumeow/calculator" style="color: #0366d6;">Calc</a><br><span style="font-size:0.4rem"><br></span>
-        주말/평일 표를 전환하려면 좌우로 슬라이드하세요.<br><span style="line-height: 50%"><br></span>
-        사이트 관리자 구합니다. 회장이 밥도 사줘요<br>
-        회장 군대가면 사이트 누가 관리하나!
+        <!-- Info Text Here -->
+        
       </div>
     </div>
     <div id='modals'>
@@ -401,7 +399,7 @@
               <div id='noticeContainer' style="font-size: 0.8rem; text-align: center">
                 <span style="font-size: 0.9rem">
                   <a href="https://github.com/luftaquila/ajoumeow" style="color: #0366d6">사용설명서</a>
-                  <br>사이트 관리자를 상시 모집합니다.<br>
+                  <br><br>사이트 관리자를 상시 모집합니다.<br>
                   야! 나도 할 수 있다! 사이트 관리자!
                 </span><br><br>
                 <span style='font-weight:bold; font-size: 0.9rem'>업데이트 알림<br></span>
@@ -681,7 +679,6 @@
     <script src='/ajoumeow/Resources/Libraries/alertify/alertify.min.js'></script>
     <script src='/ajoumeow/Resources/Libraries/micromodal/micromodal.min.js'></script>
     <script src='/ajoumeow/Resources/Libraries/jquery.rwdImageMaps.min.js'></script>
-    <script src='/ajoumeow/Resources/Libraries/jquery.touchSwipe.min.js'></script>
     <script src='/ajoumeow/Resources/Libraries/jquery.ui.ipad.min.js'></script>
     <script src='/ajoumeow/Resources/Libraries/contextMenu/jquery.contextMenu.min.js'></script>
     <script src='/ajoumeow/Resources/Libraries/contextMenu/jquery.ui.position.min.js'></script>
