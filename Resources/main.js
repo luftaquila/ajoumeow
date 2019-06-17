@@ -209,27 +209,6 @@ function eventListener() {
     validator('삭제', deleteData[0], deleteData[1]);
     MicroModal.close('deleteConfirm');
   });
-  $('#tab-1').swipe({
-    swipe: function(event, direction, distance, duration, fingerCount, fingerData) {
-      if($('#weekDays').attr('class').includes('table-show') && direction == 'left') {
-        $('#weekDays').addClass('table-leave-left').removeClass('table-show');
-        $('#weekEnds').addClass('table-enter-right').addClass('table-show');
-        setTimeout(function() {
-          $('.table-leave-left').removeClass('table-leave-left');
-          $('.table-enter-right').removeClass('table-enter-right');
-        }, 200);
-      }
-      else if($('#weekEnds').attr('class').includes('table-show') && direction == 'right'){
-        $('#weekEnds').addClass('table-leave-right').removeClass('table-show');
-        $('#weekDays').addClass('table-enter-left').addClass('table-show');
-        setTimeout(function() {
-          $('.table-leave-right').removeClass('table-leave-right');
-          $('.table-enter-left').removeClass('table-enter-left');
-        }, 200);
-      }
-    },
-    threshold: 20
-  });
 }
 function loadWeather() {
   $.ajax({
