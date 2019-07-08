@@ -2,7 +2,7 @@ $(function() {
   lazyload();
   contextLoader();
   eventListener();
-  loadWeather();
+  howsTheWeather();
   load();
 });
 function load() {
@@ -210,7 +210,7 @@ function eventListener() {
     MicroModal.close('deleteConfirm');
   });
 }
-function loadWeather() {
+function howsTheWeather() {
   $.ajax({
     url: 'https://api.openweathermap.org/data/2.5/weather?id=1835553&APPID=714bbbb9ad184e11c835635e025e301d',
     type: "GET",
@@ -401,6 +401,7 @@ var weather = {
   '구름 많음' : 'l3',
   눈 : 'l5',
   비 : 'l7',
+  소나기 : 'l7',
   흐림 : 'l9',
   '눈/비' : 'l10',
   '구름 조금' : 'l21',
