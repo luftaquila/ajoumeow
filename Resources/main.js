@@ -39,21 +39,24 @@ function newYourNameIs(response) {
   var startIndex;
   var datum = response.split('\n').map((line) => line.split(','))
   var table = Array(14).fill('').map(x => Array(6).fill(''));
-  for(var i = 0; i < 14; i++) {
-    var day = new Date(year, 0, 1 + (i % 7) + ((week + Math.floor(i / 7) - 1) * 7) - new Date(year, 0, week * 7).getDay()).format("yyyy. m. d");
-    if(!i) { for(var index in datum) { if(day == datum[index][1]) { startIndex = index; break; } } }
-    while(datum[startIndex][1] == day) {
-      for(var j = 1; j <= 3; j++) {
-        if(datum[startIndex][2].includes(String(j))) {
-          if(!table[i][2 * (j - 1)]) table[i][2 * (j - 1)] = datum[startIndex][0];
-          else if(!table[i][2 * (j - 1) + 1] && !(datum[startIndex][0] == table[i][2 * (j - 1)])) table[i][2 * (j - 1) + 1] = datum[startIndex][0];
+  try {
+    for(var i = 0; i < 14; i++) {
+      var day = new Date(year, 0, 1 + (i % 7) + ((week + Math.floor(i / 7) - 1) * 7) - new Date(year, 0, week * 7).getDay()).format("yyyy. m. d");
+      if(!i) { for(var index in datum) { if(day == datum[index][1]) { startIndex = index; break; } } }
+      while(datum[startIndex][1] == day) {
+        for(var j = 1; j <= 3; j++) {
+          if(datum[startIndex][2].includes(String(j))) {
+            if(!table[i][2 * (j - 1)]) table[i][2 * (j - 1)] = datum[startIndex][0];
+            else if(!table[i][2 * (j - 1) + 1] && !(datum[startIndex][0] == table[i][2 * (j - 1)])) table[i][2 * (j - 1) + 1] = datum[startIndex][0];
+          }
         }
+        startIndex++;
       }
-      startIndex++;
     }
+    setData(table);
+    console.log('Ready. ' + (dataSize(response) / 1000).toFixed(1) + 'KB Loaded');
   }
-  setData(table);
-  console.log('Ready. ' + (dataSize(response) / 1000).toFixed(1) + 'KB Loaded');
+  catch (e) { }
 }
 function setData(table) {
   $("#latestUpdate").html("Latest Update : " + new Date().format("TT hh시 MM분 ss초"));

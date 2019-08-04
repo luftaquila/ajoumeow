@@ -1,8 +1,10 @@
+신나는 예외처리 19/08/05 03:10
+Exception handling added if unable to find the start day of the week in array datum[] in newYourNameIs() in main.js
 <html>
   <head>
     <title>아주대학교 고양이는 미유미유</title>
     <link rel="shortcut icon" type="image/x-icon" href="/ajoumeow/Resources/Images/Resized/meyoumeow.ico" />
-    <a id='version' style="display: none;">v7.0.2</a>
+    <a id='version' style="display: none;">v7.0.3</a>
     <a id='release' style="display: none;">2019-05-12 03:05 PM</a>
     <link rel="stylesheet" href="/ajoumeow/Resources/Libraries/alertify/alertify.core.css" />
     <link rel="stylesheet" href="/ajoumeow/Resources/Libraries/alertify/alertify.default.css" id="toggleCSS" />
@@ -264,7 +266,7 @@
         <a class="ext" target='_blank' href="https://docs.google.com/spreadsheets/d/1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A/edit?usp=sharing" style="color:#0366d6">Sheet</a>&nbsp;&nbsp;
         <a class="ext" href="/ajoumeow/calculator" style="color: #0366d6;">Calc</a><br><span style="font-size:0.4rem"><br></span>
         <!-- Info Text Here -->
-        
+
       </div>
     </div>
     <div id='modals'>
@@ -399,13 +401,13 @@
               <div id='noticeContainer' style="font-size: 0.8rem; text-align: center">
                 <span style="font-size: 0.9rem">
                   <a href="https://github.com/luftaquila/ajoumeow" style="color: #0366d6">사용설명서</a>
-                  <br><br>사이트 관리자를 상시 모집합니다.<br>
-                  야! 나도 할 수 있다! 사이트 관리자!
                 </span><br><br>
                 <span style='font-weight:bold; font-size: 0.9rem'>업데이트 알림<br></span>
                 <span id='recentUpdate' style="font-weight:bold"></span><br>
                 <span id='recentUpdateContent'>
-                  이제 표에 다음주까지만 표시됩니다. 기존 신청은 유지됩니다.
+                  이제 표에 다음주까지만 표시됩니다. 기존 신청은 유지됩니다.<br>
+                  평일 / 주말 탭을 다시 분리하였습니다.<br><br>
+                  한 주가 바뀌는 시점에서 이후의 급식 신청이 하나도 없을 때<br>사이트가 멈추는 문제를 해결했습니다.
                 </span><span style="line-height:50%"><br><br></span>
                 <span id='toggle' style="color:#0366d6" onclick="updateLogDisplayer()">▼ 업데이트 로그 보기</span><br><span style="line-height:50%"><br></span>
                 <div id='more' style="display: none">
