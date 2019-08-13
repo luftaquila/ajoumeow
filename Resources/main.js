@@ -36,27 +36,31 @@ function load() {
   });
 }
 function newYourNameIs(response) {
-  var startIndex;
+  var startIndex, errCount = 0;
   var datum = response.split('\n').map((line) => line.split(','))
   var table = Array(14).fill('').map(x => Array(6).fill(''));
-  try {
-    for(var i = 0; i < 14; i++) {
-      var day = new Date(year, 0, 1 + (i % 7) + ((week + Math.floor(i / 7) - 1) * 7) - new Date(year, 0, week * 7).getDay()).format("yyyy. m. d");
-      if(!i) { for(var index in datum) { if(day == datum[index][1]) { startIndex = index; break; } } }
-      while(datum[startIndex][1] == day) {
-        for(var j = 1; j <= 3; j++) {
-          if(datum[startIndex][2].includes(String(j))) {
-            if(!table[i][2 * (j - 1)]) table[i][2 * (j - 1)] = datum[startIndex][0];
-            else if(!table[i][2 * (j - 1) + 1] && !(datum[startIndex][0] == table[i][2 * (j - 1)])) table[i][2 * (j - 1) + 1] = datum[startIndex][0];
-          }
-        }
-        startIndex++;
+  for(var i = 0; i < 14; i++) {
+    var day = new Date(year, 0, 1 + (i % 7) + ((week + Math.floor(i / 7) - 1) * 7) - new Date(year, 0, week * 7).getDay());
+    if(!i) { for(var index in datum) { if(day.format("yyyy. m. d") == datum[index][1]) { startIndex = index; break; } } }
+    if(!startIndex) {
+      while(!startIndex && errCount < 14) {
+        day.setDate(day.getDate() + 1);
+        for(var index in datum) { if(day.format("yyyy. m. d") == datum[index][1]) { startIndex = index; break; } }
+        i++; errCount++;
       }
     }
-    setData(table);
-    console.log('Ready. ' + (dataSize(response) / 1000).toFixed(1) + 'KB Loaded');
+    while(datum[startIndex][1] == day.format("yyyy. m. d")) {
+      for(var j = 1; j <= 3; j++) {
+        if(datum[startIndex][2].includes(String(j))) {
+          if(!table[i][2 * (j - 1)]) table[i][2 * (j - 1)] = datum[startIndex][0];
+          else if(!table[i][2 * (j - 1) + 1] && !(datum[startIndex][0] == table[i][2 * (j - 1)])) table[i][2 * (j - 1) + 1] = datum[startIndex][0];
+        }
+      }
+      startIndex++;
+    }
   }
-  catch (e) { }
+  setData(table);
+  console.log('Ready. ' + (dataSize(response) / 1000).toFixed(1) + 'KB Loaded');
 }
 function setData(table) {
   $("#latestUpdate").html("Latest Update : " + new Date().format("TT hh시 MM분 ss초"));
@@ -112,12 +116,13 @@ function validator(operationType, targetID, targetName, originalName) {
   var locatorReturn = locator(targetID), serializedData;
   var targetDate = locatorReturn[0], targetCourse = locatorReturn[1];
   if($('#date').text() == '관리자 모드') { transmitter(operationType, targetName, targetDate, targetCourse, originalName); return; }
-  if(targetName == "") alertify.error('이름을 입력하세요.');
+  if(!targetName) alertify.error('이름을 입력하세요.');
+  else if(!originalName && originalName != undefined) alertify.error('이름을 입력하세요.');
   else if(targetName.indexOf(',') + 1) alertify.error('이름에 콤마(,)는 사용할 수 없습니다.');
   else if(operationType == '삭제' && targetDate == today.format('yyyy-mm-dd'))
-    alertify.error('당일 삭제는 불가능합니다.');
-  else if(operationType == '삭제' && targetDate == tomorrow.format('yyyy-mm-dd') && new Date().getHours() > 17)
-      alertify.error('급식 전일 오후 6시 이후 취소는 불가능합니다.');
+    alertify.error('당일 삭제는 불가능합니다. 대타를 구해 수정해주세요.');
+  /*else if(operationType == '삭제' && targetDate == tomorrow.format('yyyy-mm-dd') && new Date().getHours() > 17)
+      alertify.error('급식 전일 오후 6시 이후 취소는 불가능합니다.');*/
   else transmitter(operationType, targetName, targetDate, targetCourse, originalName);
 }
 function transmitter(operationType, targetName, targetDate, targetCourse, originalName) {
@@ -176,12 +181,10 @@ function updateLogDisplayer() {
 }
 function eventListener() {
   if(today.getDay() == 0 || today.getDay() == 6) {
-    $('#weekDays').addClass('table-leave-left').removeClass('table-show');
-    $('#weekEnds').addClass('table-enter-right').addClass('table-show');
-    setTimeout(function() {
-      $('.table-leave-left').removeClass('table-leave-left');
-      $('.table-enter-right').removeClass('table-enter-right');
-    }, 200);
+    $('ul.tabs li').removeClass('current');
+    $('#tab-1').removeClass('current');
+    $('#tab-2').addClass('current');
+    $('li[data-tab="tab-2"]').addClass('current');
   }
   $('#icon').click(function() {
     $('#adminPW').val('');
