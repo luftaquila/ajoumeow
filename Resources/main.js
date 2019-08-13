@@ -36,27 +36,31 @@ function load() {
   });
 }
 function newYourNameIs(response) {
-  var startIndex;
+  var startIndex, errCount = 0;
   var datum = response.split('\n').map((line) => line.split(','))
   var table = Array(14).fill('').map(x => Array(6).fill(''));
-  try {
-    for(var i = 0; i < 14; i++) {
-      var day = new Date(year, 0, 1 + (i % 7) + ((week + Math.floor(i / 7) - 1) * 7) - new Date(year, 0, week * 7).getDay()).format("yyyy. m. d");
-      if(!i) { for(var index in datum) { if(day == datum[index][1]) { startIndex = index; break; } } }
-      while(datum[startIndex][1] == day) {
-        for(var j = 1; j <= 3; j++) {
-          if(datum[startIndex][2].includes(String(j))) {
-            if(!table[i][2 * (j - 1)]) table[i][2 * (j - 1)] = datum[startIndex][0];
-            else if(!table[i][2 * (j - 1) + 1] && !(datum[startIndex][0] == table[i][2 * (j - 1)])) table[i][2 * (j - 1) + 1] = datum[startIndex][0];
-          }
-        }
-        startIndex++;
+  for(var i = 0; i < 14; i++) {
+    var day = new Date(year, 0, 1 + (i % 7) + ((week + Math.floor(i / 7) - 1) * 7) - new Date(year, 0, week * 7).getDay());
+    if(!i) { for(var index in datum) { if(day.format("yyyy. m. d") == datum[index][1]) { startIndex = index; break; } } }
+    if(!startIndex) {
+      while(!startIndex && errCount < 14) {
+        day.setDate(day.getDate() + 1);
+        for(var index in datum) { if(day.format("yyyy. m. d") == datum[index][1]) { startIndex = index; break; } }
+        i++; errCount++;
       }
     }
-    setData(table);
-    console.log('Ready. ' + (dataSize(response) / 1000).toFixed(1) + 'KB Loaded');
+    while(datum[startIndex][1] == day.format("yyyy. m. d")) {
+      for(var j = 1; j <= 3; j++) {
+        if(datum[startIndex][2].includes(String(j))) {
+          if(!table[i][2 * (j - 1)]) table[i][2 * (j - 1)] = datum[startIndex][0];
+          else if(!table[i][2 * (j - 1) + 1] && !(datum[startIndex][0] == table[i][2 * (j - 1)])) table[i][2 * (j - 1) + 1] = datum[startIndex][0];
+        }
+      }
+      startIndex++;
+    }
   }
-  catch (e) { }
+  setData(table);
+  console.log('Ready. ' + (dataSize(response) / 1000).toFixed(1) + 'KB Loaded');
 }
 function setData(table) {
   $("#latestUpdate").html("Latest Update : " + new Date().format("TT hh시 MM분 ss초"));
