@@ -181,12 +181,10 @@ function updateLogDisplayer() {
 }
 function eventListener() {
   if(today.getDay() == 0 || today.getDay() == 6) {
-    $('#weekDays').addClass('table-leave-left').removeClass('table-show');
-    $('#weekEnds').addClass('table-enter-right').addClass('table-show');
-    setTimeout(function() {
-      $('.table-leave-left').removeClass('table-leave-left');
-      $('.table-enter-right').removeClass('table-enter-right');
-    }, 200);
+    $('ul.tabs li').removeClass('current');
+    $('#tab-1').removeClass('current');
+    $('#tab-2').addClass('current');
+    $('li[data-tab="tab-2"]').addClass('current');
   }
   $('#icon').click(function() {
     $('#adminPW').val('');
