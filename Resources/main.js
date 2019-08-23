@@ -116,12 +116,13 @@ function validator(operationType, targetID, targetName, originalName) {
   var locatorReturn = locator(targetID), serializedData;
   var targetDate = locatorReturn[0], targetCourse = locatorReturn[1];
   if($('#date').text() == '관리자 모드') { transmitter(operationType, targetName, targetDate, targetCourse, originalName); return; }
-  if(targetName == "") alertify.error('이름을 입력하세요.');
+  if(!targetName) alertify.error('이름을 입력하세요.');
+  else if(!originalName && originalName != undefined) alertify.error('이름을 입력하세요.');
   else if(targetName.indexOf(',') + 1) alertify.error('이름에 콤마(,)는 사용할 수 없습니다.');
   else if(operationType == '삭제' && targetDate == today.format('yyyy-mm-dd'))
-    alertify.error('당일 삭제는 불가능합니다.');
-  else if(operationType == '삭제' && targetDate == tomorrow.format('yyyy-mm-dd') && new Date().getHours() > 17)
-      alertify.error('급식 전일 오후 6시 이후 취소는 불가능합니다.');
+    alertify.error('당일 삭제는 불가능합니다. 대타를 구해 수정해주세요.');
+  /*else if(operationType == '삭제' && targetDate == tomorrow.format('yyyy-mm-dd') && new Date().getHours() > 17)
+      alertify.error('급식 전일 오후 6시 이후 취소는 불가능합니다.');*/
   else transmitter(operationType, targetName, targetDate, targetCourse, originalName);
 }
 function transmitter(operationType, targetName, targetDate, targetCourse, originalName) {
