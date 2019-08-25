@@ -102,11 +102,9 @@ function setData(table) {
     });
   }
   calendarCount = 0;
-  setCalendar('5/6(월)', '총무생일', true);
-  setCalendar('5/12(일)', '회장생일', true);
-  setCalendar('5/29(수)', '축제', false);
-  setCalendar('5/30(목)', '축제', false);
-  setCalendar('5/31(금)', '축제', false);
+  setCalendar('9/2(월)', '개강', true);
+  setCalendar('1/4(토)', '회장생일', true);
+
   $('svg').removeClass('rotating');
   $('input').attr('disabled', false);
   $('td:contains(' + Cookies.get('fillName') + ')').css('font-weight', 'bold');
