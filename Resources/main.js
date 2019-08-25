@@ -102,7 +102,7 @@ function setData(table) {
     });
   }
   calendarCount = 0;
-  setCalendar('9/2(월)', '개강', true);
+  setCalendar('9/2(월)', '★개강★', true);
   setCalendar('1/4(토)', '회장생일', true);
 
   $('svg').removeClass('rotating');
