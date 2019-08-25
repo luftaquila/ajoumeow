@@ -49,14 +49,15 @@ function newYourNameIs(response) {
         i++; errCount++;
       }
     }
-    while(datum[startIndex][1] == day.format("yyyy. m. d")) {
-      for(var j = 1; j <= 3; j++) {
-        if(datum[startIndex][2].includes(String(j))) {
-          if(!table[i][2 * (j - 1)]) table[i][2 * (j - 1)] = datum[startIndex][0];
-          else if(!table[i][2 * (j - 1) + 1] && !(datum[startIndex][0] == table[i][2 * (j - 1)])) table[i][2 * (j - 1) + 1] = datum[startIndex][0];
-        }
+    if(startIndex) {
+      while(datum[startIndex][1] == day.format("yyyy. m. d")) {
+        for(var j = 1; j <= 3; j++) {
+          if(datum[startIndex][2].includes(String(j))) {
+            if(!table[i][2 * (j - 1)]) table[i][2 * (j - 1)] = datum[startIndex][0];
+            else if(!table[i][2 * (j - 1) + 1] && !(datum[startIndex][0] == table[i][2 * (j - 1)])) table[i][2 * (j - 1) + 1] = datum[startIndex][0];
+          }
+        } startIndex++;
       }
-      startIndex++;
     }
   }
   setData(table);
@@ -189,6 +190,7 @@ function eventListener() {
   $('#icon').click(function() {
     $('#adminPW').val('');
     MicroModal.show('admin');
+    $('#adminPW').focus();
   });
   $('.reload').click(function() { load(); });
   $('#onNoticeClick').click(function() { MicroModal.show('noticeModal'); });
