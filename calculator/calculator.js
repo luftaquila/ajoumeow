@@ -1,7 +1,6 @@
-isVerified = 0;
 $(function() { onLoad(); });
 function onLoad() {
-  data = [], datum = [];
+  data = [], datum = [], errorCount = 0;
   $('#status').css('color', '#ffbf00');
   $('#status').text('Loading Data...');
   $('input').attr('disabled', true);
@@ -12,18 +11,13 @@ function onLoad() {
     cache: false,
     success: function (response) {
       datum = response.split('\n').map((line) => line.split(','));
-      datum.push(['99', '05', '12']);
       $('#status').css('color', '#15be00');
       $('#status').text('200 Ready. ' + (dataSize(response) / 1000).toFixed(1) + 'KB Loaded');
       $('input').attr('disabled', false);
-      if(!isVerified) {
-        setTimeout(function verify() {
-          var pwPosition = datum.length - 1, pwInput = prompt("Verification Required", "");
-          if(pwInput == datum[pwPosition][1] + datum[pwPosition][2]) { isVerified = 1; return; }
-          else if(pwInput == null) { alert("Access Denied"); window.location.href = 'https://luftaquila.github.io/ajoumeow'; }
-          else verify();
-        }, 100);
-      }
+
+      MicroModal.show('admin');
+      $('#adminPW').focus();
+
       $.ajax({
         url: 'https://docs.google.com/spreadsheet/pub?key=1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A&single=true&gid=513873447&sheet=Receiver&range=A:D&output=csv',
         type: "GET",
@@ -35,6 +29,17 @@ function onLoad() {
         }
       });
       load();
+    }
+  });
+  $('#confirmAdmin').click(function() {
+    if($('#adminPW').val() == '0512') MicroModal.close('admin');
+    else {
+      errorCount++;
+      if(errorCount > 4) { alert('Access Denied'); window.location.href = '/ajoumeow'; }
+      else {
+        $('#modalText').text('비밀번호 오류 ' + errorCount + '회');
+        $('#adminPW').focus();
+      }
     }
   });
 }
