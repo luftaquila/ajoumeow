@@ -105,6 +105,17 @@ function setData(table) {
   setCalendar('9/2(월)', '★개강★', true);
   setCalendar('1/4(토)', '회장생일', true);
 
+  if(Cookies.get('rainbowBlock')) {
+    $('#rainbowBlock').prop('checked', true);
+    $('.dogriver').removeClass('dogriver');
+  }
+  else {
+    $('#rainbowBlock').prop('checked', false);
+    for(var i = 0; i <= calendarCount; i++ ) {
+      $('.cal' + i).addClass('dogriver');
+    }
+  }
+
   $('svg').removeClass('rotating');
   $('input').attr('disabled', false);
   $('td:contains(' + Cookies.get('fillName') + ')').css('font-weight', 'bold');
@@ -204,11 +215,13 @@ function eventListener() {
   $('#rainbowBlock').click(function() {
     if($('#rainbowBlock').prop('checked')) {
       $('.dogriver').removeClass('dogriver');
+      Cookies.set('rainbowBlock', 'true', {expires : 14});
     }
     else {
       for(var i = 0; i <= calendarCount; i++ ) {
         $('.cal' + i).addClass('dogriver');
       }
+      Cookies.remove('rainbowBlock');
     }
   });
   $('#delete').click( function() {
