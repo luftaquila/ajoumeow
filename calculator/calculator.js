@@ -1,6 +1,6 @@
 $(function() { onLoad(); });
 function onLoad() {
-  data = [], datum = [], errorCount = 0, addCount = 0;
+  data = [], datum = [], errorCount = 0, addCount = 0, mnAddCount = 0;
   $('#status').css('color', '#ffbf00');
   $('#status').text('Loading Data...');
   $('input').attr('disabled', true);
@@ -48,21 +48,28 @@ $("#DATA").submit( function(event) {
   var request;
   if (request) { request.abort(); }
   if($("#nonManual").prop('checked')) {
+    var flag = true;
+    $("input:checkbox[name=add]:checked").each(function() { if(!$.trim($($(this).siblings($('input'))[0]).val())) flag = false; });
     if(!/\d\d\d\d\-\d\d\-\d\d/g.test($("#timestamp").val())) {
       $('#status').css('color', '#da0000');
-      $('#status').text('400 Error - Wrong Input');
+      $('#status').text('Error - Wrong Input');
       $('input').attr('disabled', false);
     }
-    else if($("#list").html() == "" || $("input:checkbox[name=namelist]:checked").length == 0) {
+    else if(!$("input:checkbox[name=namelist]:checked").length && !$("input:checkbox[name=add]:checked").length) {
       $('#status').css('color', '#da0000');
-      $('#status').text('400 Error - No Data');
+      $('#status').text('Error - No Data');
+      $('input').attr('disabled', false);
+    }
+    else if(!flag) {
+      $('#status').css('color', '#da0000');
+      $('#status').text('Error - No Final Data');
       $('input').attr('disabled', false);
     }
     else {
-      var count = 0, date;
+      var count = 0, dateSlicer = $("#timestamp").val().split('-');
+      var date = new Date(dateSlicer[0], dateSlicer[1] - 1, dateSlicer[2]).format('yyyy. m. d');
       $("input:checkbox[name=namelist]:checked").each(function() {
-        var nameSlicer = $.trim($(this).val()).split('/'), dateSlicer = $("#timestamp").val().split('-');
-        date = new Date(dateSlicer[0], dateSlicer[1] - 1, dateSlicer[2]).format('yyyy. m. d');
+        var nameSlicer = $.trim($(this).val()).split('/');
         data[count] = [];
         data[count][0] = nameSlicer[0];
         data[count][1] = nameSlicer[1];
@@ -84,29 +91,47 @@ $("#DATA").submit( function(event) {
     }
   }
   else if($("#Manual").prop('checked')) {
+    var flag = true;
+    $("input:checkbox[name=mnAdd]:checked").each(function() {
+      $($(this).siblings($('input'))).each(function() {
+        if(!$.trim($(this).val())) flag = false;
+      });
+    });
     if(!/\d\d\d\d\-\d\d\-\d\d/g.test($("#timestamp").val())) {
       $('#status').css('color', '#da0000');
-      $('#status').text('400 Error - Wrong Input');
+      $('#status').text('Error - Wrong Input');
       $('input').attr('disabled', false);
     }
-    else if($.trim($("#mnName").val()) == "" || $.trim($("#mnScore").val()) == "") {
+    else if(!$("input:checkbox[name=mnAdd]:checked").length) {
       $('#status').css('color', '#da0000');
-      $('#status').text('400 Error - No Data');
+      $('#status').text('Error - No Data');
+      $('input').attr('disabled', false);
+    }
+    else if(!flag) {
+      $('#status').css('color', '#da0000');
+      $('#status').text('Error - No Final Data');
       $('input').attr('disabled', false);
     }
     else {
       var dateSlicer = $("#timestamp").val().split('-');
       var date = new Date(dateSlicer[0], dateSlicer[1] - 1, dateSlicer[2]).format('yyyy. m. d');
-      var serializedData = "지급 일자=" + date + "&이름=" + $.trim($("#mnName").val()) + "&코스=수동 입력&점수=" + $.trim($("#mnScore").val());
-      transmitter(serializedData, 1);
+      $("input:checkbox[name=mnAdd]:checked").each(function() {
+        var obj = $(this).siblings($('input'));
+        var serializedData = "지급 일자=" + date + "&이름=" + $.trim($(obj[0]).val()) + "&코스=" + $.trim($(obj[2]).val()) + "&점수=" + $(obj[1]).val();
+        transmitter(serializedData, $("input:checkbox[name=mnAdd]:checked").length);
+      });
     }
   }
+  addCount = 0, mnAddCount = 0;
   $("#list").html("");
   $("#booster").html("");
   $("#mnName").val("");
   $("#mnScore").val("");
   $("#timestamp").val("");
+  $('#addSection').html('');
+  $('#mnAddSection').html('');
   $('#add').css('display', 'none');
+  $('#mnadd').css('display', 'none');
   event.preventDefault();
 });
 function scoreProvider(data, date, course, check) {
@@ -124,15 +149,17 @@ function scoreProvider(data, date, course, check) {
   }
 }
 function load() {
-  data = [], addCount = 0;
+  data = [];
   $('#addSection').html('');
+  $('#mnAddSection').html('');
   var currentDate = $("#timestamp").val(), str = "", booster = "";
   if(currentDate) {
     $('#add').css('display', 'block');
+    $('#mnadd').css('display', 'block');
     var dateSlicer = $("#timestamp").val().split('-'), j = 1;
     currentDate = new Date(dateSlicer[0], dateSlicer[1] - 1, dateSlicer[2]).format('yyyy. m. d');
     for(var i = 0; i < datum.length - 1; i++) { if(currentDate == datum[i][1]) { str += '<label for="namelist_' + j + '">' + '<input type="checkbox" checked="checked" name="namelist" id="namelist_' + j + '" value=' + $.trim(datum[i][0]) + "/" + $.trim(datum[i][2]) + '>' + datum[i][0] + " / " + datum[i][2] + "</input></label><br>"; j++; } }
-    if(str != "") { $("#booster").html("<label for='radio'><input type='checkbox' id='boost' value='test'>마일리지 할증</input></label><hr style='width:130px;border-bottom:0px;text-align:left;margin-left:0px'>"); }
+    if(str != "") $("#booster").html("<label for='radio'><input type='checkbox' id='boost' value='test'>마일리지 할증</input></label><hr style='width:130px;border-bottom:0px;text-align:left;margin-left:0px'>");
     else { $("#booster").html(""); }
     $("#list").html(str);
   }
@@ -149,6 +176,8 @@ function transmitter(serializedData, count) {
   request.done(function() {
     $('#status').css('color', '#15be00');
     $('#status').text('201 Transmitted. Ready.');
+    $('#addSection').html('');
+    $('#mnAddSection').html('');
   });
   request.fail(function(jqXHR, textStatus, errorThrown) {
     $('#status').css('color', '#da0000');
@@ -169,6 +198,24 @@ $('#add').click(function() {
   div.append($('<input type="checkbox" checked name="add" id="addlist_' + addCount + '">'));
   div.append($('<input id="addInput_' + addCount + '" style="width: 50" />')).append(' / ');
   div.append($('<select id="addSelect_' + addCount + '"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>')).append(' 코스');
+});
+$('#mnadd').click(function() {
+  mnAddCount++;
+  if(mnAddCount == 2) {
+    $('#mnAddSection').prepend('<span id="autoReason">> 지급 사유 통일하기</span><br><span style="line-height:25%"><br></span>');
+    $('#autoReason').click(function() {
+      var reason = $('#mnAddReason_1').val();
+      $("input:checkbox[name=mnAdd]").each(function() {
+        $($(this).siblings($('input'))[2]).val(reason);
+      });
+    });
+  }
+  var div = $('<div id="mnAddDiv_' + mnAddCount + '"></div>');
+  $('#mnAddSection').append(div);
+  div.append($('<input type="checkbox" checked name="mnAdd" id="mnAddlist_' + mnAddCount + '">'));
+  div.append('이름 : ').append($('<input id="mnAddName_' + mnAddCount + '" style="width: 50" />')).append('&nbsp;&nbsp;');
+  div.append('점수 : ').append($('<input id="mnAddScore_' + mnAddCount + '" style="width: 30" />')).append('&nbsp;&nbsp;');
+  div.append('지급 사유 : ').append($('<input id="mnAddReason_' + mnAddCount + '" style="width: 80" />')).append('&nbsp;&nbsp;');
 });
 window.onclick = function(event) {
   if (event.target == document.getElementById('logModal')) { $('#logModal').css("display", "none"); }
