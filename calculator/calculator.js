@@ -192,7 +192,6 @@ function transmitter(serializedData) {
   request.always(function() {
     $('input').attr('disabled', false);
     $('#timestamp').val('');
-    console.log('clear');
     load();
     $.ajax({
       url: "https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec",
