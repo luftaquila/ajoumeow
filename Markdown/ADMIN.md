@@ -83,7 +83,7 @@
 시트 편집 권한이 필요한 경우 기존 임원진에게 요청하십시오.  
 임원 인수인계 시 기존 임원은 차기 임원을 편집 권한 보유자에 추가해야 합니다.  
 불가피하게 편집 권한 요청이 어려운 경우 시트 최초 생성자에게 요청하세요.  
-연락처는 [사용설명서](https://github.com/luftaquila/ajoumeow/blob/master/Markdown/MANUAL.md#-%EC%9E%85%EB%A0%A5-%ED%95%84%ED%84%B0%EB%A7%81) 최상단에 있습니다.  
+연락처는 [사용설명서](https://github.com/luftaquila/ajoumeow/blob/master/Markdown/MANUAL.md#-%EC%9E%85%EB%A0%A5-%ED%95%84%ED%84%B0%EB%A7%81) 최상단에 있습니다.
 <br>
 
 `Record`, `Receiver`, `Edit Log`, `Statistics`, `NameList`, `1365` 시트가 있습니다.  
