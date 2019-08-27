@@ -2,7 +2,8 @@
 =================
 
 미유미유 급식일정관리 시스템 간단 사용설명서  
-상세 사용설명서는 [MANUAL.md](https://github.com/luftaquila/ajoumeow/blob/master/Markdown/MANUAL.md)를 참조하세요.
+상세 사용설명서는 [MANUAL.md](https://github.com/luftaquila/ajoumeow/blob/master/Markdown/MANUAL.md)를 참조하세요.  
+전산망 관리자용 사용설명서는 [ADMIN.md](https://github.com/luftaquila/ajoumeow/blob/master/Markdown/ADMIN.md)를 참조하세요.  
 
 ## 1. 급식표 사용하기
 * 급식표의 이름 칸을 선택해 급식을 신청 / 수정 / 삭제합니다.
@@ -24,6 +25,5 @@
 * `Rank` : 월별 마일리지 순위를 보여줍니다.
 메뉴에서 *마일리지 현황 보기* 를 누르면 상세 통계를 보여줍니다.
 * `Map` : 각 코스 급식소 위치를 지도에서 보여줍니다.
-* `Printer` : 동방 프린터의 사용 가이드입니다.
 * `Manual` : 사용설명서 페이지로 이동합니다.
 * `About` : 페이지 및 개발자 정보를 보여줍니다.

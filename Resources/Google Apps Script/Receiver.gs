@@ -12,8 +12,33 @@ function handleResponse(e) {
     var nextRow = sheet.getLastRow() + 1;
     var row = [];
     if(e.parameter['점수']) {
-      for (i in headers) { row.push(e.parameter[headers[i]]); }
-      sheet.getRange(nextRow, 1, 1, row.length).setValues([row]);
+      if(e.parameter['타입'] == '인증') {
+        for (i in headers) { row.push(e.parameter[headers[i]]); }
+        sheet.getRange(nextRow, 1, 1, row.length).setValues([row]);
+        sheet.getRange('A2:D').sort([1, 3, 2]);
+      }
+      else if(e.parameter['타입'] == '제거') {
+        var data = sheet.getRange('A2:D').getValues();
+        for (var i = data.length - 1; i >= 0; i--) {
+          if(JSON.stringify(new Date(new Date(e.parameter['날짜']) - 32400000)) == JSON.stringify(data[i][0])) {
+            if(e.parameter['이름'] == data[i][1]) {
+              if(e.parameter['코스'] == data[i][2]) {
+                if(e.parameter['점수'] == data[i][3]) {
+                  sheet.deleteRow(i + 2);
+                  break;
+                } else continue;
+              } else continue;
+            } else continue;
+          } else continue;
+        }
+      }
+      else {
+        var data = sheet.getRange('A2:D').getValues(), csv = "";
+        for (i in data) { csv += Utilities.formatDate(data[i][0], "GMT+09:00", "yyyy. M. d") + ',' + data[i][1] + ',' + data[i][2] + ',' + data[i][3] + '\n'; }
+        return ContentService
+              .createTextOutput(csv)
+              .setMimeType(ContentService.MimeType.CSV);
+      }
     }
     else if(e.parameter['타입'] == '신청') {
       for (i in headers) {
