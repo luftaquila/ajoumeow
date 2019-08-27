@@ -38,7 +38,7 @@
 
 ## 4. validator(operationType, targetID, targetName, originalName)
 신청/수정/삭제 내용에 대한 유효성 검사를 수행합니다.
-* [필터링 조건](https://github.com/luftaquila/ajoumeow#-%EC%9E%85%EB%A0%A5-%ED%95%84%ED%84%B0%EB%A7%81-%EC%A1%B0%EA%B1%B4) 참조
+* [필터링 조건](https://github.com/luftaquila/ajoumeow/blob/master/Markdown/MANUAL.md#-%EC%9E%85%EB%A0%A5-%ED%95%84%ED%84%B0%EB%A7%81) 참조
 
 ## 5. transmitter(submitType)
 신청 및 수정, 삭제 내용을 서버로 전송합니다.
