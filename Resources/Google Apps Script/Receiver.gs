@@ -15,6 +15,7 @@ function handleResponse(e) {
       if(e.parameter['타입'] == '인증') {
         for (i in headers) { row.push(e.parameter[headers[i]]); }
         sheet.getRange(nextRow, 1, 1, row.length).setValues([row]);
+        sheet.getRange('A2:D').sort([1, 3, 2]);
       }
       else if(e.parameter['타입'] == '제거') {
         var data = sheet.getRange('A2:D').getValues();
