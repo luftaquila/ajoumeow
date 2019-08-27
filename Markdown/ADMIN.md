@@ -77,7 +77,7 @@
 
 인증기 동작 알고리즘은 [calculator.js](https://github.com/luftaquila/ajoumeow/tree/master/calculator/README.md) 문서를 확인하세요.
 
-## 2. 구글 스프레드시트 데이터베이스
+## 3. 구글 스프레드시트 데이터베이스
 메인 페이지에서 [Sheet](https://docs.google.com/spreadsheets/d/1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A/edit?usp=sharing)를 눌러 구글 스프레드시트로 이동합니다.  
 <br>
 시트 편집 권한이 필요한 경우 기존 임원진에게 요청하십시오.  
