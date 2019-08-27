@@ -1,6 +1,6 @@
 $(function() { onLoad(); });
 function onLoad() {
-  data = [], datum = [], errorCount = 0;
+  data = [], datum = [], errorCount = 0, addCount = 0;
   $('#status').css('color', '#ffbf00');
   $('#status').text('Loading Data...');
   $('input').attr('disabled', true);
@@ -15,7 +15,7 @@ function onLoad() {
       $('#status').text('200 Ready. ' + (dataSize(response) / 1000).toFixed(1) + 'KB Loaded');
       $('input').attr('disabled', false);
 
-      MicroModal.show('admin');
+      //MicroModal.show('admin');
       $('#adminPW').focus();
 
       $.ajax({
@@ -25,7 +25,7 @@ function onLoad() {
         cache: false,
         success: function (response) {
           var name = response.split('\n').map((line) => line.split(','));
-          $('#latestConfirm').text('마지막 인증 날짜 : ' + name[name.length - 1][0]);
+          $('#latestConfirm').text('마지막 인증 : ' + name[name.length - 1][0]);
         }
       });
       load();
@@ -59,19 +59,26 @@ $("#DATA").submit( function(event) {
       $('input').attr('disabled', false);
     }
     else {
-      var count = 0;
+      var count = 0, date;
       $("input:checkbox[name=namelist]:checked").each(function() {
         var nameSlicer = $.trim($(this).val()).split('/'), dateSlicer = $("#timestamp").val().split('-');
-        var date = new Date(dateSlicer[0], dateSlicer[1] - 1, dateSlicer[2]).format('yyyy. m. d');
+        date = new Date(dateSlicer[0], dateSlicer[1] - 1, dateSlicer[2]).format('yyyy. m. d');
         data[count] = [];
         data[count][0] = nameSlicer[0];
-        data[count][1] = date;
-        data[count][2] = nameSlicer[1];
+        data[count][1] = nameSlicer[1];
         count++;
       });
-      for(var i = 1; i < 4; i++) { scoreProvider(data, i, $("#radio").prop('checked')); }
+      $("input:checkbox[name=add]:checked").each(function() {
+        var obj = $(this).siblings($('input'));
+        if(!$.trim($(obj[0]).val())) return;
+        data[count] = [];
+        data[count][0] = $(obj[0]).val() + '코스';
+        data[count][1] = $(obj[1]).val() + '코스';
+        count++;
+      });
+      for(var i = 1; i < 4; i++) { scoreProvider(data, date, i, $("#boost").prop('checked')); }
       for(var i = 0; i < data.length; i++) {
-        var serializedData = "지급 일자=" + data[i][1] + "&이름=" + data[i][0] + "&코스=" + data[i][2] + "&점수=" + data[i][3];
+        var serializedData = "지급 일자=" + date + "&이름=" + data[i][0] + "&코스=" + data[i][1] + "&점수=" + data[i][2];
         transmitter(serializedData, count);
       }
     }
@@ -95,36 +102,38 @@ $("#DATA").submit( function(event) {
     }
   }
   $("#list").html("");
-  $("#isTest").html("");
+  $("#booster").html("");
   $("#mnName").val("");
   $("#mnScore").val("");
   $("#timestamp").val("");
+  $('#add').css('display', 'none');
   event.preventDefault();
 });
-function scoreProvider(data, course, check) {
+function scoreProvider(data, date, course, check) {
   var low = 1, mid = 1.5, high = 2;
   if(check) { low = 1.5; mid = 2; high = 3; }
-  var dateArray = new Date(data[0][1].replace(/\s/g, '').replace(/\./g, '-'));
-  for(var i = count = 0; i < data.length; i++) { if(data[i][2].includes(course + "코스")) { count++; } }
+  var dateArray = new Date(date.replace(/\s/g, '').replace(/\./g, '-'));
+  for(var i = count = 0; i < data.length; i++) { if(data[i][1].includes(course + "코스")) count++; }
   if(count == 1) {
-    if(dateArray.getDay() == 0 || dateArray.getDay() == 6) { for(var i = 0; i < data.length; i++) { if(data[i][2].includes(course + "코스")) { data[i][3] = high; } } }
-    else { for(var i = 0; i < data.length; i++) { if(data[i][2].includes(course + "코스")) { data[i][3] = mid; } } }
+    if(dateArray.getDay() == 0 || dateArray.getDay() == 6) { for(var i = 0; i < data.length; i++) { if(data[i][1].includes(course + "코스")) { data[i][2] = high; } } }
+    else { for(var i = 0; i < data.length; i++) { if(data[i][1].includes(course + "코스")) data[i][2] = mid; } }
   }
   else {
-    if(dateArray.getDay() == 0 || dateArray.getDay() == 6) { for(var i = 0; i < data.length; i++) { if(data[i][2].includes(course + "코스")) { data[i][3] = mid; } } }
-    else { for(var i = 0; i < data.length; i++) { if(data[i][2].includes(course + "코스")) { data[i][3] = low; } } }
+    if(dateArray.getDay() == 0 || dateArray.getDay() == 6) { for(var i = 0; i < data.length; i++) { if(data[i][1].includes(course + "코스")) { data[i][2] = mid; } } }
+    else { for(var i = 0; i < data.length; i++) { if(data[i][1].includes(course + "코스")) data[i][2] = low; } }
   }
 }
 function load() {
-  data = [];
-  var currentDate = $("#timestamp").val(), str = "", isTest = "";
-  if(currentDate !== null) {
-    var dateSlicer = $("#timestamp").val().split('-');
+  data = [], addCount = 0;
+  $('#addSection').html('');
+  var currentDate = $("#timestamp").val(), str = "", booster = "";
+  if(currentDate) {
+    $('#add').css('display', 'block');
+    var dateSlicer = $("#timestamp").val().split('-'), j = 1;
     currentDate = new Date(dateSlicer[0], dateSlicer[1] - 1, dateSlicer[2]).format('yyyy. m. d');
-    var i = j = 1;
-    for(i = 0; i < datum.length - 1; i++) { if(currentDate == datum[i][1]) { str += '<label for="namelist_' + j + '">' + '<input type="checkbox" checked="checked" name="namelist" id="namelist_' + j + '" value=' + $.trim(datum[i][0]) + "/" + $.trim(datum[i][2]) + '>' + datum[i][0] + " / " + datum[i][2] + "</input></label><br>"; j++; } }
-    if(str != "") { $("#isTest").html("<label for='radio'><input type='checkbox' id='radio' value='test'>마일리지 할증</input></label><hr style='width:130px;border-bottom:0px;text-align:left;margin-left:0px'>"); }
-    else { $("#isTest").html(""); }
+    for(var i = 0; i < datum.length - 1; i++) { if(currentDate == datum[i][1]) { str += '<label for="namelist_' + j + '">' + '<input type="checkbox" checked="checked" name="namelist" id="namelist_' + j + '" value=' + $.trim(datum[i][0]) + "/" + $.trim(datum[i][2]) + '>' + datum[i][0] + " / " + datum[i][2] + "</input></label><br>"; j++; } }
+    if(str != "") { $("#booster").html("<label for='radio'><input type='checkbox' id='boost' value='test'>마일리지 할증</input></label><hr style='width:130px;border-bottom:0px;text-align:left;margin-left:0px'>"); }
+    else { $("#booster").html(""); }
     $("#list").html(str);
   }
 }
@@ -153,6 +162,14 @@ $('#rawLog').click(function() { $('#rawLogModal').css("display", "block"); });
 $('#reload').click(function () { onLoad(); });
 $('#nonManual').click(function() { $("#stdWrapper").show(); $("#mnWrapper").hide(); });
 $('#Manual').click(function() { $("#stdWrapper").hide(); $("#mnWrapper").show(); });
+$('#add').click(function() {
+  addCount++;
+  var div = $('<div id="addDiv_' + addCount + '"></div>');
+  $('#addSection').append(div);
+  div.append($('<input type="checkbox" checked name="add" id="addlist_' + addCount + '">'));
+  div.append($('<input id="addInput_' + addCount + '" style="width: 50" />')).append(' / ');
+  div.append($('<select id="addSelect_' + addCount + '"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>')).append(' 코스');
+});
 window.onclick = function(event) {
   if (event.target == document.getElementById('logModal')) { $('#logModal').css("display", "none"); }
   if (event.target == document.getElementById('rawLogModal')) { $('#rawLogModal').css("display", "none"); }
