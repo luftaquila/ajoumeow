@@ -17,7 +17,8 @@
       <a href="/ajoumeow" style="color:#0366d6;font-size: 0.8rem">Home</a>&nbsp;&nbsp;
       <a href="https://docs.google.com/spreadsheets/d/1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A/edit?usp=sharing" style="color:#0366d6;font-size: 0.8rem">Sheet</a><br><span style="line-height:50%"><br></span>
       <label for='nonManual'><input type='radio' id='nonManual' name='isManual' value="normal" checked='checked' disabled="true">급식 인증</input></label>&nbsp;&nbsp;
-      <label for='Manual'><input type='radio' id='Manual' name='isManual' value='manual' disabled="true">기타 인증</input></label><br><span style="line-height:50%"><br></span>
+      <label for='Manual'><input type='radio' id='Manual' name='isManual' value='manual' disabled="true">기타 인증</input></label>&nbsp;&nbsp;
+      <label for='delete'><input type='radio' id='delete' name='isManual' value='delete' disabled="true">인증 삭제</input></label><br><span style="line-height:50%"><br></span>
       <div id='stdWrapper'>
         <div id="booster"></div>
         <div id="list"></div>
@@ -27,6 +28,8 @@
       <div id='mnWrapper' style="display:none">
         <div id='mnAddSection'></div>
         <span id='mnadd' style="display:none">&nbsp;+ 추가</span>
+      </div>
+      <div id='delWrapper' style='display: none'>
       </div>
     </form>
     <div class="modal micromodal-slide" id="admin" aria-hidden="true">
