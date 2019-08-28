@@ -234,7 +234,7 @@ function clickEventListener() {
     $('#mnAddSection').append(div);
     div.append($('<input type="checkbox" checked name="mnAdd" id="mnAddlist_' + mnAddCount + '">'));
     div.append('이름 : ').append($('<input id="mnAddName_' + mnAddCount + '" style="width: 50" />')).append('&nbsp;&nbsp;');
-    div.append('점수 : ').append($('<input id="mnAddScore_' + mnAddCount + '" style="width: 30" />')).append('&nbsp;&nbsp;');
+    div.append('점수 : ').append($('<input type="number" id="mnAddScore_' + mnAddCount + '" style="width: 30" />')).append('&nbsp;&nbsp;');
     div.append('지급 사유 : ').append($('<input id="mnAddReason_' + mnAddCount + '" style="width: 80" />')).append('&nbsp;&nbsp;');
   });
   $('#confirmAdmin').click(function() {
