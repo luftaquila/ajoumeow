@@ -176,7 +176,8 @@ svg {
 
 input { margin: 0 0 0 10 }
 
-#confirmAdmin, #nameSubmit, #icon, .reload, #onNoticeClick, #onRankClick, #onMapClick, ul.tabs li, #rainbowBlock, #delete { cursor: pointer; }
+.ios { cursor: pointer; }
+
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none;

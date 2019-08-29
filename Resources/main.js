@@ -88,6 +88,10 @@ function setData(table) {
       }
     }
   }
+  if(!!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform)) {
+    $('.reserved, .notReserved').addClass('ios');
+    $('.reload, #icon, #onNoticeClick, #onRankClick, #onMapClick, ul.tabs.li').addClass('ios');
+  }
   $('td:contains(' + today.format('m/d(ddd)') + ')').css('backgroundColor', 'greenyellow');
   for(var i = 0; i < 7; i++) $("#dateCell_" + i).css("color", "#000000");
   if(Cookies.get('versionInfo') != $('#version').text()) {
@@ -218,9 +222,7 @@ function eventListener() {
       Cookies.set('rainbowBlock', 'true', {expires : 14});
     }
     else {
-      for(var i = 0; i <= calendarCount; i++ ) {
-        $('.cal' + i).addClass('dogriver');
-      }
+      for(var i = 0; i <= calendarCount; i++ ) { $('.cal' + i).addClass('dogriver'); }
       Cookies.remove('rainbowBlock');
     }
   });
