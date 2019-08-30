@@ -1,14 +1,15 @@
 <html>
   <head>
     <title>아주대학교 고양이는 미유미유</title>
+    <a id='version' style="display: none;">v7.1.0</a>
+    <a id='release' style="display: none;">2019-08-31 08:17 AM</a>
     <link rel="shortcut icon" type="image/x-icon" href="/ajoumeow/Resources/Images/Resized/meyoumeow.ico" />
-    <a id='version' style="display: none;">v7.0.3</a>
-    <a id='release' style="display: none;">2019-05-12 03:05 PM</a>
     <link rel="stylesheet" href="/ajoumeow/Resources/Libraries/alertify/alertify.core.css" />
     <link rel="stylesheet" href="/ajoumeow/Resources/Libraries/alertify/alertify.default.css" id="toggleCSS" />
     <link rel="stylesheet" href="/ajoumeow/Resources/Libraries/micromodal/micromodal.min.css" />
     <link rel="stylesheet" href="/ajoumeow/Resources/Libraries/contextMenu/jquery.contextMenu.min.css" />
     <link rel="stylesheet" href="/ajoumeow/Resources/main.css" />
+    <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic&display=swap&subset=korean" rel="stylesheet">
     <meta charset="utf-8">
     <meta property="og:title" content="아주대학교 미유미유"/>
     <meta property="og:url" content="https://luftaquila.github.io/ajoumeow/"/>
@@ -56,203 +57,203 @@
       </ul>
       <table id='weatherInfo' style="margin: -1 auto 3; text-align: center;">
         <tr>
-          <td id='date' style="text-align: center; font-size: 0.85rem; font-weight: bold; padding: 5 0 0" colspan="3" rowspan="2"></td>
+          <td id='date' style="text-align: center; font-size: 0.85rem; font-weight:600; padding: 5 0 0" colspan="3" rowspan="2"></td>
           <td id='icon' oncontextmenu="return false" rowspan="2" style="-webkit-touch-callout:none; padding: 10 0 0"></td>
-          <td id='weather' style="text-align: center; font-weight: bold; padding: 15 0 0"></td>
+          <td id='weather' style="text-align: center; font-size: 0.8rem; font-weight:600; padding: 15 0 0"></td>
           <td id='pm10' style="text-align: right; color: #fff; font-size: 0.75rem; padding: 15 0 0;">PM10 : 00㎍/㎥</td>
         </tr>
         <tr>
-          <td id='temp' style="text-align: center; font-weight: bold;"></td>
+          <td id='temp' style="text-align: center; font-size: 0.8rem; font-weight:600;"></td>
           <td id='pm25' style="text-align: right; font-size: 0.75rem"></td>
         </tr>
       </table>
       <div id='tab-1' class="tab-content current" style="position:relative">
         <div id="weekDays">
-          <table class='waffle' cellspacing="0" cellpadding="0" style="margin: 0 auto;">
-            <tr>
-              <td class="s4" colspan="2" style="width: 15%">이번 주</td>
-              <td class="s6" id="dateCell_0" style="width: 17%"></td>
-              <td class="s6" id="dateCell_1" style="width: 17%"></td>
-              <td class="s6" id="dateCell_2" style="width: 17%"></td>
-              <td class="s6" id="dateCell_3" style="width: 17%"></td>
-              <td class="s7" id="dateCell_4" style="width: 17%"></td>
+          <table class='waffle' cellspacing="0" cellpadding="0">
+            <tr class='thisWeek'>
+              <td class="thisWeek" colspan="2" style="width: 15%">이번 주</td>
+              <td id="dateCell_0" style="width: 17%"></td>
+              <td id="dateCell_1" style="width: 17%"></td>
+              <td id="dateCell_2" style="width: 17%"></td>
+              <td id="dateCell_3" style="width: 17%"></td>
+              <td id="dateCell_4" style="width: 17%"></td>
+            </tr>
+            <tr class="course">
+              <td class="thisWeek" colspan="2" rowspan="2">1코스</td>
+              <td id="nameCell_0_0"></td>
+              <td id="nameCell_1_0"></td>
+              <td id="nameCell_2_0"></td>
+              <td id="nameCell_3_0"></td>
+              <td id="nameCell_4_0"></td>
             </tr>
             <tr>
-              <td class="s5" colspan="2" rowspan="2">1코스</td>
-              <td class="s8" id="nameCell_0_0"></td>
-              <td class="s8" id="nameCell_1_0"></td>
-              <td class="s8" id="nameCell_2_0"></td>
-              <td class="s8" id="nameCell_3_0"></td>
-              <td class="s9" id="nameCell_4_0"></td>
+              <td id="nameCell_0_1"></td>
+              <td id="nameCell_1_1"></td>
+              <td id="nameCell_2_1"></td>
+              <td id="nameCell_3_1"></td>
+              <td id="nameCell_4_1"></td>
+            </tr>
+            <tr class="course">
+              <td class="thisWeek" colspan="2" rowspan="2">2코스</td>
+              <td id="nameCell_0_2"></td>
+              <td id="nameCell_1_2"></td>
+              <td id="nameCell_2_2"></td>
+              <td id="nameCell_3_2"></td>
+              <td id="nameCell_4_2"></td>
             </tr>
             <tr>
-              <td class="s10" id="nameCell_0_1"></td>
-              <td class="s10" id="nameCell_1_1"></td>
-              <td class="s10" id="nameCell_2_1"></td>
-              <td class="s10" id="nameCell_3_1"></td>
-              <td class="s11" id="nameCell_4_1"></td>
+              <td id="nameCell_0_3"></td>
+              <td id="nameCell_1_3"></td>
+              <td id="nameCell_2_3"></td>
+              <td id="nameCell_3_3"></td>
+              <td id="nameCell_4_3"></td>
+            </tr>
+            <tr class="course">
+              <td class="thisWeek" colspan="2" rowspan="2">3코스</td>
+              <td id="nameCell_0_4"></td>
+              <td id="nameCell_1_4"></td>
+              <td id="nameCell_2_4"></td>
+              <td id="nameCell_3_4"></td>
+              <td id="nameCell_4_4"></td>
             </tr>
             <tr>
-              <td class="s5" colspan="2" rowspan="2">2코스</td>
-              <td class="s8" id="nameCell_0_2"></td>
-              <td class="s8" id="nameCell_1_2"></td>
-              <td class="s8" id="nameCell_2_2"></td>
-              <td class="s8" id="nameCell_3_2"></td>
-              <td class="s9" id="nameCell_4_2"></td>
+              <td id="nameCell_0_5"></td>
+              <td id="nameCell_1_5"></td>
+              <td id="nameCell_2_5"></td>
+              <td id="nameCell_3_5"></td>
+              <td id="nameCell_4_5"></td>
+            </tr>
+            <tr class='nextWeek'>
+              <td class="nextWeek" colspan="2">다음 주</td>
+              <td id="dateCell_7"></td>
+              <td id="dateCell_8"></td>
+              <td id="dateCell_9"></td>
+              <td id="dateCell_10"></td>
+              <td id="dateCell_11"></td>
+            </tr>
+            <tr class="course">
+              <td class="nextWeek" colspan="2" rowspan="2">1코스</td>
+              <td id="nameCell_7_0"></td>
+              <td id="nameCell_8_0"></td>
+              <td id="nameCell_9_0"></td>
+              <td id="nameCell_10_0"></td>
+              <td id="nameCell_11_0"></td>
             </tr>
             <tr>
-              <td class="s10" id="nameCell_0_3"></td>
-              <td class="s10" id="nameCell_1_3"></td>
-              <td class="s10" id="nameCell_2_3"></td>
-              <td class="s10" id="nameCell_3_3"></td>
-              <td class="s11" id="nameCell_4_3"></td>
+              <td id="nameCell_7_1"></td>
+              <td id="nameCell_8_1"></td>
+              <td id="nameCell_9_1"></td>
+              <td id="nameCell_10_1"></td>
+              <td id="nameCell_11_1"></td>
+            </tr>
+            <tr class="course">
+              <td class="nextWeek" colspan="2" rowspan="2">2코스</td>
+              <td id="nameCell_7_2"></td>
+              <td id="nameCell_8_2"></td>
+              <td id="nameCell_9_2"></td>
+              <td id="nameCell_10_2"></td>
+              <td id="nameCell_11_2"></td>
             </tr>
             <tr>
-              <td class="s12" colspan="2" rowspan="2">3코스</td>
-              <td class="s8" id="nameCell_0_4"></td>
-              <td class="s8" id="nameCell_1_4"></td>
-              <td class="s8" id="nameCell_2_4"></td>
-              <td class="s8" id="nameCell_3_4"></td>
-              <td class="s9" id="nameCell_4_4"></td>
+              <td id="nameCell_7_3"></td>
+              <td id="nameCell_8_3"></td>
+              <td id="nameCell_9_3"></td>
+              <td id="nameCell_10_3"></td>
+              <td id="nameCell_11_3"></td>
+            </tr>
+            <tr class="course">
+              <td class="nextWeek" colspan="2" rowspan="2">3코스</td>
+              <td id="nameCell_7_4"></td>
+              <td id="nameCell_8_4"></td>
+              <td id="nameCell_9_4"></td>
+              <td id="nameCell_10_4"></td>
+              <td id="nameCell_11_4"></td>
             </tr>
             <tr>
-              <td class="s13" id="nameCell_0_5"></td>
-              <td class="s13" id="nameCell_1_5"></td>
-              <td class="s13" id="nameCell_2_5"></td>
-              <td class="s13" id="nameCell_3_5"></td>
-              <td class="s14" id="nameCell_4_5"></td>
-            </tr>
-            <tr>
-              <td class="s15" colspan="2">다음 주</td>
-              <td class="s16" id="dateCell_7"></td>
-              <td class="s16" id="dateCell_8"></td>
-              <td class="s16" id="dateCell_9"></td>
-              <td class="s16" id="dateCell_10"></td>
-              <td class="s17" id="dateCell_11"></td>
-            </tr>
-            <tr>
-              <td class="s15" colspan="2" rowspan="2">1코스</td>
-              <td class="s8" id="nameCell_7_0"></td>
-              <td class="s8" id="nameCell_8_0"></td>
-              <td class="s8" id="nameCell_9_0"></td>
-              <td class="s8" id="nameCell_10_0"></td>
-              <td class="s9" id="nameCell_11_0"></td>
-            </tr>
-            <tr>
-              <td class="s10" id="nameCell_7_1"></td>
-              <td class="s10" id="nameCell_8_1"></td>
-              <td class="s10" id="nameCell_9_1"></td>
-              <td class="s10" id="nameCell_10_1"></td>
-              <td class="s11" id="nameCell_11_1"></td>
-            </tr>
-            <tr>
-              <td class="s15" colspan="2" rowspan="2">2코스</td>
-              <td class="s8" id="nameCell_7_2"></td>
-              <td class="s8" id="nameCell_8_2"></td>
-              <td class="s8" id="nameCell_9_2"></td>
-              <td class="s8" id="nameCell_10_2"></td>
-              <td class="s9" id="nameCell_11_2"></td>
-            </tr>
-            <tr>
-              <td class="s10" id="nameCell_7_3"></td>
-              <td class="s10" id="nameCell_8_3"></td>
-              <td class="s10" id="nameCell_9_3"></td>
-              <td class="s10" id="nameCell_10_3"></td>
-              <td class="s11" id="nameCell_11_3"></td>
-            </tr>
-            <tr>
-              <td class="s18" colspan="2" rowspan="2">3코스</td>
-              <td class="s8" id="nameCell_7_4"></td>
-              <td class="s8" id="nameCell_8_4"></td>
-              <td class="s8" id="nameCell_9_4"></td>
-              <td class="s8" id="nameCell_10_4"></td>
-              <td class="s9" id="nameCell_11_4"></td>
-            </tr>
-            <tr>
-              <td class="s13" id="nameCell_7_5"></td>
-              <td class="s13" id="nameCell_8_5"></td>
-              <td class="s13" id="nameCell_9_5"></td>
-              <td class="s13" id="nameCell_10_5"></td>
-              <td class="s14" id="nameCell_11_5"></td>
+              <td id="nameCell_7_5"></td>
+              <td id="nameCell_8_5"></td>
+              <td id="nameCell_9_5"></td>
+              <td id="nameCell_10_5"></td>
+              <td id="nameCell_11_5"></td>
             </tr>
           </table>
         </div>
       </div>
       <div id='tab-2' class="tab-content" style="text-align:center">
         <div id="weekEnds">
-          <table class='waffle' cellspacing="0" cellpadding="0" style="margin: 0 auto;">
-            <tr>
-              <td class="s4" colspan="2" style="width: 25%">이번 주</td>
-              <td class="s6" id="dateCell_5" style="width: 37.5%"></td>
-              <td class="s7" id="dateCell_6" style="width: 37.5%"></td>
+          <table class='waffle' cellspacing="0" cellpadding="0">
+            <tr class="thisWeek">
+              <td class="thisWeek" colspan="2" style="width: 25%">이번 주</td>
+              <td id="dateCell_5" style="width: 37.5%"></td>
+              <td id="dateCell_6" style="width: 37.5%"></td>
+            </tr>
+            <tr class="course">
+              <td class="thisWeek" colspan="2" rowspan="2">1코스</td>
+              <td id="nameCell_5_0"></td>
+              <td id="nameCell_6_0"></td>
             </tr>
             <tr>
-              <td class="s5" colspan="2" rowspan="2">1코스</td>
-              <td class="s8" id="nameCell_5_0"></td>
-              <td class="s9" id="nameCell_6_0"></td>
+              <td id="nameCell_5_1"></td>
+              <td id="nameCell_6_1"></td>
+            </tr>
+            <tr class="course">
+              <td class="thisWeek" colspan="2" rowspan="2">2코스</td>
+              <td id="nameCell_5_2"></td>
+              <td id="nameCell_6_2"></td>
             </tr>
             <tr>
-              <td class="s10" id="nameCell_5_1"></td>
-              <td class="s11" id="nameCell_6_1"></td>
+              <td id="nameCell_5_3"></td>
+              <td id="nameCell_6_3"></td>
+            </tr>
+            <tr class="course">
+              <td class="thisWeek" colspan="2" rowspan="2">3코스</td>
+              <td id="nameCell_5_4"></td>
+              <td id="nameCell_6_4"></td>
             </tr>
             <tr>
-              <td class="s5" colspan="2" rowspan="2">2코스</td>
-              <td class="s8" id="nameCell_5_2"></td>
-              <td class="s9" id="nameCell_6_2"></td>
+              <td id="nameCell_5_5"></td>
+              <td id="nameCell_6_5"></td>
+            </tr>
+            <tr class="nextWeek">
+              <td class="nextWeek" colspan="2">다음 주</td>
+              <td id="dateCell_12"></td>
+              <td id="dateCell_13"></td>
+            </tr>
+            <tr class="course">
+              <td class="nextWeek" colspan="2" rowspan="2">1코스</td>
+              <td id="nameCell_12_0"></td>
+              <td id="nameCell_13_0"></td>
             </tr>
             <tr>
-              <td class="s10" id="nameCell_5_3"></td>
-              <td class="s11" id="nameCell_6_3"></td>
+              <td id="nameCell_12_1"></td>
+              <td id="nameCell_13_1"></td>
+            </tr>
+            <tr class="course">
+              <td class="nextWeek" colspan="2" rowspan="2">2코스</td>
+              <td id="nameCell_12_2"></td>
+              <td id="nameCell_13_2"></td>
             </tr>
             <tr>
-              <td class="s12" colspan="2" rowspan="2">3코스</td>
-              <td class="s8" id="nameCell_5_4"></td>
-              <td class="s9" id="nameCell_6_4"></td>
+              <td id="nameCell_12_3"></td>
+              <td id="nameCell_13_3"></td>
+            </tr>
+            <tr class="course">
+              <td class="nextWeek" colspan="2" rowspan="2">3코스</td>
+              <td id="nameCell_12_4"></td>
+              <td id="nameCell_13_4"></td>
             </tr>
             <tr>
-              <td class="s13" id="nameCell_5_5"></td>
-              <td class="s14" id="nameCell_6_5"></td>
-            </tr>
-            <tr>
-              <td class="s15" colspan="2">다음 주</td>
-              <td class="s16" id="dateCell_12"></td>
-              <td class="s17" id="dateCell_13"></td>
-            </tr>
-            <tr>
-              <td class="s15" colspan="2" rowspan="2">1코스</td>
-              <td class="s8" id="nameCell_12_0"></td>
-              <td class="s9" id="nameCell_13_0"></td>
-            </tr>
-            <tr>
-              <td class="s10" id="nameCell_12_1"></td>
-              <td class="s11" id="nameCell_13_1"></td>
-            </tr>
-            <tr>
-              <td class="s15" colspan="2" rowspan="2">2코스</td>
-              <td class="s8" id="nameCell_12_2"></td>
-              <td class="s9" id="nameCell_13_2"></td>
-            </tr>
-            <tr>
-              <td class="s10" id="nameCell_12_3"></td>
-              <td class="s11" id="nameCell_13_3"></td>
-            </tr>
-            <tr>
-              <td class="s18" colspan="2" rowspan="2">3코스</td>
-              <td class="s8" id="nameCell_12_4"></td>
-              <td class="s9" id="nameCell_13_4"></td>
-            </tr>
-            <tr>
-              <td class="s13" id="nameCell_12_5"></td>
-              <td class="s14" id="nameCell_13_5"></td>
+              <td id="nameCell_12_5"></td>
+              <td id="nameCell_13_5"></td>
             </tr>
           </table>
         </div>
       </div>
-      <div id="latestUpdate" style="height:1rem; text-align:right; font-size: 0.7rem; font-family:'Malgun Gothic'; margin:5 0 0 0;">Loading...</div>
-      <div id='rainbowBlockBox' style="height:1rem; text-align:right; font-size: 0.7rem; font-family:'Malgun Gothic'; margin:5 0 0 0; display: none">
+      <div id="latestUpdate" style="height:1rem; text-align:right; font-size: 0.7rem; margin:5 0 0 0;">Loading...</div>
+      <div id='rainbowBlockBox' style="height:1rem; text-align:right; font-size: 0.7rem; margin:5 0 0 0; display: none">
         <label for="rainbowBlock"><input type="checkbox" id="rainbowBlock">&nbsp;무지개 끄기</input></label>
       </div>
-      <div id='bottomInfo' style="text-align:center; font-size:0.813rem; font-family:'Malgun Gothic'; margin:10 0 0;">
+      <div id='bottomInfo' style="text-align:center; font-size:0.813rem; margin:10 0 0;">
         <span class='popup' id='onNoticeClick'>Notice</span>&nbsp;&nbsp;&nbsp;
         <a href="/ajoumeow/statistics" style="color: #0366d6">Statistics</a>&nbsp;&nbsp;&nbsp;
         <span class='popup' id='onRankClick'>Rank</span>&nbsp;&nbsp;&nbsp;
@@ -330,21 +331,19 @@
               2코스 : <span style='color: #5cf442;'>★</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
               3코스 : <span style='color: #f44242;'>★</span>
               <div style="position: relative">
-                <img src="/ajoumeow/Resources/Images/map.png" usemap="#Map" style="width:100%; height:auto">
+                <img src="/ajoumeow/Resources/Images/Map/map.png" usemap="#Map" style="width:100%; height:auto">
                 <map name='Map' id='Map'>
-                  <area shape='circle' coords="468,93,30" id='area_spot_1-1' href='javascript:MicroModal.show("spot_1-1")'>
-                  <area shape='circle' coords="386,442,30" id='area_spot_1-2' href='javascript:MicroModal.show("spot_1-2")'>
-                  <area shape='circle' coords="341,549,30" id='area_spot_1-3' href='javascript:MicroModal.show("spot_1-3")'>
-                  <area shape='circle' coords="150,600,30" id='area_spot_1-4' href='javascript:MicroModal.show("spot_1-4")'>
-                  <area shape='circle' coords="522,509,30" id='area_spot_2-1' href='javascript:MicroModal.show("spot_2-1")'>
-                  <area shape='circle' coords="421,633,30" id='area_spot_2-2' href='javascript:MicroModal.show("spot_2-2")'>
-                  <area shape='circle' coords="389,725,30" id='area_spot_2-3' href='javascript:MicroModal.show("spot_2-3")'>
-                  <area shape='circle' coords="619,943,30" id='area_spot_2-4' href='javascript:MicroModal.show("spot_2-4")'>
-                  <area shape='circle' coords="493,286,30" id='area_spot_3-1' href='javascript:MicroModal.show("spot_3-1")'>
-                  <area shape='circle' coords="614,370,30" id='area_spot_3-2' href='javascript:MicroModal.show("spot_3-2")'>
-                  <area shape='circle' coords="636,438,30" id='area_spot_3-3' href='javascript:MicroModal.show("spot_3-3")'>
-                  <area shape='circle' coords="692,309,30" id='area_spot_3-4' href='javascript:MicroModal.show("spot_3-4")'>
-                  <area shape='circle' coords="891,363,30" id='area_spot_3-5' href='javascript:MicroModal.show("spot_3-5")'>
+                  <area shape='circle' coords="310,134,30" id='area_spot_1-1' href='javascript:MicroModal.show("spot_1-1")'>
+                  <area shape='circle' coords="219,231,30" id='area_spot_1-2' href='javascript:MicroModal.show("spot_1-2")'>
+                  <area shape='circle' coords="199,303,30" id='area_spot_1-3' href='javascript:MicroModal.show("spot_1-3")'>
+                  <area shape='circle' coords=" 72,335,30" id='area_spot_1-4' href='javascript:MicroModal.show("spot_1-4")'>
+                  <area shape='circle' coords="310,272,30" id='area_spot_2-1' href='javascript:MicroModal.show("spot_2-1")'>
+                  <area shape='circle' coords="219,408,30" id='area_spot_2-2' href='javascript:MicroModal.show("spot_2-2")'>
+                  <area shape='circle' coords="377,562,30" id='area_spot_2-3' href='javascript:MicroModal.show("spot_2-3")'>
+                  <area shape='circle' coords="381,199,30" id='area_spot_3-1' href='javascript:MicroModal.show("spot_3-1")'>
+                  <area shape='circle' coords="386,243,30" id='area_spot_3-2' href='javascript:MicroModal.show("spot_3-2")'>
+                  <area shape='circle' coords="423,153,30" id='area_spot_3-3' href='javascript:MicroModal.show("spot_3-3")'>
+                  <area shape='circle' coords="535,181,30" id='area_spot_3-4' href='javascript:MicroModal.show("spot_3-4")'>
                 </map>
               </div>
             </main>
@@ -402,19 +401,18 @@
                 <span style='font-weight:bold; font-size: 0.9rem'>업데이트 알림<br></span>
                 <span id='recentUpdate' style="font-weight:bold"></span><br>
                 <span id='recentUpdateContent'>
-                  이제 표에 다음주까지만 표시됩니다. 기존 신청은 유지됩니다.<br>
-                  평일 / 주말 탭을 다시 분리하였습니다.<br><br>
-                  한 주가 바뀌는 시점에서 이후의 급식 신청이 하나도 없을 때<br>사이트가 멈추는 문제를 해결했습니다.
+                  표 디자인과 폰트를 개선했습니다.<br>
+                  애플 계열 제품의 클릭 이벤트 이슈를 해결했습니다<br>
+                  내부 js 및 css 소스 개선
                 </span><span style="line-height:50%"><br><br></span>
                 <span id='toggle' style="color:#0366d6" onclick="updateLogDisplayer()">▼ 업데이트 로그 보기</span><br><span style="line-height:50%"><br></span>
                 <div id='more' style="display: none">
-                  <span style="font-weight:bold">v7.0.x : 2019-05-07</span><br>
-                  평일/주말 탭을 하나로 합쳤습니다.<br>
-                  급식 탭에서 좌우로 스와이프하면 표가 전환됩니다.<br>
-                  iPhone Click Event Handler Management<br><span style="line-height:50%"><br></span>
+                  <span style="font-weight:bold">v7.0.x : 2019-05-12</span><br>
+                    이제 표에 다음주까지만 표시됩니다. 기존 신청은 유지됩니다.<br>
+                    한 주가 바뀌는 시점에서 이후의 급식 신청이 하나도 없을 때<br>사이트가 멈추는 문제를 해결했습니다.<br><span style="line-height:50%"><br></span>
                   <span style="font-weight:bold">v6.1.x : 2019-05-07</span><br>
-                  페이지 하단 메뉴에 동방 프린터 드라이버<br>다운로드 링크를 추가했습니다. (<a href="https://github.com/luftaquila/ajoumeow/releases" style="color: #0366d6">Printer</a>)<br><br>
-                  본인 이름을 더 쉽게 찾을 수 있도록<br>급식표에서 굵게 표시합니다.<br><span style="line-height:50%"><br></span>
+                    페이지 하단 메뉴에 동방 프린터 드라이버<br>다운로드 링크를 추가했습니다. (<a href="https://github.com/luftaquila/ajoumeow/releases" style="color: #0366d6">Printer</a>)<br><br>
+                    본인 이름을 더 쉽게 찾을 수 있도록<br>급식표에서 굵게 표시합니다.<br><span style="line-height:50%"><br></span>
                   <span style="font-weight:bold">v6.0.x : 2019-04-27</span><br>
                     Cross-Browsing Support for IOS, FF<br><br>
                     UI를 보다 직관적으로 이용할 수 있도록 개선했습니다.<br>
