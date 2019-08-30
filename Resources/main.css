@@ -37,15 +37,14 @@ html {
  user-select:none;
  -webkit-tap-highlight-color: transparent;
  -ms-overflow-style: none;
+  font-family: 'Nanum Gothic', sans-serif;
 }
-body { font-family: 'Malgun Gothic', serif; }
 tr {
   height: 1.3rem;
   font-size: 0.813rem;
   vertical-align: middle;
   white-space: nowrap;
   padding: 0.125rem 0.188rem 0.125rem 0.188rem;
-  font-family:'Malgun Gothic';
   text-align: center;
 }
 .waffle tr { height: 1.8rem; }
@@ -64,7 +63,7 @@ ul.tabs li {
   background: none;
   color: #222;
   display: inline-block;
-  padding: 0.5rem 0.938rem;
+  padding: 0.6rem 0.938rem;
   cursor: pointer;
 }
 ul.tabs li.current {

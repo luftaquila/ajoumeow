@@ -1,14 +1,15 @@
 <html>
   <head>
     <title>아주대학교 고양이는 미유미유</title>
-    <link rel="shortcut icon" type="image/x-icon" href="/ajoumeow/Resources/Images/Resized/meyoumeow.ico" />
     <a id='version' style="display: none;">v7.1.0</a>
     <a id='release' style="display: none;">2019-08-31 08:17 AM</a>
+    <link rel="shortcut icon" type="image/x-icon" href="/ajoumeow/Resources/Images/Resized/meyoumeow.ico" />
     <link rel="stylesheet" href="/ajoumeow/Resources/Libraries/alertify/alertify.core.css" />
     <link rel="stylesheet" href="/ajoumeow/Resources/Libraries/alertify/alertify.default.css" id="toggleCSS" />
     <link rel="stylesheet" href="/ajoumeow/Resources/Libraries/micromodal/micromodal.min.css" />
     <link rel="stylesheet" href="/ajoumeow/Resources/Libraries/contextMenu/jquery.contextMenu.min.css" />
     <link rel="stylesheet" href="/ajoumeow/Resources/main.css" />
+    <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic&display=swap&subset=korean" rel="stylesheet">
     <meta charset="utf-8">
     <meta property="og:title" content="아주대학교 미유미유"/>
     <meta property="og:url" content="https://luftaquila.github.io/ajoumeow/"/>
@@ -56,13 +57,13 @@
       </ul>
       <table id='weatherInfo' style="margin: -1 auto 3; text-align: center;">
         <tr>
-          <td id='date' style="text-align: center; font-size: 0.85rem; font-weight: bold; padding: 5 0 0" colspan="3" rowspan="2"></td>
+          <td id='date' style="text-align: center; font-size: 0.85rem; font-weight:600; padding: 5 0 0" colspan="3" rowspan="2"></td>
           <td id='icon' oncontextmenu="return false" rowspan="2" style="-webkit-touch-callout:none; padding: 10 0 0"></td>
-          <td id='weather' style="text-align: center; font-weight: bold; padding: 15 0 0"></td>
+          <td id='weather' style="text-align: center; font-size: 0.8rem; font-weight:600; padding: 15 0 0"></td>
           <td id='pm10' style="text-align: right; color: #fff; font-size: 0.75rem; padding: 15 0 0;">PM10 : 00㎍/㎥</td>
         </tr>
         <tr>
-          <td id='temp' style="text-align: center; font-weight: bold;"></td>
+          <td id='temp' style="text-align: center; font-size: 0.8rem; font-weight:600;"></td>
           <td id='pm25' style="text-align: right; font-size: 0.75rem"></td>
         </tr>
       </table>
@@ -248,11 +249,11 @@
           </table>
         </div>
       </div>
-      <div id="latestUpdate" style="height:1rem; text-align:right; font-size: 0.7rem; font-family:'Malgun Gothic'; margin:5 0 0 0;">Loading...</div>
-      <div id='rainbowBlockBox' style="height:1rem; text-align:right; font-size: 0.7rem; font-family:'Malgun Gothic'; margin:5 0 0 0; display: none">
+      <div id="latestUpdate" style="height:1rem; text-align:right; font-size: 0.7rem; margin:5 0 0 0;">Loading...</div>
+      <div id='rainbowBlockBox' style="height:1rem; text-align:right; font-size: 0.7rem; margin:5 0 0 0; display: none">
         <label for="rainbowBlock"><input type="checkbox" id="rainbowBlock">&nbsp;무지개 끄기</input></label>
       </div>
-      <div id='bottomInfo' style="text-align:center; font-size:0.813rem; font-family:'Malgun Gothic'; margin:10 0 0;">
+      <div id='bottomInfo' style="text-align:center; font-size:0.813rem; margin:10 0 0;">
         <span class='popup' id='onNoticeClick'>Notice</span>&nbsp;&nbsp;&nbsp;
         <a href="/ajoumeow/statistics" style="color: #0366d6">Statistics</a>&nbsp;&nbsp;&nbsp;
         <span class='popup' id='onRankClick'>Rank</span>&nbsp;&nbsp;&nbsp;
@@ -402,7 +403,7 @@
                 <span style='font-weight:bold; font-size: 0.9rem'>업데이트 알림<br></span>
                 <span id='recentUpdate' style="font-weight:bold"></span><br>
                 <span id='recentUpdateContent'>
-                  표 디자인을 약간 개선했습니다.<br>
+                  표 디자인과 폰트를 개선했습니다.<br>
                   애플 계열 제품의 클릭 이벤트 이슈를 해결했습니다<br>
                   내부 js 및 css 소스 개선
                 </span><span style="line-height:50%"><br><br></span>
