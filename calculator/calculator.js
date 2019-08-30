@@ -30,7 +30,7 @@ function onLoad() {
 }
 $("#DATA").submit( function(event) {
   $('input').attr('disabled', true);
-  var request;
+  var request, serializedData = [];
   if (request) { request.abort(); }
   if($("#nonManual").prop('checked')) {
     var flag = true;
@@ -69,10 +69,8 @@ $("#DATA").submit( function(event) {
         count++;
       });
       for(var i = 1; i < 4; i++) { scoreProvider(data, date, i, $("#boost").prop('checked')); }
-      for(var i = 0; i < data.length; i++) {
-        var serializedData = "타입=인증&지급 일자=" + date + "&이름=" + data[i][0] + "&코스=" + data[i][1] + "&점수=" + data[i][2];
-        transmitter(serializedData);
-      }
+      for(var i = 0; i < data.length; i++) { serializedData[i] = "타입=인증&지급 일자=" + date + "&이름=" + data[i][0] + "&코스=" + data[i][1] + "&점수=" + data[i][2]; }
+      transmitter(serializedData);
     }
   }
   else if($("#Manual").prop('checked')) {
@@ -98,13 +96,14 @@ $("#DATA").submit( function(event) {
       $('input').attr('disabled', false);
     }
     else {
-      var dateSlicer = $("#timestamp").val().split('-');
+      var dateSlicer = $("#timestamp").val().split('-'), cnt = 0;
       var date = new Date(dateSlicer[0], dateSlicer[1] - 1, dateSlicer[2]).format('yyyy. m. d');
       $("input:checkbox[name=mnAdd]:checked").each(function() {
         var obj = $(this).siblings($('input'));
-        var serializedData = "타입=인증&지급 일자=" + date + "&이름=" + $.trim($(obj[0]).val()) + "&코스=" + $.trim($(obj[2]).val()) + "&점수=" + $(obj[1]).val();
-        transmitter(serializedData);
+        serializedData[cnt] = "타입=인증&지급 일자=" + date + "&이름=" + $.trim($(obj[0]).val()) + "&코스=" + $.trim($(obj[2]).val()) + "&점수=" + $(obj[1]).val();
+        cnt++;
       });
+      transmitter(serializedData);
     }
   }
   else if($('#delete').prop('checked')) {
@@ -119,11 +118,12 @@ $("#DATA").submit( function(event) {
       $('input').attr('disabled', false);
     }
     else {
+      var cnt = 0;
       $("input:checkbox[name=del]:checked").each(function() {
         var num = (/_[0-9]+/g).exec($(this).attr('id'))[0].replace('_', '');
-        var serializedData = "타입=제거&날짜=" + $("#timestamp").val() + "&이름=" + $('#name_' + num).text() + "&코스=" + $('#course_' + num).text() + "&점수=" + $('#score_' + num).text();
-        transmitter(serializedData);
+        serializedData[cnt] = "타입=제거&날짜=" + $("#timestamp").val() + "&이름=" + $('#name_' + num).text() + "&코스=" + $('#course_' + num).text() + "&점수=" + $('#score_' + num).text();
       });
+      transmitter(serializedData);
     }
   }
   event.preventDefault();
@@ -173,38 +173,49 @@ function load() {
   }
 }
 function transmitter(serializedData) {
-  console.log("DataSet : " + serializedData);
-  $('#status').css('color', '#ffbf00');
-  $('#status').text('Sending Data...');
-  request = $.ajax({
-      type: 'POST',
-      url: "https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec",
-      data: encodeURI(serializedData)
-  });
-  request.done(function() {
-    $('#status').css('color', '#15be00');
-    $('#status').text('Transmitted.');
-  });
-  request.fail(function(jqXHR, textStatus, errorThrown) {
-    $('#status').css('color', '#da0000');
-    $('#status').text('Error - ' + textStatus + errorThrown);
-  });
-  request.always(function() {
-    $('input').attr('disabled', false);
-    $('#timestamp').val('');
-    load();
-    $.ajax({
-      url: "https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec",
-      data: encodeURI('점수=인증'),
-      type: "POST",
-      dataType: 'text',
-      cache: false,
-      success: function (response) {
-        verifData = response.split('\n').map((line) => line.split(','));
-        $('#latestConfirm').text('마지막 인증 날짜 : ' + verifData[verifData.length - 2][0]);
-      }
+  var req = 0, cfm = 0;
+  for(i in serializedData) {
+    console.log("DataSet : " + serializedData[i]);
+    $('#status').css('color', '#ffbf00');
+    $('#status').text('Sending Data...');
+    request = $.ajax({
+        type: 'POST',
+        url: "https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec",
+        data: encodeURI(serializedData[i])
     });
-  });
+    request.done(function() {
+      cfm++;
+      initializer();
+    });
+    request.fail(function(jqXHR, textStatus, errorThrown) {
+      $('#status').css('color', '#da0000');
+      $('#status').text('Error - ' + textStatus + errorThrown);
+    });
+    request.always(function() { req++; });
+  }
+  function initializer() {
+    if(cfm == serializedData.length) {
+      $('input').attr('disabled', false);
+      $('#timestamp').val('');
+      $('#status').css('color', '#15be00');
+      $('#status').text('Transmitted.');
+      load();
+
+      $.ajax({
+        url: "https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec",
+        data: encodeURI('점수=인증'),
+        type: "POST",
+        dataType: 'text',
+        cache: false,
+        success: function (response) {
+          verifData = response.split('\n').map((line) => line.split(','));
+          $('#latestConfirm').text('마지막 인증 날짜 : ' + verifData[verifData.length - 2][0]);
+          load();
+        }
+      });
+    }
+    else if(req == serializedData.length) alert('Data loss during transmission!!!\nPlease check sheet data');
+  }
 }
 function clickEventListener() {
   $('#reload').click(function () { onLoad(); });
