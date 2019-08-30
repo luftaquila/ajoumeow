@@ -103,7 +103,7 @@ function setData(table) {
   }
   if(!!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform)) {
     $('.reserved, .notReserved').addClass('ios');
-    $('.reload, #icon, #onNoticeClick, #onRankClick, #onMapClick, ul.tabs.li').addClass('ios');
+    $('.reload, .popup, #icon, ul.tabs.li').addClass('ios');
   }
   $('td:contains(' + today.format('m/d(ddd)') + ')').css('backgroundColor', 'greenyellow');
   for(var i = 0; i < 7; i++) $("#dateCell_" + i).css("color", "#000000");
