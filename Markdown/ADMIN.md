@@ -85,7 +85,7 @@
 연락처는 [사용설명서](https://github.com/luftaquila/ajoumeow/blob/master/Markdown/MANUAL.md#-%EC%9E%85%EB%A0%A5-%ED%95%84%ED%84%B0%EB%A7%81) 최상단에 있습니다.
 <br>
 
-`Record`, `Receiver`, `Edit Log`, `Statistics`, `NameList`, `1365` 시트가 있습니다.  
+`Record`, `Receiver`, `Edit Log`, `Statistics`, `NameList`, `1365`, `Schedule` 시트가 있습니다.  
 * `Record` 시트는 급식 신청 내역을 기록하는 시트입니다.
 * `Receiver` 시트는 마일리지 인증 내역을 기록하는 시트입니다.
 * `Edit Log` 시트는 급식 수정 및 삭제 내역을 기록하는 시트입니다.
@@ -96,7 +96,7 @@
 
 ### ✔ 시트 데이터 설정
 * `Statistics` 시트의 학기 기간은 수동으로 설정해야 합니다.
-  + **G2** 셀에서 이번 학기 시작일을 선택합니다. 셀을 선택하면 달력이 표시됩니다.
+  + **G2** 셀에서 이번 학기 시작일을 선택합니다. 셀을 더블 클릭하면 달력이 표시됩니다.
   + **J2** 셀에서 이번 학기 종료일을 선택합니다.
   + **M2** 셀에서 지난 학기 시작일을 선택합니다.
   + **N2** 셀에서 지난 학기 종료일을 선택합니다.
