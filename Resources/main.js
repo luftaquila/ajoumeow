@@ -6,6 +6,7 @@ $(function() {
   load();
 });
 function load() {
+  stat = [false, false];
   $('input').attr('disabled', true);
   $("#latestUpdate").html("Loading...");
   $('svg').addClass('rotating');
@@ -32,6 +33,18 @@ function load() {
         $("#this_t_" + i).html(parseFloat(rankArray[i - 1][1]));
         $("#past_t_" + i).html(parseFloat(rankArray[i - 1][3]));
       }
+    }
+  });
+  $.ajax({
+    url: "https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec",
+    data: encodeURI('타입=일정'),
+    type: "POST",
+    dataType: 'text',
+    cache: false,
+    success: function(response) {
+      scheduleList = response.split('\n').map((line) => line.split(','));
+      stat[0] = true;
+      setCalendar();
     }
   });
 }
@@ -105,20 +118,9 @@ function setData(table) {
       MicroModal.close('askName');
     });
   }
-  calendarCount = 0;
-  setCalendar('9/2(월)', '★개강★', true);
-  setCalendar('1/4(토)', '회장생일', true);
 
-  if(Cookies.get('rainbowBlock')) {
-    $('#rainbowBlock').prop('checked', true);
-    $('.dogriver').removeClass('dogriver');
-  }
-  else {
-    $('#rainbowBlock').prop('checked', false);
-    for(var i = 0; i <= calendarCount; i++ ) {
-      $('.cal' + i).addClass('dogriver');
-    }
-  }
+  stat[1] = true;
+  setCalendar();
 
   $('svg').removeClass('rotating');
   $('input').attr('disabled', false);
@@ -164,22 +166,37 @@ function locator(targetID) {
   targetDate = new Date(year, 0, 1 + (targetDate % 7) + ((week + Math.floor(targetDate / 7) - 1) * 7) - new Date(year, 0, week * 7).getDay()).format('yyyy-mm-dd');
   return [targetDate, targetCourse];
 }
-function setCalendar(targetDay, targetText, isRainbow) {
-  calendarCount += 1;
-  try {
-    targetDayNum = targetDay.substr(2, 2);
-    var cel = new Date(year, targetDay.substr(0, 1) - 1, Number(targetDayNum) ? targetDayNum : targetDayNum.substr(0, 1));
-    if(cel >= new Date(new Date(today.format('yyyy-mm-dd')) - 9 * 3600 * 1000) && cel < new Date(year, 0, 8 + ((week + 1) * 7) - new Date(year, 0, week * 7).getDay())) {
-      if(isRainbow) {
-        $('#rainbowBlockBox').css('display', 'block');
-        $('td:contains(' + targetDay + ')').addClass('dogriver');
+function setCalendar() {
+  if(stat[0] && stat[1]) {
+    calendarCount = 0;
+    for(i in scheduleList) {
+      if(!scheduleList[i][0]) break;
+      try {
+        targetDayNum = scheduleList[i][0].substr(2, 2);
+        var cel = new Date(year, scheduleList[i][0].substr(0, 1) - 1, Number(targetDayNum) ? targetDayNum : targetDayNum.substr(0, 1));
+        if(cel >= new Date(new Date(today.format('yyyy-mm-dd')) - 9 * 3600 * 1000) && cel < new Date(year, 0, 8 + ((week + 1) * 7) - new Date(year, 0, week * 7).getDay())) {
+          if(scheduleList[i][2] == 'true') {
+            $('#rainbowBlockBox').css('display', 'block');
+            $('td:contains(' + scheduleList[i][0] + ')').addClass('dogriver').addClass('rainbow');
+          }
+          $('td:contains(' + scheduleList[i][0] + ')').addClass('cal' + calendarCount);
+          $('.cal' + calendarCount).html(scheduleList[i][1]);
+        }
       }
-      $('td:contains(' + targetDay + ')').addClass('cal' + calendarCount);
-      $('.cal' + calendarCount).html(targetText);
+      catch (e) { }
+      finally { }
+      calendarCount += 1;
+    }
+
+    if(Cookies.get('rainbowBlock')) {
+      $('#rainbowBlock').prop('checked', true);
+      $('.dogriver').removeClass('dogriver');
+    }
+    else {
+      $('#rainbowBlock').prop('checked', false);
+      $('.rainbow').addClass('dogriver');
     }
   }
-  catch (e) { }
-  finally { }
 }
 function dataSize(s, b, i, c) { for(b = i = 0; c = s.charCodeAt(i++); b += c >> 11 ? 3 : c >> 7 ? 2 : 1); return b; }
 function mileageDisplayer() { MicroModal.close('rankModal'); MicroModal.show('mileModal'); }
@@ -222,7 +239,7 @@ function eventListener() {
       Cookies.set('rainbowBlock', 'true', {expires : 14});
     }
     else {
-      for(var i = 0; i <= calendarCount; i++ ) { $('.cal' + i).addClass('dogriver'); }
+      $('.rainbow').addClass('dogriver');
       Cookies.remove('rainbowBlock');
     }
   });
