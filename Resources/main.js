@@ -353,7 +353,7 @@ function contextLoader() {
   });
 }
 function military() {
-  if(new Date() > new Date(2019, 10, 4, 9, 0, 0, 0) && new Date() < new Date(2019, 10, 20, 0, 0, 0, 0)) {
+  if(new Date() > new Date(2019, 10, 4, 9) && new Date() < new Date(2019, 10, 20) {
     $('#disabler').click(function() {
       if($('#disabler').is(':checked')) MicroModal.show('confirmClose');
       else Cookies.remove('getOut');
