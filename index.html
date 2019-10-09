@@ -263,11 +263,48 @@
         <a id='info' class="ext" href="" style="color: #0366d6;">About</a>&nbsp;&nbsp;
         <a class="ext" target='_blank' href="https://docs.google.com/spreadsheets/d/1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A/edit?usp=sharing" style="color:#0366d6">Sheet</a>&nbsp;&nbsp;
         <a class="ext" href="/ajoumeow/calculator" style="color: #0366d6;">Calc</a><br><span style="font-size:0.4rem"><br></span>
+        <span id='infotext'></span>
         <!-- Info Text Here -->
-
       </div>
     </div>
     <div id='modals'>
+      <div class="modal micromodal-slide" id="saveme" aria-hidden="true">
+        <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+          <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="saveme-title" style="width: 100%">
+            <header class="modal__header">
+              <h2 class="modal__title" id="saveme-title" style="font-size: 1.8rem">살려주세요</h2>
+              <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+            </header>
+            <main class="modal__content" id="saveme-content" style="text-align:center;">
+              여러분 안녕!<br>
+              저는 과거에서 날아온 민간인 오병준이에요!<br>
+              11월 4일부터 제가 인편을 받을 수 있어요!<br>
+              은혜는 잊지 않을게요 한번만 써주세요....<br><br>
+              생년월일은 1999년 05월 12일이에요!<br>
+              <a href="http://www.airforce.mil.kr:8081/user/indexSub.action?codyMenuSeq=156893223&siteId=last2&menuUIType=sub" style="color: #0366d6;  text-decoration: underline; text-underline-position: under;">편지 쓰러 가기 +_+</a><br>
+            </main>
+            <footer class="modal__footer" style="text-align:right; font-size: 0.8rem">
+              <label for="disabler"><input type="checkbox" id="disabler">&nbsp;일주일동안 보지 않기 ㅠㅠ</input></label>
+            </footer>
+          </div>
+        </div>
+      </div>
+      <div class="modal micromodal-slide" id="confirmClose" aria-hidden="true">
+        <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+          <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="confirmClose-title" style="width: 100%">
+            <header class="modal__header">
+              <h2 class="modal__title" id="confirmClose-title">진짜 일주일동안 안 볼 거에요?</h2>
+              <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+            </header>
+            <main class="modal__content" id="confirmClose-content" style="text-align:center;">
+              다시 한 번만 생각해 봐요...
+            </main>
+            <footer class="modal__footer" style="text-align:right">
+              <input type="button" id='shut' class="modal__btn modal__btn-primary" value="응">&nbsp;
+            </footer>
+          </div>
+        </div>
+      </div>
       <div class="modal micromodal-slide" id="askName" aria-hidden="true">
         <div class="modal__overlay" tabindex="-1" data-micromodal-close>
           <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="askName-title">

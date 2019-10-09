@@ -59,7 +59,7 @@ function handleResponse(e) {
               sheet.getRange('B' + (i + 2)).setValue(e.parameter['수정 이름']);
               var log = [ new Date(), '수정', e.parameter['이름'], e.parameter['날짜'], e.parameter['코스'], e.parameter['수정 이름'] ];
               doc.getSheetByName('Edit Log').getRange(doc.getSheetByName('Edit Log').getLastRow() + 1, 1, 1, 6).setValues([log]);
-              doc.getSheetByName('Edit Log').getRange('A:H').setHorizontalAlignment('center');
+              doc.getSheetByName('Edit Log').getRange('A:F').setHorizontalAlignment('center');
               break;
             } else continue;
           } else continue;
@@ -75,7 +75,7 @@ function handleResponse(e) {
               sheet.deleteRow(i + 2);
               var log = [ new Date(), '삭제', e.parameter['이름'], e.parameter['날짜'], e.parameter['코스'] ];
               doc.getSheetByName('Edit Log').getRange(doc.getSheetByName('Edit Log').getLastRow() + 1, 1, 1, 5).setValues([log]);
-              doc.getSheetByName('Edit Log').getRange('A:H').setHorizontalAlignment('center');
+              doc.getSheetByName('Edit Log').getRange('A:F').setHorizontalAlignment('center');
               break;
             } else continue;
           } else continue;

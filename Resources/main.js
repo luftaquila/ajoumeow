@@ -4,6 +4,8 @@ $(function() {
   eventListener();
   howsTheWeather();
   load();
+
+  military();
 });
 function load() {
   stat = [false, false];
@@ -349,6 +351,20 @@ function contextLoader() {
       hide: function() { $(this).removeClass('focusing'); }
     }
   });
+}
+function military() {
+  if(new Date() > new Date(2019, 10, 4, 9, 0, 0, 0) && new Date() < new Date(2019, 10, 20, 0, 0, 0, 0)) {
+    $('#disabler').click(function() {
+      if($('#disabler').is(':checked')) MicroModal.show('confirmClose');
+      else Cookies.remove('getOut');
+    });
+    $('#shut').click(function() {
+      MicroModal.close('confirmClose');
+      Cookies.set('getOut', true, {expires: 3});
+    });
+    if(!Cookies.get('getOut')) MicroModal.show('saveme');
+  }
+  if(new Date() > new Date(2019, 9, 21)) $('#infotext').text('D - ' + Math.round(Math.abs((new Date(2021, 7, 1) - new Date()) / (24 * 60 * 60 * 1000)) + 1));
 }
 var dateFormat = function () {
   var	token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g,
