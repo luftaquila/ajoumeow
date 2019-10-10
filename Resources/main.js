@@ -4,8 +4,7 @@ $(function() {
   eventListener();
   howsTheWeather();
   load();
-
-  military();
+  //military();
 });
 function load() {
   stat = [false, false];
@@ -174,8 +173,8 @@ function setCalendar() {
     for(i in scheduleList) {
       if(!scheduleList[i][0]) break;
       try {
-        targetDayNum = scheduleList[i][0].substr(2, 2);
-        var cel = new Date(year, scheduleList[i][0].substr(0, 1) - 1, Number(targetDayNum) ? targetDayNum : targetDayNum.substr(0, 1));
+        targetDayNum = scheduleList[i][0].substring(scheduleList[i][0].indexOf('/') + 1, scheduleList[i][0].indexOf('('));
+        var cel = new Date(year, Number(scheduleList[i][0].substring(0, scheduleList[i][0].indexOf('/'))) - 1, Number(targetDayNum) ? targetDayNum : targetDayNum.substr(0, 1));
         if(cel >= new Date(new Date(today.format('yyyy-mm-dd')) - 9 * 3600 * 1000) && cel < new Date(year, 0, 8 + ((week + 1) * 7) - new Date(year, 0, week * 7).getDay())) {
           if(scheduleList[i][2] == 'true') {
             $('#rainbowBlockBox').css('display', 'block');
@@ -353,7 +352,7 @@ function contextLoader() {
   });
 }
 function military() {
-  if(new Date() > new Date(2019, 10, 4, 9) && new Date() < new Date(2019, 10, 20) {
+  if(new Date() > new Date(2019, 10, 4, 9) && new Date() < new Date(2019, 10, 20)) {
     $('#disabler').click(function() {
       if($('#disabler').is(':checked')) MicroModal.show('confirmClose');
       else Cookies.remove('getOut');
