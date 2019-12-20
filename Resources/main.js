@@ -4,8 +4,7 @@ $(function() {
   eventListener();
   howsTheWeather();
   load();
-
-  military();
+  //military();
 });
 function load() {
   stat = [false, false];
