@@ -39,6 +39,14 @@ html {
  -ms-overflow-style: none;
   font-family: 'Nanum Gothic', sans-serif;
 }
+
+/*
+body {
+        background: url('/ajoumeow/Resources/Images/christmas.png') no-repeat;
+        background-size: cover;
+}
+*/
+
 tr {
   height: 1.3rem;
   font-size: 0.813rem;
