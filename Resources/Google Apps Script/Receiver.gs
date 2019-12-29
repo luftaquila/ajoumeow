@@ -84,7 +84,7 @@ function handleResponse(e) {
     }
     else if(e.parameter['타입'] == '일정') {
       var data = doc.getSheetByName('Schedule').getRange('A2:C').getValues(), csv = "";
-      for (i in data) { csv += data[i][0] + ',' + data[i][1] + ',' + data[i][2] + '\n'; }
+      for (i in data) { csv += data[i][0] + ',' + data[i][1] + ',' + data[i][2] + ',' + data[i][3] + '\n'; }
       return ContentService
             .createTextOutput(csv)
             .setMimeType(ContentService.MimeType.CSV);
