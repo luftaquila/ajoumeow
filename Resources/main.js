@@ -171,17 +171,17 @@ function setCalendar() {
   if(stat[0] && stat[1]) {
     calendarCount = 0;
     for(i in scheduleList) {
-      if(!scheduleList[i][0]) break;
+      if(!scheduleList[i][1]) break;
       try {
-        targetDayNum = scheduleList[i][0].substring(scheduleList[i][0].indexOf('/') + 1, scheduleList[i][0].indexOf('('));
-        var cel = new Date(year, Number(scheduleList[i][0].substring(0, scheduleList[i][0].indexOf('/'))) - 1, Number(targetDayNum) ? targetDayNum : targetDayNum.substr(0, 1));
+        targetDayNum = scheduleList[i][1].substring(scheduleList[i][1].indexOf('/') + 1, scheduleList[i][1].indexOf('('));
+        var cel = new Date(Number(scheduleList[i][0]), Number(scheduleList[i][1].substring(0, scheduleList[i][1].indexOf('/'))) - 1, Number(targetDayNum) ? targetDayNum : targetDayNum.substr(0, 1));
         if(cel >= new Date(new Date(today.format('yyyy-mm-dd')) - 9 * 3600 * 1000) && cel < new Date(year, 0, 8 + ((week + 1) * 7) - new Date(year, 0, week * 7).getDay())) {
-          if(scheduleList[i][2] == 'true') {
+          if(scheduleList[i][3] == 'true') {
             $('#rainbowBlockBox').css('display', 'block');
-            $('td:contains(' + scheduleList[i][0] + ')').addClass('dogriver').addClass('rainbow');
+            $('td:contains(' + scheduleList[i][1] + ')').addClass('dogriver').addClass('rainbow');
           }
-          $('td:contains(' + scheduleList[i][0] + ')').addClass('cal' + calendarCount);
-          $('.cal' + calendarCount).html(scheduleList[i][1]);
+          $('td:contains(' + scheduleList[i][1] + ')').addClass('cal' + calendarCount);
+          $('.cal' + calendarCount).html(scheduleList[i][2]);
         }
       }
       catch (e) { }
