@@ -29,7 +29,7 @@ function load() {
   var thisMonth = '<table style="text-align:center;"><tr><td colspan="4">' + new Date().getFullYear() + '년 ' + (new Date().getMonth() + 1) + '월 활동 내역</td></tr><tr height="30"><td>날짜</td><td>이름</td><td>코스</td><td>점수</td></tr>';
   var totalTime = '<table style="text-align:center;"><tr><td colspan="4"><hr style="width:auto;border-bottom:0px;text-align:left;margin-left:0px"></td></tr><tr><td colspan="4">전 기간 활동 내역</td></tr><tr height="30"><td>날짜</td><td>이름</td><td>코스</td><td>점수</td></tr>';
   data.forEach(function(value) {
-    if(new Date(value[0]).getMonth() == new Date().getMonth() && $('#name').val() == value[1]) { thisMonth += '<tr><td>' + value[0] + '</td><td>' + value[1] + '</td><td>' + value[2] + '</td><td>' + value[3] + '</td></tr>'; }
+    if(new Date(value[0]).getFullYear() == new Date().getFullYear() && new Date(value[0]).getMonth() == new Date().getMonth() && $('#name').val() == value[1]) { thisMonth += '<tr><td>' + value[0] + '</td><td>' + value[1] + '</td><td>' + value[2] + '</td><td>' + value[3] + '</td></tr>'; }
     if($('#name').val() == value[1]) { totalTime += '<tr><td>' + value[0] + '</td><td>' + value[1] + '</td><td>' + value[2] + '</td><td>' + value[3] + '</td></tr>'; }
   });
   $('#thisMonth').html(thisMonth + '</table>');
