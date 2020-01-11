@@ -51,36 +51,7 @@
       <span class='popup' id='toApply'>회원 등록</span><br><br>
       <span class='popup' id='toLogin'>로그인</span>
     </div>
-    
-    <div class='container' id='memberApply' style='display: block'>
-      <div>
-        회원 구분<br>
-        <label for='New'><input type='radio' name='isNew' id='New' value='New'>신규 가입</input></label>
-        <label for='Old'><input type='radio' name='isNew' id='Old' value='Old'>기존 회원</input></label>
-      </div>
-      <div>
-        <input placeholder='이름' id='applyName' type='text' style='width: 100' required>
-      </div>
-      <div>
-        <input placeholder='학번' id='applyStudentNumber' type='number' style='width: 100' required>
-      </div>
-      <div>
-        <select id='applyCollege' required>
-          <option value=''>단과대학</option>
-          <option value='공과대학'>공과대학</option>
-          <option value='정보통신대학'>정보통신대학</option>
-          <option value='자연과학대학'>자연과학대학</option>
-          <option value='경영대학'>경영대학</option>
-          <option value='인문대학'>인문대학</option>
-          <option value='사회과학대학'>사회과학대학</option>
-          <option value='의과대학'>의과대학</option>
-          <option value='간호대학'>간호대학</option>
-          <option value='약학대학'>약학대학</option>
-          <option value='국제학부'>국제학부</option>
-          <option value='다산학부대학'>다산학부대학</option>
-        </select>
-      </div>
-          
+         
     <div class="container" id='mainTable' style='display: none'>
       <ul class="tabs">
         <li class="tab-link current" data-tab="tab-1">평일</li>
@@ -307,6 +278,41 @@
     </div>
   
     <div id='modals'>
+      
+      <div class="modal micromodal-slide" id="applyForm" aria-hidden="true">
+        <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+          <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="applyForm-title">
+            <header class="modal__header">
+              <h2 class="modal__title" id="applyForm-title">회원 등록</h2>
+              <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+            </header>
+            <main class="modal__content" id="applyForm-content">
+              <div style="position: relative">
+                <div>
+                  회원 구분<br>
+                  <label for='New'><input type='radio' name='isNew' id='New' value='New'>신규 가입</input></label>
+                  <label for='Old'><input type='radio' name='isNew' id='Old' value='Old'>기존 회원</input></label>
+                </div>
+                <div>
+                  <input placeholder='이름' id='applyName' type='text' style='width: 100' required>
+                </div>
+                <div>
+                  <input placeholder='학번' id='applyStudentNumber' type='number' style='width: 100' required>
+                </div>
+                <div>
+                  <select id='applyCollege' required>
+                  </select>
+                </div>
+                <div>
+                  <select id='applyDepartment' required></select>
+                </div>
+            
+              </div>
+            </main>
+          </div>
+        </div>
+      </div>
+      
       <div class="modal micromodal-slide" id="saveme" aria-hidden="true">
         <div class="modal__overlay" tabindex="-1" data-micromodal-close>
           <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="saveme-title" style="width: 100%">
@@ -351,7 +357,7 @@
               <h2 class="modal__title" id="randCatModal-title">랜덤랜덤 고양이</h2>
               <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
             </header>
-            <main class="modal__content" id="mapModal-content">
+            <main class="modal__content" id="randCatModal-content">
               <div style="position: relative">
                 <img id='randCatGif' src="" style="width:100%; height:auto">
               </div>
