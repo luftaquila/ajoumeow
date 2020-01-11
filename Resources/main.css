@@ -92,6 +92,10 @@ ul.tabs li.current {
   text-decoration: underline;
 }
 
+.inputBox {
+  padding: 5 0 5 0;
+}
+
 table { border-collapse: collapse; }
 .waffle { margin: 7 auto 0; }
 
