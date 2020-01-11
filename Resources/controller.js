@@ -16,11 +16,11 @@ $(function() {
   var applyCollegeHtml = '<option value="">단과대학</option>';
      
   for(var college in collegeDict) applyCollegeHtml += '<option value="' + college + '">' + college + '</option>';
-  
   $('#applyCollege').html(applyCollegeHtml);
+  
   $('#applyCollege').change(function() {
     var applyDepartmentHtml = '<option value="">학과</option>';
     for(var i in collegeDict[$(this).val()]) applyDepartmentHtml += '<option value="' + collegeDict[$(this).val()][i] + '">' + collegeDict[$(this).val()][i] + '</option>';
-    console.log(applyDepartmentHtml);
+    $('#applyDepartment').html(applyDepartmentHtml);
   });
 });
