@@ -96,6 +96,7 @@ ul.tabs li.current {
   padding: 5 0 5 0;
 }
 
+select { width: 150; height: 25; }
 table { border-collapse: collapse; }
 .waffle { margin: 7 auto 0; }
 
