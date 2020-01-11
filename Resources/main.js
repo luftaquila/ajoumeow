@@ -227,6 +227,11 @@ function eventListener() {
   $('#onNoticeClick').click(function() { MicroModal.show('noticeModal'); });
   $('#onRankClick').click(function() { MicroModal.show('rankModal'); });
   $('#onMapClick').click(function() { $('img[usemap]').rwdImageMaps(); MicroModal.show('mapModal'); });
+  $('#randCat').click(function() {
+    MicroModal.show('randCatModal');
+    var randNum = Math.floor(Math.random() * 404) + 1;
+    $('#randCatGif').attr('src', 'src="https://rand.cat/gifs/cat-' + randNum + '.gif"');
+  });
   $('ul.tabs li').click(function() {
     var tab_id = $(this).attr('data-tab');
     $('ul.tabs li').removeClass('current');
