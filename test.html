@@ -288,8 +288,8 @@
             </header>
             <main class="modal__content" id="applyForm-content">
               <div style="position: relative">
-                <div>
-                  회원 구분<br>
+                <div style='font-size: 0.7rem'>
+                  <span style='font-size: 0.8rem'>회원 구분</span><br>
                   <label for='New'><input type='radio' name='isNew' id='New' value='New'>신규 가입</input></label>
                   <label for='Old'><input type='radio' name='isNew' id='Old' value='Old'>기존 회원</input></label>
                 </div>
@@ -297,7 +297,7 @@
                   <input placeholder='이름' id='applyName' type='text' style='width: 100' required>
                 </div>
                 <div class='inputBox'>
-                  <input placeholder='학번' id='applyStudentNumber' type='number' style='width: 100' required>
+                  <input placeholder='학번' id='applyStudentNumber' type='number' maxlength="9" style='width: 100' required>
                 </div>
                 <div class='inputBox'>
                   <select id='applyCollege' required>
