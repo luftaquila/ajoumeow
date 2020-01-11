@@ -230,7 +230,7 @@ function eventListener() {
   $('#randCat').click(function() {
     MicroModal.show('randCatModal');
     var randNum = Math.floor(Math.random() * 404) + 1;
-    $('#randCatGif').attr('src', 'src="https://rand.cat/gifs/cat-' + randNum + '.gif"');
+    $('#randCatGif').attr('src', 'https://rand.cat/gifs/cat-' + randNum + '.gif');
   });
   $('ul.tabs li').click(function() {
     var tab_id = $(this).attr('data-tab');
