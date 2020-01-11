@@ -20,7 +20,7 @@ $(function() {
   $('#applyCollege').html(applyCollegeHtml);
   $('#applyCollege').change(function() {
     var applyDepartmentHtml = '<option value="">학과</option>';
-    for(var department in collegeDict[$('#applyCollege').value()]) applyDepartmentHtml += '<option value="' + department + '">' + department + '</option>';
+    for(var department in collegeDict[$('#applyCollege').val()]) applyDepartmentHtml += '<option value="' + department + '">' + department + '</option>';
     console.log(applyDepartmentHtml);
   });
 });
