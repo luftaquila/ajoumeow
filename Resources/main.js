@@ -122,6 +122,7 @@ function setData(table) {
 
   stat[1] = true;
   setCalendar();
+  randomizeCat();
 
   $('svg').removeClass('rotating');
   $('input').attr('disabled', false);
@@ -227,14 +228,7 @@ function eventListener() {
   $('#onNoticeClick').click(function() { MicroModal.show('noticeModal'); });
   $('#onRankClick').click(function() { MicroModal.show('rankModal'); });
   $('#onMapClick').click(function() { $('img[usemap]').rwdImageMaps(); MicroModal.show('mapModal'); });
-  $('#randCat').click(function() {
-    function randomizeCat() {
-      var randNum = Math.floor(Math.random() * 404) + 1;
-      $('#randCatGif').attr('src', 'https://rand.cat/gifs/cat-' + randNum + '.gif');
-    }
-    MicroModal.show('randCatModal', { onClose : randomizeCat });
-    randomizeCat();
-  });
+  $('#randCat').click(function() { MicroModal.show('randCatModal', { onClose : randomizeCat }); });
   $('ul.tabs li').click(function() {
     var tab_id = $(this).attr('data-tab');
     $('ul.tabs li').removeClass('current');
@@ -256,6 +250,10 @@ function eventListener() {
     validator('삭제', deleteData[0], deleteData[1]);
     MicroModal.close('deleteConfirm');
   });
+}
+function randomizeCat() {
+  var randNum = Math.floor(Math.random() * 404) + 1;
+  $('#randCatGif').attr('src', 'https://rand.cat/gifs/cat-' + randNum + '.gif');
 }
 function howsTheWeather() {
   $.ajax({
