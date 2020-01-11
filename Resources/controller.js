@@ -14,14 +14,13 @@ $(function() {
     '기타' : ['기타']
   }
   var applyCollegeHtml = '<option value="">단과대학</option>';
-  Object.keys(collegeDict)
      
   for(var college in collegeDict) applyCollegeHtml += '<option value="' + college + '">' + college + '</option>';
-  console.log(applyCollegeHtml);
-  
   
   $('#applyCollege').html(applyCollegeHtml);
   $('#applyCollege').change(function() {
-
+    var applyDepartmentHtml = '<option value="">학과</option>';
+    for(var department in collegeDict[$('#applyCollege').value()]) applyDepartmentHtml += '<option value="' + department + '">' + department + '</option>';
+    console.log(applyDepartmentHtml);
   });
 });
