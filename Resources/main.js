@@ -228,9 +228,12 @@ function eventListener() {
   $('#onRankClick').click(function() { MicroModal.show('rankModal'); });
   $('#onMapClick').click(function() { $('img[usemap]').rwdImageMaps(); MicroModal.show('mapModal'); });
   $('#randCat').click(function() {
-    MicroModal.show('randCatModal');
-    var randNum = Math.floor(Math.random() * 404) + 1;
-    $('#randCatGif').attr('src', 'https://rand.cat/gifs/cat-' + randNum + '.gif');
+    function randomizeCat() {
+      var randNum = Math.floor(Math.random() * 404) + 1;
+      $('#randCatGif').attr('src', 'https://rand.cat/gifs/cat-' + randNum + '.gif');
+    }
+    MicroModal.show('randCatModal', { onClose : randomizeCat });
+    randomizeCat();
   });
   $('ul.tabs li').click(function() {
     var tab_id = $(this).attr('data-tab');
