@@ -294,10 +294,10 @@
                   <label for='Old'><input type='radio' name='isNew' id='Old' value='Old'>기존 회원</input></label>
                 </div>
                 <div class='inputBox'>
-                  <input placeholder='이름' id='applyName' type='text' style='width: 100' required>
+                  <input placeholder='이름' id='applyName' type='text' style='width: 100; height: 25' required>
                 </div>
                 <div class='inputBox'>
-                  <input placeholder='학번' id='applyStudentNumber' type='number' maxlength="9" style='width: 100' required>
+                  <input placeholder='학번' id='applyStudentNumber' type='number' maxlength="9" style='width: 100; height: 25' required>
                 </div>
                 <div class='inputBox' style='padding:5 0 5 10'>
                   <select id='applyCollege' required>
@@ -306,7 +306,12 @@
                 <div class='inputBox' style='padding: 5 0 5 10'>
                   <select id='applyDepartment' required></select>
                 </div>
-            
+                <div class='inputBox'>
+                  <input placeholder='생년월일(yymmdd)' id='applyBirthday' type='number' maxlength="6" style='width: 100; height: 25' required>
+                </div>
+                <div class='inputBox'>
+                  <input placeholder="연락처" id="applyContact" type="tel" maxlength="13" pattern="010-[0-9]{4}-[0-9]{4}" style="width:150" required="">
+                </div>
               </div>
             </main>
           </div>
