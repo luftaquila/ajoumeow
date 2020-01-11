@@ -14,7 +14,7 @@ $(function() {
     '기타' : ['기타']
   }
   var applyCollegeHtml = '<option value="">단과대학</option>';
-  collegeDict.keys().foreach(college => applyCollegeHtml += '<option value="' + college + '">' + college + '</option>');
+  Object.keys(collegeDict).foreach(college => applyCollegeHtml += '<option value="' + college + '">' + college + '</option>');
   console.log(applyCollegeHtml);
   
   
