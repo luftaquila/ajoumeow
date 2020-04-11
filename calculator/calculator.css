@@ -1,8 +1,0 @@
-#reload, #nonManual, #Manual, #delete, #add, #mnadd, #confirmAdmin { cursor: pointer }
-
-td { padding: 0 5 0 5; }
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}

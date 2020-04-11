@@ -1,9 +1,10 @@
 $(function() {
-  lazyload();
-  contextLoader();
-  eventListener();
-  howsTheWeather();
-  load();
+    applySetup();
+    lazyload();
+    contextLoader();
+    eventListener();
+    howsTheWeather();
+    load();
   //military();
 });
 function load() {
@@ -50,6 +51,7 @@ function load() {
   });
 }
 function newYourNameIs(response) {
+  console.log(response)
   var startIndex, errCount = 0;
   var datum = response.split('\n').map((line) => line.split(','))
   var table = Array(14).fill('').map(x => Array(6).fill(''));
@@ -138,7 +140,7 @@ function validator(operationType, targetID, targetName, originalName) {
   else if(!originalName && originalName != undefined) alertify.error('이름을 입력하세요.');
   else if(targetName.indexOf(',') + 1) alertify.error('이름에 콤마(,)는 사용할 수 없습니다.');
   else if(operationType == '삭제' && targetDate == today.format('yyyy-mm-dd'))
-    alertify.error('당일 삭제는 불가능합니다. 대타를 구해 수정해주세요.');
+    alertify.error('당일 삭제는 불가능합니다.<br>대타를 구해 수정해주세요.');
   /*else if(operationType == '삭제' && targetDate == tomorrow.format('yyyy-mm-dd') && new Date().getHours() > 17)
       alertify.error('급식 전일 오후 6시 이후 취소는 불가능합니다.');*/
   else transmitter(operationType, targetName, targetDate, targetCourse, originalName);
@@ -288,6 +290,23 @@ function howsTheWeather() {
       $('#pm25').html('PM2.5 : ' + '<span id="pm25val">' + pm25 + '</span>' + '㎍/㎥');
       $('#pm10val').css('color', pm10 > 30 ? pm10 > 80 ? pm10 > 150 ? '#ff5959' : '#fd9b5a' : '#00c73c' : '#32a1ff');
       $('#pm25val').css('color', pm25 > 15 ? pm25 > 35 ? pm25 > 75 ? '#ff5959' : '#fd9b5a' : '#00c73c' : '#32a1ff');
+    }
+  });
+  $.ajax({
+    //url:'https://luftaquila.io/proxy?url=' + encodeURIComponent('http://ncov.mohw.go.kr/index_main.jsp'),
+    url:'https://luftaquila.io/proxy?url=' + encodeURIComponent('http://ncov.mohw.go.kr/bdBoardList_Real.do?brdId=&brdGubun=&ncvContSeq=&contSeq=&board_id=&gubun='),
+    type: "GET",
+    dataType: 'text',
+    cache: false,
+    success: function (res) {
+      res = $($.parseHTML(res));
+      var confirmed = res.find('th:contains("확진환자")').next().text();
+      var freed = res.find('th:contains("확진환자 격리해제")').next().text();
+      var dead = res.find('th:contains("사망자")').next().text();
+      $('#covid').text('COVID-19');
+      $('#confirmed').text('확진환자 : ' + confirmed);
+      $('#freed').text('퇴원환자 : ' + freed);
+      $('#dead').text('사망자 : ' + dead);
     }
   });
 }
