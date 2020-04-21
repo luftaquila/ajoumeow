@@ -118,6 +118,7 @@ td.thisWeek, td.nextWeek { border-right: 0.063rem SOLID #999999; }
 	width: 50px;
   top: 18px;
   right: 5px;
+  
 }
 svg {
   transition: transform 500ms cubic-bezier(.85,-0.48,.26,.67);
@@ -178,3 +179,37 @@ svg {
 }
 
 .ios { cursor: pointer; }
+
+.sidebar_container {
+  background: #ffffff;
+  opacity: 10;
+  height: 100%;
+  width: 160px;
+  position: fixed!important;
+  z-index: 1;
+  right: 0;
+  top: 0;
+  box-shadow:0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12)
+}
+.sidebar_overlay {
+  /*background: rgba(150, 150, 150, 0.8);*/
+
+  height: 100%;
+  width: 100%;
+}
+.animate-right {
+  position: relative;
+  animation: animateright 0.4s;
+}
+@keyframes animateright {
+  from { right: -300px; opacity: 0; }
+  to { right: 0; opacity: 1; }
+}
+.animate-left {
+  position: relative;
+  animation: animateleft 0.4s;
+}
+@keyframes animateleft {
+  from { right: 0; opacity: 1; }
+  to { right: -300px; opacity: 0; }
+}
