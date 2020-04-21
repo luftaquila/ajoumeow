@@ -21,10 +21,11 @@
     <div id='intro'>
         미유미유 관리자 페이지에 오신 것을 환영합니다.<br>
         <ul class="tabs">
-          <li class="tab-link current" data-tab="tab-1">급식 인증기</li>
+          <li class="tab-link current" data-tab="tab-1">급식 인증</li>
           <li class="tab-link" data-tab="tab-2">설정</li>
-          <li class="tab-link" data-tab="tab-3">1365</li>
-          <li class="tab-link" data-tab='tab-4'>신입회원 모집</li>
+          <li class='tab-link' data-tab='tab-3'>회원 관리</li>
+          <li class="tab-link" data-tab="tab-4">1365</li>
+          <li class="tab-link" data-tab='tab-5'>신입회원 모집</li>
         </ul>
     </div>
     <div id='tab-1' class="tab-content current">
@@ -84,10 +85,20 @@
                 <td></td>
             </tr>
         </table><br>
+        <div style='font-size: 0.7rem'>
+          회원 등록과 신입 모집은 오늘 날짜가 설정 기간에 포함되거나<br>
+          추가 허용 여부가 TRUE일 때, 둘 중 한 조건만 만족해도 활성화됩니다.<br><br>
+          추가 허용 항목은 평소에는 FALSE로 맞춰 놓고<br>
+          기간외 등록을 희망하는 사람이 있을 때만 잠깐 TRUE로 바꿔 허용했다가<br>
+          해당 사람이 등록을 마치면 다시 FALSE로 바꾸면 됩니다.
+        </div>
         <!--<select id='namelist-config'></select><br>-->
         <div id='namelistWrap'></div>
     </div>
     <div id='tab-3' class='tab-content'>
+      hi
+    </div>
+    <div id='tab-4' class='tab-content'>
       <div style='font-size:0.7rem'>
         1365 봉사활동 확인서를 자동으로 작성한 후 다운로드합니다.<br>
         아래에서 생성할 년/월 및 명단 데이터를 선택한 후 다운로드 버튼을 클릭하세요.<br>
@@ -103,7 +114,7 @@
       <span style="font-size: 0.7rem">모바일 크롬 브라우저로 다운로드 버튼을 누르면<br>다운로드되는 대신 Google Sheets 앱으로 연결됩니다.<br>
           카톡 인앱 브라우저 등 크롬 외 다른 브라우저에서는 정상적으로 다운로드됩니다.</span>
     </div>
-    <div id='tab-4' class='tab-content' style='font-size: 0.9rem'>
+    <div id='tab-5' class='tab-content' style='font-size: 0.9rem'>
       신입 모집 설문지 : <a href='https://luftaquila.io/ajoumeow/register/'>luftaquila.io/ajoumeow/register/</a><br>
       설문지 링크 QR코드 : <br><img src='/ajoumeow/Resources/Images/frame.png'><br>
       <a href="https://docs.google.com/spreadsheets/d/14fRlX0UWFbMzDjhueOPi9ivZFE799kui6-1UixzgvWg/edit?usp=drivesdk">모집 설문지 응답 시트</a><br><br>

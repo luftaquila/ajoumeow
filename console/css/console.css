@@ -1,0 +1,3 @@
+a[disabled="disabled"] {
+        pointer-events: none;
+}

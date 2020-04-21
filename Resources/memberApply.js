@@ -1,18 +1,22 @@
 function applySetup() {
     $.ajax({ // Request settings
-        url: "https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec",
-        data: encodeURI('type=requestSettings'),
+        url: 'https://luftaquila.io/ajoumeow/api/requestSettings',
         type: "POST",
-        dataType: 'text',
+        dataType: 'json',
         cache: false,
-        success: function(response) {
-            settingList = response.split('\n').map((line) => line.split(','));
-            
-            var current = settingList[0][1].split('-'), past;
+        success: function(res) {
+          settings = res;
+            var current = settings['currentSemister'].split('-'), past;
             if(Number(current[1]) == 2) past = current[0] + '-' + '1';
             else past = (Number(current[0]) - 1) + '-' + '2';
-            
-            
+            $.ajax({ // 이번학기 신규가입자 명단 요청
+                url: "https://script.google.com/macros/s/AKfycbwOT83RGEPIgdu1oTM9VvBqyRN6jcEXRkGlpdqG1EUCr1HdaBxX/exec",
+                data: encodeURI('type=requestAllSheetContent&semister=' + settings['currentSemister'] + '학기'),
+                type: "POST",
+                dataType: 'text',
+                cache: false,
+                success: function(response) { newMemberList = response.split('\n').map((line) => line.split(',')); }
+            });  
             $.ajax({ // 이전학기 가입자 명단 요청
                 url: "https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec",
                 data: encodeURI('type=requestMemebers&semister=' + past),
@@ -21,11 +25,8 @@ function applySetup() {
                 cache: false,
                 success: function(response) { memberList = response.split('\n').map((line) => line.split(',')); }
             });
-            var assignDate = settingList[1][1].split('~');
-            if( (new Date() > new Date(assignDate[0]) && new Date() < new Date(new Date(assignDate[1]).getTime() + 60 * 60 * 24 * 1000)) || (settingList[2][1] == 'true')) {
-                $('#toApply').html('회원 등록<br><span style="font-size:0.4rem"><br></span>').click(memberApply);
-            }
-        }
+        },
+        error: function(req, stat, err) { alertify.error('responseCode : ' + req.status + '<br>Error : ' + req.responseText); }
     });
 }
 
@@ -71,7 +72,7 @@ function memberApply() {
         $('#applySubmit').click(function() {
             if(!$.trim($('#applyName').val())) alertify.error('이름을 입력하세요.');
             else if(!new RegExp(/\d{9}/ig).test($('#applyStudentNumber').val())) alertify.error('학번이 올바르지 않습니다');
-            else if(!new RegExp(/^[0-9][0-9]([0][1-9]|[1][1-2])[0-3][0-9]$/ig).test($('#applyBirthday').val())) alertify.error('생년월일이 올바르지 않습니다.<br>주민번호 앞 6자리를 입력하세요.');
+            else if(!new RegExp(/^[0-9][0-9]([0][1-9]|[1][0-2])[0-3][0-9]$/ig).test($('#applyBirthday').val())) alertify.error('생년월일이 올바르지 않습니다.<br>주민번호 앞 6자리를 입력하세요.');
             else if(!new RegExp(/010-\d{4}-\d{4}/ig).test($('#applyContact').val())) alertify.error('연락처가 올바르지 않습니다.');
             else if(!$('#applyDepartment').val()) alertify.error('학과를 선택하세요');
             else if(!$('#applyVolunteer').val()) alertify.error('1365 아이디를 입력하세요.<br>봉사시간 지급을 윈치 않으면<br>공백(스페이스) 하나를 입력하세요.');
@@ -90,7 +91,7 @@ function memberApply() {
                             '&전화번호=' + $('#applyContact').val() +
                             '&생년월일=' + $('#applyBirthday').val() +
                             '&1365 아이디=' + $.trim($('#applyVolunteer').val()) +
-                            '&가입 학기=' + '20' + settingList[0][1] + '학기';
+                            '&가입 학기=' + '20' + settings['currentSemister'] + '학기';
                             console.log(payload);
                     }
                     else alertify.error('신규 가입 회원이 아닙니다.');
@@ -114,17 +115,22 @@ function memberApply() {
                     MicroModal.close('applyForm');
                     $('#toApply').html('');
                     Cookies.set('fillName', $.trim($('#applyName').val(), {expires: 365}));
-                    alertify.log('등록 진행 중...');
+
                     $('input:radio[name=isNew]:checked').prop('checked', false);
                     $('.inputField').val('');
                     $.ajax({
-                        url: "https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec",
-                        data: encodeURI('type=applyMember&' + payload),
+                      url:"https://luftaquila.io/ajoumeow/api/apply",
+                        //url: "https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec",
+                        data: encodeURI(/*'type=applyMember&' + */payload),
                         type: "POST",
-                        dataType: 'text',
+                        dataType: 'json',
                         cache: false,
-                        success: function(response) { alertify.success('등록이 완료되었습니다.'); },
-                        error: function(response) { alertify.error('ERR::APPLY_FAILURE<br>관리자에게 문의하세요.'); }
+                        success: function(response) {
+                          if(response.affectedRows) alertify.success('등록이 완료되었습니다.');
+                          else if(response.error == 'ER_DUP_ENTRY') aleryify.error('ERR::DATA_EXISTS<br>이미 등록된 학번입니다.');
+                          else alertify.error('ERR::' + response.error + '<br>관리자에게 문의하세요.');
+                        },
+                        error: function(req, stat, err) { alertify.error('ERR::APPLY_FAILURE<br>관리자에게 문의하세요.<br><br>responseCode : ' + req.status + '<br>Error : ' + req.responseText); }
                     });
                 }
             }
@@ -147,7 +153,20 @@ function memberApply() {
                         return;
                     }
                 }
-            } 
+            }
+            else {
+                for(var i in newMemberList) {
+                    if($('#applyName').val() == newMemberList[i][0]) {
+                        $('#applyStudentNumber').val(newMemberList[i][3]);
+                        $('#applyCollege').val(newMemberList[i][1]);
+                        
+                        var applyDepartmentHtml = '';
+                        for(var j in collegeDict[$('#applyCollege').val()]) applyDepartmentHtml += '<option value="' + collegeDict[$('#applyCollege').val()][j] + '">' + collegeDict[$('#applyCollege').val()][j] + '</option>';
+                        $('#applyDepartment').html(applyDepartmentHtml).val(newMemberList[i][2]);
+                        $('#applyContact').val(newMemberList[i][4]);
+                    }
+                }
+            }
         });
     }
 }

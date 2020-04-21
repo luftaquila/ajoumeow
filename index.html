@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="/ajoumeow/Resources/Libraries/alertify/alertify.default.css" id="toggleCSS" />
     <link rel="stylesheet" href="/ajoumeow/Resources/Libraries/micromodal/micromodal.min.css" />
     <link rel="stylesheet" href="/ajoumeow/Resources/Libraries/contextMenu/jquery.contextMenu.min.css" />
+    <link rel="stylesheet" href="/ajoumeow/Resources/Libraries/btn.css" />
     <link rel="stylesheet" href="/ajoumeow/Resources/main.css" />
     <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic&display=swap&subset=korean" rel="stylesheet">
     <meta charset="utf-8">
@@ -51,10 +52,13 @@
       <ul class="tabs">
         <li class="tab-link current" data-tab="tab-1">평일</li>
         <li class="tab-link" data-tab="tab-2">주말</li>
-        <div class="reload" style="display: inline; float: right">
+        <div class="reload" style='display: inline; float: right;'>
+          <div style='font-size: 1.5rem; padding: 10 0 0 15;'>&#9776;</span>
+          <!--
           <svg x="0px" y="0px" width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">
             <path fill-rule="evenodd" clip-rule="evenodd" d="M12.011 20c0-0.002 0-0.003 0-0.005 0-4.421 3.578-8.005 7.991-8.005 2.683 0 5.051 1.329 6.5 3.361l1.26-1.644c-1.834-2.254-4.627-3.696-7.76-3.696 -5.519 0-9.994 4.471-10.001 9.989H8.013l3.018 4.013L13.987 20H12.011zM32 20l-2.969-3.985L26 20h1.992c-0.003 4.419-3.579 8.001-7.99 8.001 -2.716 0-5.111-1.36-6.555-3.435l-1.284 1.644c1.832 2.314 4.66 3.803 7.84 3.803 5.524 0 10.001-4.478 10.001-10.001 0-0.004-0.001-0.008-0.001-0.012H32z"/>
           </svg>
+          -->
         </div>
         <div id='thanos' class='alive' style="display: inline; float: right; padding-right: 40;"></div>
       </ul>
@@ -273,14 +277,14 @@
         &nbsp;©<script>document.write(new Date().getFullYear())</script> <a href="https://luftaquila.io" style="color: #0366d6">LUFT - AQUILA.</a>&nbsp;
         <a id='info' class="ext" href="" style="color: #0366d6;">About</a>&nbsp;&nbsp;
         <a class="ext" target='_blank' href="https://docs.google.com/spreadsheets/d/1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A/edit?usp=sharing" style="color:#0366d6">Sheet</a>&nbsp;&nbsp;
-        <a class="ext" href="/ajoumeow/admin" style="color: #0366d6;">Admin</a><br><span style="font-size:0.4rem"><br></span>
+        <a class="ext" href="/ajoumeow/console" style="color: #0366d6;">Admin</a><br><span style="font-size:0.4rem"><br></span>
         <span id='infotext' style='display: none'></span>
         <span style="font-size:0.4rem"><br></span>
         <span class='popup' id='toApply'></span>
         <span class='popup' id='randCat'>랜덤랜덤 고양이</span><br><br>
         <!-- Info Text Here -->
           <span class="ad">⬇</span> 광고 클릭 한 번으로 개발자에게 <span class="ad">⬇</span><br>
-          <span class="ad">⬇</span> 아이스크림 하나 사 먹는 기쁨을 선물하세요. <span class="ad">⬇</span><br><br>
+          <span class="ad">⬇</span> 군것질의 기쁨을 선물하세요. <span class="ad">⬇</span><br><br>
           <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
           <!-- ajoumeow -->
           <ins class="adsbygoogle"
@@ -291,10 +295,27 @@
                data-full-width-responsive="true"></ins>
           <script> (adsbygoogle = window.adsbygoogle || []).push({}); </script>
       </div>
+      <div id='sidebar' style='display: none; position: fixed; top: 0; left: 0; height: 100%; width: 100%;'>
+        <div class='sidebar_overlay'>
+          <div class='sidebar_container animate-right' style='font-size: 0.8rem; padding: 10; text-align: center'>
+            <span id='sidebarClose' style='position: absolute; font-size: 2rem; top: 0; right: 10;'>×</span>
+            <br><br><br>
+            <div id='loginForm' style='display: none;'>
+              학번 : <input id='loginID' type="number" style='width: 90' placeholder='학번' /><br><br>
+              <a id='login' class='btn blue' style='font-size: 0.8rem'>로그인</a><br>
+              <a id='apply' class='btn green' style='font-size: 0.8rem'>회원 등록</a><br><br>
+              <span style='font-size: 0.6rem'>급식표 편집은<br>로그인 상태에서만 가능합니다.</span>
+            </div>
+            <div id='userInfo' style='display: none;'>
+              <span id='username'></span> 회원님 안녕하세요<br><br>
+              <a id='logout' class='btn red' style='font-size: 0.8rem'>로그아웃</a>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   
     <div id='modals'>
-      
       <div class="modal micromodal-slide" id="applyForm" aria-hidden="true">
         <div class="modal__overlay" tabindex="-1">
           <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="applyForm-title" style='width: 100%; text-align: center; max-height: 95%!important'>
@@ -341,7 +362,7 @@
                         <h4>제1조 (명칭)</h4>
                         본 단체는 “미유미유(MeYouMeow)” 라 칭한다. (이하 “동아리”라 함)
                         <h4>제2조 (소재지)</h4>
-                        본 동아리의 소재는 수원시 영통구 원천동 아주대학교에 둔다.
+                        본 동아리의 소재는 경기도 수원시 영통구 월드컵로 206, 아주대학교 제2학생회관 406호에 둔다.
                         <h4>제3조 (목적)</h4>
                         본 동아리는 아주대학교 교내 고양이들의 복지 개선 및 회원 상호 교류를 통한 우호증진 및 회원들의 권익과 발전에 기여함을 목적으로 한다.<br><br>
                         <h3>제 2 장 회 원</h3>
@@ -420,7 +441,7 @@
                         <h3>제 5 장 부 칙</h3>
                         <h4>제12조 (기타 운영에 관한 사항)</h4>
                         ① 기타 제반 사항은 관례에 따른다.<br>
-                        ② 위 회칙은 2020년 ??월 ??일부터 효력을 갖는다.<br>
+                        ② 위 회칙은 2020년 4월 10일부터 효력을 갖는다.<br>
                         ③ 동아리 가입 시, 1365 ID를 제출하지 않으면 미인증을 원칙으로 한다. (1365 ID 미제출에 대한 책임은 회원 본인이 진다.)<br><br>
                         + 병원 연락처 : 이지훈 동물 병원<br>
                         + 사료 지원 연락처 : 이미선 교수님 010-2078-7644<br>
@@ -503,7 +524,7 @@
         <div class="modal__overlay" tabindex="-1" data-micromodal-close>
           <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="askName-title">
             <header class="modal__header">
-              <h2 class="modal__title" id="askName-title">이름을 알려주세요</h2>
+              <h2 class="modal__title" id="askName-title">이름을 알려주세요.</h2>
               <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
             </header>
             <main class="modal__content" id="askName-content">
@@ -512,6 +533,22 @@
             </main>
             <footer class="modal__footer" style="text-align:right">
               <input type="button" id='nameSubmit' class="modal__btn modal__btn-primary" value="확인">&nbsp;
+            </footer>
+          </div>
+        </div>
+      </div>
+      <div class="modal micromodal-slide" id="requestApply" aria-hidden="true">
+        <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+          <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="requestApply-title">
+            <header class="modal__header">
+              <h2 class="modal__title" id="requestApply-title">잠깐!</h2>
+              <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+            </header>
+            <main class="modal__content" id="requestApply-content">
+              <span style='font-size:0.8rem'>회원 등록은 하셨나요?<br>등록하지 않으면 봉사시간 지급 등 전산에서 누락됩니다!</span>
+            </main>
+            <footer class="modal__footer" style="text-align:right">
+              <input type="button" id='goApply' class="modal__btn modal__btn-primary" value="회원 등록하기">&nbsp;
             </footer>
           </div>
         </div>

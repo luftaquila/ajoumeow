@@ -16,17 +16,13 @@ $(function() {
     }
 
     $.ajax({ // Request settings
-        url: "https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec",
-        data: encodeURI('type=requestSettings'),
+        url: "https://luftaquila.io/ajoumeow/api/requestRegister",
         type: "POST",
-        dataType: 'text',
+        dataType: 'json',
         cache: false,
-        success: function(response) {
-            settingList = response.split('\n').map((line) => line.split(','));
-            var assignDate = settingList[3][1].split('~');
-
-            if( (new Date() > new Date(assignDate[0]) && new Date() < new Date(new Date(assignDate[1]).getTime() + 60 * 60 * 24 * 1000)) || (settingList[4][1] == 'true')) {
-                $('#semister').text(settingList[0][1]);
+        success: function(res) {
+            if(res.result) {
+                $('#semister').text(res.semister);
                 $('.loading').css('display', 'none');
                 $('.container-contact100').css('display', 'block');
             }
