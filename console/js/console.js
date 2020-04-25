@@ -14,7 +14,7 @@ $(function() {
       });
     },
     error: function(res) {
-      window.location.href = 'https://luftaquila.io/403.html';
+      window.location.href = 'https://luftaquila.io/ajoumeow/403.html';
     }
   });
     onLoad();
@@ -103,7 +103,7 @@ function onLoad() {
     autoWidth: false,
     pagingType: "numbers",
     ajax: {
-      url: "https://luftaquila.io/ajoumeow/api/requestMemberList",
+      url: "https://luftaquila.io/ajoumeow/api/requestNameList",
       type: 'POST',
       data: { 'semister' : '20-1' },
       dataSrc: ''

@@ -9,182 +9,160 @@ $(function() {
   //military();
 });
 function init() {
-  $.ajax({
-    url:"https://luftaquila.io/ajoumeow/api/loginCheck",
-    type: "POST",
-    dataType: 'json',
-    cache: false,
-    success: function(res) {
-      if(res.name) {
-        username = res.name;
-        $('#username').text(username);
-        $('#userInfo').css('display', 'block');
-        $('#loginForm').css('display', 'none');
+    $.ajax({
+      url:"https://luftaquila.io/ajoumeow/api/loginCheck",
+      type: "POST",
+      dataType: 'json',
+      success: function(res) {
+        if(res.name) {
+          username = res.name;
+          userid = res.id;
+          useradmin = (res.role != "회원");
+          $('#username').text(username);
+          $('#userInfo').css('display', 'block');
+          $('#loginForm').css('display', 'none');
+        }
+        else {
+          username = '';
+          $('#sidebar').css('display', 'block');
+          $('#loginForm').css('display', 'block');
+          $('#userInfo').css('display', 'none');
+        }
       }
-      else {
-        username = '';
-        $('#sidebar').css('display', 'block');
-        $('#loginForm').css('display', 'block');
-        $('#userInfo').css('display', 'none');
-      }
-    }
-  });
+    });
 }
 function load() {
-  stat = [false, false];
-  //$('input').attr('disabled', true);
   $("#latestUpdate").html("Loading...");
   $('svg').addClass('rotating');
   $('#recentUpdate').text($('#version').text() + ' : ' + $('#release').text().substr(0, 10));
   $('#info').attr('href', '/ajoumeow/about.html?' + $('#version').html() + '!' + $('#release').html());
-  $.ajax({
-    url: 'https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec',
-    type: "GET",
-    dataType: 'text',
-    cache: false,
-    success: newYourNameIs
-  });
-  $.ajax({
-    url: 'https://docs.google.com/spreadsheet/pub?key=1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A&single=true&gid=1034362398&sheet=Statistics&range=A4:E6&output=csv',
-    type: "GET",
-    dataType: 'text',
-    cache: false,
-    success: function (response) {
-      var rankArray = response.split('\n').map((line) => line.split(','));
-      rankArray.forEach(function(value) { value.splice(2, 1); });
-      for(var i = 1; i <= 3; i++) {
-        $("#this_" + i).html(rankArray[i - 1][0]);
-        $("#past_" + i).html(rankArray[i - 1][2]);
-        $("#this_t_" + i).html(parseFloat(rankArray[i - 1][1]));
-        $("#past_t_" + i).html(parseFloat(rankArray[i - 1][3]));
-      }
-    }
-  });
-  $.ajax({
-    url: "https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec",
-    data: encodeURI('타입=일정'),
-    type: "POST",
-    dataType: 'text',
-    cache: false,
-    success: function(response) {
-      scheduleList = response.split('\n').map((line) => line.split(','));
-      stat[0] = true;
-      setCalendar();
-    }
-  });
+  startDate = new Date(Date.now() - ((new Date().getDayNum() - 1) * 24 * 3600000)).format('yyyy-mm-dd');
+  endDate = new Date(Date.now() - ((new Date().getDayNum() - 14) * 24 * 3600000)).format('yyyy-mm-dd');
+  memberlist = [], nameTable = [];
+  $.when(
+    $.ajax({
+      url: 'https://luftaquila.io/ajoumeow/api/records',
+      type: "POST",
+      dataType: 'json',
+      data: { 'startDate' : startDate, 'endDate' : endDate},
+      error: errorHandler
+    }),
+    $.ajax({
+      url: 'https://luftaquila.io/ajoumeow/api/requestNameList',
+      type: 'POST',
+      dataType: 'json',
+      data: { 'semister' : 'this' },
+      error: errorHandler
+    })
+  ).done(function(record, namelistSet) { memberlist = namelistSet[0]; yourNameIs(record[0], memberlist); });
 }
-function newYourNameIs(response) {
-  var startIndex, errCount = 0;
-  var datum = response.split('\n').map((line) => line.split(','))
-  /*var*/ table = Array(14).fill('').map(x => Array(6).fill(''));
-  for(var i = 0; i < 14; i++) {
-    var day = new Date(year, 0, 1 + (i % 7) + ((week + Math.floor(i / 7) - 1) * 7) - new Date(year, 0, week * 7).getDay());
-    if(!i) { for(var index in datum) { if(day.format("yyyy. m. d") == datum[index][1]) { startIndex = index; break; } } }
-    if(!startIndex) {
-      while(!startIndex && errCount < 14) {
-        day.setDate(day.getDate() + 1);
-        for(var index in datum) { if(day.format("yyyy. m. d") == datum[index][1]) { startIndex = index; break; } }
-        i++; errCount++;
-      }
-    }
-    if(startIndex) {
-      while(datum[startIndex][1] == day.format("yyyy. m. d")) {
-        for(var j = 1; j <= 3; j++) {
-          if(datum[startIndex][2].includes(String(j))) {
-            if(!table[i][2 * (j - 1)]) table[i][2 * (j - 1)] = datum[startIndex][0];
-            else if(!table[i][2 * (j - 1) + 1] && !(datum[startIndex][0] == table[i][2 * (j - 1)])) table[i][2 * (j - 1) + 1] = datum[startIndex][0];
-          }
-        } startIndex++;
-      }
-    }
+function yourNameIs(record, namelist) {
+  var table = Array(14).fill('').map(x => Array(3).fill('').map(y => Array()));
+  for(var obj of record) {
+    var target = new Date(new Date(obj.date).format('yyyy-mm-dd')), start = new Date(startDate);
+    var diff = Math.ceil(Math.abs(target - start) / (1000 * 60 * 60 * 24));
+    table[diff][Number(obj.course.replace('코스', '')) - 1].push(obj.ID);
   }
-  setData(table);
-  console.log('Ready. ' + (dataSize(response) / 1000).toFixed(1) + 'KB Loaded');
+  nameTable = table;
+  setData(table, namelist);
 }
-function setData(table) {
+function setData(table, namelist) {
   $("#latestUpdate").html("Latest Update : " + new Date().format("TT hh시 MM분 ss초"));
-  $('#confirmAdmin').click(function() {
-    if($('#adminPW').val() == '0512') {
-      for(var i = 0; i < 14; i++) {
-        for(var j = 0; j < 6; j++) {
-          if(table[i][j]) $('#nameCell_' + i + '_' + j).addClass('reserved');
-          else $('#nameCell_' + i + '_' + j).addClass('notReserved');
+  for(var date = 0; date < 14; date++) {
+    $('#dateCell_' + Number(date + 1)).text(new Date(Date.now() - ((new Date().getDayNum() - (date + 1)) * 24 * 3600000)).format('m/d(ddd)'));
+    for(var course = 0; course < 3; course++) {
+      for(var order = 0; order < 2; order++) {
+        var name = namelist.find(o => o.ID == table[date][course][order]);
+        var cell = $('#nameCell_' + Number(date + 1) + '_' + Number(course + 1) + '_' + Number(order + 1));
+        cell.removeClass().text('').css('font-weight', 'normal');
+        if(username) { // 로그인 상태일 때
+          var admin = namelist.find(o => o.ID == userid)['role'] != '회원';
+          if(admin) { // 관리자일 때
+            if(name) cell.text(name.name).addClass('reserved').css('font-weight', name.name == username ? 'bold' : 'normal');
+            else cell.addClass('notReserved');
+          }
+          else { // 일반 회원일 때
+            if(((date < 7) && (new Date().getDayNum() < date + 2)) || date > 6) {
+              if(name) {
+                cell.text(name.name).css('font-weight', name.name == username ? 'bold' : 'normal');
+                if(name.name == username && date != new Date().getDayNum() - 1) cell.addClass('reserved');
+              }
+              else cell.addClass('notReserved');
+            }
+            else if(name) cell.text(name.name).css('font-weight', name.name == username ? 'bold' : 'normal');
+          }
         }
-      }
-      $('#date').text('관리자 모드');
-    }
-    MicroModal.close('admin');
-  });
-  for(var i = 0; i < 14; i++) {
-    var day = new Date(year, 0, 1 + (i % 7) + ((week + Math.floor(i / 7) - 1) * 7) - new Date(year, 0, week * 7).getDay());
-    $('#dateCell_' + i).text(day.format('m/d(ddd)'));
-    for(var j = 0; j < 6; j++) {
-      $('#nameCell_' + i + '_' + j).removeClass('reserved notReserved').text(table[i][j]);
-      if((i > (today.getDay() || 7) - 2) && username) {
-        if(table[i][j]) $('#nameCell_' + i + '_' + j).addClass('reserved');
-        else $('#nameCell_' + i + '_' + j).addClass('notReserved');
+        else if(name) cell.text(name.name);
       }
     }
   }
+  
   if(!!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform)) {
     $('.reserved, .notReserved').addClass('ios');
     $('.reload, .popup, #icon, ul.tabs.li').addClass('ios');
   }
-  $('td:contains(' + today.format('m/d(ddd)') + ')').css('backgroundColor', 'greenyellow');
-  for(var i = 0; i < 7; i++) $("#dateCell_" + i).css("color", "#000000");
+  $('td:contains(' + new Date().format('m/d(ddd)') + ')').css('backgroundColor', 'greenyellow');
+  
   if(Cookies.get('versionInfo') != $('#version').text()) {
     Cookies.set('versionInfo', $('#version').text(), {expires : 30});
     MicroModal.show('noticeModal');
   }
 
-  stat[1] = true;
-  setCalendar();
-  randomizeCat();
-
-  $('svg').removeClass('rotating');
-  $('input').attr('disabled', false);
+  //randomizeCat();
+  //$('svg').removeClass('rotating');
   if(username) $('td:contains(' + username + ')').css('font-weight', 'bold');
 }
-function validator(operationType, targetID, targetName, originalName) {
-  var tomorrow = new Date();
-  tomorrow.setDate(new Date().getDate() + 1);
-  var locatorReturn = locator(targetID), serializedData;
-  var targetDate = locatorReturn[0], targetCourse = locatorReturn[1];
-  if($('#date').text() == '관리자 모드') { transmitter(operationType, targetName, targetDate, targetCourse, originalName); return; }
-  if(!targetName) alertify.error('이름을 입력하세요.');
-  else if(!originalName && originalName != undefined) alertify.error('이름을 입력하세요.');
-  else if(targetName.indexOf(',') + 1) alertify.error('이름에 콤마(,)는 사용할 수 없습니다.');
-  else if(operationType == '삭제' && targetDate == today.format('yyyy-mm-dd'))
-    alertify.error('당일 삭제는 불가능합니다.<br>대타를 구해 수정해주세요.');
-  /*else if(operationType == '삭제' && targetDate == tomorrow.format('yyyy-mm-dd') && new Date().getHours() > 17)
-      alertify.error('급식 전일 오후 6시 이후 취소는 불가능합니다.');*/
-  else transmitter(operationType, targetName, targetDate, targetCourse, originalName);
+function validator(type, cell, ID) {
+  var target = locator(cell);
+  if(!ID) return alertify.error('INVAILD_PAYLOAD');
+  transmitter({
+    'type' : type,
+    'date' : target.date,
+    'course' : target.course + '코스',
+    'id' : Number(ID),
+    'name'  : memberlist.find(o => o.ID == ID)['name']
+  });
 }
-function transmitter(operationType, targetName, targetDate, targetCourse, originalName) {
-  $('input').attr('disabled', true);
-  if(originalName) serializedData = "타입=수정&이름=" + originalName + "&날짜=" + targetDate + "&코스=" + targetCourse + "코스&수정 이름=" + $.trim(targetName);
-  else serializedData = "타입=" + operationType + "&이름=" + $.trim(targetName) + "&날짜=" + targetDate + "&코스=" + targetCourse + '코스';
-  alertify.log(operationType + ' 요청 중...');
-  console.log(dataSize(encodeURI(serializedData)) + "B DataSet : " + serializedData);
-  request = $.ajax({
+function transmitter(data) {
+  if(data.type == 'add') {
+    $.ajax({
+      url: 'https://luftaquila.io/ajoumeow/api/insertIntoTable',
       type: 'POST',
-      url: "https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec",
-      data: encodeURI(serializedData)
-  });
-  request.done(function() {
-    load();
-    alertify.success('Ok.');
-  });
-  request.fail(function(jqXHR, textStatus, errorThrown) { alertify.error('Error - ' + textStatus + errorThrown); });
-  request.always(function() { $('input').attr('disabled', false); });
+      dataType: 'json',
+      data: {
+        date: data.date,
+        course: data.course,
+        ID: data.id,
+        name: data.name
+      },
+      success: load,
+      error: errorHandler
+    });
+  }
+  else if(data.type == 'delete') {
+    $.ajax({
+      url: 'https://luftaquila.io/ajoumeow/api/deleteFromTable',
+      type: 'POST',
+      dataType: 'json',
+      data: {
+        date: data.date,
+        course: data.course,
+        ID: data.id,
+        name: data.name
+      },
+      success: load,
+      error: errorHandler
+    });
+  }
 }
-function locator(targetID) {
-  var targetDate = new RegExp( /\d+/ ).exec(targetID);
-  var targetCourse = Math.floor(Number(targetID.substr(targetID.length - 1)) / 2) + 1;
-  targetDate = new Date(year, 0, 1 + (targetDate % 7) + ((week + Math.floor(targetDate / 7) - 1) * 7) - new Date(year, 0, week * 7).getDay()).format('yyyy-mm-dd');
-  return [targetDate, targetCourse];
+function locator(cell) {
+  var target = cell.replace('nameCell_', '').split('_');
+  return {
+    'date' : new Date(Date.now() - ((new Date().getDayNum() - Number(target[0])) * 24 * 3600000)).format('yyyy-mm-dd'),
+    'course' : target[1]
+  }
 }
-function setCalendar() {
+function setCalendar() {/*
   if(stat[0] && stat[1]) {
     calendarCount = 0;
     for(i in scheduleList) {
@@ -214,7 +192,7 @@ function setCalendar() {
       $('#rainbowBlock').prop('checked', false);
       $('.rainbow').addClass('dogriver');
     }
-  }
+  }*/
 }
 function dataSize(s, b, i, c) { for(b = i = 0; c = s.charCodeAt(i++); b += c >> 11 ? 3 : c >> 7 ? 2 : 1); return b; }
 function mileageDisplayer() { MicroModal.close('rankModal'); MicroModal.show('mileModal'); }
@@ -229,17 +207,12 @@ function updateLogDisplayer() {
   }
 }
 function eventListener() {
-  if(today.getDay() == 0 || today.getDay() == 6) {
+  if(new Date().getDayNum() > 5) {
     $('ul.tabs li').removeClass('current');
     $('#tab-1').removeClass('current');
     $('#tab-2').addClass('current');
     $('li[data-tab="tab-2"]').addClass('current');
   }
-  $('#icon').click(function() {
-    $('#adminPW').val('');
-    MicroModal.show('admin');
-    $('#adminPW').focus();
-  });
   $('.reload').click(function() {
     $('#sidebar').css('display', 'block');
   });
@@ -252,19 +225,19 @@ function eventListener() {
       data: { 'ID' : $('#loginID').val() },
       type: "POST",
       dataType: 'json',
-      cache: false,
       success: function(res) {
         if(res.name) {
           username = res.name;
-          $('td:contains(' + username + ')').css('font-weight', 'bold');
-          setData(table);
+          userid = res.id;
+          useradmin = (res.role != '회원');
+          load();
           $('#username').text(res.name);
           $('#userInfo').css('display', 'block');
           $('#loginForm').css('display', 'none');
         }
         else alertify.error('등록되지 않은 학번입니다.');
       },
-      error: function(req, stat, err) {  }
+      error: errorHandler
     });
   });
   $('#logout').click(function() {
@@ -272,16 +245,18 @@ function eventListener() {
       url: 'https://luftaquila.io/ajoumeow/api/logout',
       type: 'POST',
       dataType: 'json',
-      cache: false,
       success: function(res) {
         if(res.result) {
           $('td:contains(' + username + ')').css('font-weight', 'normal');
           username = '';
-          setData(table);
+          userid = '';
+          useradmin = false;
+          load()
           $('#loginForm').css('display', 'block');
           $('#userInfo').css('display', 'none');
         }
-      }
+      },
+      error: errorHandler
     });
   });
   $('#apply').click(function() {
@@ -289,15 +264,21 @@ function eventListener() {
       url: 'https://luftaquila.io/ajoumeow/api/requestApply',
       type: 'POST',
       dataType: 'json',
-      cache: false,
       success: function(res) {
         if(res.result) {
           $('#sidebar').css('display', 'none');
           memberApply();
         }
         else alertify.error('회원 등록 기간이 아닙니다.');
-      }
+      },
+      error: errorHandler
     });
+  });
+  $('input[name=context-menu-input-ID]').keyup(function(e) {
+    var name = $('input[name=context-menu-input-name');
+    var obj = memberlist.find(o => o.ID == Number($(this).val()));
+    if(obj) name.val(obj.name);
+    else name.val('');
   });
   $('#onNoticeClick').click(function() { MicroModal.show('noticeModal'); });
   $('#onRankClick').click(function() { MicroModal.show('rankModal'); });
@@ -321,7 +302,8 @@ function eventListener() {
     }
   });
   $('#delete').click( function() {
-    validator('삭제', deleteData[0], deleteData[1]);
+    var tmp = deleteCell.replace('nameCell_', '').split('_');
+    validator('delete', deleteCell, nameTable[tmp[0] - 1][tmp[1] - 1][tmp[2] - 1]);
     MicroModal.close('deleteConfirm');
   });
 }
@@ -337,7 +319,7 @@ function howsTheWeather() {
     cache: false,
     success: function (response) {
       $('#temp').html('&nbsp;' + (response.main.temp - 273.15).toFixed(1) + '°C');
-      $('#date').html('&nbsp;&nbsp;' + today.format('m월 d일 dddd'));
+      $('#date').html('&nbsp;&nbsp;' + new Date().format('m월 d일 dddd'));
     }
   });
   $.ajax({
@@ -387,16 +369,22 @@ function contextLoader() {
     selector: '.notReserved',
     trigger: 'left',
     items: {
-      addName: {
+      name: {
         name: '이름',
-        type: 'text',
+        type: 'text'
+      },
+      ID: {
+        name: '학번',
+        type: 'text'
       },
       add: {
         name: '신청',
         icon: 'check',
         callback: function(itemKey, opt, e) {
-          var targetID = $('.focusing').attr('id'), targetName = $.contextMenu.getInputValues(opt, this.data()).addName;
-          validator('신청', targetID, targetName);
+          var cell = $('.focusing').attr('id');
+          var target = $.contextMenu.getInputValues(opt, this.data());
+          if(!target.name) { alertify.error('등록되지 않은 학번입니다.'); return; }
+          validator('add', cell, target.ID);
           $(this).removeClass('focusing');
         }
       }
@@ -404,7 +392,13 @@ function contextLoader() {
     events: {
       show: function() {
         $(this).addClass('focusing');
-        setTimeout(function() { $('input[name=context-menu-input-addName]').val(username); }, 1);
+        setTimeout(function() {
+          $('input[name=context-menu-input-name]').val(username).attr('disabled', true);
+          $('input[name=context-menu-input-ID]').val(userid).attr('type', 'number');
+          if(!useradmin) {
+            $('input[name=context-menu-input-ID]').attr('disabled', true);
+          }
+        }, 1);
       },
       hide: function() { $(this).removeClass('focusing'); }
     }
@@ -413,40 +407,25 @@ function contextLoader() {
     selector: '.reserved',
     trigger: 'left',
     items: {
-      modName: {
-        name: '이름',
-        type: 'text',
-      },
-      mod: {
-        name: '수정',
-        icon: 'mod',
-        callback: function(itemKey, opt, e) {
-          var targetID = $('.focusing').attr('id'), targetName = $.contextMenu.getInputValues(opt, this.data()).modName;
-          var originalName =  $('.focusing').text();
-          validator('수정', targetID, targetName, originalName);
-          $(this).removeClass('focusing');
-        }
-      },
-      sep: '-----',
       del: {
         name: '삭제',
         icon: 'del',
         callback: function(itemKey, opt, e) {
-          var targetID = $('.focusing').attr('id'), targetName =  $('.focusing').text();
-          $('#deleteInfo').html('다음 신청 내역을 삭제합니다.<br><br>' + new Date(locator(targetID)[0]).format('m월 d일 dddd ') + locator(targetID)[1] + '코스<br>' + targetName + ' 회원님');
+          var target = locator($('.focusing').attr('id'));
+          $('#deleteInfo').html('다음 신청 내역을 삭제합니다.<br><br>' + new Date(target.date).format('m월 d일 dddd ') + target.course + '코스<br>' + $('.focusing').text() + ' 회원님');
+          deleteCell = $('.focusing').attr('id');
           MicroModal.show('deleteConfirm');
-          deleteData = [targetID, targetName];
         }
       }
     },
     events: {
-      show: function() {
-        $(this).addClass('focusing');
-        //setTimeout(function() { $('input[name=context-menu-input-modName]').focus(); }, 1);
-      },
+      show: function() { $(this).addClass('focusing'); },
       hide: function() { $(this).removeClass('focusing'); }
     }
   });
+}
+function errorHandler(req, stat, err) {
+  alertify.error('ERR_' + req.responseJSON.error.code);
 }
 function military() {
   if(new Date() > new Date(2019, 10, 4, 9) && new Date() < new Date(2019, 10, 20)) {
@@ -545,7 +524,9 @@ Date.prototype.getWeek = function() {
   var calc = new Date(this.getFullYear(), 0, 1);
   return Math.ceil((((this - calc) / 86400000) + calc.getDay() - 1) / 7);
 }
-var today = new Date(), week = new Date().getWeek(), year = new Date().getFullYear();
+Date.prototype.getDayNum = function() {
+  return this.getDay() ? this.getDay() : 7;
+}
 var weather = {
   맑음 : 'l1',
   '구름 많음' : 'l3',
