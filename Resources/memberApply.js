@@ -14,7 +14,6 @@ function applySetup() {
                 data: encodeURI('type=requestAllSheetContent&semister=' + settings['currentSemister'] + '학기'),
                 type: "POST",
                 dataType: 'text',
-                cache: false,
                 success: function(response) { newMemberList = response.split('\n').map((line) => line.split(',')); }
             });  
             $.ajax({ // 이전학기 가입자 명단 요청
@@ -22,7 +21,6 @@ function applySetup() {
                 data: encodeURI('type=requestMemebers&semister=' + past),
                 type: "POST",
                 dataType: 'text',
-                cache: false,
                 success: function(response) { memberList = response.split('\n').map((line) => line.split(',')); }
             });
         },

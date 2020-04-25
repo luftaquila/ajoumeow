@@ -22,7 +22,10 @@
     display: none;
 }
 
-input { margin: 0 0 0 10 }
+input {
+  margin: 0 0 0 10;
+  text-align: center
+}
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none;
@@ -164,11 +167,11 @@ svg {
   background-position: 1.4rem;
 }
 .context-menu-icon-del {
-  margin: 0 0 0 17;
-  text-align: center;
+  margin: 5 0 5 10;
+  text-align: right;
   background: url(/ajoumeow/Resources/Images/del.svg) no-repeat;
-  background-size: 13%;
-  background-position: 1.4rem;
+  background-size: 20%;
+  background-position: 0.7rem;
 }
 .context-menu-icon-mod {
   margin: 0 0 0 17;
