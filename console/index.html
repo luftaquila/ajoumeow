@@ -170,35 +170,42 @@
           </div>
 
           <form id="DATA" class='text-gray-700'>
-            Status : <span id="status" style="color:#ffbf00;">로딩 중...</span><br>
-
-            <input id="timestamp" class='btn btn-secondary' style='margin: 100 0;' type="date" name="timestamp" value="" onchange="load();" disabled="true"/>
+            <input id="timestamp" class='btn btn-secondary' style='margin: 100 0;' type="date" name="timestamp" value="" />
             &nbsp;&nbsp;
             <a id="submit" href="#" class="btn btn-success btn-icon-split" style='width: 30; height: 5;'>
               <span class="text">인증</span>
             </a>
-            
-            <!--<input id="submit" type="submit" value="Confirm" disabled="true"/>--><br>
-            <span id='latestConfirm' style="font-size: 0.9rem">마지막 인증 날짜 : Loading...</span><br>
-            <span id="reload" style="color:#0366d6; font-size: 0.8rem; text-decoration: underline;">급식 기록 다시 불러오기</span><br>
-            <!--
-            <a href="/ajoumeow" style="color:#0366d6;font-size: 0.8rem">Home</a>&nbsp;&nbsp;
-            <a href="https://docs.google.com/spreadsheets/d/1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A/edit?usp=sharing" style="color:#0366d6;font-size: 0.8rem">Sheet</a><br><span style="line-height:50%"><br></span>
-            --><br>
-            <label for='nonManual'><input type='radio' id='nonManual' name='isManual' value="normal" checked='checked' disabled="true">급식 인증</input></label>&nbsp;&nbsp;
-            <label for='Manual'><input type='radio' id='Manual' name='isManual' value='manual' disabled="true">기타 인증</input></label>&nbsp;&nbsp;
-            <label for='delete'><input type='radio' id='delete' name='isManual' value='delete' disabled="true">인증 삭제</input></label><br>
-            <div id='stdWrapper'>
-                <div id="booster"></div>
-                <div id="list"></div>
-                <div id='addSection'></div>
-                <span id='add' style="display:none">&nbsp;+ 추가</span>
+            <br>
+            <span id='latestConfirm' style="font-size: 0.9rem">마지막 인증 날짜 : Loading...</span>
+            <br><br>
+            <label><input type='radio' name='verifyType' value="auto" checked='checked'>&nbsp;급식 인증</input></label>&nbsp;&nbsp;
+            <label><input type='radio' name='verifyType' value='manual'>&nbsp;기타 인증</input></label>&nbsp;&nbsp;
+            <label><input type='radio' name='verifyType' value='delete'>&nbsp;인증 삭제</input></label>
+            <div id='auto'>
+                <div id="autolist"></div>
+                <span id='autoadd'>&nbsp;+ 추가</span>
+                <div style='font-size: 0.8rem'><br>
+                  <li>되도록 한 날짜의 급식 인증은 한 번에 해 주세요.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;한 코스에 두 사람이 급식한 경우, 따로따로 인증하면 점수가 잘못 지급됩니다.</li>
+                  <li>급식 인증방에 인증한 사람만 체크한 후 인증을 진행해 주세요.</li>
+                  <li>목록에 없는 회원을 인증하려면 +추가 버튼을 누르면 됩니다.</li>
+                </div>
             </div>
-            <div id='mnWrapper' style="display:none">
-                <div id='mnAddSection'></div>
-                <span id='mnadd' style="display:none">&nbsp;+ 추가</span>
+              
+            <div id='manual' style="display:none">
+                <div id='manuallist'></div>
+                <span id='manualadd'>&nbsp;+ 추가</span>
+                <div style='font-size: 0.8rem'><br>
+                  <li>동아리박람회 등 급식 외 활동의 마일리지를 지급합니다.</li>
+                  <li>날짜는 오늘 날짜가 아니라 활동한 날짜로 설정하세요.</li>
+                  <li>지급 인원이 둘 이상일 때 >지급 사유 통일하기 버튼을 누르면<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;모든 항목의 지급 사유가 첫 번째 항목의 사유로 통일됩니다.</li>
+                </div>
             </div>
-            <div id='delWrapper' style='display: none'></div>
+            <div id='delete' style='display: none'>
+              <div id='deletelist'></div>
+              <div style='font-size: 0.8rem'><br>
+                <li>이미 인증한 내역을 삭제합니다.</li>
+              </div>
+            </div>
           </form>
           
         </div>
@@ -213,38 +220,39 @@
           
         <table style='border-spacing: 7 10; margin-left: -5; margin-top: -10; font-size: 0.8rem'>
             <tr>
-                <td>현재 학기</td>
+                <td>현재 학기&nbsp;</td>
                 <td><input id='currentYear' class='setting settingSemister' type="number" min=20 max=99 maxlength=2 style='width: 30; text-align: center' required/> - <select id='currentSemister' class='setting settingSemister' required><option>1</option><option>2</option></select> 학기</td>
                 <td></td>
             </tr>
             <tr><td>&nbsp;</td></tr>
             <tr>
-                <td>회원 등록 기간</td>
-                <td><input class='setting settingCalendar settingApplyCalendar' id="applyStartDate" type="date" value="" />&nbsp;&nbsp;~&nbsp;&nbsp;<input class='setting settingCalendar settingApplyCalendar' id="applyEndDate" type="date" value="" /></td>
+                <td>회원 등록 기간&nbsp;</td>
+                <td><input class='setting settingCalendar settingApplyCalendar' style="width: 100px;" id="applyStartDate" type="date" value="" />&nbsp;&nbsp;~&nbsp;&nbsp;<input class='setting settingCalendar settingApplyCalendar' style='width: 100px' id="applyEndDate" type="date" value="" /></td>
                 <td></td>
             </tr>
             <tr>
-                <td>추가 등록 허용</td>
+                <td>추가 등록 허용&nbsp;</td>
                 <td><select id='isAdditionalApplyAllowed' class='setting settingAdditionalApply'><option>TRUE</option><option>FALSE</option></select></td>
                 <td></td>
             </tr>
             <tr><td>&nbsp;</td></tr>
             <tr>
-                <td>신입 모집 기간</td>
-                <td><input class='setting settingCalendar settingRegisterCalendar' id="registerStartDate" type="date" value="" />&nbsp;&nbsp;~&nbsp;&nbsp;<input class='setting settingCalendar settingRegisterCalendar' id="registerEndDate" type="date" value="" /></td>
+                <td>신입 모집 기간&nbsp;</td>
+                <td><input class='setting settingCalendar settingRegisterCalendar' style='width: 100px' id="registerStartDate" type="date" value="" />&nbsp;&nbsp;~&nbsp;&nbsp;<input class='setting settingCalendar settingRegisterCalendar' style="width: 100px" id="registerEndDate" type="date" value="" /></td>
                 <td></td>
             </tr>
             <tr>
-                <td>추가 모집 허용</td>
+                <td>추가 모집 허용&nbsp;</td>
                 <td><select id='isAdditionalRegisterAllowed' class='setting settingAdditionalRegister'><option>TRUE</option><option>FALSE</option></select></td>
                 <td></td>
             </tr>
         </table><br>
-        <div style='font-size: 0.7rem'>
+        <div style='font-size: 0.8rem'>
+          <li style='font-weight: bold'>현재 학기 값은 학기가 바뀌면 항상 업데이트 해 주세요.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;명단 작성 등 전산 여러 곳에서 중요하게 사용되는 값입니다.</li><br>
           회원 등록과 신입 모집은 오늘 날짜가 설정 기간에 포함되거나<br>
-          추가 허용 여부가 TRUE일 때, 둘 중 한 조건만 만족해도 활성화됩니다.<br><br>
+          추가 허용 여부가 TRUE일 때, 둘 중 하나만 만족해도 활성화됩니다.<br><br>
           추가 허용 항목은 평소에는 FALSE로 맞춰 놓고<br>
-          기간외 등록을 희망하는 사람이 있을 때만 잠깐 TRUE로 바꿔 허용했다가<br>
+          기간외 등록을 희망하는 사람이 있을 때 잠깐 TRUE로 바꿨다가<br>
           해당 사람이 등록을 마치면 다시 FALSE로 바꾸면 됩니다.
         </div>
         <!--<select id='namelist-config'></select><br>-->
@@ -257,8 +265,26 @@
           <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">회원 관리</h1>
           </div>
+          <div style='font-size: 0.8rem'>
+            <li>회원 목록을 관리합니다. 학번 외 모든 항목은 수정할 수 있습니다.</li>
+            <li>수정할 값을 클릭하면 입력창이 활성화됩니다.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            수정할 값을 입력한 후 엔터를 누르면 수정됩니다.</li>
+            <li>직책이 '회원'이 아닌 사람에게는 모두 관리자 권한이 부여됩니다.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              관리자는 관리자 페이지 접속 권한, 급식표 모든 셀의 편집 권한을 갖습니다. 또한 본인 외 다른 신분으로 급식을 신청할 수 있습니다.</li>
+          </div><br>
           <div class="table-responsive">
-            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+            <table class="table table-bordered" id="dataTable" width="100%" style='table-layout: fixed; text-align: center' cellspacing="0">
+              <colgroup>
+                <col width="130px" />
+                <col width="180px" />
+                <col width="130px" />
+                <col width="90px" />
+                <col width="200px" />
+                <col width="100px" />
+                <col width="200px" />
+                <col width="180px" />
+                <col width="100px" />
+              </colgroup>
               <thead>
                 <tr>
                   <th>단과대학</th>
@@ -296,21 +322,20 @@
             <h1 class="h3 mb-0 text-gray-800">1365 인증서</h1>
           </div>
           
-      <div style='font-size:0.7rem'>
-        1365 봉사활동 확인서를 자동으로 작성한 후 다운로드합니다.<br>
-        아래에서 생성할 년/월 및 명단 데이터를 선택한 후 다운로드 버튼을 클릭하세요.<br>
-        다운로드가 되지 않으면 팝업 차단을 해제했는지 확인하세요.<br>
-        문서 생성에는 평균적으로 약 3분 정도 소요됩니다.
+      <div style='font-size:0.8rem'>
+        <li>1365 봉사활동 확인서를 자동으로 작성한 후 다운로드합니다.</li>
+        <li>인증서를 생성할 년/월 및 명단 데이터를 선택한 후 다운로드 버튼을 누르세요.</li>
+        <li>다운로드 버튼을 누르면 10초 내외로 다운로드가 시작됩니다.</li>
       </div><br>
-      <table>
-        <tr><td>년/월</td><td><input type='month' id='calendar1365' /></td></tr>
-        <tr><td>명단 데이터</td><td><select id='namelist'></select></td></tr>
-      </table><br>
-      <input type='button' id='download1365' value='새로 작성 후 다운로드' />&nbsp;&nbsp;/&nbsp;&nbsp;
-      <a href="https://docs.google.com/spreadsheets/d/1tubdLyELoYAPi8f3PVeh6jfIbQiQ3au3frIVEbnj20A/export?format=pdf&gid=1723852450">기존 문서 바로 다운로드</a><br><br>
-      <span style="font-size: 0.7rem">모바일 크롬 브라우저로 다운로드 버튼을 누르면<br>다운로드되는 대신 Google Sheets 앱으로 연결됩니다.<br>
-          카톡 인앱 브라우저 등 크롬 외 다른 브라우저에서는 정상적으로 다운로드됩니다.</span>
-          
+      <table style="border-collapse: separate; border-spacing: 10px;">
+        <tr><td>년 / 월</td><td><input type='month' id='calendar1365' class='btn btn-secondary'/></td></tr>
+        <tr><td>명단 데이터&nbsp;&nbsp;</td><td><select id='namelist'></select></td></tr>
+      </table>
+      <div style='margin: 15px 0px; text-align: right;'>
+        <a id="download1365" href="#" class="btn btn-success btn-icon-split" style='width: 30; height: 5; margin: 20 0;'>
+          <span class='text'>다운로드</span>
+        </a>
+      </div>
         </div>
 
           
@@ -322,13 +347,15 @@
           </div>
           
       신입 모집 설문지 : <a href='https://luftaquila.io/ajoumeow/register/'>luftaquila.io/ajoumeow/register/</a><br>
-      설문지 링크 QR코드 : <br><img src='/ajoumeow/Resources/Images/frame.png'><br>
-      <a href="https://docs.google.com/spreadsheets/d/14fRlX0UWFbMzDjhueOPi9ivZFE799kui6-1UixzgvWg/edit?usp=drivesdk">모집 설문지 응답 시트</a><br><br>
+      설문지 링크 QR코드 : <br><img src='/ajoumeow/Resources/Images/frame.png'><br><br>
+      <a href="https://docs.google.com/spreadsheets/d/14fRlX0UWFbMzDjhueOPi9ivZFE799kui6-1UixzgvWg/edit?usp=drivesdk">> 모집 설문지 응답 시트</a><br><br>
         
-      <select id='newMemberList'><select> 연락처 파일 생성<br>
-      <label for='google'><input type='radio' id='google' name='contactfile' value='google' />Google 연락처 파일</label><br>
-      <label for='outlook'><input type='radio' id='outlook' name='contactfile' value='outlook' />Outlook/네이버 연락처 파일</label><br>
-      <input type='button' id='contactDownload' value='다운로드' /><br><br>
+      <select id='newMemberList' style='margin-bottom: 15px'></select> 연락처 파일 생성<br>
+      <label for='google'><input type='radio' id='google' name='contactfile' value='google' /> Google 연락처 파일</label><br>
+      <label for='outlook'><input type='radio' id='outlook' name='contactfile' value='outlook' /> Outlook/네이버 연락처 파일</label><br>
+      <a id="contactDownload" href="#" class="btn btn-success btn-icon-split" style='width: 30; height: 5;'>
+        <span class='text'>다운로드</span>
+      </a><br><br>
       <div style='font-size: 0.8rem'>
         <h4>연락처 다운로드 기능 사용 방법</h4>
         <ol>
@@ -340,6 +367,15 @@
         </ol>
       </div>
         
+        </div>
+  
+        <div class="container-fluid text-gray-700" id='dashboardContent' style='display: none;'>
+         
+          <!-- Page Heading -->
+          <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">통계</h1>
+          </div>
+          페이지 준비중입니다.
         </div>
   
       </div>

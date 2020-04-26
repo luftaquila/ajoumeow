@@ -19,6 +19,7 @@ function init() {
           userid = res.id;
           useradmin = (res.role != "회원");
           $('#username').text(username);
+          $('#userrole').text(res.role);
           $('#userInfo').css('display', 'block');
           $('#loginForm').css('display', 'none');
         }
@@ -232,6 +233,7 @@ function eventListener() {
           useradmin = (res.role != '회원');
           load();
           $('#username').text(res.name);
+          $('#userrole').text(res.role);
           $('#userInfo').css('display', 'block');
           $('#loginForm').css('display', 'none');
         }
