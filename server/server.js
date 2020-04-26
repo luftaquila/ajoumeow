@@ -1,4 +1,6 @@
+const fs = require('fs');
 const ejs = require('ejs');
+const request = require('request');
 const express = require('express');
 const mariadb = require('mariadb');
 const bodyParser = require('body-parser');
@@ -160,6 +162,131 @@ app.post('//deleteFromTable', async function(req, res) {
     res.send({ 'result' : true });
   }
   catch(e) { res.send({ 'result' : null, 'error' : e }); }
+});
+
+app.post('//requestVerifyList', async function(req, res) {
+  let record = await db.query("SELECT * FROM record WHERE date='" + req.body.date + "' ORDER BY course;");
+  let verify = await db.query("SELECT * FROM verify WHERE date='" + req.body.date + "' ORDER BY course;");
+  res.send({ 'record' : record, 'verify' : verify });
+});
+
+app.post('//verify', async function(req, res) {
+  try {
+    let payload = JSON.parse(req.body.data);
+    for(let obj of payload) {
+      let query = await db.query("INSERT INTO verify(ID, date, name, course, score) VALUES(" + obj.ID + ", '" + obj.date + "', '" + obj.name + "', '" + obj.course + "', '" + obj.score + "');");
+    }
+    res.send({ 'result' : true });
+  }
+  catch(e) { res.status(406).send({ 'error' : e }); }
+});
+
+app.post('//deleteVerify', async function(req, res) {
+  try {
+    let payload = JSON.parse(req.body.data);
+    for(let obj of payload) {
+      let query = await db.query("DELETE FROM verify WHERE ID=" + obj.ID + " AND date='" + obj.date + "' AND name='" + obj.name + "' AND course='" + obj.course + "';");
+    }
+    res.send({ 'result' : true });
+  }
+  catch(e) { res.status(406).send({ 'error' : e }); }
+});
+
+app.post('//requestLatestVerify', async function(req, res) {
+  let query = await db.query("SELECT * FROM verify ORDER BY date DESC LIMIT 1;");
+  res.send(query);
+});
+
+app.post('//requestNamelistTables', async function(req, res) {
+  let data = [];
+  let tables = await db.query('SHOW TABLES;');
+  for(let obj of tables) {
+    if(obj['Tables_in_ajoumeow'].includes('namelist')) data.push(obj);
+  }
+  res.send(data);
+});
+
+app.post('//request1365', async function(req, res) {
+  let verify = await db.query("SELECT * FROM verify WHERE REPLACE(SUBSTRING_INDEX(date, '-', 2), '-', '')='" + req.body.month.replace('-', '') + "';");
+  let namelist = await db.query("SELECT * FROM `" + req.body.namelist + "`;");
+  let data = [];
+
+  for(let obj of verify) {
+    let person = data.find(o => o.ID == obj.ID);
+    if(person) {
+      let day = person.date.find(o => +o.day == +obj.date);
+      if(day) day.hour++;
+      else {
+        person.date.push({
+          day: obj.date,
+          hour: 1
+        });
+      }
+    }
+    else {
+      let member = namelist.find(o => o.ID == obj.ID);
+      if(member) {
+        data.push({
+          ID: member.ID,
+          name: member.name,
+          '1365ID' : member['1365ID'],
+          birthday: member.birthday,
+          date: [ { day: obj.date, hour: 1 } ]
+        });
+      }
+    }
+  }
+  /*
+  const getDaysInMonth = (month, year) => (new Array(31)).fill('').map((v, i) => new Date(year, month - 1, i + 1)).filter(v => v.getMonth() === month - 1);
+  let [year, month] = req.body.month.split('-'), data = [];
+
+  for(let date of getDaysInMonth(Number(month), Number(year))) {
+    let people = [];
+    for(let record of verify) {
+      if(+record.date == +date) {
+        let person = people.find(o => o.ID == record.ID);
+        if(person) person.hour++;
+        else {
+          let human = namelist.find(o => o.ID == record.ID);
+          if(human) {
+            people.push({
+              ID: human.ID,
+              name : human.name,
+              birthday: human.birthday,
+              '1365ID' : human['1365ID'],
+              hour : 1
+            });
+          }
+        }
+      }
+    }
+    data.push({
+      date: date,
+      people: people
+    });
+  }
+  */
+  request.post({
+    url: 'https://script.google.com/macros/s/AKfycbw3VnMUXHLQJY5Te8aFX1uJLR0wQt2y5XMvvNaLQnPbLJ59UiQ/exec',
+    body: JSON.stringify(data),
+    followAllRedirect: true
+  },
+  function(error, response, body) {
+    if (error) console.log(error);
+    else {
+      request(response.headers['location'], function(error, response, data) {
+        let buf = Buffer.from(data, 'base64');
+        fs.writeFile('인증서.pdf', buf, error => {
+          if (error) throw error;
+        });
+        res.send({ result : true });
+      });
+    }
+  });
+});
+
+app.get('//download1365', function(req, res) {
+  res.download('인증서.pdf');
 });
 
 app.listen(5710, () => { console.log('Server Started'); });
