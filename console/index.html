@@ -96,6 +96,14 @@
           <span>신입 모집</span></a>
       </li>
 
+      <!-- Nav Item - Tables -->
+      <li class="nav-item" id='log'>
+        <a class="nav-link" href="#">
+          <i class="fas fa-fw fa-clipboard-list"></i>
+          <span>서버 로그</span></a>
+      </li>
+
+      
       <!-- Divider -->
       <hr class="sidebar-divider d-none d-md-block">
 
@@ -176,7 +184,7 @@
               <span class="text">인증</span>
             </a>
             <br>
-            <span id='latestConfirm' style="font-size: 0.9rem">마지막 인증 날짜 : Loading...</span>
+            <span id='latestConfirm' style="font-size: 0.9rem">마지막 인증 기록 : Loading...</span>
             <br><br>
             <label><input type='radio' name='verifyType' value="auto" checked='checked'>&nbsp;급식 인증</input></label>&nbsp;&nbsp;
             <label><input type='radio' name='verifyType' value='manual'>&nbsp;기타 인증</input></label>&nbsp;&nbsp;
@@ -246,9 +254,13 @@
                 <td><select id='isAdditionalRegisterAllowed' class='setting settingAdditionalRegister'><option>TRUE</option><option>FALSE</option></select></td>
                 <td></td>
             </tr>
+            <tr><td>&nbsp;</td></tr>
+            <tr><td>공지사항</td></tr>
+            <tr><td colspan='3'><textarea class='setting notice' id='notice' style='width: 100%; height: 70px'></textarea></td></tr>
         </table><br>
         <div style='font-size: 0.8rem'>
-          <li style='font-weight: bold'>현재 학기 값은 학기가 바뀌면 항상 업데이트 해 주세요.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;명단 작성 등 전산 여러 곳에서 중요하게 사용되는 값입니다.</li><br>
+          <li style='font-weight: bold'>현재 학기 값은 학기가 바뀌면 항상 업데이트 해 주세요.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;명단 작성 등 전산 여러 곳에서 중요하게 사용되는 값입니다.</li>
+          <li>공지사항은 값을 변경할 때마다 급식표 페이지 방문 시 자동으로 팝업을 표시합니다. 자동 팝업은 값 변경 후 최초 1회만 표시됩니다. 이후에는 사용자가 공지사항 메뉴를 눌러야 팝업이 보여집니다.</li><br>
           회원 등록과 신입 모집은 오늘 날짜가 설정 기간에 포함되거나<br>
           추가 허용 여부가 TRUE일 때, 둘 중 하나만 만족해도 활성화됩니다.<br><br>
           추가 허용 항목은 평소에는 FALSE로 맞춰 놓고<br>
@@ -377,6 +389,62 @@
           </div>
           페이지 준비중입니다.
         </div>
+  
+        <div class="container-fluid text-gray-700" id='logContent' style='display: none;'>
+          <!-- Page Heading -->
+          <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">서버 로그</h1>
+          </div>
+          <h6>서버 로그를 열람합니다.</h6>
+          <div style='font-size: 0.8rem; margin-bottom: 10px'>
+            <li>생성된 로그는 30일 동안만 저장합니다.</li>
+            <li>체크박스가 체크된 범주의 로그만 표시합니다.</li>
+            <li>오류 체크박스에 체크하면 오류 기록만 표시합니다.</li>
+          </div>
+          <label><input type='checkbox' name='iserror' value='error'> 오류</input></label>
+          <hr width='100%' style='margin: 0 0 10px 0'>
+          <table width='100%'>
+            <tr>
+              <td><label><input type='checkbox' name='logtype' value='pageload' checked> 페이지 로드</input></label></td>
+              <td><label><input type='checkbox' name='logtype' value='loginout' checked> 로그인 / 로그아웃</input></label></td>
+            </tr>
+            <tr>
+              <td><label><input type='checkbox' name='logtype' value='insdelTable' checked> 급식 신청 / 삭제</input></label></td>
+              <td><label><input type='checkbox' name='logtype' value='verify' checked> 급식 인증</input></label></td>
+            </tr>
+            <tr>
+              <td><label><input type='checkbox' name='logtype' value='settingchange' checked> 설정 변경</input></label></td>
+              <td><label><input type='checkbox' name='logtype' value='memberchange' checked> 회원 명단 변경</input></label></td>
+            </tr>
+            <tr>
+              <td><label><input type='checkbox' name='logtype' value='1365' checked> 1365 인증서</input></label></td>
+              <td><label><input type='checkbox' name='logtype' value='others' checked> 기타</input></label></td>
+            </tr>
+          </table><br>
+          <div class='table-responsive'>
+            <table class="table table-bordered" id="serverlog" width="100%" style='table-layout: fixed; text-align: center' cellspacing="0">
+              <colgroup>
+                <col width='200px' />
+                <col width='160px' />
+                <col width='120px' />
+                <col width='220px' />
+                <col width='300px' />
+                <col width='170px' />
+                <col width='200px' />
+              </colgroup>
+              <thead>
+                <th>타임스탬프</th>
+                <th>IP</th>
+                <th>ID</th>
+                <th>설명</th>
+                <th>쿼리</th>
+                <th>요청 url</th>
+                <th>결과</th>
+              </thead>
+            </table>
+          </div>
+        </div>
+
   
       </div>
       <!-- End of Main Content -->

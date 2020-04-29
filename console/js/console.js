@@ -29,6 +29,7 @@ function init() {
         $('#currentSemister').val(settings['currentSemister'].split('-')[1]);
         $('#isAdditionalApplyAllowed').val(settings['isAllowAdditionalApply'].toUpperCase()).attr('selected', 'selected');
         $('#isAdditionalRegisterAllowed').val(settings['isAllowAdditionalRegister'].toUpperCase()).attr('selected', 'selected');
+        $('#notice').val(settings['notice'].split('$')[1].replace('<br>', '\n'));
         try {
           document.getElementById('applyStartDate').valueAsDate = new Date(new Date(settings['applyTerm'].split('~')[0]) - (-1) * 9 * 3600 * 1000);
           document.getElementById('applyEndDate').valueAsDate = new Date(new Date(settings['applyTerm'].split('~')[1]) - (-1) * 9 * 3600 * 1000);
@@ -108,6 +109,40 @@ function init() {
         $('#newMemberList').html(str);
       }
     });
+    serverlog = $('#serverlog').DataTable({
+      pagingType: "numbers",
+      order: [[ 0, 'desc' ]],
+      ajax: {
+        url: "https://luftaquila.io/ajoumeow/api/requestLogs",
+        type: 'POST',
+        data: function(d) {
+          var str = '', types = {
+            pageload: '^loginCheck$|^requestSettings$|^records$|^requestNamelist$|^isAllowedAdminConsole$|^requestNamelistTables$|^requestLatestVerify$|^requestVerifyList$|^requestNotice$|',
+            loginout: '^login$|^logout$|',
+            insdelTable: '^insertIntoTable$|^deleteFromTable$|',
+            verify: '^verify$|^deleteVerify$|',
+            settingchange: '^modifySettings$|',
+            memberchange: '^modifyMember$|',
+            '1365' : '^request1365$|',
+            others : '^apply$|^requestApply$|^requestRegister$|^server$|'
+          };
+          for(var obj of $('input[name=logtype]:checked')) str += types[$(obj).val()];
+          if(!str) str = '^love$|';
+          d.error = ($('input[name=iserror]:checked').length ? true : false);
+          d.type = str.substring(0, str.length - 1);
+        },
+        dataSrc: ''
+      },
+      columns: [
+        { data: "timestamp" },
+        { data: "ip" },
+        { data: "identity" },
+        { data: "description" },
+        { data: "query" },
+        { data: "type" },
+        { data: "result" }
+      ]
+    });
     
     $.ajax({ // Request Namelist DBs
       url: 'https://luftaquila.io/ajoumeow/api/requestNamelistTables',
@@ -132,7 +167,7 @@ async function load() {
   $.ajax({
     url: 'https://luftaquila.io/ajoumeow/api/requestLatestVerify',
     type: 'POST',
-    success: function(res) { $('#latestConfirm').text('마지막 인증 날짜 : ' + new Date(res[0].date).format('yyyy-mm-dd')); }
+    success: function(res) { $('#latestConfirm').text('마지막 인증 기록 : ' + new Date(res[0].date).format('yyyy-mm-dd')); }
   });
   
   await $.ajax({
@@ -339,6 +374,7 @@ function clickEventListener() {
     else if(obj.includes('settingAdditionalApply')) req = ['isAllowAdditionalApply', $('#isAdditionalApplyAllowed').val()];
     else if(obj.includes('settingRegisterCalendar')) req = ['registerTerm', $('#registerStartDate').val() + '~' + $('#registerEndDate').val()];
     else if(obj.includes('settingAdditionalRegister')) req = ['isAllowAdditionalRegister', $('#isAdditionalRegisterAllowed').val()];
+    else if(obj.includes('notice')) req = ['notice', $('#notice').val()];
     
     $.ajax({
       type: 'POST',
@@ -409,6 +445,7 @@ function clickEventListener() {
         }
       });
   });
+  $('input[name=iserror], input[name=logtype]').click(function() { serverlog.ajax.reload(); });
 }
 
 function dataSize(s, b, i, c) { for(b = i = 0; c = s.charCodeAt(i++); b += c >> 11 ? 3 : c >> 7 ? 2 : 1); return b; }

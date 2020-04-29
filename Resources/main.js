@@ -104,10 +104,17 @@ function setData(table, namelist) {
   }
   $('td:contains(' + new Date().format('m/d(ddd)') + ')').css('backgroundColor', 'greenyellow');
   
-  if(Cookies.get('versionInfo') != $('#version').text()) {
-    Cookies.set('versionInfo', $('#version').text(), {expires : 30});
-    MicroModal.show('noticeModal');
-  }
+  $.ajax({
+    url: 'https://luftaquila.io/ajoumeow/api/requestNotice',
+    type: 'POST',
+    success: function(res) {
+      $('#notice').html(res.notice);
+      if(Cookies.get('versionInfo') != res.version) {
+        Cookies.set('versionInfo', res.version, {expires : 7});
+        MicroModal.show('noticeModal');
+      }
+    }
+  });
 
   //randomizeCat();
   //$('svg').removeClass('rotating');
