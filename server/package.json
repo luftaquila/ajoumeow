@@ -19,6 +19,7 @@
   "homepage": "https://github.com/luftaquila/ajoumeow#readme",
   "dependencies": {
     "body-parser": "^1.19.0",
+    "dateformat": "^3.0.3",
     "ejs": "^3.0.2",
     "express": "^4.17.1",
     "express-mysql-session": "^2.1.4",
