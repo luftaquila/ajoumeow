@@ -57,7 +57,7 @@ app.post('//loginCheck', async function(req, res) {
       log(ip, null, 'loginCheck', '요청 세션이 로그인된 세션인지 확인합니다.', query, { result : 'success' });
     }
   }
-  catch(e) { log(ip, null, 'loginCheck', '요청 세션이 로그인된 세션인지 확인합니다.', query, e.code); }
+  catch(e) { log(ip, null, 'loginCheck', '요청 세션이 로그인된 세션인지 확인합니다.', query, e); }
 });
 
 app.post('//login', async function(req, res) {
@@ -77,7 +77,7 @@ app.post('//login', async function(req, res) {
       log(ip, null, 'login', '로그인 실패', query, { result : 'success' });
     } 
   }
-  catch(e) { log(ip, null, 'login', '로그인 시도', query, e.code); }
+  catch(e) { log(ip, null, 'login', '로그인 시도', query, e); }
 });
 
 app.post('//logout', async function(req, res) {
@@ -99,7 +99,7 @@ app.post('//apply', async function(req, res) {
   }
   catch(e) {
     res.send({ 'result' : null, 'error' : e });
-    log(ip, null, 'apply', '회원 등록', query, e.code);
+    log(ip, null, 'apply', '회원 등록', query, e);
   }
 });
 
@@ -139,7 +139,7 @@ app.post('//modifySettings', async function(req, res) {
   }
   catch(e) { 
     res.send({ 'result' : null, 'error' : e });
-    log(ip, req.session.ID, 'modifySettings', '설정값 변경', query, e.code);
+    log(ip, req.session.ID, 'modifySettings', '설정값 변경', query, e);
   }
 });
 
@@ -153,7 +153,7 @@ app.post('//records', async function(req, res) {
     log(ip, null, 'records', '급식표 데이터 요청', query, { result : 'success' });
   }
   catch(e) {
-    log(ip, null, 'records', '급식표 데이터 요청', query, e.code);
+    log(ip, null, 'records', '급식표 데이터 요청', query, e);
   }
 });
 
@@ -169,7 +169,7 @@ app.post('//requestSettings', async function(req, res) {
     log(ip, req.session.ID, 'requestSettings', '설정값 요청', query, { result : 'success' });
   }
   catch(e) {
-    log(ip, req.session.ID, 'requestSettings', '설정값 요청', query, e.code);
+    log(ip, req.session.ID, 'requestSettings', '설정값 요청', query, e);
   }
 });
 
@@ -190,7 +190,7 @@ app.post('//requestNameList', async function(req, res) {
     log(ip, null, 'requestNamelist', '회원 명단 요청', query, { result : 'success' });
   }
   catch(e) {
-    log(ip, null, 'requestNamelist', '회원 명단 요청', query, e.code);
+    log(ip, null, 'requestNamelist', '회원 명단 요청', query, e);
   }
 });
 
@@ -206,7 +206,7 @@ app.post('//isAllowedAdminConsole', async function(req, res) {
   }
   catch(e) {
     res.send({ 'result' : null, 'error' : e });
-    log(ip, null, 'isAllowedAdminConsole', '관리자 권한 요청', query, e.code);
+    log(ip, null, 'isAllowedAdminConsole', '관리자 권한 요청', query, e);
   }
 });
 
@@ -222,7 +222,28 @@ app.post('//modifyMember', async function(req, res) {
   }
   catch(e) {
     res.send({ 'result' : null, 'error' : e });
-    log(ip, req.session.ID, 'modifyMember', '회원 정보 수정', query, e.code);
+    log(ip, req.session.ID, 'modifyMember', '회원 정보 수정', query, e);
+  }
+});
+
+app.post('//deleteMember', async function(req, res) {
+  const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
+  let query, result;
+  try {
+    query = "DELETE FROM `namelist_" + await settings('currentSemister') + "` WHERE ID=" + req.body.delete + ";";
+    result = await db.query(query);
+    if(result.affectedRows) {
+      res.send({ 'result' : true });
+      log(ip, req.session.ID, 'deleteMember', '회원 제명', query, result);
+    }
+    else {
+      res.send({ 'result' : null });
+      log(ip, req.session.ID, 'deleteMember', '회원 제명', query, result);
+    }
+  }
+  catch(e) {
+    res.send({ 'result' : null });
+    log(ip, req.session.ID, 'deleteMember', '회원 제명', query, e);
   }
 });
 
@@ -244,7 +265,7 @@ app.post('//insertIntoTable', async function(req, res) {
   }
   catch(e) {
     res.status(406).send({ 'result' : null, 'error' : e });
-    log(ip, req.session.ID, 'insertIntoTable', '급식 신청', query, e.code);
+    log(ip, req.session.ID, 'insertIntoTable', '급식 신청', query, e);
   }
 });
 
@@ -260,7 +281,7 @@ app.post('//deleteFromTable', async function(req, res) {
   }
   catch(e) {
     res.send({ 'result' : null, 'error' : e });
-    log(ip, req.session.ID, 'deleteFromTable', '급식 신청 삭제', query, e.code);
+    log(ip, req.session.ID, 'deleteFromTable', '급식 신청 삭제', query, e);
   }
 });
 
@@ -273,7 +294,7 @@ app.post('//requestVerifyList', async function(req, res) {
     log(ip, req.session.ID, 'requestVerifyList', '급식 인증 기록 요청', '-', { result : 'success' });
   }
   catch(e) {
-    log(ip, req.session.ID, 'requestVerifyList', '급식 인증 기록 요청', '-', e.code);
+    log(ip, req.session.ID, 'requestVerifyList', '급식 인증 기록 요청', '-', e);
   }
 });
 
@@ -291,7 +312,7 @@ app.post('//verify', async function(req, res) {
   }
   catch(e) {
     res.status(406).send({ 'error' : e });
-    log(ip, req.session.ID, 'verify', '급식 인증', query, e.code);
+    log(ip, req.session.ID, 'verify', '급식 인증', query, e);
   }
 });
 
@@ -309,7 +330,7 @@ app.post('//deleteVerify', async function(req, res) {
   }
   catch(e) {
     res.status(406).send({ 'error' : e });
-    log(ip, req.session.ID, 'deleteVerify', '급식 인증 삭제', query, e.code);
+    log(ip, req.session.ID, 'deleteVerify', '급식 인증 삭제', query, e);
   }
 });
 
@@ -323,7 +344,7 @@ app.post('//requestLatestVerify', async function(req, res) {
     log(ip, req.session.ID, 'requestLatestVerify', '마지막 급식 인증 날짜 요청', query, { result: 'success' });
   }
   catch(e) {
-    log(ip, req.session.ID, 'requestLatestVerify', '마지막 급식 인증 날짜 요청', query, e.code);
+    log(ip, req.session.ID, 'requestLatestVerify', '마지막 급식 인증 날짜 요청', query, e);
   }
 });
 
@@ -341,7 +362,7 @@ app.post('//requestNamelistTables', async function(req, res) {
     log(ip, req.session.ID, 'requestNamelistTables', '회원 명단 테이블 리스트 요청', query, { result: 'success' });
   }
   catch(e) {
-    log(ip, req.session.ID, 'requestNamelistTables', '회원 명단 테이블 리스트 요청', query, e.code);
+    log(ip, req.session.ID, 'requestNamelistTables', '회원 명단 테이블 리스트 요청', query, e);
   }
 });
 
@@ -444,7 +465,7 @@ app.post('//requestNotice', async function(req, res) {
     log(ip, null, 'requestNotice', '공지사항 내용 요청', query, { result : 'success' });
   }
   catch(e) {
-    log(ip, null, 'requestNotice', '공지사항 내용 요청', query, e.code);
+    log(ip, null, 'requestNotice', '공지사항 내용 요청', query, e);
   }
 });
 
@@ -460,6 +481,120 @@ app.post('//requestLogs', async function(req, res) {
   }
   catch(e) {
     console.log(e)
+  }
+});
+
+app.post('//requestStat', async function(req, res) {
+  const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
+  try {
+    let data = [];
+    let verify = await db.query("SELECT * FROM verify WHERE REPLACE(SUBSTRING_INDEX(date, '-', 2), '-', '')='" + dateformat(new Date(), 'yyyymm') + "';");
+    let namelist = await db.query("SELECT * FROM `namelist_" + await settings('currentSemister') + "`;");
+
+    for(let obj of verify) {
+      let person = data.find(o => o.ID == obj.ID);
+      if(!person) {
+        let member = namelist.find(o => o.ID == obj.ID);
+        if(member) data.push({ ID: member.ID });
+      }
+    }
+    res.send({
+      time: verify.length,
+      people: data.length,
+      total: namelist.length
+    });
+    log(ip, req.session.ID, 'requestStat', '활동 통계 카드 내용 요청', '-', { result: 'success'});
+  }
+  catch(e) {
+    log(ip, req.session.ID, 'requestStat', '활동 통계 카드 내용 요청', '-', e);
+  }
+});
+
+app.post('//requestStatistics', async function(req, res) {
+  const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
+  try {
+    let namelist = await db.query("SELECT * FROM `namelist_" + await settings('currentSemister') + "`;");
+    let data = [];
+    
+    if(req.body.type == 'thisMonthFeeding') {
+      let verify = await db.query("SELECT * FROM verify WHERE REPLACE(SUBSTRING_INDEX(date, '-', 2), '-', '')='" + dateformat(new Date(), 'yyyymm') + "';");
+      for(let obj of verify) {
+        if(obj.course.includes('코스')) {
+          let person = data.find(o => o.ID == obj.ID);
+          if(person) person.score = person.score + Number(obj.score);
+          else {
+            let member = namelist.find(o => o.ID == obj.ID);
+            if(member) {
+              data.push({
+                ID: member.ID,
+                name: member.name,
+                score: Number(obj.score)
+              });
+            }
+          }
+        }
+      }
+    }
+    else if(req.body.type == 'lastMonthFeeding') {
+      let date = new Date();
+      date.setMonth(date.getMonth() - 1);
+      let verify = await db.query("SELECT * FROM verify WHERE REPLACE(SUBSTRING_INDEX(date, '-', 2), '-', '')='" + dateformat(date, 'yyyymm') + "';");
+      for(let obj of verify) {
+        if(obj.course.includes('코스')) {
+          let person = data.find(o => o.ID == obj.ID);
+          if(person) person.score = person.score + Number(obj.score);
+          else {
+            let member = namelist.find(o => o.ID == obj.ID);
+            if(member) {
+              data.push({
+                ID: member.ID,
+                name: member.name,
+                score: Number(obj.score)
+              });
+            }
+          }
+        }
+      }
+    }
+    else if(req.body.type == 'thisMonthTotal') {
+      let verify = await db.query("SELECT * FROM verify WHERE REPLACE(SUBSTRING_INDEX(date, '-', 2), '-', '')='" + dateformat(new Date(), 'yyyymm') + "';");
+      for(let obj of verify) {
+        let person = data.find(o => o.ID == obj.ID);
+        if(person) person.score = person.score + Number(obj.score);
+        else {
+          let member = namelist.find(o => o.ID == obj.ID);
+          if(member) {
+            data.push({
+              ID: member.ID,
+              name: member.name,
+              score: Number(obj.score)
+            });
+          }
+        }
+      }
+    }
+    else if(req.body.type == 'totalStatistics') {
+      let verify = await db.query("SELECT * FROM verify;");
+      for(let obj of verify) {
+        let person = data.find(o => o.ID == obj.ID);
+        if(person) person.score = person.score + Number(obj.score);
+        else {
+          let member = namelist.find(o => o.ID == obj.ID);
+          if(member) {
+            data.push({
+              ID: member.ID,
+              name: member.name,
+              score: Number(obj.score)
+            });
+          }
+        }
+      }
+    }
+    res.send(data);
+    log(ip, req.session.ID, 'requestStatistics', '활동 통계 순위 요청', req.body.type, { result: 'success' });
+  }
+  catch(e) {
+    log(ip, req.session.ID, 'requestStatistics', '활동 통계 순위 요청', req.body.type, e);
   }
 });
 
@@ -481,7 +616,9 @@ function log(ip, identity, type, description, query, result) {
     db.query("DELETE FROM log WHERE timestamp < UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 30 DAY))");
     db.query("INSERT INTO log(ip, identity, type, query, description, result) VALUES('" + ip + "', '" + identity + "', '" + type + "', '" + query + "', '" + description + "', '" + result + "');");
   }
-  catch(e) {}
+  catch(e) {
+    let error = JSON.stringify(e).replace(/"/g, "'").replace(/`/g, "'").replace(/'/g, "");
+    db.query("INSERT INTO log(ip, identity, type, query, description, result) VALUES('-', '-', '" + type + "', 'Logging Error', 'Logging Error', '" + error + "');"); }
 }
   
   
