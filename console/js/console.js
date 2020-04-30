@@ -97,7 +97,7 @@ function init() {
        }
     });
     
-    $.ajax({ // Request Sheet Lists
+    $.ajax({ // Request New Member Recruit Sheet Lists
       url: "https://script.google.com/macros/s/AKfycbwOT83RGEPIgdu1oTM9VvBqyRN6jcEXRkGlpdqG1EUCr1HdaBxX/exec",
       data: encodeURI('type=requestSheetLists'),
       type: "POST",
@@ -109,6 +109,18 @@ function init() {
         $('#newMemberList').html(str);
       }
     });
+    
+    $.ajax({
+      url: 'https://luftaquila.io/ajoumeow/api/requestStat',
+      type: 'POST',
+      success: function(res) {
+        var percent = (res.people / res.total * 100).toFixed(1) + '%';
+        $('#activityTime').text(res.time + '시간');
+        $('#activeMember').text(res.people + '명 / ' + percent);
+        $('#activePercentGraph').css('width', percent);
+      }
+    });
+      
     serverlog = $('#serverlog').DataTable({
       pagingType: "numbers",
       order: [[ 0, 'desc' ]],
@@ -117,12 +129,12 @@ function init() {
         type: 'POST',
         data: function(d) {
           var str = '', types = {
-            pageload: '^loginCheck$|^requestSettings$|^records$|^requestNamelist$|^isAllowedAdminConsole$|^requestNamelistTables$|^requestLatestVerify$|^requestVerifyList$|^requestNotice$|',
+            pageload: '^loginCheck$|^requestSettings$|^records$|^requestNamelist$|^isAllowedAdminConsole$|^requestNamelistTables$|^requestLatestVerify$|^requestVerifyList$|^requestNotice$|^requestStatistics$|^requestStat$|',
             loginout: '^login$|^logout$|',
             insdelTable: '^insertIntoTable$|^deleteFromTable$|',
             verify: '^verify$|^deleteVerify$|',
             settingchange: '^modifySettings$|',
-            memberchange: '^modifyMember$|',
+            memberchange: '^modifyMember$|^deleteMember$|',
             '1365' : '^request1365$|',
             others : '^apply$|^requestApply$|^requestRegister$|^server$|'
           };
@@ -141,6 +153,24 @@ function init() {
         { data: "query" },
         { data: "type" },
         { data: "result" }
+      ]
+    });
+    
+    statistics = $('#statistics').DataTable({
+      paging: false,
+      lengthChange: false,
+      order: [[ 1, 'desc' ]],
+      ajax: {
+        url: "https://luftaquila.io/ajoumeow/api/requestStatistics",
+        type: 'POST',
+        data: function(d) {
+          d.type = $('input[name=statisticsType]:checked').val();
+        },
+        dataSrc: ''
+      },
+      columns: [
+        { data: "name" },
+        { data: "score" }
       ]
     });
     
@@ -446,6 +476,18 @@ function clickEventListener() {
       });
   });
   $('input[name=iserror], input[name=logtype]').click(function() { serverlog.ajax.reload(); });
+  $('input[name=statisticsType]').click(function() { statistics.ajax.reload(); });
+  $('#memberDeleteConfirm').click(function() {
+    $.ajax({
+      url: 'https://luftaquila.io/ajoumeow/api/deleteMember',
+      type: 'POST',
+      data: { delete: $('#deletemember').val() },
+      success: function(res) {
+        if(res.result) alertify.error('회원이 제명되었습니다.');
+        else alertify.error('등록되지 않은 학번입니다.');
+      }
+    });
+  });
 }
 
 function dataSize(s, b, i, c) { for(b = i = 0; c = s.charCodeAt(i++); b += c >> 11 ? 3 : c >> 7 ? 2 : 1); return b; }

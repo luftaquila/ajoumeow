@@ -324,7 +324,19 @@
                 </tr>
               </tfoot>
             </table>
-          </div>
+          </div><br>
+          <table width='100%' style='margin-bottom: 10px'>
+            <tr>
+              <td>회원 삭제 :</td>
+              <td><input id='deletemember' type='number' placeholder='학번' style='width: 200px' class='form-control bg-light border-5 small'></td>
+              <td>
+                <a id="memberDeleteConfirm" href="#" class="btn btn-danger btn-icon-split" style='width: 30; height: 5;'>
+                  <span class='text'>제명</span>
+                </a>
+              </td>
+            </tr></table>
+          <li>경고! 제명 버튼을 누르면 별도의 확인 없이 바로 회원이 제명되고, 재등록하지 않는 한 복구가 불가능합니다! 신중하게 누르세요!</li>
+          <br>
         </div>
 
         <div class="container-fluid text-gray-700" id='1365Content' style='display: none;'>
@@ -387,7 +399,75 @@
           <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">통계</h1>
           </div>
-          페이지 준비중입니다.
+          
+            <!-- Earnings (Monthly) Card Example -->
+            <div class="col-xl-3 col-md-6 mb-4">
+              <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-info text-uppercase mb-1">이번 달 활동자 수</div>
+                      <div class="row no-gutters align-items-center">
+                        <div class='col mr-2'>
+                          <div class="h5 mb-0 font-weight-bold text-gray-800" id='activeMember'></div>
+                        </div>
+                        <div class="col">
+                          <div class="progress progress-sm mr-2">
+                            <div class="progress-bar bg-info" role="progressbar" id='activePercentGraph' style="width: 0%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-auto">
+                      <i class="fas fa-user-friends fa-2x text-gray-300"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-md-6 mb-4">
+              <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-success text-uppercase mb-1">이번 달 활동 시간</div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800" id='activityTime'></div>
+                    </div>
+                    <div class="col-auto">
+                      <i class="fas fa-user-clock fa-2x text-gray-300"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          
+            <div class="col-xl-8 col-lg-7">
+              <div class="card shadow mb-4">
+                <!-- Card Header - Dropdown -->
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  <h6 class="m-0 font-weight-bold text-primary">활동 통계</h6>
+                </div>
+                <!-- Card Body -->
+                <div class="card-body">
+                  <label><input type='radio' name='statisticsType' value='thisMonthFeeding' checked> 이번 달 급식 마일리지 순위</input></label>
+                  <label><input type='radio' name='statisticsType' value='thisMonthTotal'> 이번 달 마일리지 전체 순위</input></label>
+                  <label><input type='radio' name='statisticsType' value='lastMonthFeeding'> 저번 달 급식 마일리지 순위</input></label>
+                  <label><input type='radio' name='statisticsType' value='totalStatistics'> 전체 기간 마일리지 순위</input></label>
+                  <div class='table-responsive'>
+                    <table class="table table-bordered" id="statistics" width="99%" style='table-layout: fixed; text-align: center' cellspacing="0">
+                      <colgroup>
+                        <col />
+                        <col />
+                      </colgroup>
+                      <thead>
+                        <th>이름</th>
+                        <th>마일리지</th>
+                      </thead>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
         </div>
   
         <div class="container-fluid text-gray-700" id='logContent' style='display: none;'>
