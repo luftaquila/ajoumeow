@@ -5,6 +5,7 @@ After=network.target network-online.target
 
 [Service]
 Type=simple
+WorkingDirectory=/home/pi/ExtHDD/ajoumeow/server
 ExecStart=node /home/pi/ExtHDD/ajoumeow/server/server.js
 Restart=always
 

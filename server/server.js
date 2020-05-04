@@ -3,6 +3,7 @@ const ejs = require('ejs');
 const request = require('request');
 const express = require('express');
 const mariadb = require('mariadb');
+const winston = require('winston');
 const dateformat = require('dateformat');
 const bodyParser = require('body-parser');
 const session = require('express-session');
@@ -16,6 +17,25 @@ const DBOptions = {
 const pool = mariadb.createPool(DBOptions);
 const sessionDB = new sessionDatabase(DBOptions);
 let db;
+
+let logger = new winston.createLogger({
+  transports: [
+    new winston.transports.File({
+      level: 'info',
+      filename: '/home/pi/ExtHDD/ajoumeow/server/server.log',
+      maxsize: 5242880, //5MB
+      maxFiles: 1,
+      showLevel: true,
+      format: winston.format.combine(
+        winston.format.timestamp({
+          format: 'YYYY-MM-DD HH:mm:ss'
+        }),
+        winston.format.json()
+      )
+    })
+  ],
+  exitOnError: false,
+});
 
 const app = express();
 //app.use('/', express.static('../'));
@@ -50,14 +70,17 @@ app.post('//loginCheck', async function(req, res) {
       query = 'SELECT name, ID, role FROM `namelist_' + await settings('currentSemister') + "` WHERE ID='" + req.session.ID + "';";
       result = await db.query(query);
       res.send({ 'name' : result[0].name, 'id' : result[0].ID, 'role' : result[0].role });
-      log(ip, result[0].ID, 'loginCheck', '요청 세션이 로그인된 세션인지 확인합니다.', query, { result : 'success' });
+      logger.info('세션의 로그인 여부를 확인합니다.', { ip: ip, url: 'loginCheck', query: query, result: JSON.stringify(result)});
     }
     else {
       res.send({ 'name' : null, 'id' : null, 'role' : null });
-      log(ip, null, 'loginCheck', '요청 세션이 로그인된 세션인지 확인합니다.', query, { result : 'success' });
+      logger.info('세션의 로그인 여부를 확인합니다.', { ip: ip, url: 'loginCheck', query: '-', result: 'Not logged in.' });
     }
   }
-  catch(e) { log(ip, null, 'loginCheck', '요청 세션이 로그인된 세션인지 확인합니다.', query, e); }
+  catch(e) {
+    res.send({ 'name' : null, 'id' : null, 'role' : null });
+    logger.error('세션의 로그인 여부를 확인하는 중에 오류가 발생했습니다.', { ip: ip, url: 'loginCheck', query: query, result: e.toString()});
+  }
 });
 
 app.post('//login', async function(req, res) {
@@ -70,21 +93,23 @@ app.post('//login', async function(req, res) {
       req.session.ID = req.body['ID'];
       req.session.isLogin = true;
       res.send({ 'name' : result[0].name, 'id' : result[0].ID, 'role' : result[0].role });
-      log(ip, result[0].ID, 'login', '로그인', query, { result : 'success' });
+      logger.info('로그인을 시도합니다.', { ip: ip, url: 'login', query: query, result: JSON.stringify(result)});
     }
     else {
       res.send({ 'name' : null, 'id' : null, 'role' : null });
-      log(ip, null, 'login', '로그인 실패', query, { result : 'success' });
+      logger.info('로그인을 시도합니다.', { ip: ip, url: 'login', query: query, result: JSON.stringify(result)});
     } 
   }
-  catch(e) { log(ip, null, 'login', '로그인 시도', query, e); }
+  catch(e) {
+    logger.error('로그인 시도 중에 오류가 발생했습니다.', { ip: ip, url: 'login', query: query, result: e.toString()});
+  }
 });
 
 app.post('//logout', async function(req, res) {
   const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
-  log(ip, req.session.ID, 'logout', '로그아웃', 'req.session.destroy()', { result : 'success' });
   req.session.destroy();
   res.send({ 'result' : 'success' });
+  logger.info('로그아웃을 시도합니다.', { ip: ip, url: 'logout', query: 'logout', result: 'ok'});
 });
 
 app.post('//apply', async function(req, res) {
@@ -95,28 +120,47 @@ app.post('//apply', async function(req, res) {
         " VALUES('" + req.body['단과대학'] + "', '" + req.body['학과'] + "', '" + req.body['학번'] + "', '" + req.body['이름'] + "', '" + req.body['전화번호'] + "', '" + req.body['생년월일'] + "', '" + req.body['1365 아이디'] + "', '" + req.body['가입 학기'] + "');";
     result = await db.query(query);
     res.send(result);
-    log(ip, null, 'apply', '회원 등록', query, result);
+    logger.info('회원 등록을 시도합니다.', { ip: ip, url: 'apply', query: query, result: JSON.stringify(result)});
   }
   catch(e) {
-    res.send({ 'result' : null, 'error' : e });
-    log(ip, null, 'apply', '회원 등록', query, e);
+    res.send({ 'result' : null, 'error' : e.toString() });
+    logger.error('회원 등록 중에 오류가 발생했습니다.', { ip: ip, url: 'apply', query: query, result: e.toString()});
   }
 });
 
 app.post('//requestApply', async function(req, res) {
-  let applyTerm = await settings('applyTerm');
-  applyTerm = applyTerm.split('~');
-  if((new Date() > new Date(applyTerm[0]) && new Date() < new Date(new Date(applyTerm[1]).getTime() + 60 * 60 * 24 * 1000)) || (await settings('isAllowAdditionalApply') == 'TRUE'))
-    res.send({ 'result' : true });
-  else res.send({ 'result' : null });
+  const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
+  try {
+    let applyTerm = await settings('applyTerm'), result;
+    applyTerm = applyTerm.split('~');
+  
+    if((new Date() > new Date(applyTerm[0]) && new Date() < new Date(new Date(applyTerm[1]).getTime() + 60 * 60 * 24 * 1000)) || (await settings('isAllowAdditionalApply') == 'TRUE'))
+      result = { result: true };
+    else result = { result: null };
+  
+    res.send(result);
+    logger.info('회원 등록 가능 여부를 확인합니다.', { ip: ip, url: 'requestApply', query: '-', result: JSON.stringify(result)});
+  }
+  catch(e) {
+    logger.error('회원 등록 가능 여부를 확인하는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestApply', query: '-', result: e.toString()});
+  }
 });
 
 app.post('//requestRegister', async function(req, res) {
-  let registerTerm = await settings('registerTerm');
-  registerTerm = registerTerm.split('~');
-  if((new Date() > new Date(registerTerm[0]) && new Date() < new Date(new Date(registerTerm[1]).getTime() + 60 * 60 * 24 * 1000)) || (await settings('isAllowAdditionalRegister') == 'TRUE'))
-    await res.send({ 'result' : true, 'semister' : await settings('currentSemister') });
-  else res.send({ 'result' : null });
+  const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
+  try {
+    let registerTerm = await settings('registerTerm'), result;
+    registerTerm = registerTerm.split('~');
+  
+    if((new Date() > new Date(registerTerm[0]) && new Date() < new Date(new Date(registerTerm[1]).getTime() + 60 * 60 * 24 * 1000)) || (await settings('isAllowAdditionalRegister') == 'TRUE'))
+      result = { 'result' : true, 'semister' : await settings('currentSemister') };
+    else result = { 'result' : null };
+    res.send(result);
+    logger.info('회원 가입 가능 여부를 확인합니다.', { ip: ip, url: 'requestRegister', query: '-', result: JSON.stringify(result)});
+  }
+  catch(e) {
+    logger.info('회원 가입 가능 여부를 확인하는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestRegister', query: '-', result: e.toString()});
+  }
 });
 
 app.post('//modifySettings', async function(req, res) {
@@ -128,18 +172,15 @@ app.post('//modifySettings', async function(req, res) {
       version = Number(version.split('$')[0]) + 1;
       let notice = req.body.editData.replace(/(?:\r\n|\r|\n)/g, '<br>');
       query = "UPDATE settings SET value='" + version + '$' + notice + "' WHERE name='" + req.body.editParam + "';";
-      result = await db.query(query);
     }
-    else {
-      query = "UPDATE settings SET value='" + req.body.editData + "' WHERE name='" + req.body.editParam + "';";
-      result = await db.query(query);
-    }
+    else query = "UPDATE settings SET value='" + req.body.editData + "' WHERE name='" + req.body.editParam + "';";
+    result = await db.query(query);
     res.send({ 'result' : true });
-    log(ip, req.session.ID, 'modifySettings', '설정값 변경', query, result);
+    logger.info('설정값 변경을 시도합니다.', { ip: ip, url: 'modifySettings', query: query, result: JSON.stringify(result)});
   }
   catch(e) { 
-    res.send({ 'result' : null, 'error' : e });
-    log(ip, req.session.ID, 'modifySettings', '설정값 변경', query, e);
+    res.send({ 'result' : null, 'error' : e.toString() });
+    logger.error('설정값 변경 중에 오류가 발생했습니다.', { ip: ip, url: 'modifySettings', query: query, result: e.toString()});
   }
 });
 
@@ -150,10 +191,10 @@ app.post('//records', async function(req, res) {
     query = "SELECT * FROM record WHERE date BETWEEN '" + req.body.startDate + "' AND '" + req.body.endDate + "' ORDER BY date, course, timestamp;";
     result = await db.query(query);
     res.send(result);
-    log(ip, null, 'records', '급식표 데이터 요청', query, { result : 'success' });
+    logger.info('급식표 데이터를 요청합니다.', { ip: ip, url: 'records', query: query, result: JSON.stringify(result)});
   }
   catch(e) {
-    log(ip, null, 'records', '급식표 데이터 요청', query, e);
+    logger.error('급식표 데이터를 불러오는 중에 오류가 발생했습니다.', { ip: ip, url: 'records', query: query, result: e.toString()});
   }
 });
 
@@ -166,10 +207,10 @@ app.post('//requestSettings', async function(req, res) {
     let reply = {};
     for(let obj of result) reply[obj.name] = obj.value;
     res.send(reply);
-    log(ip, req.session.ID, 'requestSettings', '설정값 요청', query, { result : 'success' });
+    logger.info('설정값을 요청합니다.', { ip: ip, url: 'requestSettings', query: query, result: JSON.stringify(result)});
   }
   catch(e) {
-    log(ip, req.session.ID, 'requestSettings', '설정값 요청', query, e);
+    logger.error('설정값을 불러오는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestSettings', query: query, result: e.toString()});
   }
 });
 
@@ -187,10 +228,10 @@ app.post('//requestNameList', async function(req, res) {
     query = 'SELECT * FROM `namelist_' + semister + '`;';
     result = await db.query(query);
     res.send(result);
-    log(ip, null, 'requestNamelist', '회원 명단 요청', query, { result : 'success' });
+    logger.info('회원 명단을 요청합니다.', { ip: ip, url: 'requestNameList', query: query, result: JSON.stringify(result)});
   }
   catch(e) {
-    log(ip, null, 'requestNamelist', '회원 명단 요청', query, e);
+    logger.error('회원 명단을 불러오는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestNameList', query: query, result: e.toString()});
   }
 });
 
@@ -202,11 +243,11 @@ app.post('//isAllowedAdminConsole', async function(req, res) {
     result = await db.query(query);
     if(result[0].role != "회원") res.send({ 'result' : true });
     else res.send({ 'result' : null });
-    log(ip, null, 'isAllowedAdminConsole', '관리자 권한 요청', query, { result : 'success' });
+    logger.info('관리자 권한이 있는지 확인합니다.', { ip: ip, url: 'isAllowedAdminConsole', query: query, result: JSON.stringify(result)});
   }
   catch(e) {
-    res.send({ 'result' : null, 'error' : e });
-    log(ip, null, 'isAllowedAdminConsole', '관리자 권한 요청', query, e);
+    res.send({ 'result' : null, 'error' : e.toString() });
+    logger.error('관리자 권한이 있는지 확인하는 중에 오류가 발생했습니다.', { ip: ip, url: 'isAllowedAdminConsole', query: query, result: e.toString()});
   }
 });
 
@@ -218,11 +259,11 @@ app.post('//modifyMember', async function(req, res) {
     query = 'UPDATE `namelist_' + await settings('currentSemister') + "` SET college='" + data.college + "', department='" + data.department + "', name='" + data.name + "', phone='" + data.phone + "', birthday='" + data.birthday + "', 1365ID='" + data['1365ID'] + "', role='" + data.role + "', register='" + data.register + "' WHERE ID='" + data.ID + "';";
     result = await db.query(query);
     res.send({ 'result' : true });
-    log(ip, req.session.ID, 'modifyMember', '회원 정보 수정', query, result);
+    logger.info('회원 정보를 수정합니다.', { ip: ip, url: 'modifyMember', query: query, result: JSON.stringify(result)});
   }
   catch(e) {
-    res.send({ 'result' : null, 'error' : e });
-    log(ip, req.session.ID, 'modifyMember', '회원 정보 수정', query, e);
+    res.send({ 'result' : null, 'error' : e.toString() });
+    logger.error('회원 정보를 수정하는 중에 오류가 발생했습니다.', { ip: ip, url: 'modifyMember', query: query, result: e.toString()});
   }
 });
 
@@ -234,16 +275,16 @@ app.post('//deleteMember', async function(req, res) {
     result = await db.query(query);
     if(result.affectedRows) {
       res.send({ 'result' : true });
-      log(ip, req.session.ID, 'deleteMember', '회원 제명', query, result);
+      logger.info('회원을 제명합니다.', { ip: ip, url: 'deleteMember', query: query, result: JSON.stringify(result)});
     }
     else {
       res.send({ 'result' : null });
-      log(ip, req.session.ID, 'deleteMember', '회원 제명', query, result);
+      logger.info('회원을 제명합니다.', { ip: ip, url: 'deleteMember', query: query, result: JSON.stringify(result)});
     }
   }
   catch(e) {
     res.send({ 'result' : null });
-    log(ip, req.session.ID, 'deleteMember', '회원 제명', query, e);
+    logger.error('회원을 제명하는 중에 오류가 발생했습니다.', { ip: ip, url: 'deleteMember', query: query, result: e.toString()});
   }
 });
 
@@ -255,17 +296,17 @@ app.post('//insertIntoTable', async function(req, res) {
     query = "SELECT * FROM record WHERE ID=" + payload.ID + " AND name='" + payload.name + "' AND date='" + payload.date + "' AND course='" + payload.course + "';";
     let test = await db.query(query);
     if(test.length) {
-      log(ip, req.session.ID, 'insertIntoTable', '급식 중복 신청', query, 'ER_DUP_RECORD');
+      logger.info('급식을 신청했지만 중복 신청으로 거부되었습니다.', { ip: ip, url: 'insertIntoTable', query: query, result: test});
       return res.status(406).send({ 'result' : null, 'error' : { 'code' : 'DUP_RECORD' } }); 
     }
     query = "INSERT INTO record(ID, name, date, course) VALUES(" + payload.ID + ", '" + payload.name + "', '" + payload.date + "', '" + payload.course + "');";
     result = await db.query(query);
     res.send({ 'result' : true });
-    log(ip, req.session.ID, 'insertIntoTable', '급식 신청', query, result);
+    logger.info('급식을 신청합니다.', { ip: ip, url: 'insertIntoTable', query: query, result: JSON.stringify(result)});
   }
   catch(e) {
     res.status(406).send({ 'result' : null, 'error' : e });
-    log(ip, req.session.ID, 'insertIntoTable', '급식 신청', query, e);
+    logger.info('급식을 신청하는 중에 오류가 발생했습니다.', { ip: ip, url: 'insertIntoTable', query: query, result: e.toString()});
   }
 });
 
@@ -277,24 +318,26 @@ app.post('//deleteFromTable', async function(req, res) {
     query = "DELETE FROM record WHERE ID=" + payload.ID + " AND name='" + payload.name + "' AND date='" + payload.date + "' AND course='" + payload.course + "';";
     result = await db.query(query);
     res.send({ 'result' : true });
-    log(ip, req.session.ID, 'deleteFromTable', '급식 신청 삭제', query, result);
+    logger.info('급식 신청을 삭제합니다.', { ip: ip, url: 'deleteFromTable', query: query, result: JSON.stringify(result)});
   }
   catch(e) {
-    res.send({ 'result' : null, 'error' : e });
-    log(ip, req.session.ID, 'deleteFromTable', '급식 신청 삭제', query, e);
+    res.send({ 'result' : null, 'error' : e.toString() });
+    logger.error('급식 신청을 삭제하는 중에 오류가 발생했습니다.', { ip: ip, url: 'deleteFromTable', query: query, result: e.toString()});
   }
 });
 
 app.post('//requestVerifyList', async function(req, res) {
   const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
+  let record, verify, result;
   try {
-    let record = await db.query("SELECT * FROM record WHERE date='" + req.body.date + "' ORDER BY course;");
-    let verify = await db.query("SELECT * FROM verify WHERE date='" + req.body.date + "' ORDER BY course;");
-    res.send({ 'record' : record, 'verify' : verify });
-    log(ip, req.session.ID, 'requestVerifyList', '급식 인증 기록 요청', '-', { result : 'success' });
+    record = await db.query("SELECT * FROM record WHERE date='" + req.body.date + "' ORDER BY course;");
+    verify = await db.query("SELECT * FROM verify WHERE date='" + req.body.date + "' ORDER BY course;");
+    result = { 'record' : record, 'verify' : verify };
+    res.send(result);
+    logger.info('급식 인증 기록을 요청합니다.', { ip: ip, url: 'requestVerifyList', query: '-', result: JSON.stringify(result)});
   }
   catch(e) {
-    log(ip, req.session.ID, 'requestVerifyList', '급식 인증 기록 요청', '-', e);
+    logger.error('급식 인증 기록을 요청하는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestVerifyList', query: '-', result: e.toString()});
   }
 });
 
@@ -306,13 +349,13 @@ app.post('//verify', async function(req, res) {
     for(let obj of payload) {
       query = "INSERT INTO verify(ID, date, name, course, score) VALUES(" + obj.ID + ", '" + obj.date + "', '" + obj.name + "', '" + obj.course + "', '" + obj.score + "');";
       result = await db.query(query);
-      log(ip, req.session.ID, 'verify', '급식 인증', query, result);
+      logger.info('급식을 인증합니다.', { ip: ip, url: 'verify', query: query, result: JSON.stringify(result)});
     }
     res.send({ 'result' : true });
   }
   catch(e) {
-    res.status(406).send({ 'error' : e });
-    log(ip, req.session.ID, 'verify', '급식 인증', query, e);
+    res.status(406).send({ 'error' : e.toString() });
+    logger.error('급식을 인증하는 중에 오류가 발생했습니다.', { ip: ip, url: 'verify', query: query, result: e.toString()});
   }
 });
 
@@ -324,13 +367,13 @@ app.post('//deleteVerify', async function(req, res) {
     for(let obj of payload) {
       query = "DELETE FROM verify WHERE ID=" + obj.ID + " AND date='" + obj.date + "' AND name='" + obj.name + "' AND course='" + obj.course + "';";
       result = await db.query(query);
-      log(ip, req.session.ID, 'deleteVerify', '급식 인증 삭제', query, result);
+      logger.info('급식 인증을 삭제합니다.', { ip: ip, url: 'deleteVerify', query: query, result: JSON.stringify(result)});
     }
     res.send({ 'result' : true });
   }
   catch(e) {
-    res.status(406).send({ 'error' : e });
-    log(ip, req.session.ID, 'deleteVerify', '급식 인증 삭제', query, e);
+    res.status(406).send({ 'error' : e.toString() });
+    logger.error('급식 인증을 삭제하는 중에 오류가 발생했습니다.', { ip: ip, url: 'deleteVerify', query: query, result: e.toString()});
   }
 });
 
@@ -341,10 +384,10 @@ app.post('//requestLatestVerify', async function(req, res) {
     query = "SELECT * FROM verify ORDER BY date DESC LIMIT 1;";
     result = await db.query(query);
     res.send(result);
-    log(ip, req.session.ID, 'requestLatestVerify', '마지막 급식 인증 날짜 요청', query, { result: 'success' });
+    logger.info('마지막으로 인증한 날짜를 요청합니다.', { ip: ip, url: 'requestLatestVerify', query: query, result: JSON.stringify(result)});
   }
   catch(e) {
-    log(ip, req.session.ID, 'requestLatestVerify', '마지막 급식 인증 날짜 요청', query, e);
+    logger.error('마지막으로 인증한 날짜를 요청하는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestLatestVerify', query: query, result: e.toString()});
   }
 });
 
@@ -359,10 +402,10 @@ app.post('//requestNamelistTables', async function(req, res) {
       if(obj['Tables_in_ajoumeow'].includes('namelist')) data.push(obj);
     }
     res.send(data);
-    log(ip, req.session.ID, 'requestNamelistTables', '회원 명단 테이블 리스트 요청', query, { result: 'success' });
+    logger.info('회원 명단 테이블 이름 목록을 요청합니다.', { ip: ip, url: 'requestNamelistTables', query: query, result: JSON.stringify(result)});
   }
   catch(e) {
-    log(ip, req.session.ID, 'requestNamelistTables', '회원 명단 테이블 리스트 요청', query, e);
+    logger.info('회원 명단 테이블 이름 목록을 요청하는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestNamelistTables', query: query, result: e.toString()});
   }
 });
 
@@ -445,9 +488,11 @@ app.post('//request1365', async function(req, res) {
       });
     }
   });
-  log(ip, req.session.ID, 'request1365', '1365 인증서 생성', null, { result : 'success' });
+  logger.info('1365 인증서를 요청합니다.', { ip: ip, url: 'request1365', query: '-', result: 'ok'});
   }
-  catch(e) {}
+  catch(e) {
+    logger.error('1365 인증서를 요청하는 중에 오류가 발생했습니다.', { ip: ip, url: 'request1365', query: '-', result: e.toString()});
+  }
 });
 
 app.get('//download1365', function(req, res) {
@@ -462,22 +507,30 @@ app.post('//requestNotice', async function(req, res) {
     result = await db.query(query);
     let notice = result[0].value.split('$');
     res.send({ 'result' : true, 'version' : notice[0], 'notice' : notice[1] });
-    log(ip, null, 'requestNotice', '공지사항 내용 요청', query, { result : 'success' });
+    logger.info('공지사항을 불러옵니다.', { ip: ip, url: 'requestNotice', query: query, result: JSON.stringify(result)});
   }
   catch(e) {
-    log(ip, null, 'requestNotice', '공지사항 내용 요청', query, e);
+    logger.error('공지사항을 불러오는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestNotice', query: query, result: e.toString()});
   }
 });
 
 app.post('//requestLogs', async function(req, res) {
   const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
-  let query, result;
   try {
-    if(req.body.error == 'true') query = "SELECT * FROM log WHERE result LIKE '%error%' AND type REGEXP('" + req.body.type + "');";
-    else query = "SELECT * FROM log WHERE type REGEXP('" + req.body.type + "');";
-    result = await db.query(query);
-    for(let obj of result) obj.timestamp = dateformat(obj.timestamp, 'yyyy-mm-dd HH:MM:ss');
-    res.send(result);
+    fs.readFile('/home/pi/ExtHDD/ajoumeow/server/server.log', 'utf8', function(err, data) {
+      if(err) {
+        console.log(err)
+        return res.send([{ timestamp: null, ip: null, message: null, query: null, result: null, level: null, url: null }]);
+      }
+      let array = data.split('\n');
+      array.pop();
+      for(let i in array) {
+        array[i] = JSON.parse(array[i]);
+        if(array[i].result.length > 100)
+          array[i].result = array[i].result.substring(0, 100) + ' ...';
+      }
+      res.send(array);
+    });
   }
   catch(e) {
     console.log(e)
@@ -486,6 +539,7 @@ app.post('//requestLogs', async function(req, res) {
 
 app.post('//requestStat', async function(req, res) {
   const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
+  let result;
   try {
     let data = [];
     let verify = await db.query("SELECT * FROM verify WHERE REPLACE(SUBSTRING_INDEX(date, '-', 2), '-', '')='" + dateformat(new Date(), 'yyyymm') + "';");
@@ -498,15 +552,16 @@ app.post('//requestStat', async function(req, res) {
         if(member) data.push({ ID: member.ID });
       }
     }
-    res.send({
+    result = {
       time: verify.length,
       people: data.length,
       total: namelist.length
-    });
-    log(ip, req.session.ID, 'requestStat', '활동 통계 카드 내용 요청', '-', { result: 'success'});
+    };
+    res.send(result);
+    logger.info('활동 통계를 불러옵니다.', { ip: ip, url: 'requestStat', query: '-', result: JSON.stringify(result)});
   }
   catch(e) {
-    log(ip, req.session.ID, 'requestStat', '활동 통계 카드 내용 요청', '-', e);
+    logger.error('활동 통계를 불러옵니다.', { ip: ip, url: 'requestStat', query: '-', result: e.toString()});
   }
 });
 
@@ -591,17 +646,17 @@ app.post('//requestStatistics', async function(req, res) {
       }
     }
     res.send(data);
-    log(ip, req.session.ID, 'requestStatistics', '활동 통계 순위 요청', req.body.type, { result: 'success' });
+    logger.info('활동 통계를 불러옵니다.', { ip: ip, url: 'requestStatistics', query: '-', result: JSON.stringify(data)});
   }
   catch(e) {
-    log(ip, req.session.ID, 'requestStatistics', '활동 통계 순위 요청', req.body.type, e);
+    logger.info('활동 통계를 불러오는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestStatistics', query: '-', result: e.toString()});
   }
 });
 
 app.listen(5710, async function() {
   db = await pool.getConnection();
   console.log('Server startup at ' + new Date() + '\nServer is listening on port 5710');
-  db.query("INSERT INTO log(ip, identity, type, query, description, result) VALUES('LOCALHOST', 'SERVER', 'server', 'Server startup', 'Server startup', 'Listening on port 5710');");
+  logger.info('Server Startup.', { ip: 'LOCALHOST', url: 'SERVER', query: '-', result: 'Server listening on port 5710'});
 });
 
 async function settings(name) {

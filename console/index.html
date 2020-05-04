@@ -477,9 +477,9 @@
           </div>
           <h6>서버 로그를 열람합니다.</h6>
           <div style='font-size: 0.8rem; margin-bottom: 10px'>
-            <li>생성된 로그는 30일 동안만 저장합니다.</li>
-            <li>체크박스가 체크된 범주의 로그만 표시합니다.</li>
+            <li>체크박스가 체크된 범주의 로그만 표시됩니다.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;요청의 대다수는 페이지를 로딩할 때 발생합니다.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;페이지 로드 체크박스를 해제하면 보다 중요한 로그만 볼 수 있습니다.</li>
             <li>오류 체크박스에 체크하면 오류 기록만 표시합니다.</li>
+            <li>로그는 일정 크기를 초과하면 삭제됩니다</li>
           </div>
           <label><input type='checkbox' name='iserror' value='error'> 오류</input></label>
           <hr width='100%' style='margin: 0 0 10px 0'>
@@ -505,20 +505,20 @@
             <table class="table table-bordered" id="serverlog" width="100%" style='table-layout: fixed; text-align: center' cellspacing="0">
               <colgroup>
                 <col width='200px' />
-                <col width='160px' />
                 <col width='120px' />
+                <col width='160px' />
                 <col width='220px' />
                 <col width='300px' />
-                <col width='170px' />
                 <col width='200px' />
+                <col width='500px'/>
               </colgroup>
               <thead>
                 <th>타임스탬프</th>
+                <th>로그 수준</th>
                 <th>IP</th>
-                <th>ID</th>
                 <th>설명</th>
                 <th>쿼리</th>
-                <th>요청 url</th>
+                <th>url</th>
                 <th>결과</th>
               </thead>
             </table>
