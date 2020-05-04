@@ -49,7 +49,7 @@ function init() {
       success: function(res) { namelist = res; }
     })
   ).done(function() {
-    let datatable = $('#dataTable').DataTable({
+    membertable = $('#dataTable').DataTable({
       pagingType: "numbers",
       ajax: {
         url: "https://luftaquila.io/ajoumeow/api/requestNameList",
@@ -70,7 +70,7 @@ function init() {
       ]
     });
     datatableEdit({
-      dataTable : datatable,
+      dataTable : membertable,
       columnDefs : [
         { targets : 0 },
         { targets : 1 },
@@ -90,7 +90,7 @@ function init() {
            success: function(res) {
              if(res.result) alertify.success('수정되었습니다.');
              else alertify.error('수정에 실패했습니다.');
-             datatable.ajax.reload();
+             membertable.ajax.reload();
            },
            error: function() { alertify.error('수정에 실패했습니다.'); }
          });
@@ -120,40 +120,26 @@ function init() {
         $('#activePercentGraph').css('width', percent);
       }
     });
-      
-    serverlog = $('#serverlog').DataTable({
-      pagingType: "numbers",
-      order: [[ 0, 'desc' ]],
-      ajax: {
-        url: "https://luftaquila.io/ajoumeow/api/requestLogs",
-        type: 'POST',
-        data: function(d) {
-          var str = '', types = {
-            pageload: '^loginCheck$|^requestSettings$|^records$|^requestNamelist$|^isAllowedAdminConsole$|^requestNamelistTables$|^requestLatestVerify$|^requestVerifyList$|^requestNotice$|^requestStatistics$|^requestStat$|',
-            loginout: '^login$|^logout$|',
-            insdelTable: '^insertIntoTable$|^deleteFromTable$|',
-            verify: '^verify$|^deleteVerify$|',
-            settingchange: '^modifySettings$|',
-            memberchange: '^modifyMember$|^deleteMember$|',
-            '1365' : '^request1365$|',
-            others : '^apply$|^requestApply$|^requestRegister$|^server$|'
-          };
-          for(var obj of $('input[name=logtype]:checked')) str += types[$(obj).val()];
-          if(!str) str = '^love$|';
-          d.error = ($('input[name=iserror]:checked').length ? true : false);
-          d.type = str.substring(0, str.length - 1);
-        },
-        dataSrc: ''
-      },
-      columns: [
-        { data: "timestamp" },
-        { data: "ip" },
-        { data: "identity" },
-        { data: "description" },
-        { data: "query" },
-        { data: "type" },
-        { data: "result" }
-      ]
+    
+    $.ajax({
+      url: "https://luftaquila.io/ajoumeow/api/requestLogs",
+      type: 'POST',
+      success: function(res) { logData = res; }
+    }).done(function() {
+      serverlog = $('#serverlog').DataTable({
+        pagingType: "numbers",
+        data: logData,
+        order: [[ 0, 'desc' ]],
+        columns: [
+          { data: "timestamp" },
+          { data: "level" },
+          { data: "ip" },
+          { data: "message" },
+          { data: "query" },
+          { data: "url" },
+          { data: "result" }
+        ]
+      });
     });
     
     statistics = $('#statistics').DataTable({
@@ -475,7 +461,34 @@ function clickEventListener() {
         }
       });
   });
-  $('input[name=iserror], input[name=logtype]').click(function() { serverlog.ajax.reload(); });
+  $('input[name=iserror], input[name=logtype]').click(function() {
+    var isError = $('input[name=iserror]:checked').length;
+    var logdata = [], logtype = [];
+    $('input[name=logtype]:checked').each(function() { logtype.push($(this).val()) });
+    var types = {
+      pageload: ['loginCheck', 'requestSettings', 'records', 'requestNamelist', 'isAllowedAdminConsole', 'requestNamelistTables', 'requestLatestVerify', 'requestVerifyList', 'requestNotice', 'requestStatistics', 'requestStat'],
+      loginout: ['login', 'logout'],
+      insdelTable: ['insertIntoTable', 'deleteFromTable'],
+      verify: ['verify', 'deleteVerify'],
+      settingchange: ['modifySettings'],
+      memberchange: ['apply', 'modifyMember', 'deleteMember'],
+      '1365' : ['request1365'],
+      others : ['requestApply', 'requestRegister', 'SERVER']
+    };
+    for(var obj of logData) {
+      for(var type of logtype) {
+        if(types[type].indexOf(obj.url) > -1) {
+          if(isError) {
+            if(obj.level != 'info') logdata.push(obj);
+          }
+          else logdata.push(obj);
+        }
+      }
+    }
+    if(!logdata.length) logdata = [{ timestamp: null, ip: null, query: null, result: null, url: null, message: null, level: null }];
+    $('#serverlog').dataTable().fnClearTable(); 
+    $('#serverlog').dataTable().fnAddData(logdata);
+  });
   $('input[name=statisticsType]').click(function() { statistics.ajax.reload(); });
   $('#memberDeleteConfirm').click(function() {
     $.ajax({
@@ -483,7 +496,10 @@ function clickEventListener() {
       type: 'POST',
       data: { delete: $('#deletemember').val() },
       success: function(res) {
-        if(res.result) alertify.error('회원이 제명되었습니다.');
+        if(res.result) {
+          alertify.error('회원이 제명되었습니다.');
+          membertable.ajax.reload();
+        }
         else alertify.error('등록되지 않은 학번입니다.');
       }
     });
