@@ -1,17 +1,12 @@
 $(function() {
   $.ajax({
-    url: 'https://luftaquila.io/ajoumeow/api/isAllowedAdminConsole',
-    type: 'POST',
-    success: function(res) {
-      if(!res.result) window.location.href = 'https://luftaquila.io/ajoumeow/403.html';
-      $.ajax({
-        url:"https://luftaquila.io/ajoumeow/api/loginCheck",
-        type: "POST",
-        dataType: 'json',
-        success: function(response) { if(response.name) $('#welcomeMSG').text(response.name + '(관리자)님 안녕하세요.'); }
-      });
-    },
-    error: function(res) { window.location.href = 'https://luftaquila.io/ajoumeow/403.html'; }
+    url:"https://luftaquila.io/ajoumeow/api/loginCheck",
+    type: "POST",
+    dataType: 'json',
+    success: function(response) {
+      if(!response.role || response.role == '회원') window.location.href = "https://luftaquila.io/ajoumeow/403.html";
+      else $('#welcomeMSG').text(response.name + '(관리자)님 안녕하세요.');
+    }
   });
   init();
   clickEventListener();

@@ -25,6 +25,7 @@
     "express-mysql-session": "^2.1.4",
     "express-session": "^1.17.1",
     "mariadb": "^2.3.1",
+    "moment-timezone": "^0.5.28",
     "request": "^2.88.2",
     "winston": "^3.2.1"
   }

@@ -22,6 +22,7 @@ function init() {
           $('#userrole').text(res.role);
           $('#userInfo').css('display', 'block');
           $('#loginForm').css('display', 'none');
+          setUserStat();
         }
         else {
           username = '';
@@ -47,38 +48,39 @@ function load() {
       dataType: 'json',
       data: { 'startDate' : startDate, 'endDate' : endDate},
       error: errorHandler
-    }),
-    $.ajax({
-      url: 'https://luftaquila.io/ajoumeow/api/requestNameList',
-      type: 'POST',
-      dataType: 'json',
-      data: { 'semister' : 'this' },
-      error: errorHandler
     })
-  ).done(function(record, namelistSet) { memberlist = namelistSet[0]; yourNameIs(record[0], memberlist); });
+  ).done(function(record) { yourNameIs(record); });
+    
+  $.ajax({
+    url: 'https://luftaquila.io/ajoumeow/api/requestNameList',
+    type: 'POST',
+    dataType: 'json',
+    data: { 'semister' : 'this' },
+    success: function(namelistSet) { memberlist = namelistSet; },
+    error: errorHandler
+  });
 }
 function yourNameIs(record, namelist) {
   var table = Array(14).fill('').map(x => Array(3).fill('').map(y => Array()));
   for(var obj of record) {
     var target = new Date(new Date(obj.date).format('yyyy-mm-dd')), start = new Date(startDate);
     var diff = Math.ceil(Math.abs(target - start) / (1000 * 60 * 60 * 24));
-    table[diff][Number(obj.course.replace('코스', '')) - 1].push(obj.ID);
+    table[diff][Number(obj.course.replace('코스', '')) - 1].push({ 'id': obj.ID, 'name': obj.name });
   }
   nameTable = table;
-  setData(table, namelist);
+  setData(table);
 }
-function setData(table, namelist) {
+function setData(table) {
   $("#latestUpdate").html("Latest Update : " + new Date().format("TT hh시 MM분 ss초"));
   for(var date = 0; date < 14; date++) {
     $('#dateCell_' + Number(date + 1)).text(new Date(Date.now() - ((new Date().getDayNum() - (date + 1)) * 24 * 3600000)).format('m/d(ddd)'));
     for(var course = 0; course < 3; course++) {
       for(var order = 0; order < 2; order++) {
-        var name = namelist.find(o => o.ID == table[date][course][order]);
+        var name = table[date][course][order];
         var cell = $('#nameCell_' + Number(date + 1) + '_' + Number(course + 1) + '_' + Number(order + 1));
         cell.removeClass().text('').css('font-weight', 'normal');
         if(username) { // 로그인 상태일 때
-          var admin = namelist.find(o => o.ID == userid)['role'] != '회원';
-          if(admin) { // 관리자일 때
+          if(useradmin) { // 관리자일 때
             if(name) cell.text(name.name).addClass('reserved').css('font-weight', name.name == username ? 'bold' : 'normal');
             else cell.addClass('notReserved');
           }
@@ -121,14 +123,15 @@ function setData(table, namelist) {
   if(username) $('td:contains(' + username + ')').css('font-weight', 'bold');
 }
 function validator(type, cell, ID) {
+  console.log(ID)
   var target = locator(cell);
   if(!ID) return alertify.error('INVAILD_PAYLOAD');
   transmitter({
     'type' : type,
     'date' : target.date,
     'course' : target.course + '코스',
-    'id' : Number(ID),
-    'name'  : memberlist.find(o => o.ID == ID)['name']
+    'id' : Number(ID.id),
+    'name'  : ID.name
   });
 }
 function transmitter(data) {
@@ -167,7 +170,8 @@ function locator(cell) {
   var target = cell.replace('nameCell_', '').split('_');
   return {
     'date' : new Date(Date.now() - ((new Date().getDayNum() - Number(target[0])) * 24 * 3600000)).format('yyyy-mm-dd'),
-    'course' : target[1]
+    'course' : target[1],
+    'text' : $('#' + cell).text()
   }
 }
 function setCalendar() {/*
@@ -201,6 +205,31 @@ function setCalendar() {/*
       $('.rainbow').addClass('dogriver');
     }
   }*/
+}
+function setUserStat() {
+  $.ajax({
+    url: 'https://luftaquila.io/ajoumeow/api/requestUserStat',
+    type:'POST',
+    data: { id: userid },
+    success: function(res) {
+      var mileage_this = 0, mileage_total = 0, time_this = 0, time_total = 0, html = '<br>';
+      var this_month = new Date().format('yyyy-mm');
+      for(var obj of res) {
+        if(new Date(obj.date).format('yyyy-mm') == this_month) {
+          mileage_this += Number(obj.score);
+          time_this++;
+        }
+        mileage_total += Number(obj.score);
+        time_total++;
+        html += new Date(obj.date).format('yyyy년 m월 d일') + '<br>' + obj.course + '<br>' + obj.score + '점<br><br>';
+      }
+      $('#mileage_this').text(mileage_this);
+      $('#mileage_total').text(mileage_total);
+      $('#time_this').text(time_this);
+      $('#time_total').text(time_total);
+      $('#myhistory').html(html + '<br><br><br>');
+    }
+  });
 }
 function dataSize(s, b, i, c) { for(b = i = 0; c = s.charCodeAt(i++); b += c >> 11 ? 3 : c >> 7 ? 2 : 1); return b; }
 function mileageDisplayer() { MicroModal.close('rankModal'); MicroModal.show('mileModal'); }
@@ -239,6 +268,7 @@ function eventListener() {
           userid = res.id;
           useradmin = (res.role != '회원');
           load();
+          setUserStat();
           $('#username').text(res.name);
           $('#userrole').text(res.role);
           $('#userInfo').css('display', 'block');
@@ -310,10 +340,20 @@ function eventListener() {
       Cookies.remove('rainbowBlock');
     }
   });
-  $('#delete').click( function() {
+  $('#delete').click(function() {
     var tmp = deleteCell.replace('nameCell_', '').split('_');
     validator('delete', deleteCell, nameTable[tmp[0] - 1][tmp[1] - 1][tmp[2] - 1]);
     MicroModal.close('deleteConfirm');
+  });
+  $('#historyDispenser').click(function() {
+    if($(this).text() == '내 급식 기록 보기 ▼') {
+      $(this).text('내 급식 기록 닫기 ▲');
+      $('#myhistory').css('display', 'block');
+    }
+    else {
+      $(this).text('내 급식 기록 보기 ▼');
+      $('#myhistory').css('display', 'none');
+    }
   });
 }
 function randomizeCat() {
@@ -393,7 +433,7 @@ function contextLoader() {
           var cell = $('.focusing').attr('id');
           var target = $.contextMenu.getInputValues(opt, this.data());
           if(!target.name) { alertify.error('등록되지 않은 학번입니다.'); return; }
-          validator('add', cell, target.ID);
+          validator('add', cell, { id: target.ID, name: target.name });
           $(this).removeClass('focusing');
         }
       }
