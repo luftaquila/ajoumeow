@@ -12,7 +12,8 @@ const DBOptions = {
   host: 'localhost', 
   user:'root', 
   password: 'luftaquila',
-  database: 'ajoumeow'
+  database: 'ajoumeow',
+  idleTimeout: 0
 };
 const pool = mariadb.createPool(DBOptions);
 const sessionDB = new sessionDatabase(DBOptions);
@@ -47,7 +48,8 @@ app.use(session({
  secret: '@+*LU_Ft%AQuI-|!la#@$',
  resave: false,
  saveUninitialized: true,
- store: sessionDB
+ store: sessionDB,
+ cookie: {expires: new Date(2147483647000)}
 }));
 
 app.get('/', async function(req, res) {
@@ -64,7 +66,7 @@ app.get('/', async function(req, res) {
 
 app.post('//loginCheck', async function(req, res) {
   const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
-  let query, result;
+  let query = true, result;
   try {
     if(req.session.isLogin) {
       query = 'SELECT name, ID, role FROM `namelist_' + await settings('currentSemister') + "` WHERE ID='" + req.session.ID + "';";
@@ -116,8 +118,30 @@ app.post('//apply', async function(req, res) {
   const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
   let query, result;
   try {
-    query = 'INSERT INTO `namelist_' + await settings('currentSemister') + '`(college, department, ID, name, phone, birthday, 1365ID, register)' +
-        " VALUES('" + req.body['단과대학'] + "', '" + req.body['학과'] + "', '" + req.body['학번'] + "', '" + req.body['이름'] + "', '" + req.body['전화번호'] + "', '" + req.body['생년월일'] + "', '" + req.body['1365 아이디'] + "', '" + req.body['가입 학기'] + "');";
+    query = 'SHOW TABLES;';
+    result = await db.query(query)
+    let flag = false;
+    for(let obj of result) {
+      if(obj['Tables_in_ajoumeow'].includes('namelist_' + await settings('currentSemister'))) flag = true;
+    }
+    if(!flag) {
+      query = "CREATE TABLE `namelist_" + await settings('currentSemister') + "` (" +
+              "`college` varchar(10) not null," +
+              "`department` varchar(15) not null," +
+              "`ID` int(11) not null," +
+              "`name` varchar(10) not null," +
+              "`phone` varchar(15) not null," +
+              "`birthday` varchar(10)," +
+              "`1365ID` varchar(30)," +
+              "`register` varchar(20)," +
+              "`role` varchar(10) default '회원'," +
+              "PRIMARY KEY (`ID`)" +
+              ") ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+      result = await db.query(query);
+    }
+
+    query = 'INSERT INTO `namelist_' + await settings('currentSemister') + '`(college, department, ID, name, phone, birthday, 1365ID, register, role)' +
+        " VALUES('" + req.body['단과대학'] + "', '" + req.body['학과'] + "', '" + req.body['학번'] + "', '" + req.body['이름'] + "', '" + req.body['전화번호'] + "', '" + req.body['생년월일'] + "', '" + req.body['1365 아이디'] + "', '" + req.body['가입 학기'] + "', '" + req.body['직책'] + "');";
     result = await db.query(query);
     res.send(result);
     logger.info('회원 등록을 시도합니다.', { ip: ip, url: 'apply', query: query, result: JSON.stringify(result)});
@@ -220,7 +244,8 @@ app.post('//requestNameList', async function(req, res) {
   try {
     if(req.body.semister == 'this') semister = await settings('currentSemister');
     else if(req.body.semister == 'past') {
-      let tmp = await settings('currentSemister').split('-');
+      let tmp = await settings('currentSemister');
+      tmp = tmp.split('-');
       if(tmp[1] == '2') semister = tmp[0] + '-1';
       else semister = (Number(tmp[0]) - 1) + '-2';
     }
@@ -306,7 +331,7 @@ app.post('//insertIntoTable', async function(req, res) {
   }
   catch(e) {
     res.status(406).send({ 'result' : null, 'error' : e });
-    logger.info('급식을 신청하는 중에 오류가 발생했습니다.', { ip: ip, url: 'insertIntoTable', query: query, result: e.toString()});
+    logger.error('급식을 신청하는 중에 오류가 발생했습니다.', { ip: ip, url: 'insertIntoTable', query: query, result: e.toString()});
   }
 });
 
@@ -653,10 +678,29 @@ app.post('//requestStatistics', async function(req, res) {
   }
 });
 
+app.post('//requestUserStat', async function(req, res) {
+  const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
+  let query, result;
+  try {
+    query = 'SELECT date, course, score FROM verify WHERE id=' + req.body.id + ' ORDER BY date DESC;';
+    result = await db.query(query);
+    res.send(result);
+    logger.info('회원의 활동 기록을 불러옵니다.', { ip: ip, url: 'requestUserStat', query: query, result: JSON.stringify(result) });
+  }
+  catch(e) {
+    logger.error('회원의 활동 기록을 불러오는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestUserStat', query: query, result: e.toString() });
+  }
+});
+
 app.listen(5710, async function() {
   db = await pool.getConnection();
   console.log('Server startup at ' + new Date() + '\nServer is listening on port 5710');
   logger.info('Server Startup.', { ip: 'LOCALHOST', url: 'SERVER', query: '-', result: 'Server listening on port 5710'});
+  setInterval(async function() {
+    let query = 'SHOW TABLES;';
+    let result = await db.query(query);
+    logger.info('DB connection check.', { ip: 'LOCALHOST', url: 'SERVER', query: query, result: JSON.stringify(result) });
+  }, 14400000);
 });
 
 async function settings(name) {

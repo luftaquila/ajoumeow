@@ -17,11 +17,11 @@ function applySetup() {
                 success: function(response) { newMemberList = response.split('\n').map((line) => line.split(',')); }
             });  
             $.ajax({ // 이전학기 가입자 명단 요청
-                url: "https://script.google.com/macros/s/AKfycbzxfoEcT8YkxV7lL4tNykzUt_7qwMsImV9-3BzFNvtclJOHrqM/exec",
-                data: encodeURI('type=requestMemebers&semister=' + past),
+                url: 'https://luftaquila.io/ajoumeow/api/requestNameList',
+                data: { 'semister' : 'past' },
                 type: "POST",
-                dataType: 'text',
-                success: function(response) { memberList = response.split('\n').map((line) => line.split(',')); }
+                dataType: 'json',
+                success: function(response) { memberList = response; }
             });
         },
         error: function(req, stat, err) { alertify.error('responseCode : ' + req.status + '<br>Error : ' + req.responseText); }
@@ -77,8 +77,8 @@ function memberApply() {
             else if($('input:checkbox[name=rule]:checked').length != 2) alertify.error('회칙과 개인정보 수집 및 이용에 모두 동의해 주세요');
             
             else {
-                var payload = '', isMember = false;
-                for(var i in memberList) if($.trim($('#applyName').val()) == memberList[i][3] && $('#applyStudentNumber').val() == memberList[i][2]) { isMember = i; break; }
+                var payload = '';
+                var isMember = memberList.find(o => o.ID == $('#applyStudentNumber').val());
                 if($('#newMember').prop('checked')) {
                     if(!isMember) {
                         payload = 
@@ -89,7 +89,8 @@ function memberApply() {
                             '&전화번호=' + $('#applyContact').val() +
                             '&생년월일=' + $('#applyBirthday').val() +
                             '&1365 아이디=' + $.trim($('#applyVolunteer').val()) +
-                            '&가입 학기=' + '20' + settings['currentSemister'] + '학기';
+                            '&가입 학기=' + '20' + settings['currentSemister'] + '학기' +
+                            '&직책=' + $('#applyRole').val();
                             console.log(payload);
                     }
                     else alertify.error('신규 가입 회원이 아닙니다.');
@@ -104,7 +105,8 @@ function memberApply() {
                             '&전화번호=' + $('#applyContact').val() +
                             '&생년월일=' + $('#applyBirthday').val() +
                             '&1365 아이디=' + $.trim($('#applyVolunteer').val()) +
-                            '&가입 학기=' + memberList[i][7];
+                            '&가입 학기=' + isMember.register +
+                            '&직책=' + $('#applyRole').val();
                             console.log(payload);
                     }
                     else alertify.error('기존 회원이 아닙니다.');
@@ -133,26 +135,17 @@ function memberApply() {
                 }
             }
         });
-        $('input:radio[name=isNew]').click(function() { $('.inputField').attr('disabled', false); });
+        $('input:radio[name=isNew]').click(function() {
+          if($('#oldMember').prop('checked')) {
+            $('.inputField').attr('disabled', true);
+            $('#applyStudentNumber').attr('disabled', false);
+          }
+          else {
+            $('.inputField').attr('disabled', false);
+          }
+        });
         $('#applyName').keyup(function(event) {
-            if($('#oldMember').prop('checked')) {
-                for(var i in memberList) {
-                    if($('#applyName').val() == memberList[i][3]) {
-                        $('#applyStudentNumber').val(memberList[i][2]);
-                        $('#applyCollege').val(memberList[i][0]);
-                        
-                        var applyDepartmentHtml = '';
-                        for(var j in collegeDict[$('#applyCollege').val()]) applyDepartmentHtml += '<option value="' + collegeDict[$('#applyCollege').val()][j] + '">' + collegeDict[$('#applyCollege').val()][j] + '</option>';
-                        $('#applyDepartment').html(applyDepartmentHtml).val(memberList[i][1]);
-                        
-                        $('#applyContact').val(memberList[i][4]);
-                        $('#applyBirthday').val(memberList[i][5]);
-                        $('#applyVolunteer').val(memberList[i][6]);
-                        return;
-                    }
-                }
-            }
-            else {
+            if($('#newMember').prop('checked')) {
                 for(var i in newMemberList) {
                     if($('#applyName').val() == newMemberList[i][0]) {
                         $('#applyStudentNumber').val(newMemberList[i][3]);
@@ -165,6 +158,23 @@ function memberApply() {
                     }
                 }
             }
+        });
+        $('#applyStudentNumber').keyup(function(event) {
+          if($('#oldMember').prop('checked')) {
+            var target = memberList.find(o => o.ID == $('#applyStudentNumber').val());
+            if(target) {
+              $('#applyName').val(target.name);
+              $('#applyCollege').val(target.college);
+              var applyDepartmentHtml = '';
+              for(var j in collegeDict[$('#applyCollege').val()]) applyDepartmentHtml += '<option value="' + collegeDict[$('#applyCollege').val()][j] + '">' + collegeDict[$('#applyCollege').val()][j] + '</option>';
+              $('#applyDepartment').html(applyDepartmentHtml).val(target.department);
+              $('#applyContact').val(target.phone);
+              $('#applyBirthday').val(target.birthday);
+              $('#applyVolunteer').val(target['1365ID']);
+              $('#applyRole').val(target.role);
+              return;
+            }
+          }
         });
     }
 }

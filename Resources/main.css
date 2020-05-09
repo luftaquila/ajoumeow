@@ -78,6 +78,7 @@ ul.tabs li {
   cursor: pointer;
 }
 ul.tabs li.current {
+  border-radius: 0.5rem;
   background: #ededed;
   color: #222;
 }

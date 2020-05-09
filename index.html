@@ -53,7 +53,7 @@
         <li class="tab-link current" data-tab="tab-1">평일</li>
         <li class="tab-link" data-tab="tab-2">주말</li>
         <div class="reload" style='display: inline; float: right;'>
-          <div style='font-size: 1.5rem; padding: 10 0 0 15;'>&#9776;</span>
+          <div style='font-size: 1.5rem; padding: 10 0 0 15;'>&#9776;</div>
           <!--
           <svg x="0px" y="0px" width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">
             <path fill-rule="evenodd" clip-rule="evenodd" d="M12.011 20c0-0.002 0-0.003 0-0.005 0-4.421 3.578-8.005 7.991-8.005 2.683 0 5.051 1.329 6.5 3.361l1.26-1.644c-1.834-2.254-4.627-3.696-7.76-3.696 -5.519 0-9.994 4.471-10.001 9.989H8.013l3.018 4.013L13.987 20H12.011zM32 20l-2.969-3.985L26 20h1.992c-0.003 4.419-3.579 8.001-7.99 8.001 -2.716 0-5.111-1.36-6.555-3.435l-1.284 1.644c1.832 2.314 4.66 3.803 7.84 3.803 5.524 0 10.001-4.478 10.001-10.001 0-0.004-0.001-0.008-0.001-0.012H32z"/>
@@ -82,16 +82,16 @@
           <td id='dead' style='text-align: center; font-size: 0.8rem:'></td>
         </tr>
       </table>
-      <div id='tab-1' class="tab-content current" style="position:relative">
+      <div id='tab-1' class="tab-content current" style="position:relative;">
         <div id="weekDays">
           <table class='waffle' cellspacing="0" cellpadding="0">
             <tr class='thisWeek'>
-              <td class="thisWeek" colspan="2" style="width: 15%">이번 주</td>
+              <td class="thisWeek" colspan="2" style="width: 15%; border-top-left-radius: 0.5rem">이번 주</td>
               <td id="dateCell_1" style="width: 17%"></td>
               <td id="dateCell_2" style="width: 17%"></td>
               <td id="dateCell_3" style="width: 17%"></td>
               <td id="dateCell_4" style="width: 17%"></td>
-              <td id="dateCell_5" style="width: 17%"></td>
+              <td id="dateCell_5" style="width: 17%; border-top-right-radius: 0.5rem"></td>
             </tr>
             <tr class="course">
               <td class="thisWeek" colspan="2" rowspan="2">1코스</td>
@@ -177,7 +177,7 @@
               <td id="nameCell_12_2_2"></td>
             </tr>
             <tr class="course">
-              <td class="nextWeek" colspan="2" rowspan="2">3코스</td>
+              <td class="nextWeek" colspan="2" rowspan="2" style='border-bottom-left-radius: 0.5rem'>3코스</td>
               <td id="nameCell_8_3_1"></td>
               <td id="nameCell_9_3_1"></td>
               <td id="nameCell_10_3_1"></td>
@@ -198,9 +198,9 @@
         <div id="weekEnds">
           <table class='waffle' cellspacing="0" cellpadding="0">
             <tr class="thisWeek">
-              <td class="thisWeek" colspan="2" style="width: 25%">이번 주</td>
+              <td class="thisWeek" colspan="2" style="width: 25%; border-top-left-radius: 0.5rem">이번 주</td>
               <td id="dateCell_6" style="width: 37.5%"></td>
-              <td id="dateCell_7" style="width: 37.5%"></td>
+              <td id="dateCell_7" style="width: 37.5%; border-top-right-radius: 0.5rem"></td>
             </tr>
             <tr class="course">
               <td class="thisWeek" colspan="2" rowspan="2">1코스</td>
@@ -253,7 +253,7 @@
               <td id="nameCell_14_2_2"></td>
             </tr>
             <tr class="course">
-              <td class="nextWeek" colspan="2" rowspan="2">3코스</td>
+              <td class="nextWeek" colspan="2" rowspan="2" style='border-bottom-left-radius: 0.5rem'>3코스</td>
               <td id="nameCell_13_3_1"></td>
               <td id="nameCell_14_3_1"></td>
             </tr>
@@ -278,7 +278,7 @@
         <span id='infotext' style='display: none'></span>
         <span style="font-size:0.4rem"><br></span>
         <span class='popup' id='toApply'></span>
-        <span class='popup' id='randCat'>랜덤랜덤 고양이</span><br><br>
+        <!--<span class='popup' id='randCat'>랜덤랜덤 고양이</span>--><br>
         <!-- Info Text Here -->
         <span style='font-weight: bold; font-size: 1.2rem'></span>
           <span class="ad">⬇</span> 광고 클릭 한 번으로 개발자에게 <span class="ad">⬇</span><br>
@@ -295,7 +295,7 @@
       </div>
       <div id='sidebar' style='display: none; position: fixed; top: 0; left: 0; height: 100%; width: 100%;'>
         <div class='sidebar_overlay'>
-          <div class='sidebar_container animate-right' style='font-size: 0.8rem; padding: 10; text-align: center'>
+          <div class='sidebar_container animate-right' style='font-size: 0.8rem; padding: 10; text-align: center; overflow-y: scroll;'>
             <span id='sidebarClose' style='position: absolute; font-size: 2rem; top: 0; right: 10;'>×</span>
             <br><br><br>
             <div id='loginForm' style='display: none;'>
@@ -306,10 +306,23 @@
             </div>
             <div id='userInfo' style='display: none;'>
               <span id='username'></span>&nbsp;<span id='userrole'></span>님<br>안녕하세요!<br><br>
-              <a id='logout' class='btn red' style='font-size: 0.8rem'>로그아웃</a><br><br><br><br>
-              <div>
-                
-              </div>
+              <a id='logout' class='btn red' style='font-size: 0.8rem'>로그아웃</a><br><br><br>
+              <table style='width: 90%; padding-right: 10%;'>
+                <colgroup>
+                  <col width=10% />
+                  <col width=60% />
+                  <col width=30% />
+                </colgroup>
+                <tr><td colspan='2' style='text-align: left'>내 마일리지</td><td></td></tr>
+                <tr><td>&nbsp;</td><td style='text-align: left'>전체</td><td style='text-align: right;'><span id='mileage_total'></span>점</td></tr>
+                <tr><td>&nbsp;</td><td style='text-align: left'>이번 달</td><td style='text-align: right;'><span id='mileage_this'></span>점</td></tr>
+                <tr style='height: 0.5rem'><td colspan='3'></td></tr>
+                <tr><td colspan='2' style='text-align: left'>내 봉사활동 시간</td><td></td></tr>
+                <tr><td>&nbsp;</td><td style='text-align: left'>전체</td><td style='text-align: right;'><span id='time_total'></span>시간</td></tr>
+                <tr><td>&nbsp;</td><td style='text-align: left'>이번 달</td><td style='text-align: right;'><span id='time_this'></span>시간</td></tr>
+              </table><br>
+              <span id='historyDispenser'>내 급식 기록 보기 ▼</span>
+              <div id='myhistory' style='display: none'></div>
             </div>
           </div>
         </div>
@@ -335,7 +348,7 @@
                 </div>
                 <div style='width: 160; margin: auto; font-size: 0.7rem; text-align: left'>
                     <div class='inputBox'>&nbsp;&nbsp;이름<br>
-                      <input class='inputField' placeholder='이름' id='applyName' type='text' style='width: 150; height: 25' required>
+                      <input class='inputField' placeholder='이름' id='applyName' type='text' style='width: 150; height: 25' required disabled>
                     </div>
                     <div class='inputBox'>&nbsp;&nbsp;학번<br>
                       <input class='inputField' placeholder='학번' id='applyStudentNumber' type='number' style='width: 150; height: 25' required>
@@ -354,6 +367,9 @@
                     </div>
                     <div class='inputBox'>&nbsp;&nbsp;1365 아이디<br>
                       <input class='inputField' placeholder='1365 아이디' id='applyVolunteer' style='width: 150; height: 25;' required>
+                    </div>
+                    <div class='inputBox'>&nbsp;&nbsp;직책<br>
+                      <input id='applyRole' style='width: 150; height: 25;' value='회원' disabled>
                     </div>
                 </div>
                 <div style="margin: auto; font-size:0.7rem; text-align: left;"><br><br>
