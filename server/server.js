@@ -10,8 +10,8 @@ const session = require('express-session');
 const sessionDatabase = require('express-mysql-session')(session);
 const DBOptions = {
   host: 'localhost', 
-  user:'root', 
-  password: 'luftaquila',
+  user:'ajoumeow',
+  //password: '',
   database: 'ajoumeow',
   idleTimeout: 0
 };
