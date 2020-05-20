@@ -23,7 +23,7 @@ let logger = new winston.createLogger({
   transports: [
     new winston.transports.File({
       level: 'info',
-      filename: '/home/pi/ExtHDD/ajoumeow/server/server.log',
+      filename: '/home/luftaquila/HDD/ajoumeow/server/server.log',
       maxsize: 5242880, //5MB
       maxFiles: 1,
       showLevel: true,
@@ -72,7 +72,7 @@ app.post('//loginCheck', async function(req, res) {
       query = 'SELECT name, ID, role FROM `namelist_' + await settings('currentSemister') + "` WHERE ID='" + req.session.ID + "';";
       result = await db.query(query);
       res.send({ 'name' : result[0].name, 'id' : result[0].ID, 'role' : result[0].role });
-      logger.info('세션의 로그인 여부를 확인합니다.', { ip: ip, url: 'loginCheck', query: query, result: JSON.stringify(result)});
+      logger.info('세션의 로그인 여부를 확인합니다.', { ip: ip, url: 'loginCheck', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
     }
     else {
       res.send({ 'name' : null, 'id' : null, 'role' : null });
@@ -81,7 +81,7 @@ app.post('//loginCheck', async function(req, res) {
   }
   catch(e) {
     res.send({ 'name' : null, 'id' : null, 'role' : null });
-    logger.error('세션의 로그인 여부를 확인하는 중에 오류가 발생했습니다.', { ip: ip, url: 'loginCheck', query: query, result: e.toString()});
+    logger.error('세션의 로그인 여부를 확인하는 중에 오류가 발생했습니다.', { ip: ip, url: 'loginCheck', query: query ? query : 'Query String Not generated.', result: e.toString()});
   }
 });
 
@@ -95,15 +95,15 @@ app.post('//login', async function(req, res) {
       req.session.ID = req.body['ID'];
       req.session.isLogin = true;
       res.send({ 'name' : result[0].name, 'id' : result[0].ID, 'role' : result[0].role });
-      logger.info('로그인을 시도합니다.', { ip: ip, url: 'login', query: query, result: JSON.stringify(result)});
+      logger.info('로그인을 시도합니다.', { ip: ip, url: 'login', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
     }
     else {
       res.send({ 'name' : null, 'id' : null, 'role' : null });
-      logger.info('로그인을 시도합니다.', { ip: ip, url: 'login', query: query, result: JSON.stringify(result)});
+      logger.info('로그인을 시도합니다.', { ip: ip, url: 'login', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
     } 
   }
   catch(e) {
-    logger.error('로그인 시도 중에 오류가 발생했습니다.', { ip: ip, url: 'login', query: query, result: e.toString()});
+    logger.error('로그인 시도 중에 오류가 발생했습니다.', { ip: ip, url: 'login', query: query ? query : 'Query String Not generated.', result: e.toString()});
   }
 });
 
@@ -144,11 +144,11 @@ app.post('//apply', async function(req, res) {
         " VALUES('" + req.body['단과대학'] + "', '" + req.body['학과'] + "', '" + req.body['학번'] + "', '" + req.body['이름'] + "', '" + req.body['전화번호'] + "', '" + req.body['생년월일'] + "', '" + req.body['1365 아이디'] + "', '" + req.body['가입 학기'] + "', '" + req.body['직책'] + "');";
     result = await db.query(query);
     res.send(result);
-    logger.info('회원 등록을 시도합니다.', { ip: ip, url: 'apply', query: query, result: JSON.stringify(result)});
+    logger.info('회원 등록을 시도합니다.', { ip: ip, url: 'apply', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
   }
   catch(e) {
     res.send({ 'result' : null, 'error' : e.toString() });
-    logger.error('회원 등록 중에 오류가 발생했습니다.', { ip: ip, url: 'apply', query: query, result: e.toString()});
+    logger.error('회원 등록 중에 오류가 발생했습니다.', { ip: ip, url: 'apply', query: query ? query : 'Query String Not generated.', result: e.toString()});
   }
 });
 
@@ -200,11 +200,11 @@ app.post('//modifySettings', async function(req, res) {
     else query = "UPDATE settings SET value='" + req.body.editData + "' WHERE name='" + req.body.editParam + "';";
     result = await db.query(query);
     res.send({ 'result' : true });
-    logger.info('설정값 변경을 시도합니다.', { ip: ip, url: 'modifySettings', query: query, result: JSON.stringify(result)});
+    logger.info('설정값 변경을 시도합니다.', { ip: ip, url: 'modifySettings', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
   }
   catch(e) { 
     res.send({ 'result' : null, 'error' : e.toString() });
-    logger.error('설정값 변경 중에 오류가 발생했습니다.', { ip: ip, url: 'modifySettings', query: query, result: e.toString()});
+    logger.error('설정값 변경 중에 오류가 발생했습니다.', { ip: ip, url: 'modifySettings', query: query ? query : 'Query String Not generated.', result: e.toString()});
   }
 });
 
@@ -215,10 +215,10 @@ app.post('//records', async function(req, res) {
     query = "SELECT * FROM record WHERE date BETWEEN '" + req.body.startDate + "' AND '" + req.body.endDate + "' ORDER BY date, course, timestamp;";
     result = await db.query(query);
     res.send(result);
-    logger.info('급식표 데이터를 요청합니다.', { ip: ip, url: 'records', query: query, result: JSON.stringify(result)});
+    logger.info('급식표 데이터를 요청합니다.', { ip: ip, url: 'records', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
   }
   catch(e) {
-    logger.error('급식표 데이터를 불러오는 중에 오류가 발생했습니다.', { ip: ip, url: 'records', query: query, result: e.toString()});
+    logger.error('급식표 데이터를 불러오는 중에 오류가 발생했습니다.', { ip: ip, url: 'records', query: query ? query : 'Query String Not generated.', result: e.toString()});
   }
 });
 
@@ -231,10 +231,10 @@ app.post('//requestSettings', async function(req, res) {
     let reply = {};
     for(let obj of result) reply[obj.name] = obj.value;
     res.send(reply);
-    logger.info('설정값을 요청합니다.', { ip: ip, url: 'requestSettings', query: query, result: JSON.stringify(result)});
+    logger.info('설정값을 요청합니다.', { ip: ip, url: 'requestSettings', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
   }
   catch(e) {
-    logger.error('설정값을 불러오는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestSettings', query: query, result: e.toString()});
+    logger.error('설정값을 불러오는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestSettings', query: query ? query : 'Query String Not generated.', result: e.toString()});
   }
 });
 
@@ -253,10 +253,10 @@ app.post('//requestNameList', async function(req, res) {
     query = 'SELECT * FROM `namelist_' + semister + '`;';
     result = await db.query(query);
     res.send(result);
-    logger.info('회원 명단을 요청합니다.', { ip: ip, url: 'requestNameList', query: query, result: JSON.stringify(result)});
+    logger.info('회원 명단을 요청합니다.', { ip: ip, url: 'requestNameList', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
   }
   catch(e) {
-    logger.error('회원 명단을 불러오는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestNameList', query: query, result: e.toString()});
+    logger.error('회원 명단을 불러오는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestNameList', query: query ? query : 'Query String Not generated.', result: e.toString()});
   }
 });
 
@@ -268,11 +268,11 @@ app.post('//isAllowedAdminConsole', async function(req, res) {
     result = await db.query(query);
     if(result[0].role != "회원") res.send({ 'result' : true });
     else res.send({ 'result' : null });
-    logger.info('관리자 권한이 있는지 확인합니다.', { ip: ip, url: 'isAllowedAdminConsole', query: query, result: JSON.stringify(result)});
+    logger.info('관리자 권한이 있는지 확인합니다.', { ip: ip, url: 'isAllowedAdminConsole', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
   }
   catch(e) {
     res.send({ 'result' : null, 'error' : e.toString() });
-    logger.error('관리자 권한이 있는지 확인하는 중에 오류가 발생했습니다.', { ip: ip, url: 'isAllowedAdminConsole', query: query, result: e.toString()});
+    logger.error('관리자 권한이 있는지 확인하는 중에 오류가 발생했습니다.', { ip: ip, url: 'isAllowedAdminConsole', query: query ? query : 'Query String Not generated.', result: e.toString()});
   }
 });
 
@@ -284,11 +284,11 @@ app.post('//modifyMember', async function(req, res) {
     query = 'UPDATE `namelist_' + await settings('currentSemister') + "` SET college='" + data.college + "', department='" + data.department + "', name='" + data.name + "', phone='" + data.phone + "', birthday='" + data.birthday + "', 1365ID='" + data['1365ID'] + "', role='" + data.role + "', register='" + data.register + "' WHERE ID='" + data.ID + "';";
     result = await db.query(query);
     res.send({ 'result' : true });
-    logger.info('회원 정보를 수정합니다.', { ip: ip, url: 'modifyMember', query: query, result: JSON.stringify(result)});
+    logger.info('회원 정보를 수정합니다.', { ip: ip, url: 'modifyMember', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
   }
   catch(e) {
     res.send({ 'result' : null, 'error' : e.toString() });
-    logger.error('회원 정보를 수정하는 중에 오류가 발생했습니다.', { ip: ip, url: 'modifyMember', query: query, result: e.toString()});
+    logger.error('회원 정보를 수정하는 중에 오류가 발생했습니다.', { ip: ip, url: 'modifyMember', query: query ? query : 'Query String Not generated.', result: e.toString()});
   }
 });
 
@@ -300,16 +300,16 @@ app.post('//deleteMember', async function(req, res) {
     result = await db.query(query);
     if(result.affectedRows) {
       res.send({ 'result' : true });
-      logger.info('회원을 제명합니다.', { ip: ip, url: 'deleteMember', query: query, result: JSON.stringify(result)});
+      logger.info('회원을 제명합니다.', { ip: ip, url: 'deleteMember', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
     }
     else {
       res.send({ 'result' : null });
-      logger.info('회원을 제명합니다.', { ip: ip, url: 'deleteMember', query: query, result: JSON.stringify(result)});
+      logger.info('회원을 제명합니다.', { ip: ip, url: 'deleteMember', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
     }
   }
   catch(e) {
     res.send({ 'result' : null });
-    logger.error('회원을 제명하는 중에 오류가 발생했습니다.', { ip: ip, url: 'deleteMember', query: query, result: e.toString()});
+    logger.error('회원을 제명하는 중에 오류가 발생했습니다.', { ip: ip, url: 'deleteMember', query: query ? query : 'Query String Not generated.', result: e.toString()});
   }
 });
 
@@ -321,17 +321,17 @@ app.post('//insertIntoTable', async function(req, res) {
     query = "SELECT * FROM record WHERE ID=" + payload.ID + " AND name='" + payload.name + "' AND date='" + payload.date + "' AND course='" + payload.course + "';";
     let test = await db.query(query);
     if(test.length) {
-      logger.info('급식을 신청했지만 중복 신청으로 거부되었습니다.', { ip: ip, url: 'insertIntoTable', query: query, result: test});
+      logger.info('급식을 신청했지만 중복 신청으로 거부되었습니다.', { ip: ip, url: 'insertIntoTable', query: query ? query : 'Query String Not generated.', result: test});
       return res.status(406).send({ 'result' : null, 'error' : { 'code' : 'DUP_RECORD' } }); 
     }
     query = "INSERT INTO record(ID, name, date, course) VALUES(" + payload.ID + ", '" + payload.name + "', '" + payload.date + "', '" + payload.course + "');";
     result = await db.query(query);
     res.send({ 'result' : true });
-    logger.info('급식을 신청합니다.', { ip: ip, url: 'insertIntoTable', query: query, result: JSON.stringify(result)});
+    logger.info('급식을 신청합니다.', { ip: ip, url: 'insertIntoTable', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
   }
   catch(e) {
     res.status(406).send({ 'result' : null, 'error' : e });
-    logger.error('급식을 신청하는 중에 오류가 발생했습니다.', { ip: ip, url: 'insertIntoTable', query: query, result: e.toString()});
+    logger.error('급식을 신청하는 중에 오류가 발생했습니다.', { ip: ip, url: 'insertIntoTable', query: query ? query : 'Query String Not generated.', result: e.toString()});
   }
 });
 
@@ -343,11 +343,11 @@ app.post('//deleteFromTable', async function(req, res) {
     query = "DELETE FROM record WHERE ID=" + payload.ID + " AND name='" + payload.name + "' AND date='" + payload.date + "' AND course='" + payload.course + "';";
     result = await db.query(query);
     res.send({ 'result' : true });
-    logger.info('급식 신청을 삭제합니다.', { ip: ip, url: 'deleteFromTable', query: query, result: JSON.stringify(result)});
+    logger.info('급식 신청을 삭제합니다.', { ip: ip, url: 'deleteFromTable', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
   }
   catch(e) {
     res.send({ 'result' : null, 'error' : e.toString() });
-    logger.error('급식 신청을 삭제하는 중에 오류가 발생했습니다.', { ip: ip, url: 'deleteFromTable', query: query, result: e.toString()});
+    logger.error('급식 신청을 삭제하는 중에 오류가 발생했습니다.', { ip: ip, url: 'deleteFromTable', query: query ? query : 'Query String Not generated.', result: e.toString()});
   }
 });
 
@@ -380,7 +380,7 @@ app.post('//verify', async function(req, res) {
   }
   catch(e) {
     res.status(406).send({ 'error' : e.toString() });
-    logger.error('급식을 인증하는 중에 오류가 발생했습니다.', { ip: ip, url: 'verify', query: query, result: e.toString()});
+    logger.error('급식을 인증하는 중에 오류가 발생했습니다.', { ip: ip, url: 'verify', query: query ? query : 'Query String Not generated.', result: e.toString()});
   }
 });
 
@@ -392,13 +392,13 @@ app.post('//deleteVerify', async function(req, res) {
     for(let obj of payload) {
       query = "DELETE FROM verify WHERE ID=" + obj.ID + " AND date='" + obj.date + "' AND name='" + obj.name + "' AND course='" + obj.course + "';";
       result = await db.query(query);
-      logger.info('급식 인증을 삭제합니다.', { ip: ip, url: 'deleteVerify', query: query, result: JSON.stringify(result)});
+      logger.info('급식 인증을 삭제합니다.', { ip: ip, url: 'deleteVerify', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
     }
     res.send({ 'result' : true });
   }
   catch(e) {
     res.status(406).send({ 'error' : e.toString() });
-    logger.error('급식 인증을 삭제하는 중에 오류가 발생했습니다.', { ip: ip, url: 'deleteVerify', query: query, result: e.toString()});
+    logger.error('급식 인증을 삭제하는 중에 오류가 발생했습니다.', { ip: ip, url: 'deleteVerify', query: query ? query : 'Query String Not generated.', result: e.toString()});
   }
 });
 
@@ -409,10 +409,10 @@ app.post('//requestLatestVerify', async function(req, res) {
     query = "SELECT * FROM verify ORDER BY date DESC LIMIT 1;";
     result = await db.query(query);
     res.send(result);
-    logger.info('마지막으로 인증한 날짜를 요청합니다.', { ip: ip, url: 'requestLatestVerify', query: query, result: JSON.stringify(result)});
+    logger.info('마지막으로 인증한 날짜를 요청합니다.', { ip: ip, url: 'requestLatestVerify', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
   }
   catch(e) {
-    logger.error('마지막으로 인증한 날짜를 요청하는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestLatestVerify', query: query, result: e.toString()});
+    logger.error('마지막으로 인증한 날짜를 요청하는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestLatestVerify', query: query ? query : 'Query String Not generated.', result: e.toString()});
   }
 });
 
@@ -427,10 +427,10 @@ app.post('//requestNamelistTables', async function(req, res) {
       if(obj['Tables_in_ajoumeow'].includes('namelist')) data.push(obj);
     }
     res.send(data);
-    logger.info('회원 명단 테이블 이름 목록을 요청합니다.', { ip: ip, url: 'requestNamelistTables', query: query, result: JSON.stringify(result)});
+    logger.info('회원 명단 테이블 이름 목록을 요청합니다.', { ip: ip, url: 'requestNamelistTables', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
   }
   catch(e) {
-    logger.info('회원 명단 테이블 이름 목록을 요청하는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestNamelistTables', query: query, result: e.toString()});
+    logger.info('회원 명단 테이블 이름 목록을 요청하는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestNamelistTables', query: query ? query : 'Query String Not generated.', result: e.toString()});
   }
 });
 
@@ -532,17 +532,17 @@ app.post('//requestNotice', async function(req, res) {
     result = await db.query(query);
     let notice = result[0].value.split('$');
     res.send({ 'result' : true, 'version' : notice[0], 'notice' : notice[1] });
-    logger.info('공지사항을 불러옵니다.', { ip: ip, url: 'requestNotice', query: query, result: JSON.stringify(result)});
+    logger.info('공지사항을 불러옵니다.', { ip: ip, url: 'requestNotice', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
   }
   catch(e) {
-    logger.error('공지사항을 불러오는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestNotice', query: query, result: e.toString()});
+    logger.error('공지사항을 불러오는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestNotice', query: query ? query : 'Query String Not generated.', result: e.toString()});
   }
 });
 
 app.post('//requestLogs', async function(req, res) {
   const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
   try {
-    fs.readFile('/home/pi/ExtHDD/ajoumeow/server/server.log', 'utf8', function(err, data) {
+    fs.readFile('/home/luftaquila/HDD/ajoumeow/server/server.log', 'utf8', function(err, data) {
       if(err) {
         console.log(err)
         return res.send([{ timestamp: null, ip: null, message: null, query: null, result: null, level: null, url: null }]);
@@ -685,10 +685,10 @@ app.post('//requestUserStat', async function(req, res) {
     query = 'SELECT date, course, score FROM verify WHERE id=' + req.body.id + ' ORDER BY date DESC;';
     result = await db.query(query);
     res.send(result);
-    logger.info('회원의 활동 기록을 불러옵니다.', { ip: ip, url: 'requestUserStat', query: query, result: JSON.stringify(result) });
+    logger.info('회원의 활동 기록을 불러옵니다.', { ip: ip, url: 'requestUserStat', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result) });
   }
   catch(e) {
-    logger.error('회원의 활동 기록을 불러오는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestUserStat', query: query, result: e.toString() });
+    logger.error('회원의 활동 기록을 불러오는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestUserStat', query: query ? query : 'Query String Not generated.', result: e.toString() });
   }
 });
 
@@ -697,10 +697,26 @@ app.listen(5710, async function() {
   console.log('Server startup at ' + new Date() + '\nServer is listening on port 5710');
   logger.info('Server Startup.', { ip: 'LOCALHOST', url: 'SERVER', query: '-', result: 'Server listening on port 5710'});
   setInterval(async function() {
-    let query = 'SHOW TABLES;';
-    let result = await db.query(query);
-    logger.info('DB connection check.', { ip: 'LOCALHOST', url: 'SERVER', query: query, result: JSON.stringify(result) });
-  }, 14400000);
+    try {
+      let query = 'SHOW TABLES;';
+      let result = await db.query(query);
+      logger.info('DB connection check.', { ip: 'LOCALHOST', url: 'SERVER', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result) });
+    }
+    catch(e) {
+      /*
+      logger.info('DB connection closed. Attempting Restart', { ip: 'LOCALHOST', url: 'SERVER', query: 'SIGRESTART', result: '-' });
+      let cmd = '/usr/local/bin/node /home/luftaquila/HDD/ajoumeow/server/server.js';
+      let exec = require('child_process').exec;
+      exec(cmd, function() {
+        process.kill();
+      });
+      */
+      
+      db = await pool.getConnection();
+      logger.info('DB connection closed. Attempting reconnect.', { ip: 'LOCALHOST', url: 'SERVER', query: 'pool.getConnection()', result: JSON.stringify(db) });
+    }
+  }, 600000);
+    
 });
 
 async function settings(name) {

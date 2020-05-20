@@ -280,10 +280,19 @@
           </div>
           <div style='font-size: 0.8rem'>
             <li>회원 목록을 관리합니다. 학번 외 모든 항목은 수정할 수 있습니다.</li>
-            <li>수정할 값을 클릭하면 입력창이 활성화됩니다.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            수정할 값을 입력한 후 엔터를 누르면 수정됩니다.</li>
-            <li>직책이 '회원'이 아닌 사람에게는 모두 관리자 권한이 부여됩니다.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              관리자는 관리자 페이지 접속 권한, 급식표 모든 셀의 편집 권한을 갖습니다. 또한 본인 외 다른 신분으로 급식을 신청할 수 있습니다.</li>
+            <li>수정할 값을 클릭하면 입력창이 활성화됩니다.<br>수정할 값을 입력한 후 엔터를 누르면 수정됩니다.</li>
+            <li>직책이 '회원'이 아닌 사람에게는 모두 관리자 권한이 부여됩니다.<br>
+              관리자는 다음과 같은 권한을 갖습니다.
+              <ul>
+                <li>관리자 페이지 접속</li>
+                <li>타인의 신분(학번)으로 급식 신청<br>빈 셀을 클릭해 학번을 수정하면 자동으로 이름이 완성됩니다.</li>
+                <li>급식표의 모든 셀에 대한 수정<br>이는 일반 회원은 수정할 수 없는 다음의 경우를 포함합니다.</li>
+                  <ul>
+                    <li>이미 지난 날짜에 대한 신청/삭제</li>
+                    <li>본인이 신청하지 않은 급식에 대한 삭제</li>
+                  </ul>
+              </ul>
+            </li>
           </div><br>
           <div class="table-responsive">
             <table class="table table-bordered" id="dataTable" width="100%" style='table-layout: fixed; text-align: center' cellspacing="0">
