@@ -715,7 +715,7 @@ app.listen(5710, async function() {
       db = await pool.getConnection();
       logger.info('DB connection closed. Attempting reconnect.', { ip: 'LOCALHOST', url: 'SERVER', query: 'pool.getConnection()', result: JSON.stringify(db) });
     }
-  }, 600000);
+  }, 300000);
     
 });
 
