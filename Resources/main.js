@@ -1,4 +1,5 @@
 $(function() {
+ // (function () { var script = document.createElement('script'); script.src="//cdn.jsdelivr.net/npm/eruda"; document.body.appendChild(script); script.onload = function () { eruda.init() } })();
     init();
     applySetup();
     lazyload();
@@ -14,6 +15,7 @@ function init() {
       type: "POST",
       dataType: 'json',
       success: function(res) {
+        console.log(res)
         if(res.name) {
           username = res.name;
           userid = res.id;
@@ -30,7 +32,8 @@ function init() {
           $('#loginForm').css('display', 'block');
           $('#userInfo').css('display', 'none');
         }
-      }
+      },
+      error: function(req, stat, err) { errorHandler(req, stat, err); }
     });
 }
 function load() {
@@ -41,15 +44,15 @@ function load() {
   startDate = new Date(Date.now() - ((new Date().getDayNum() - 1) * 24 * 3600000)).format('yyyy-mm-dd');
   endDate = new Date(Date.now() - ((new Date().getDayNum() - 14) * 24 * 3600000)).format('yyyy-mm-dd');
   memberlist = [], nameTable = [];
-  $.when(
-    $.ajax({
-      url: 'https://luftaquila.io/ajoumeow/api/records',
-      type: "POST",
-      dataType: 'json',
-      data: { 'startDate' : startDate, 'endDate' : endDate},
-      error: errorHandler
-    })
-  ).done(function(record) { yourNameIs(record); });
+  console.log('!?')
+  $.ajax({
+    url: 'https://luftaquila.io/ajoumeow/api/records',
+    type: "POST",
+    dataType: 'json',
+    data: { 'startDate' : startDate, 'endDate' : endDate},
+    success: function(record) { yourNameIs(record); },
+    error: function(req, stat, err) { errorHandler(req, stat, err); }
+  });
     
   $.ajax({
     url: 'https://luftaquila.io/ajoumeow/api/requestNameList',
@@ -57,7 +60,7 @@ function load() {
     dataType: 'json',
     data: { 'semister' : 'this' },
     success: function(namelistSet) { memberlist = namelistSet; },
-    error: errorHandler
+    error: function(req, stat, err) { errorHandler(req, stat, err); }
   });
 }
 function yourNameIs(record, namelist) {
@@ -147,7 +150,7 @@ function transmitter(data) {
         name: data.name
       },
       success: load,
-      error: errorHandler
+      error: function(req, stat, err) { errorHandler(req, stat, err); }
     });
   }
   else if(data.type == 'delete') {
@@ -162,7 +165,7 @@ function transmitter(data) {
         name: data.name
       },
       success: load,
-      error: errorHandler
+      error: function(req, stat, err) { errorHandler(req, stat, err); }
     });
   }
 }
@@ -276,7 +279,7 @@ function eventListener() {
         }
         else alertify.error('등록되지 않은 학번입니다.');
       },
-      error: errorHandler
+      error: function(req, stat, err) { errorHandler(req, stat, err); }
     });
   });
   $('#logout').click(function() {
@@ -295,7 +298,7 @@ function eventListener() {
           $('#userInfo').css('display', 'none');
         }
       },
-      error: errorHandler
+      error: function(req, stat, err) { errorHandler(req, stat, err); }
     });
   });
   $('#apply').click(function() {
@@ -310,7 +313,7 @@ function eventListener() {
         }
         else alertify.error('회원 등록 기간이 아닙니다.');
       },
-      error: errorHandler
+      error: function(req, stat, err) { errorHandler(req, stat, err); }
     });
   });
   $('input[name=context-menu-input-ID]').keyup(function(e) {
@@ -474,7 +477,10 @@ function contextLoader() {
   });
 }
 function errorHandler(req, stat, err) {
-  alertify.error('ERR_' + req.responseJSON.error.code);
+  console.log(req)
+  console.log(stat)
+  console.log(err)
+  alertify.error('SERVERSIDE API ERR_' + req.responseJSON.error.code + '<br><br>고양이가 사이트 어딘가를 망가뜨렸어요.<br>5분쯤 뒤에 다시 오시면 치워놓을게요😿');
 }
 function military() {
   if(new Date() > new Date(2019, 10, 4, 9) && new Date() < new Date(2019, 10, 20)) {

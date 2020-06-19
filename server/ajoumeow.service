@@ -5,8 +5,8 @@ After=network.target network-online.target
 
 [Service]
 Type=simple
-WorkingDirectory=/home/pi/HDD/ajoumeow/server
-ExecStart=node /home/pi/HDD/ajoumeow/server/server.js
+WorkingDirectory=/home/luftaquila/HDD/ajoumeow/server
+ExecStart=/usr/local/bin/node /home/luftaquila/HDD/ajoumeow/server/server.js
 Restart=always
 
 [Install]
