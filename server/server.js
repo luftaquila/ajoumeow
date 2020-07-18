@@ -24,7 +24,7 @@ let logger = new winston.createLogger({
     new winston.transports.File({
       level: 'info',
       filename: '/home/luftaquila/HDD/ajoumeow/server/server.log',
-      maxsize: 5242880, //5MB
+      maxsize: 10485760, //10MB
       maxFiles: 1,
       showLevel: true,
       format: winston.format.combine(
@@ -163,7 +163,7 @@ app.post('//requestApply', async function(req, res) {
     else result = { result: null };
   
     res.send(result);
-    logger.info('회원 등록 가능 여부를 확인합니다.', { ip: ip, url: 'requestApply', query: '-', result: JSON.stringify(result)});
+    //logger.info('회원 등록 가능 여부를 확인합니다.', { ip: ip, url: 'requestApply', query: '-', result: JSON.stringify(result)});
   }
   catch(e) {
     logger.error('회원 등록 가능 여부를 확인하는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestApply', query: '-', result: e.toString()});
@@ -180,7 +180,7 @@ app.post('//requestRegister', async function(req, res) {
       result = { 'result' : true, 'semister' : await settings('currentSemister') };
     else result = { 'result' : null };
     res.send(result);
-    logger.info('회원 가입 가능 여부를 확인합니다.', { ip: ip, url: 'requestRegister', query: '-', result: JSON.stringify(result)});
+    //logger.info('회원 가입 가능 여부를 확인합니다.', { ip: ip, url: 'requestRegister', query: '-', result: JSON.stringify(result)});
   }
   catch(e) {
     logger.info('회원 가입 가능 여부를 확인하는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestRegister', query: '-', result: e.toString()});
@@ -215,7 +215,7 @@ app.post('//records', async function(req, res) {
     query = "SELECT * FROM record WHERE date BETWEEN '" + req.body.startDate + "' AND '" + req.body.endDate + "' ORDER BY date, course, timestamp;";
     result = await db.query(query);
     res.send(result);
-    logger.info('급식표 데이터를 요청합니다.', { ip: ip, url: 'records', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
+    //logger.info('급식표 데이터를 요청합니다.', { ip: ip, url: 'records', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
   }
   catch(e) {
     logger.error('급식표 데이터를 불러오는 중에 오류가 발생했습니다.', { ip: ip, url: 'records', query: query ? query : 'Query String Not generated.', result: e.toString()});
@@ -231,7 +231,7 @@ app.post('//requestSettings', async function(req, res) {
     let reply = {};
     for(let obj of result) reply[obj.name] = obj.value;
     res.send(reply);
-    logger.info('설정값을 요청합니다.', { ip: ip, url: 'requestSettings', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
+    //logger.info('설정값을 요청합니다.', { ip: ip, url: 'requestSettings', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
   }
   catch(e) {
     logger.error('설정값을 불러오는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestSettings', query: query ? query : 'Query String Not generated.', result: e.toString()});
@@ -253,7 +253,7 @@ app.post('//requestNameList', async function(req, res) {
     query = 'SELECT * FROM `namelist_' + semister + '`;';
     result = await db.query(query);
     res.send(result);
-    logger.info('회원 명단을 요청합니다.', { ip: ip, url: 'requestNameList', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
+    //logger.info('회원 명단을 요청합니다.', { ip: ip, url: 'requestNameList', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
   }
   catch(e) {
     logger.error('회원 명단을 불러오는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestNameList', query: query ? query : 'Query String Not generated.', result: e.toString()});
@@ -268,7 +268,7 @@ app.post('//isAllowedAdminConsole', async function(req, res) {
     result = await db.query(query);
     if(result[0].role != "회원") res.send({ 'result' : true });
     else res.send({ 'result' : null });
-    logger.info('관리자 권한이 있는지 확인합니다.', { ip: ip, url: 'isAllowedAdminConsole', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
+    //logger.info('관리자 권한이 있는지 확인합니다.', { ip: ip, url: 'isAllowedAdminConsole', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
   }
   catch(e) {
     res.send({ 'result' : null, 'error' : e.toString() });
@@ -359,7 +359,7 @@ app.post('//requestVerifyList', async function(req, res) {
     verify = await db.query("SELECT * FROM verify WHERE date='" + req.body.date + "' ORDER BY course;");
     result = { 'record' : record, 'verify' : verify };
     res.send(result);
-    logger.info('급식 인증 기록을 요청합니다.', { ip: ip, url: 'requestVerifyList', query: '-', result: JSON.stringify(result)});
+    //logger.info('급식 인증 기록을 요청합니다.', { ip: ip, url: 'requestVerifyList', query: '-', result: JSON.stringify(result)});
   }
   catch(e) {
     logger.error('급식 인증 기록을 요청하는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestVerifyList', query: '-', result: e.toString()});
@@ -409,7 +409,7 @@ app.post('//requestLatestVerify', async function(req, res) {
     query = "SELECT * FROM verify ORDER BY date DESC LIMIT 1;";
     result = await db.query(query);
     res.send(result);
-    logger.info('마지막으로 인증한 날짜를 요청합니다.', { ip: ip, url: 'requestLatestVerify', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
+    //logger.info('마지막으로 인증한 날짜를 요청합니다.', { ip: ip, url: 'requestLatestVerify', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
   }
   catch(e) {
     logger.error('마지막으로 인증한 날짜를 요청하는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestLatestVerify', query: query ? query : 'Query String Not generated.', result: e.toString()});
@@ -427,10 +427,10 @@ app.post('//requestNamelistTables', async function(req, res) {
       if(obj['Tables_in_ajoumeow'].includes('namelist')) data.push(obj);
     }
     res.send(data);
-    logger.info('회원 명단 테이블 이름 목록을 요청합니다.', { ip: ip, url: 'requestNamelistTables', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
+    //logger.info('회원 명단 테이블 이름 목록을 요청합니다.', { ip: ip, url: 'requestNamelistTables', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
   }
   catch(e) {
-    logger.info('회원 명단 테이블 이름 목록을 요청하는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestNamelistTables', query: query ? query : 'Query String Not generated.', result: e.toString()});
+    logger.error('회원 명단 테이블 이름 목록을 요청하는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestNamelistTables', query: query ? query : 'Query String Not generated.', result: e.toString()});
   }
 });
 
@@ -532,7 +532,7 @@ app.post('//requestNotice', async function(req, res) {
     result = await db.query(query);
     let notice = result[0].value.split('$');
     res.send({ 'result' : true, 'version' : notice[0], 'notice' : notice[1] });
-    logger.info('공지사항을 불러옵니다.', { ip: ip, url: 'requestNotice', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
+    //logger.info('공지사항을 불러옵니다.', { ip: ip, url: 'requestNotice', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
   }
   catch(e) {
     logger.error('공지사항을 불러오는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestNotice', query: query ? query : 'Query String Not generated.', result: e.toString()});
@@ -583,10 +583,10 @@ app.post('//requestStat', async function(req, res) {
       total: namelist.length
     };
     res.send(result);
-    logger.info('활동 통계를 불러옵니다.', { ip: ip, url: 'requestStat', query: '-', result: JSON.stringify(result)});
+    //logger.info('활동 통계를 불러옵니다.', { ip: ip, url: 'requestStat', query: '-', result: JSON.stringify(result)});
   }
   catch(e) {
-    logger.error('활동 통계를 불러옵니다.', { ip: ip, url: 'requestStat', query: '-', result: e.toString()});
+    logger.error('활동 통계를 불러오는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestStat', query: '-', result: e.toString()});
   }
 });
 
@@ -671,10 +671,10 @@ app.post('//requestStatistics', async function(req, res) {
       }
     }
     res.send(data);
-    logger.info('활동 통계를 불러옵니다.', { ip: ip, url: 'requestStatistics', query: '-', result: JSON.stringify(data)});
+    //logger.info('활동 통계를 불러옵니다.', { ip: ip, url: 'requestStatistics', query: '-', result: JSON.stringify(data)});
   }
   catch(e) {
-    logger.info('활동 통계를 불러오는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestStatistics', query: '-', result: e.toString()});
+    logger.error('활동 통계를 불러오는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestStatistics', query: '-', result: e.toString()});
   }
 });
 
@@ -685,7 +685,7 @@ app.post('//requestUserStat', async function(req, res) {
     query = 'SELECT date, course, score FROM verify WHERE id=' + req.body.id + ' ORDER BY date DESC;';
     result = await db.query(query);
     res.send(result);
-    logger.info('회원의 활동 기록을 불러옵니다.', { ip: ip, url: 'requestUserStat', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result) });
+    //logger.info('회원의 활동 기록을 불러옵니다.', { ip: ip, url: 'requestUserStat', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result) });
   }
   catch(e) {
     logger.error('회원의 활동 기록을 불러오는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestUserStat', query: query ? query : 'Query String Not generated.', result: e.toString() });
