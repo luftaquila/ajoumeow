@@ -485,6 +485,14 @@ function clickEventListener() {
     $('#serverlog').dataTable().fnAddData(logdata);
   });
   $('input[name=statisticsType]').click(function() { statistics.ajax.reload(); });
+  $('.statisticsDate').change(function() {
+    let start = $('#statisticsStartDate').val(), end = $('#statisticsEndDate').val();
+    if(start && end) {
+      $('#customStatistics').val(start + '|' + end);
+      statistics.ajax.reload();
+    }
+    else $('#customStatistics').val('');
+  });
   $('#memberDeleteConfirm').click(function() {
     $.ajax({
       url: 'https://luftaquila.io/ajoumeow/api/deleteMember',
