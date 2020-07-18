@@ -670,10 +670,31 @@ app.post('//requestStatistics', async function(req, res) {
         }
       }
     }
+    else {
+      if(req.body.type) {
+        let [start, end] = req.body.type.split('|');
+        let verify = await db.query("SELECT * FROM verify WHERE date BETWEEN '" + start + "' AND '" + end + "';");
+        for(let obj of verify) {
+          let person = data.find(o => o.ID == obj.ID);
+          if(person) person.score = person.score + Number(obj.score);
+          else {
+            let member = namelist.find(o => o.ID == obj.ID);
+            if(member) {
+              data.push({
+                ID: member.ID,
+                name: member.name,
+                score: Number(obj.score)
+              });
+            }
+          }
+        }
+      }
+    }
     res.send(data);
     //logger.info('활동 통계를 불러옵니다.', { ip: ip, url: 'requestStatistics', query: '-', result: JSON.stringify(data)});
   }
   catch(e) {
+    console.log(e)
     logger.error('활동 통계를 불러오는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestStatistics', query: '-', result: e.toString()});
   }
 });

@@ -459,10 +459,12 @@
                 </div>
                 <!-- Card Body -->
                 <div class="card-body">
-                  <label><input type='radio' name='statisticsType' value='thisMonthFeeding' checked> 이번 달 급식 마일리지 순위</input></label>
-                  <label><input type='radio' name='statisticsType' value='thisMonthTotal'> 이번 달 마일리지 전체 순위</input></label>
-                  <label><input type='radio' name='statisticsType' value='lastMonthFeeding'> 저번 달 급식 마일리지 순위</input></label>
-                  <label><input type='radio' name='statisticsType' value='totalStatistics'> 전체 기간 마일리지 순위</input></label>
+                  <label><input type='radio' name='statisticsType' value='thisMonthFeeding' checked> 이번 달 급식 마일리지 순위</label>
+                  <label><input type='radio' name='statisticsType' value='thisMonthTotal'> 이번 달 마일리지 전체 순위</label>
+                  <label><input type='radio' name='statisticsType' value='lastMonthFeeding'> 저번 달 급식 마일리지 순위</label>
+                  <label><input type='radio' name='statisticsType' value='totalStatistics'> 전체 기간 마일리지 순위</label>
+                  <label><input type='radio' name='statisticsType' value='' id='customStatistics'> 특정 기간 마일리지 순위</label><br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;<input class='statisticsDate' type='date' id='statisticsStartDate'> ~ <input class='statisticsDate' type='date' id='statisticsEndDate'><br><br>
                   <div class='table-responsive'>
                     <table class="table table-bordered" id="statistics" width="99%" style='table-layout: fixed; text-align: center' cellspacing="0">
                       <colgroup>
@@ -491,24 +493,24 @@
             <li>오류 체크박스에 체크하면 오류 기록만 표시합니다.</li>
             <li>로그는 일정 크기를 초과하면 삭제됩니다</li>
           </div>
-          <label><input type='checkbox' name='iserror' value='error'> 오류</input></label>
+          <label><input type='checkbox' name='iserror' value='error'> 오류</label>
           <hr width='100%' style='margin: 0 0 10px 0'>
           <table width='100%'>
             <tr>
-              <td><label><input type='checkbox' name='logtype' value='pageload' checked> 페이지 로드</input></label></td>
-              <td><label><input type='checkbox' name='logtype' value='loginout' checked> 로그인 / 로그아웃</input></label></td>
+              <td><label><input type='checkbox' name='logtype' value='pageload' checked> 페이지 로드</label></td>
+              <td><label><input type='checkbox' name='logtype' value='loginout' checked> 로그인 / 로그아웃</label></td>
             </tr>
             <tr>
-              <td><label><input type='checkbox' name='logtype' value='insdelTable' checked> 급식 신청 / 삭제</input></label></td>
-              <td><label><input type='checkbox' name='logtype' value='verify' checked> 급식 인증</input></label></td>
+              <td><label><input type='checkbox' name='logtype' value='insdelTable' checked> 급식 신청 / 삭제</label></td>
+              <td><label><input type='checkbox' name='logtype' value='verify' checked> 급식 인증</label></td>
             </tr>
             <tr>
-              <td><label><input type='checkbox' name='logtype' value='settingchange' checked> 설정 변경</input></label></td>
-              <td><label><input type='checkbox' name='logtype' value='memberchange' checked> 회원 명단 변경</input></label></td>
+              <td><label><input type='checkbox' name='logtype' value='settingchange' checked> 설정 변경</label></td>
+              <td><label><input type='checkbox' name='logtype' value='memberchange' checked> 회원 명단 변경</label></td>
             </tr>
             <tr>
-              <td><label><input type='checkbox' name='logtype' value='1365' checked> 1365 인증서</input></label></td>
-              <td><label><input type='checkbox' name='logtype' value='others' checked> 기타</input></label></td>
+              <td><label><input type='checkbox' name='logtype' value='1365' checked> 1365 인증서</label></td>
+              <td><label><input type='checkbox' name='logtype' value='others' checked> 기타</label></td>
             </tr>
           </table><br>
           <div class='table-responsive'>
