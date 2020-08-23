@@ -1,4 +1,5 @@
 $(function() {
+  //(function () { var script = document.createElement('script'); script.src="//cdn.jsdelivr.net/npm/eruda"; document.body.appendChild(script); script.onload = function () { eruda.init() } })();
   $.ajax({
     url:"https://luftaquila.io/ajoumeow/api/loginCheck",
     type: "POST",
@@ -507,8 +508,62 @@ function clickEventListener() {
       }
     });
   });
+  $('#pick').click(function() {
+    let list = statistics.ajax.json(), sum = 0; // 표 값 저장
+    list.sort((a, b) => a.score - b.score); // 마일리지 오름차순 정렬
+    /*
+    for(let i = 0; i < 3; i++) { // 상위 1, 2, 3등 제거
+      let top = list[list.length - 1].score;
+      list = list.filter(function( obj ) { return obj.score !== top; });
+    }
+    */
+    for(let i in list) { // 누적확률값 acc 및 마일리지 총합 sum 계산
+      sum += list[i].score;
+      list[i].acc = sum;
+    }
+    let key = Math.random() * sum; // 랜덤 key값 추출
+    for(let obj of list) { // 누적확률 일치 값 추출
+      if(obj.acc > key) {
+        key = obj;
+        break;
+      }
+    }
+    /*
+    let tgt = testcase.find(o => o.name == key.name);
+    if(tgt) tgt.case++;
+    else testcase.push({ name: key.name, case: 1, tp: Math.round(key.score / sum * 1000) / 10 + '%' });
+    */
+    if(key.name) {
+      MicroModal.show('pop');
+      $('#popgif').attr('src', '/ajoumeow/Resources/Images/loading.gif');
+      $('#poptext').text('기지개 켜는 중...');
+      setTimeout(function() {
+        $('#poptext').text('캔 따는 중...');
+        setTimeout(function() {
+          $('#poptext').text('레이저포인터 쫓는 중...');
+          setTimeout(function() {
+            $('#popgif').attr('src', '/ajoumeow/Resources/Images/thinking.gif');
+            $('#poptext').text('생각하는 척 하는 중...');
+            setTimeout(function() {
+              $('#poptext').html('당첨자는 ' + key.name + ' 님 이니라<br>당첨 확률 : ' + Math.round(key.score / sum * 1000) / 10 + '%');
+            }, 5000);
+          }, 1500);
+        }, 2000);
+      }, 1000);
+    }
+    
+  });
 }
-
+/*
+testcase = [], exec = 100000;
+function test() {
+  for(let i = 0; i < exec; i++) $('#pick').trigger('click');
+  for(let i in testcase) testcase[i].ep = Math.round(testcase[i].case / exec * 1000) / 10 + '%';
+  testcase.sort((a, b) => parseFloat(b.case) - parseFloat(a.case));
+  console.log('runtime: ' + exec);
+  console.log(testcase);
+}
+*/
 function dataSize(s, b, i, c) { for(b = i = 0; c = s.charCodeAt(i++); b += c >> 11 ? 3 : c >> 7 ? 2 : 1); return b; }
 var dateFormat = function () {
   var	token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g,

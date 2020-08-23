@@ -49,7 +49,7 @@ app.use(session({
  resave: false,
  saveUninitialized: true,
  store: sessionDB,
- cookie: {expires: new Date(2147483647000)}
+ cookie: { maxAge: 365 * 24 * 60 * 60 * 1000 }
 }));
 
 app.get('/', async function(req, res) {
@@ -92,6 +92,7 @@ app.post('//login', async function(req, res) {
     query = 'SELECT name, ID, role FROM `namelist_' + await settings('currentSemister') + "` WHERE ID='" + req.body['ID'] + "';";
     result = await db.query(query);
     if(result[0]) {
+      req.session.touch();
       req.session.ID = req.body['ID'];
       req.session.isLogin = true;
       res.send({ 'name' : result[0].name, 'id' : result[0].ID, 'role' : result[0].role });
@@ -213,7 +214,7 @@ app.post('//records', async function(req, res) {
   let query, result;
   try {
     query = "SELECT * FROM record WHERE date BETWEEN '" + req.body.startDate + "' AND '" + req.body.endDate + "' ORDER BY date, course, timestamp;";
-    result = await db.query(query);
+    result = [await db.query(query), await db.query("SELECT UPDATE_TIME FROM information_schema.tables WHERE TABLE_SCHEMA='ajoumeow' AND TABLE_name='record';")];
     res.send(result);
     //logger.info('급식표 데이터를 요청합니다.', { ip: ip, url: 'records', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
   }
