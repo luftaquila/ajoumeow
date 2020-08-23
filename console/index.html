@@ -20,6 +20,7 @@
   <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
   <link rel='stylesheet' href='/ajoumeow/Resources/Libraries/alertify/alertify.core.css' />
   <link rel='stylesheet' href='/ajoumeow/Resources/Libraries/alertify/alertify.default.css' />
+  <link rel="stylesheet" href="/ajoumeow/Resources/Libraries/micromodal/micromodal.min.css" />
   <link rel='stylesheet' href='css/console.css'>
 
 </head>
@@ -465,6 +466,7 @@
                   <label><input type='radio' name='statisticsType' value='totalStatistics'> 전체 기간 마일리지 순위</label>
                   <label><input type='radio' name='statisticsType' value='' id='customStatistics'> 특정 기간 마일리지 순위</label><br>
                   &nbsp;&nbsp;&nbsp;&nbsp;<input class='statisticsDate' type='date' id='statisticsStartDate'> ~ <input class='statisticsDate' type='date' id='statisticsEndDate'><br><br>
+                  <div style='width: 100%; text-align: center;'><a class='btn btn-success' id='pick'><span style='color: #fff'>이 목록으로 제비뽑기</span></a></div><br>
                   <div class='table-responsive'>
                     <table class="table table-bordered" id="statistics" width="99%" style='table-layout: fixed; text-align: center' cellspacing="0">
                       <colgroup>
@@ -581,6 +583,23 @@
     </div>
   </div>
 
+  <div class="modal micromodal-slide" id="pop" aria-hidden="true">
+    <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+      <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="randCatModal-title">
+        <header class="modal__header">
+          <h2 class="modal__title" id="randCatModal-title">랜덤랜덤 고양이</h2>
+          <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+        </header>
+        <main class="modal__content" id="randCatModal-content">
+          <div style="position: relative; text-align: center">
+            <img id='popgif' src="/ajoumeow/Resources/Images/loading.gif" style="width:100%; height:auto; margin-bottom: 0.8rem;">
+            <span id='poptext'>기지개 켜는 중...</span>
+          </div>
+        </main>
+      </div>
+    </div>
+  </div>
+
   <!-- Bootstrap core JavaScript-->
   <script src="vendor/jquery/jquery.min.js"></script>
   <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -596,6 +615,7 @@
 
   <script src='js/datatable-editor.js'></script>
   <script src='/ajoumeow/Resources/Libraries/alertify/alertify.min.js'></script>
+  <script src='/ajoumeow/Resources/Libraries/micromodal/micromodal.min.js'></script>
   <script src='js/console.js'></script>
 
 </body>

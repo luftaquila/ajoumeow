@@ -1,5 +1,5 @@
 $(function() {
- // (function () { var script = document.createElement('script'); script.src="//cdn.jsdelivr.net/npm/eruda"; document.body.appendChild(script); script.onload = function () { eruda.init() } })();
+    // (function () { var script = document.createElement('script'); script.src="//cdn.jsdelivr.net/npm/eruda"; document.body.appendChild(script); script.onload = function () { eruda.init() } })();
     init();
     applySetup();
     lazyload();
@@ -44,7 +44,6 @@ function load() {
   startDate = new Date(Date.now() - ((new Date().getDayNum() - 1) * 24 * 3600000)).format('yyyy-mm-dd');
   endDate = new Date(Date.now() - ((new Date().getDayNum() - 14) * 24 * 3600000)).format('yyyy-mm-dd');
   memberlist = [], nameTable = [];
-  console.log('!?')
   $.ajax({
     url: 'https://luftaquila.io/ajoumeow/api/records',
     type: "POST",
@@ -65,16 +64,17 @@ function load() {
 }
 function yourNameIs(record, namelist) {
   var table = Array(14).fill('').map(x => Array(3).fill('').map(y => Array()));
-  for(var obj of record) {
+  for(var obj of record[0]) {
     var target = new Date(new Date(obj.date).format('yyyy-mm-dd')), start = new Date(startDate);
     var diff = Math.ceil(Math.abs(target - start) / (1000 * 60 * 60 * 24));
     table[diff][Number(obj.course.replace('코스', '')) - 1].push({ 'id': obj.ID, 'name': obj.name });
   }
   nameTable = table;
-  setData(table);
+  setData(table, record[1][0].UPDATE_TIME);
 }
-function setData(table) {
-  $("#latestUpdate").html("Latest Update : " + new Date().format("TT hh시 MM분 ss초"));
+function setData(table, update) {
+  $("#updated").html("마지막 표 업데이트 : " + new Date(update).format("yyyy-mm-dd TT hh:MM:ss"));
+ $("#loaded").html("급식표 데이터 로드 : " + new Date().format("yyyy-mm-dd TT hh:MM:ss"));
   for(var date = 0; date < 14; date++) {
     $('#dateCell_' + Number(date + 1)).text(new Date(Date.now() - ((new Date().getDayNum() - (date + 1)) * 24 * 3600000)).format('m/d(ddd)'));
     for(var course = 0; course < 3; course++) {
