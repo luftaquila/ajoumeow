@@ -1,416 +1,412 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="">
-  <meta name="author" content="">
-
-  <title>급식 인증</title>
-
-  <!-- Custom fonts for this template-->
-  <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
-
-  <!-- Custom styles for this template-->
-  <link href="css/sb-admin-2.min.css" rel="stylesheet">
-  <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
-  <link rel='stylesheet' href='/ajoumeow/Resources/Libraries/alertify/alertify.core.css' />
-  <link rel='stylesheet' href='/ajoumeow/Resources/Libraries/alertify/alertify.default.css' />
-  <link rel="stylesheet" href="/ajoumeow/Resources/Libraries/micromodal/micromodal.min.css" />
-  <link rel='stylesheet' href='css/console.css'>
-
-</head>
-
-<body id="page-top">
-
-  <!-- Page Wrapper -->
-  <div id="wrapper">
-
-    <!-- Sidebar -->
-    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar" style=''>
-
-      <!-- Sidebar - Brand -->
-      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="../">
-        <div class="sidebar-brand-icon rotate-n-15">
-          <i class="fas fa-paw"></i>
-        </div>
-        <div class="sidebar-brand-text mx-3">미유미유<br>관리자 콘솔</div>
-      </a>
-
-      <!-- Divider -->
-      <hr class="sidebar-divider my-0">
-
-      <!-- Nav Item - Dashboard -->
-      <li class="nav-item" id='dashboard'>
-        <a class="nav-link" href="#">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>급식 인증</title>
+    <!-- Custom fonts for this template-->
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <!-- Custom styles for this template-->
+    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+    <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <link rel='stylesheet' href='/ajoumeow/Resources/Libraries/alertify/alertify.core.css' />
+    <link rel='stylesheet' href='/ajoumeow/Resources/Libraries/alertify/alertify.default.css' />
+    <link rel="stylesheet" href="/ajoumeow/Resources/Libraries/micromodal/micromodal.min.css" />
+    <link rel='stylesheet' href='css/console.css'>
+  </head>
+  <body id="page-top">
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+      <!-- Sidebar -->
+      <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar" style=''>
+        <!-- Sidebar - Brand -->
+        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="../">
+          <div class="sidebar-brand-icon rotate-n-15">
+            <i class="fas fa-paw"></i>
+          </div>
+          <div class="sidebar-brand-text mx-3">미유미유<br>관리자 콘솔</div>
+        </a>
+        <!-- Divider -->
+        <hr class="sidebar-divider my-0">
+        <!-- Nav Item - Dashboard -->
+        <li class="nav-item" id='dashboard'>
+          <a class="nav-link" href="#">
           <i class="fas fa-fw fa-tachometer-alt"></i>
           <span>Dashboard</span></a>
-      </li>
-
-      <!-- Divider -->
-      <hr class="sidebar-divider">
-
-      <!-- Heading -->
-      <div class="sidebar-heading">
-        Interface
-      </div>
-
-      <!-- Nav Item - Pages Collapse Menu -->
-      <li class="nav-item active" id='auth'>
-        <a class="nav-link" href="#">
+        </li>
+        <!-- Divider -->
+        <hr class="sidebar-divider">
+        <!-- Heading -->
+        <div class="sidebar-heading">
+          Interface
+        </div>
+        <!-- Nav Item - Pages Collapse Menu -->
+        <li class="nav-item active" id='auth'>
+          <a class="nav-link" href="#">
           <i class="fas fa-fw fa-calendar-check"></i>
           <span>급식 인증</span>
-        </a>
-      </li>
-
-      <!-- Nav Item - Utilities Collapse Menu -->
-      <li class="nav-item" id='settings'>
-        <a class="nav-link" href='#'>
+          </a>
+        </li>
+        <!-- Nav Item - Utilities Collapse Menu -->
+        <li class="nav-item" id='settings'>
+          <a class="nav-link" href='#'>
           <i class="fas fa-fw fa-wrench"></i>
           <span>설정</span>
-        </a>
-      </li>
-      
-      <!-- Nav Item - Pages Collapse Menu -->
-      <li class="nav-item" id='member'>
-        <a class="nav-link" href="#">
+          </a>
+        </li>
+        <!-- Nav Item - Pages Collapse Menu -->
+        <li class="nav-item" id='member'>
+          <a class="nav-link" href="#">
           <i class="fas fa-fw fa-user-edit"></i>
           <span>회원 관리</span>
-        </a>
-      </li>
-
-      <!-- Nav Item - Charts -->
-      <li class="nav-item" id='1365'>
-        <a class="nav-link" href="#">
+          </a>
+        </li>
+        <!-- Nav Item - Charts -->
+        <li class="nav-item" id='1365'>
+          <a class="nav-link" href="#">
           <i class="fas fa-fw fa-chart-area"></i>
           <span>1365</span></a>
-      </li>
-
-      <!-- Nav Item - Tables -->
-      <li class="nav-item" id='recruit'>
-        <a class="nav-link" href="#">
+        </li>
+        <!-- Nav Item - Tables -->
+        <li class="nav-item" id='recruit'>
+          <a class="nav-link" href="#">
           <i class="fas fa-fw fa-user-plus"></i>
           <span>신입 모집</span></a>
-      </li>
-
-      <!-- Nav Item - Tables -->
-      <li class="nav-item" id='log'>
-        <a class="nav-link" href="#">
+        </li>
+        <!-- Nav Item - Tables -->
+        <li class="nav-item" id='log'>
+          <a class="nav-link" href="#">
           <i class="fas fa-fw fa-clipboard-list"></i>
           <span>서버 로그</span></a>
-      </li>
-
-      
-      <!-- Divider -->
-      <hr class="sidebar-divider d-none d-md-block">
-
-      <!-- Sidebar Toggler (Sidebar) -->
-      <div class="text-center d-none d-md-inline">
-        <button class="rounded-circle border-0" id="sidebarToggle"></button>
-      </div>
-
-    </ul>
-    <!-- End of Sidebar -->
-
-    <!-- Content Wrapper -->
-    <div id="content-wrapper" class="d-flex flex-column">
-
-      <!-- Main Content -->
-      <div id="content">
-
-        <!-- Topbar -->
-        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-
-          <!-- Sidebar Toggle (Topbar) -->
-          <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+        </li>
+        <!-- Divider -->
+        <hr class="sidebar-divider d-none d-md-block">
+        <!-- Sidebar Toggler (Sidebar) -->
+        <div class="text-center d-none d-md-inline">
+          <button class="rounded-circle border-0" id="sidebarToggle"></button>
+        </div>
+      </ul>
+      <!-- End of Sidebar -->
+      <!-- Content Wrapper -->
+      <div id="content-wrapper" class="d-flex flex-column">
+        <!-- Main Content -->
+        <div id="content">
+          <!-- Topbar -->
+          <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+            <!-- Sidebar Toggle (Topbar) -->
+            <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
             <i class="fa fa-bars"></i>
-          </button>
-
-          <!-- Topbar Search -->
-          <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
-            <div class="input-group">
-              <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
-              <div class="input-group-append">
-                <button class="btn btn-primary" type="button">
+            </button>
+            <!-- Topbar Search 
+            <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+              <div class="input-group">
+                <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                  <button class="btn btn-primary" type="button">
                   <i class="fas fa-search fa-sm"></i>
-                </button>
+                  </button>
+                </div>
               </div>
-            </div>
-          </form>
+            </form> -->
+            
+            <a style='color: #0366d6' onclick="window.location.href = 'https://github.com/luftaquila/ajoumeow';"><i class='far fa-question-circle'></i> 사용설명서</a>
 
-          <!-- Topbar Navbar -->
-          <ul class="navbar-nav ml-auto">
-
-            <!-- Nav Item - User Information -->
-            <li class=" dropdown no-arrow">
-              <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            
+            <!-- Topbar Navbar -->
+            <ul class="navbar-nav ml-auto">
+              <!-- Nav Item - User Information -->
+              <li class=" dropdown no-arrow">
+                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="mr-2 d-none d-lg-inline text-gray-600 small">Valerie Luna</span>
                 <i class='fas fa-user'></i>
-              </a>
-              <!-- Dropdown - User Information -->
-              <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                <a class="dropdown-item" id='welcomeMSG' href="#">
-                  <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
-                  
                 </a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                <!-- Dropdown - User Information -->
+                <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                  <a class="dropdown-item" id='welcomeMSG' href="#">
+                  <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+                  </a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
                   <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                   로그아웃
-                </a>
-              </div>
-            </li>
-
-          </ul>
-
-        </nav>
-        <!-- End of Topbar -->
-
-        <!-- Begin Page Content -->
-        <div class="container-fluid" id='authContent'>
-
-          <!-- Page Heading -->
-          <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">급식 인증</h1>
-          </div>
-
-          <form id="DATA" class='text-gray-700'>
-            <input id="timestamp" class='btn btn-secondary' style='margin: 100 0;' type="date" name="timestamp" value="" />
-            &nbsp;&nbsp;
-            <a id="submit" href="#" class="btn btn-success btn-icon-split" style='width: 30; height: 5;'>
+                  </a>
+                </div>
+              </li>
+            </ul>
+          </nav>
+          <!-- End of Topbar -->
+          <!-- Begin Page Content -->
+          <div class="container-fluid" id='authContent'>
+            <!-- Page Heading -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+              <h1 class="h3 mb-0 text-gray-800">급식 인증</h1>
+            </div>
+            <form id="DATA" class='text-gray-700'>
+              <input id="timestamp" class='btn btn-secondary' style='margin: 100 0;' type="date" name="timestamp" value="" />
+              &nbsp;&nbsp;
+              <a id="submit" href="#" class="btn btn-success btn-icon-split" style='width: 30; height: 5;'>
               <span class="text">인증</span>
-            </a>
-            <br>
-            <span id='latestConfirm' style="font-size: 0.9rem">마지막 인증 기록 : Loading...</span>
-            <br><br>
-            <label><input type='radio' name='verifyType' value="auto" checked='checked'>&nbsp;급식 인증</input></label>&nbsp;&nbsp;
-            <label><input type='radio' name='verifyType' value='manual'>&nbsp;기타 인증</input></label>&nbsp;&nbsp;
-            <label><input type='radio' name='verifyType' value='delete'>&nbsp;인증 삭제</input></label>
-            <div id='auto'>
+              </a>
+              <br>
+              <span id='latestConfirm' style="font-size: 0.9rem">마지막 인증 기록 : Loading...</span>
+              <br><br>
+              <label><input type='radio' name='verifyType' value="auto" checked='checked'>&nbsp;급식 인증</input></label>&nbsp;&nbsp;
+              <label><input type='radio' name='verifyType' value='manual'>&nbsp;기타 인증</input></label>&nbsp;&nbsp;
+              <label><input type='radio' name='verifyType' value='delete'>&nbsp;인증 삭제</input></label>
+              <div id='auto'>
                 <div id="autolist"></div>
                 <span id='autoadd'>&nbsp;+ 추가</span>
-                <div style='font-size: 0.8rem'><br>
+                <div style='font-size: 0.8rem'>
+                  <br>
                   <li>되도록 한 날짜의 급식 인증은 한 번에 해 주세요.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;한 코스에 두 사람이 급식한 경우, 따로따로 인증하면 점수가 잘못 지급됩니다.</li>
                   <li>급식 인증방에 인증한 사람만 체크한 후 인증을 진행해 주세요.</li>
                   <li>목록에 없는 회원을 인증하려면 +추가 버튼을 누르면 됩니다.</li>
                   <li>동명이인 식별을 위해 인증 추가는 학번으로만 가능합니다.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;학번을 맞게 입력하면 이름은 자동완성됩니다.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;회원 관리 메뉴의 검색창을 이용하면 이름으로 학번을 알아낼 수 있습니다.</li>
                 </div>
-            </div>
-              
-            <div id='manual' style="display:none">
+              </div>
+              <div id='manual' style="display:none">
                 <div id='manuallist'></div>
                 <span id='manualadd'>&nbsp;+ 추가</span>
-                <div style='font-size: 0.8rem'><br>
+                <div style='font-size: 0.8rem'>
+                  <br>
                   <li>동아리박람회 등 급식 외 활동의 마일리지를 지급합니다.</li>
                   <li>날짜는 오늘 날짜가 아니라 활동한 날짜로 설정하세요.</li>
                   <li>지급 인원이 둘 이상일 때 >지급 사유 통일하기 버튼을 누르면<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;모든 항목의 지급 사유가 첫 번째 항목의 사유로 통일됩니다.</li>
                 </div>
-            </div>
-            <div id='delete' style='display: none'>
-              <div id='deletelist'></div>
-              <div style='font-size: 0.8rem'><br>
-                <li>이미 인증한 내역을 삭제합니다.</li>
               </div>
-            </div>
-          </form>
-          
-        </div>
-        <!-- /.container-fluid -->
-
-        <div class="container-fluid text-gray-700" id='settingsContent' style='display: none;'>
-          
-          <!-- Page Heading -->
-          <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">설정</h1>
+              <div id='delete' style='display: none'>
+                <div id='deletelist'></div>
+                <div style='font-size: 0.8rem'>
+                  <br>
+                  <li>이미 인증한 내역을 삭제합니다.</li>
+                </div>
+              </div>
+            </form>
           </div>
-          
-        <table style='border-spacing: 7 10; margin-left: -5; margin-top: -10; font-size: 0.8rem'>
-            <tr>
+          <!-- /.container-fluid -->
+          <div class="container-fluid text-gray-700" id='settingsContent' style='display: none;'>
+            <!-- Page Heading -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+              <h1 class="h3 mb-0 text-gray-800">설정</h1>
+            </div>
+            <table style='border-spacing: 7 10; margin-left: -5; margin-top: -10; font-size: 0.8rem'>
+              <tr>
                 <td>현재 학기&nbsp;</td>
-                <td><input id='currentYear' class='setting settingSemister' type="number" min=20 max=99 maxlength=2 style='width: 30; text-align: center' required/> - <select id='currentSemister' class='setting settingSemister' required><option>1</option><option>2</option></select> 학기</td>
+                <td>
+                  <input id='currentYear' class='setting settingSemister' type="number" min=20 max=99 maxlength=2 style='width: 30; text-align: center' required/> - 
+                  <select id='currentSemister' class='setting settingSemister' required>
+                    <option>1</option>
+                    <option>2</option>
+                  </select>
+                  학기
+                </td>
                 <td></td>
-            </tr>
-            <tr><td>&nbsp;</td></tr>
-            <tr>
+              </tr>
+              <tr><td colspan=2>⚠️현재 학기를 바꾸면 모든 회원이 로그아웃되고 다시 새 학기 회원 등록을 해야 합니다.</td><td></td></tr>
+              <tr>
+                <td>&nbsp;</td>
+              </tr>
+              <tr>
                 <td>회원 등록 기간&nbsp;</td>
                 <td><input class='setting settingCalendar settingApplyCalendar' style="width: 100px;" id="applyStartDate" type="date" value="" />&nbsp;&nbsp;~&nbsp;&nbsp;<input class='setting settingCalendar settingApplyCalendar' style='width: 100px' id="applyEndDate" type="date" value="" /></td>
                 <td></td>
-            </tr>
-            <tr>
+              </tr>
+              <tr>
                 <td>추가 등록 허용&nbsp;</td>
-                <td><select id='isAdditionalApplyAllowed' class='setting settingAdditionalApply'><option>TRUE</option><option>FALSE</option></select></td>
+                <td>
+                  <select id='isAdditionalApplyAllowed' class='setting settingAdditionalApply'>
+                    <option>TRUE</option>
+                    <option>FALSE</option>
+                  </select>
+                </td>
                 <td></td>
-            </tr>
-            <tr><td>&nbsp;</td></tr>
-            <tr>
+              </tr>
+              <tr>
+                <td>&nbsp;</td>
+              </tr>
+              <tr>
                 <td>신입 모집 기간&nbsp;</td>
                 <td><input class='setting settingCalendar settingRegisterCalendar' style='width: 100px' id="registerStartDate" type="date" value="" />&nbsp;&nbsp;~&nbsp;&nbsp;<input class='setting settingCalendar settingRegisterCalendar' style="width: 100px" id="registerEndDate" type="date" value="" /></td>
                 <td></td>
-            </tr>
-            <tr>
+              </tr>
+              <tr>
                 <td>추가 모집 허용&nbsp;</td>
-                <td><select id='isAdditionalRegisterAllowed' class='setting settingAdditionalRegister'><option>TRUE</option><option>FALSE</option></select></td>
+                <td>
+                  <select id='isAdditionalRegisterAllowed' class='setting settingAdditionalRegister'>
+                    <option>TRUE</option>
+                    <option>FALSE</option>
+                  </select>
+                </td>
                 <td></td>
-            </tr>
-            <tr><td>&nbsp;</td></tr>
-            <tr><td>공지사항</td></tr>
-            <tr><td colspan='3'><textarea class='setting notice' id='notice' style='width: 100%; height: 70px'></textarea></td></tr>
-        </table><br>
-        <div style='font-size: 0.8rem'>
-          <li style='font-weight: bold'>현재 학기 값은 학기가 바뀌면 항상 업데이트 해 주세요.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;명단 작성 등 전산 여러 곳에서 중요하게 사용되는 값입니다.</li>
-          <li>공지사항은 값을 변경할 때마다 급식표 페이지 방문 시 자동으로 팝업을 표시합니다. 자동 팝업은 값 변경 후 최초 1회만 표시됩니다. 이후에는 사용자가 공지사항 메뉴를 눌러야 팝업이 보여집니다.</li><br>
-          회원 등록과 신입 모집은 오늘 날짜가 설정 기간에 포함되거나<br>
-          추가 허용 여부가 TRUE일 때, 둘 중 하나만 만족해도 활성화됩니다.<br><br>
-          추가 허용 항목은 평소에는 FALSE로 맞춰 놓고<br>
-          기간외 등록을 희망하는 사람이 있을 때 잠깐 TRUE로 바꿨다가<br>
-          해당 사람이 등록을 마치면 다시 FALSE로 바꾸면 됩니다.
-        </div>
-        <!--<select id='namelist-config'></select><br>-->
-        <div id='namelistWrap'></div>
-        </div>
-
-        <div class="container-fluid text-gray-700" id='memberContent' style='display: none;'>
-          
-          <!-- Page Heading -->
-          <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">회원 관리</h1>
+              </tr>
+              <tr>
+                <td>&nbsp;</td>
+              </tr>
+              <tr>
+                <td>공지사항</td>
+              </tr>
+              <tr>
+                <td colspan='3'><textarea class='setting notice' id='notice' style='width: 100%; height: 70px'></textarea></td>
+              </tr>
+            </table>
+            <br>
+            <div style='font-size: 0.8rem'>
+              <li style='font-weight: bold'>현재 학기 값은 학기가 바뀌면 항상 업데이트 해 주세요.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;명단 작성 등 전산 여러 곳에서 중요하게 사용되는 값입니다.<br><br></li>
+              <li>공지사항은 값을 변경할 때마다 급식표 페이지 방문 시 자동으로 팝업을 표시합니다. 자동 팝업은 값 변경 후 최초 1회만 표시됩니다. 이후에는 사용자가 공지사항 메뉴를 눌러야 팝업이 보여집니다.<br><br></li>
+              <li>
+              회원 등록과 신입 모집은 오늘 날짜가 설정 기간에 포함되거나<br>
+              추가 허용 여부가 TRUE일 때, 둘 중 하나만 만족해도 활성화됩니다.<br><br></li>
+              <li>
+              추가 허용 항목은 평소에는 FALSE로 맞춰 놓고<br>
+              기간외 등록을 희망하는 사람이 있을 때 잠깐 TRUE로 바꿨다가<br>
+              해당 사람이 등록을 마치면 다시 FALSE로 바꾸면 됩니다.</li>
+            </div>
+            <!--<select id='namelist-config'></select><br>-->
+            <div id='namelistWrap'></div>
           </div>
-          <div style='font-size: 0.8rem'>
-            <li>회원 목록을 관리합니다. 학번 외 모든 항목은 수정할 수 있습니다.</li>
-            <li>수정할 값을 클릭하면 입력창이 활성화됩니다.<br>수정할 값을 입력한 후 엔터를 누르면 수정됩니다.</li>
-            <li>직책이 '회원'이 아닌 사람에게는 모두 관리자 권한이 부여됩니다.<br>
-              관리자는 다음과 같은 권한을 갖습니다.
-              <ul>
-                <li>관리자 페이지 접속</li>
-                <li>타인의 신분(학번)으로 급식 신청<br>빈 셀을 클릭해 학번을 수정하면 자동으로 이름이 완성됩니다.</li>
-                <li>급식표의 모든 셀에 대한 수정<br>이는 일반 회원은 수정할 수 없는 다음의 경우를 포함합니다.</li>
+          <div class="container-fluid text-gray-700" id='memberContent' style='display: none;'>
+            <!-- Page Heading -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+              <h1 class="h3 mb-0 text-gray-800">회원 관리</h1>
+            </div>
+            <div style='font-size: 0.8rem'>
+              <li>회원 목록을 관리합니다. 학번 외 모든 항목은 수정할 수 있습니다.</li>
+              <li>수정할 값을 클릭하면 입력창이 활성화됩니다.<br>수정할 값을 입력한 후 엔터를 누르면 수정됩니다.</li>
+              <li>
+                직책이 '회원'이 아닌 사람에게는 모두 관리자 권한이 부여됩니다.<br>
+                관리자는 다음과 같은 권한을 갖습니다.
+                <ul>
+                  <li>관리자 페이지 접속</li>
+                  <li>타인의 신분(학번)으로 급식 신청<br>빈 셀을 클릭해 학번을 수정하면 자동으로 이름이 완성됩니다.</li>
+                  <li>급식표의 모든 셀에 대한 수정<br>이는 일반 회원은 수정할 수 없는 다음의 경우를 포함합니다.</li>
                   <ul>
                     <li>이미 지난 날짜에 대한 신청/삭제</li>
                     <li>본인이 신청하지 않은 급식에 대한 삭제</li>
                   </ul>
-              </ul>
-            </li>
-          </div><br>
-          <div class="table-responsive">
-            <table class="table table-bordered" id="dataTable" width="100%" style='table-layout: fixed; text-align: center' cellspacing="0">
-              <colgroup>
-                <col width="130px" />
-                <col width="180px" />
-                <col width="130px" />
-                <col width="90px" />
-                <col width="200px" />
-                <col width="100px" />
-                <col width="200px" />
-                <col width="180px" />
-                <col width="100px" />
-              </colgroup>
-              <thead>
-                <tr>
-                  <th>단과대학</th>
-                  <th>학과</th>
-                  <th>학번</th>
-                  <th>이름</th>
-                  <th>전화번호</th>
-                  <th>생일</th>
-                  <th>1365 아이디</th>
-                  <th>가입 학기</th>
-                  <th>직책</th>
-                </tr>
-              </thead>
-              <tfoot>
-                <tr>
-                  <th>단과대학</th>
-                  <th>학과</th>
-                  <th>학번</th>
-                  <th>이름</th>
-                  <th>전화번호</th>
-                  <th>생일</th>
-                  <th>1365 아이디</th>
-                  <th>가입 학기</th>
-                  <th>직책</th>
-                </tr>
-              </tfoot>
-            </table>
-          </div><br>
-          <table width='100%' style='margin-bottom: 10px'>
-            <tr>
-              <td>회원 삭제 :</td>
-              <td><input id='deletemember' type='number' placeholder='학번' style='width: 200px' class='form-control bg-light border-5 small'></td>
-              <td>
-                <a id="memberDeleteConfirm" href="#" class="btn btn-danger btn-icon-split" style='width: 30; height: 5;'>
+                </ul>
+              </li>
+            </div>
+            <br>
+            <div class="table-responsive">
+              <table class="table table-bordered" id="dataTable" width="100%" style='table-layout: fixed; text-align: center' cellspacing="0">
+                <colgroup>
+                  <col width="130px" />
+                  <col width="180px" />
+                  <col width="130px" />
+                  <col width="90px" />
+                  <col width="200px" />
+                  <col width="100px" />
+                  <col width="200px" />
+                  <col width="180px" />
+                  <col width="100px" />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th>단과대학</th>
+                    <th>학과</th>
+                    <th>학번</th>
+                    <th>이름</th>
+                    <th>전화번호</th>
+                    <th>생일</th>
+                    <th>1365 아이디</th>
+                    <th>가입 학기</th>
+                    <th>직책</th>
+                  </tr>
+                </thead>
+                <tfoot>
+                  <tr>
+                    <th>단과대학</th>
+                    <th>학과</th>
+                    <th>학번</th>
+                    <th>이름</th>
+                    <th>전화번호</th>
+                    <th>생일</th>
+                    <th>1365 아이디</th>
+                    <th>가입 학기</th>
+                    <th>직책</th>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+            <br>
+            <table width='100%' style='margin-bottom: 10px'>
+              <tr>
+                <td>회원 삭제 :</td>
+                <td><input id='deletemember' type='number' placeholder='학번' style='width: 200px' class='form-control bg-light border-5 small'></td>
+                <td>
+                  <a id="memberDeleteConfirm" href="#" class="btn btn-danger btn-icon-split" style='width: 30; height: 5;'>
                   <span class='text'>제명</span>
-                </a>
-              </td>
-            </tr></table>
-          <li>경고! 제명 버튼을 누르면 별도의 확인 없이 바로 회원이 제명되고, 재등록하지 않는 한 복구가 불가능합니다! 신중하게 누르세요!</li>
-          <br>
-        </div>
-
-        <div class="container-fluid text-gray-700" id='1365Content' style='display: none;'>
-
-          <!-- Page Heading -->
-          <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">1365 인증서</h1>
+                  </a>
+                </td>
+              </tr>
+            </table>
+            <li>경고! 제명 버튼을 누르면 별도의 확인 없이 바로 회원이 제명되고, 재등록하지 않는 한 복구가 불가능합니다! 신중하게 누르세요!</li>
+            <br>
           </div>
-          
-      <div style='font-size:0.8rem'>
-        <li>1365 봉사활동 확인서를 자동으로 작성한 후 다운로드합니다.</li>
-        <li>인증서를 생성할 년/월 및 명단 데이터를 선택한 후 다운로드 버튼을 누르세요.</li>
-        <li>다운로드 버튼을 누르면 10초 내외로 다운로드가 시작됩니다.</li>
-      </div><br>
-      <table style="border-collapse: separate; border-spacing: 10px;">
-        <tr><td>년 / 월</td><td><input type='month' id='calendar1365' class='btn btn-secondary'/></td></tr>
-        <tr><td>명단 데이터&nbsp;&nbsp;</td><td><select id='namelist'></select></td></tr>
-      </table>
-      <div style='margin: 15px 0px; text-align: right;'>
-        <a id="download1365" href="#" class="btn btn-success btn-icon-split" style='width: 30; height: 5; margin: 20 0;'>
-          <span class='text'>다운로드</span>
-        </a>
-      </div>
-        </div>
-
-          
-        <div class="container-fluid text-gray-700" id='recruitContent' style='display: none;'>
-
-          <!-- Page Heading -->
-          <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">신입 모집</h1>
+          <div class="container-fluid text-gray-700" id='1365Content' style='display: none;'>
+            <!-- Page Heading -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+              <h1 class="h3 mb-0 text-gray-800">1365 인증서</h1>
+            </div>
+            <div style='font-size:0.8rem'>
+              <li>1365 봉사활동 확인서를 자동으로 작성한 후 다운로드합니다.</li>
+              <li>인증서를 생성할 년/월 및 명단 데이터를 선택한 후 다운로드 버튼을 누르세요.</li>
+              <li>다운로드 버튼을 누르면 10초 내외로 다운로드가 시작됩니다.</li>
+            </div>
+            <br>
+            <table style="border-collapse: separate; border-spacing: 10px;">
+              <tr>
+                <td>년 / 월</td>
+                <td><input type='month' id='calendar1365' class='btn btn-secondary'/></td>
+              </tr>
+              <tr>
+                <td>명단 데이터&nbsp;&nbsp;</td>
+                <td><select id='namelist'></select></td>
+              </tr>
+            </table>
+            <div style='margin: 15px 0px; text-align: right;'>
+              <a id="download1365" href="#" class="btn btn-success btn-icon-split" style='width: 30; height: 5; margin: 20 0;'>
+              <span class='text'>다운로드</span>
+              </a>
+            </div>
           </div>
-          
-      신입 모집 설문지 : <a href='https://luftaquila.io/ajoumeow/register/'>luftaquila.io/ajoumeow/register/</a><br>
-      설문지 링크 QR코드 : <br><img src='/ajoumeow/Resources/Images/frame.png'><br><br>
-      <a href="https://docs.google.com/spreadsheets/d/14fRlX0UWFbMzDjhueOPi9ivZFE799kui6-1UixzgvWg/edit?usp=drivesdk">> 모집 설문지 응답 시트</a><br><br>
-        
-      <select id='newMemberList' style='margin-bottom: 15px'></select> 연락처 파일 생성<br>
-      <label for='google'><input type='radio' id='google' name='contactfile' value='google' /> Google 연락처 파일</label><br>
-      <label for='outlook'><input type='radio' id='outlook' name='contactfile' value='outlook' /> Outlook/네이버 연락처 파일</label><br>
-      <a id="contactDownload" href="#" class="btn btn-success btn-icon-split" style='width: 30; height: 5;'>
-        <span class='text'>다운로드</span>
-      </a><br><br>
-      <div style='font-size: 0.8rem'>
-        <h4>연락처 다운로드 기능 사용 방법</h4>
-        <ol>
-          <li><a href="https://contacts.google.com">contacts.google.com</a> 접속</li>
-          <li>좌측 상단 메뉴에서 가져오기 클릭</li>
-          <li>다운로드한 연락처 파일 선택 후 가져오기 클릭</li>
-          <li>핸드폰에서 연락처 동기화하면 <mark>[년도]-[학기] 미유미유</mark> 라벨에 <mark>[학번][이름]</mark> 형식으로 가입신청자 연락처가 저장됩니다.</li>
-          <li>카톡방 초대가 끝나면 라벨을 삭제해서 간단하게 제거할 수 있습니다.</li>
-        </ol>
-      </div>
-        
-        </div>
-  
-        <div class="container-fluid text-gray-700" id='dashboardContent' style='display: none;'>
-         
-          <!-- Page Heading -->
-          <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">통계</h1>
+          <div class="container-fluid text-gray-700" id='recruitContent' style='display: none;'>
+            <!-- Page Heading -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+              <h1 class="h3 mb-0 text-gray-800">신입 모집</h1>
+            </div>
+            <ul>
+              <li style='font-size: 0.9rem'>⚠️ 설문지 링크 공개 전에 반드시 <span style='font-weight: bold;'>설정</span> 탭에서 <mark>현재 학기</mark> 및 <mark>신입 모집</mark> 관련 설정을 업데이트하십시오. 특히 <mark>현재 학기</mark>는 반드시 신입 회원을 모집하는 학기로 설정해야 합니다.</li>
+            </ul>
+            신입 모집 설문지 : <a href='https://luftaquila.io/ajoumeow/register/'>luftaquila.io/ajoumeow/register/</a><br>
+            설문지 링크 QR코드 : <br><img src='/ajoumeow/Resources/Images/frame.png'><br><br>
+            <a href="https://docs.google.com/spreadsheets/d/14fRlX0UWFbMzDjhueOPi9ivZFE799kui6-1UixzgvWg/edit?usp=drivesdk">> 모집 설문지 응답 시트</a><br><br>
+            <select id='newMemberList' style='margin-bottom: 15px'></select> 연락처 파일 생성<br>
+            <label for='google'><input type='radio' id='google' name='contactfile' value='google' /> Google 연락처 파일</label><br>
+            <label for='outlook'><input type='radio' id='outlook' name='contactfile' value='outlook' /> Outlook/네이버 연락처 파일</label><br>
+            <a id="contactDownload" href="#" class="btn btn-success btn-icon-split" style='width: 30; height: 5;'>
+            <span class='text'>다운로드</span>
+            </a><br><br>
+            <div style='font-size: 0.8rem'>
+              <h4>연락처 다운로드 기능 사용 방법</h4>
+              <ol>
+                <li><a href="https://contacts.google.com">contacts.google.com</a> 접속</li>
+                <li>좌측 상단 메뉴에서 가져오기 클릭</li>
+                <li>다운로드한 연락처 파일 선택 후 가져오기 클릭</li>
+                <li>핸드폰에서 연락처 동기화하면 <mark>[년도]-[학기] 미유미유</mark> 라벨에 <mark>[학번][이름]</mark> 형식으로 가입신청자 연락처가 저장됩니다.</li>
+                <li>카톡방 초대가 끝나면 라벨을 삭제해서 간단하게 제거할 수 있습니다.</li>
+              </ol>
+            </div>
           </div>
-          
+          <div class="container-fluid text-gray-700" id='dashboardContent' style='display: none;'>
+            <!-- Page Heading -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+              <h1 class="h3 mb-0 text-gray-800">통계</h1>
+            </div>
             <!-- Earnings (Monthly) Card Example -->
             <div class="col-xl-3 col-md-6 mb-4">
               <div class="card border-left-info shadow h-100 py-2">
@@ -451,7 +447,6 @@
                 </div>
               </div>
             </div>
-          
             <div class="col-xl-8 col-lg-7">
               <div class="card shadow mb-4">
                 <!-- Card Header - Dropdown -->
@@ -466,7 +461,8 @@
                   <label><input type='radio' name='statisticsType' value='totalStatistics'> 전체 기간 마일리지 순위</label>
                   <label><input type='radio' name='statisticsType' value='' id='customStatistics'> 특정 기간 마일리지 순위</label><br>
                   &nbsp;&nbsp;&nbsp;&nbsp;<input class='statisticsDate' type='date' id='statisticsStartDate'> ~ <input class='statisticsDate' type='date' id='statisticsEndDate'><br><br>
-                  <div style='width: 100%; text-align: center;'><a class='btn btn-success' id='pick'><span style='color: #fff'>이 목록으로 제비뽑기</span></a></div><br>
+                  <div style='width: 100%; text-align: center;'><a class='btn btn-success' id='pick'><span style='color: #fff'>이 목록으로 제비뽑기</span></a></div>
+                  <br>
                   <div class='table-responsive'>
                     <table class="table table-bordered" id="statistics" width="99%" style='table-layout: fixed; text-align: center' cellspacing="0">
                       <colgroup>
@@ -482,142 +478,129 @@
                 </div>
               </div>
             </div>
-        </div>
-  
-        <div class="container-fluid text-gray-700" id='logContent' style='display: none;'>
-          <!-- Page Heading -->
-          <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">서버 로그</h1>
           </div>
-          <h6>서버 로그를 열람합니다.</h6>
-          <div style='font-size: 0.8rem; margin-bottom: 10px'>
-            <li>체크박스가 체크된 범주의 로그만 표시됩니다.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;요청의 대다수는 페이지를 로딩할 때 발생합니다.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;페이지 로드 체크박스를 해제하면 보다 중요한 로그만 볼 수 있습니다.</li>
-            <li>오류 체크박스에 체크하면 오류 기록만 표시합니다.</li>
-            <li>로그는 일정 크기를 초과하면 삭제됩니다</li>
-          </div>
-          <label><input type='checkbox' name='iserror' value='error'> 오류</label>
-          <hr width='100%' style='margin: 0 0 10px 0'>
-          <table width='100%'>
-            <tr>
-              <td><label><input type='checkbox' name='logtype' value='pageload' checked> 페이지 로드</label></td>
-              <td><label><input type='checkbox' name='logtype' value='loginout' checked> 로그인 / 로그아웃</label></td>
-            </tr>
-            <tr>
-              <td><label><input type='checkbox' name='logtype' value='insdelTable' checked> 급식 신청 / 삭제</label></td>
-              <td><label><input type='checkbox' name='logtype' value='verify' checked> 급식 인증</label></td>
-            </tr>
-            <tr>
-              <td><label><input type='checkbox' name='logtype' value='settingchange' checked> 설정 변경</label></td>
-              <td><label><input type='checkbox' name='logtype' value='memberchange' checked> 회원 명단 변경</label></td>
-            </tr>
-            <tr>
-              <td><label><input type='checkbox' name='logtype' value='1365' checked> 1365 인증서</label></td>
-              <td><label><input type='checkbox' name='logtype' value='others' checked> 기타</label></td>
-            </tr>
-          </table><br>
-          <div class='table-responsive'>
-            <table class="table table-bordered" id="serverlog" width="100%" style='table-layout: fixed; text-align: center' cellspacing="0">
-              <colgroup>
-                <col width='200px' />
-                <col width='120px' />
-                <col width='160px' />
-                <col width='220px' />
-                <col width='300px' />
-                <col width='200px' />
-                <col width='500px'/>
-              </colgroup>
-              <thead>
-                <th>타임스탬프</th>
-                <th>로그 수준</th>
-                <th>IP</th>
-                <th>설명</th>
-                <th>쿼리</th>
-                <th>url</th>
-                <th>결과</th>
-              </thead>
+          <div class="container-fluid text-gray-700" id='logContent' style='display: none;'>
+            <!-- Page Heading -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+              <h1 class="h3 mb-0 text-gray-800">서버 로그</h1>
+            </div>
+            <h6>서버 로그를 열람합니다.</h6>
+            <div style='font-size: 0.8rem; margin-bottom: 10px'>
+              <li>체크박스가 체크된 범주의 로그만 표시됩니다.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;요청의 대다수는 페이지를 로딩할 때 발생합니다.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;페이지 로드 체크박스를 해제하면 보다 중요한 로그만 볼 수 있습니다.</li>
+              <li>오류 체크박스에 체크하면 오류 기록만 표시합니다.</li>
+              <li>로그는 일정 크기를 초과하면 삭제됩니다</li>
+            </div>
+            <label><input type='checkbox' name='iserror' value='error'> 오류</label>
+            <hr width='100%' style='margin: 0 0 10px 0'>
+            <table width='100%'>
+              <tr>
+                <td><label><input type='checkbox' name='logtype' value='pageload' checked> 페이지 로드</label></td>
+                <td><label><input type='checkbox' name='logtype' value='loginout' checked> 로그인 / 로그아웃</label></td>
+              </tr>
+              <tr>
+                <td><label><input type='checkbox' name='logtype' value='insdelTable' checked> 급식 신청 / 삭제</label></td>
+                <td><label><input type='checkbox' name='logtype' value='verify' checked> 급식 인증</label></td>
+              </tr>
+              <tr>
+                <td><label><input type='checkbox' name='logtype' value='settingchange' checked> 설정 변경</label></td>
+                <td><label><input type='checkbox' name='logtype' value='memberchange' checked> 회원 명단 변경</label></td>
+              </tr>
+              <tr>
+                <td><label><input type='checkbox' name='logtype' value='1365' checked> 1365 인증서</label></td>
+                <td><label><input type='checkbox' name='logtype' value='others' checked> 기타</label></td>
+              </tr>
             </table>
+            <br>
+            <div class='table-responsive'>
+              <table class="table table-bordered" id="serverlog" width="100%" style='table-layout: fixed; text-align: center' cellspacing="0">
+                <colgroup>
+                  <col width='200px' />
+                  <col width='120px' />
+                  <col width='160px' />
+                  <col width='220px' />
+                  <col width='300px' />
+                  <col width='200px' />
+                  <col width='500px'/>
+                </colgroup>
+                <thead>
+                  <th>타임스탬프</th>
+                  <th>로그 수준</th>
+                  <th>IP</th>
+                  <th>설명</th>
+                  <th>쿼리</th>
+                  <th>url</th>
+                  <th>결과</th>
+                </thead>
+              </table>
+            </div>
           </div>
         </div>
-
-  
+        <!-- End of Main Content -->
+        <!-- Footer -->
+        <footer class="sticky-footer bg-white">
+          <div class="container my-auto">
+            <div class="copyright text-center my-auto">
+              <span>
+                Copyright &copy; LUFT-AQUILA <script>document.write(new Date().getFullYear())</script>
+              </span>
+            </div>
+          </div>
+        </footer>
+        <!-- End of Footer -->
       </div>
-      <!-- End of Main Content -->
-
-      <!-- Footer -->
-      <footer class="sticky-footer bg-white">
-        <div class="container my-auto">
-          <div class="copyright text-center my-auto">
-            <span>Copyright &copy; LUFT-AQUILA <script>document.write(new Date().getFullYear())</script></span>
-          </div>
-        </div>
-      </footer>
-      <!-- End of Footer -->
-
+      <!-- End of Content Wrapper -->
     </div>
-    <!-- End of Content Wrapper -->
-
-  </div>
-  <!-- End of Page Wrapper -->
-
-  <!-- Scroll to Top Button
-  <a class="scroll-to-top rounded" href="#page-top">
-    <i class="fas fa-angle-up"></i>
-  </a>-->
-
-  <!-- Logout Modal-->
-  <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">로그아웃</h5>
-          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+    <!-- End of Page Wrapper -->
+    <!-- Scroll to Top Button
+      <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+      </a>-->
+    <!-- Logout Modal-->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">로그아웃</h5>
+            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">×</span>
-          </button>
-        </div>
-        <div class="modal-body">로그아웃합니다.</div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-          <a class="btn btn-primary" href="login.html">Logout</a>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal micromodal-slide" id="pop" aria-hidden="true">
-    <div class="modal__overlay" tabindex="-1" data-micromodal-close>
-      <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="randCatModal-title">
-        <header class="modal__header">
-          <h2 class="modal__title" id="randCatModal-title">랜덤랜덤 고양이</h2>
-          <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
-        </header>
-        <main class="modal__content" id="randCatModal-content">
-          <div style="position: relative; text-align: center">
-            <img id='popgif' src="/ajoumeow/Resources/Images/loading.gif" style="width:100%; height:auto; margin-bottom: 0.8rem;">
-            <span id='poptext'>기지개 켜는 중...</span>
+            </button>
           </div>
-        </main>
+          <div class="modal-body">로그아웃합니다.</div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+            <a class="btn btn-primary" href="login.html">Logout</a>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-
-  <!-- Bootstrap core JavaScript-->
-  <script src="vendor/jquery/jquery.min.js"></script>
-  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-  <!-- Core plugin JavaScript-->
-  <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
-  
-  <!-- Page level plugins -->
-  <script src="js/sb-admin-2.js"></script>
-  
-  <script src="vendor/datatables/jquery.dataTables.min.js"></script>
-  <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
-
-  <script src='js/datatable-editor.js'></script>
-  <script src='/ajoumeow/Resources/Libraries/alertify/alertify.min.js'></script>
-  <script src='/ajoumeow/Resources/Libraries/micromodal/micromodal.min.js'></script>
-  <script src='js/console.js'></script>
-
-</body>
-
+    <div class="modal micromodal-slide" id="pop" aria-hidden="true">
+      <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+        <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="randCatModal-title">
+          <header class="modal__header">
+            <h2 class="modal__title" id="randCatModal-title">랜덤랜덤 고양이</h2>
+            <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+          </header>
+          <main class="modal__content" id="randCatModal-content">
+            <div style="position: relative; text-align: center">
+              <img id='popgif' src="/ajoumeow/Resources/Images/loading.gif" style="width:100%; height:auto; margin-bottom: 0.8rem;">
+              <span id='poptext'>기지개 켜는 중...</span>
+            </div>
+          </main>
+        </div>
+      </div>
+    </div>
+    <!-- Bootstrap core JavaScript-->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- Core plugin JavaScript-->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+    <!-- Page level plugins -->
+    <script src="js/sb-admin-2.js"></script>
+    <script src="vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
+    <script src='js/datatable-editor.js'></script>
+    <script src='/ajoumeow/Resources/Libraries/alertify/alertify.min.js'></script>
+    <script src='/ajoumeow/Resources/Libraries/micromodal/micromodal.min.js'></script>
+    <script src='js/console.js'></script>
+  </body>
 </html>
