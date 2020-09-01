@@ -30,7 +30,7 @@
 개발자 연락처
 * <luftaquila@luftaquila.io>
 * [카카오톡](http://qr.kakao.com/talk/RmgKn.t2Sxgy8I7hwdhuYZQF1vc-) / ID: luftaquila
-* [아주대학교 전자공학과 18학번 오병준](https://luftaquila.io
+* [아주대학교 전자공학과 18학번 오병준](https://luftaquila.io)
 
 <br>
 
