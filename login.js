@@ -11,7 +11,8 @@ $(function() {
           user.id = res.id;
           user.admin = (res.role != '회원');
           load();
-          setUserStat();
+          genUserRecord();
+          if(user.admin) $('#admin').css('display', 'block');
           $('#username').text(res.name);
           $('#userrole').text(res.role);
           $('#userInfo').css('display', 'block');
@@ -32,7 +33,10 @@ $(function() {
           user.name = '';
           user.id = '';
           user.admin = false;
+          
           load();
+          
+          $('#admin').css('display', 'none');
           $('#loginForm').css('display', 'block');
           $('#userInfo').css('display', 'none');
           $('.my').removeClass('my');
@@ -67,7 +71,8 @@ function logincheck(user) {
         user.name = res.name;
         user.id = res.id;
         user.admin = (res.role != "회원");
-        setUserStat();
+        genUserRecord();
+        if(user.admin) $('#admin').css('display', 'block');
         $('#username').text(user.name);
         $('#userrole').text(res.role);
         $('#userInfo').css('display', 'block');
@@ -77,6 +82,7 @@ function logincheck(user) {
         user.name = '';
         user.id = '';
         user.admin = false;
+        $('#admin').css('display', 'none');
         $('#sidebar').css('display', 'block');
         $('#loginForm').css('display', 'block');
         $('#userInfo').css('display', 'none');
@@ -86,28 +92,28 @@ function logincheck(user) {
   return user;
 }
 
-function setUserStat() {
+function genUserRecord() {
   $.ajax({
     url: 'https://luftaquila.io/ajoumeow/api/requestUserStat',
     type:'POST',
     data: { id: user.id },
     success: function(res) {
-      var mileage_this = 0, mileage_total = 0, time_this = 0, time_total = 0, html = '<br>';
-      var this_month = new Date().format('yyyy-mm');
-      for(var obj of res) {
+      let mileage_this = 0, mileage_total = 0, time_this = 0, time_total = 0, html = '<br>';
+      let this_month = new Date().format('yyyy-mm');
+      for(let obj of res) {
         if(new Date(obj.date).format('yyyy-mm') == this_month) {
           mileage_this += Number(obj.score);
           time_this++;
         }
         mileage_total += Number(obj.score);
         time_total++;
-        html += new Date(obj.date).format('yyyy년 m월 d일') + '<br>' + obj.course + '<br>' + obj.score + '점<br><br>';
+        html += new Date(obj.date).format('yyyy년 m월 d일') + ' • ' + obj.course + ' • ' + obj.score + '점<br><br>';
       }
       $('#mileage_this').text(mileage_this);
       $('#mileage_total').text(mileage_total);
       $('#time_this').text(time_this);
       $('#time_total').text(time_total);
-      $('#myhistory').html(html + '<br><br><br>');
+      $('#history').html(html);
     }
   });
 }

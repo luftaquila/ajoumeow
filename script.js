@@ -1,5 +1,5 @@
 $(function() {
-  //(function () { var script = document.createElement('script'); script.src="//cdn.jsdelivr.net/npm/eruda"; document.body.appendChild(script); script.onload = function () { eruda.init() } })();
+  (function () { var script = document.createElement('script'); script.src="//cdn.jsdelivr.net/npm/eruda"; document.body.appendChild(script); script.onload = function () { eruda.init() } })();
   init();
   eventListener();
 });
@@ -195,30 +195,10 @@ function transmitter(data) {
   }
 }
 
-function setUserStat() {
-  $.ajax({
-    url: 'https://luftaquila.io/ajoumeow/api/requestUserStat',
-    type: 'POST',
-    data: { id: user.id },
-    success: function(res) {
-      var mileage_this = 0, mileage_total = 0, time_this = 0, time_total = 0, html = '<br>';
-      var this_month = new Date().format('yyyy-mm');
-      for(var obj of res) {
-        if(new Date(obj.date).format('yyyy-mm') == this_month) {
-          mileage_this += Number(obj.score);
-          time_this++;
-        }
-        mileage_total += Number(obj.score);
-        time_total++;
-        html += new Date(obj.date).format('yyyy년 m월 d일') + '<br>' + obj.course + '<br>' + obj.score + '점<br><br>';
-      }
-      $('#mileage_this').text(mileage_this);
-      $('#mileage_total').text(mileage_total);
-      $('#time_this').text(time_this);
-      $('#time_total').text(time_total);
-      $('#myhistory').html(html + '<br><br><br>');
-    }
-  });
+function courseImg(course) {
+  $('#spot_modal-title').text(course.replace('-', '코스 ') + '번째 급식소');
+  $('#courseImg').attr('src', '/ajoumeow/Resources/Images/Map/spot_' + course + '.jpg');
+  MicroModal.show('spot_modal');
 }
 
 function getDateFromCalendarStart(plusdate) { return new Date(Date.now() - ((new Date().getDayNum() + 7 - plusdate) * 24 * 3600000)).format('yyyy-mm-dd'); }
@@ -238,6 +218,31 @@ function dateDataToSvgTranslator(courses) {
   
   svgString += `%3C/svg%3E`;
   return svgString;
+}
+
+window.onload = function () {
+  var ImageMap = function (map) {
+    var n,
+      areas = map.getElementsByTagName('area'),
+      len = areas.length,
+      coords = [],
+      previousWidth = 2500;
+    for (n = 0; n < len; n++) coords[n] = areas[n].coords.split(',');
+    this.resize = function () {
+      var n, m, clen,
+        x = document.body.clientWidth / previousWidth;
+      for (n = 0; n < len; n++) {
+        clen = coords[n].length;
+        for (m = 0; m < clen; m++) coords[n][m] *= x;
+        areas[n].coords = coords[n].join(',');
+      }
+      previousWidth = document.body.clientWidth;
+      return true;
+    };
+    window.onresize = this.resize;
+  },
+  imageMap = new ImageMap(document.getElementById('Map'));
+  imageMap.resize();
 }
 
 var dateFormat = function () {

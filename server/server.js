@@ -160,7 +160,7 @@ app.post('//requestApply', async function(req, res) {
     applyTerm = applyTerm.split('~');
   
     if((new Date() > new Date(applyTerm[0]) && new Date() < new Date(new Date(applyTerm[1]).getTime() + 60 * 60 * 24 * 1000)) || (await settings('isAllowAdditionalApply') == 'TRUE'))
-      result = { result: true };
+      result = { 'result' : true, 'semister' : await settings('currentSemister') };
     else result = { result: null };
   
     res.send(result);
@@ -239,6 +239,19 @@ app.post('//requestSettings', async function(req, res) {
   }
 });
 
+app.post('//requestSetting', async function(req, res) {
+  const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
+  let query, result;
+  try {
+    query = "SELECT `value` FROM `settings` WHERE `name`='" + req.body.name + "';";
+    result = await db.query(query);
+    res.send(result[0]);
+    //logger.info('설정값을 요청합니다.', { ip: ip, url: 'requestSettings', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
+  }
+  catch(e) { logger.error('설정값을 불러오는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestSettings', query: query ? query : 'Query String Not generated.', result: e.toString()});  }
+});
+
+    
 app.post('//requestNameList', async function(req, res) {
   const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
   let semister, query, result;
@@ -711,6 +724,28 @@ app.post('//requestUserStat', async function(req, res) {
   }
   catch(e) {
     logger.error('회원의 활동 기록을 불러오는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestUserStat', query: query ? query : 'Query String Not generated.', result: e.toString() });
+  }
+});
+
+app.post('//requestUserDetail', async function(req, res) {
+  const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
+  let semister, query, result;
+  try {
+    if(req.body.semister == 'this') semister = await settings('currentSemister');
+    else if(req.body.semister == 'past') {
+      let tmp = await settings('currentSemister');
+      tmp = tmp.split('-');
+      if(tmp[1] == '2') semister = tmp[0] + '-1';
+      else semister = (Number(tmp[0]) - 1) + '-2';
+    }
+    else semister = req.body.semister;
+
+    query = 'SELECT * FROM `namelist_' + semister + '` WHERE `ID`=' + req.body.ID + ';';
+    result = await db.query(query);
+    res.send(result);
+  }
+  catch(e) {
+    logger.error('회원 정보를 불러오는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestUserDetail', query: query ? query : 'Query String Not generated.', result: e.toString() });
   }
 });
 
