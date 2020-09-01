@@ -4,28 +4,33 @@
 임원진 여러분을 위한 관리자 메뉴 사용설명서입니다.
 
 ### 빠른 목차
-[1. 관리자 권한 - 나! 나도 임원진이에요!](https://github.com/luftaquila/ajoumeow/blob/master/README.md#1. 관리자 권한)
-[2. 급식 인증 및 삭제 - 밥 주새오](https://github.com/luftaquila/ajoumeow/blob/master/README.md#2. 급식 인증 및 삭제)
-[3. 설정 - 학기 바꿨더니 로그인이 안 되는데요?](https://github.com/luftaquila/ajoumeow/blob/master/README.md#3. 설정)
-[4. 회원 관리 - 맘에 안 드는 너, 숙청.](https://github.com/luftaquila/ajoumeow/blob/master/README.md#4.회원 관리)
-[5. 1365 - 봉사시간 많이 모아야 군대 잘 간다](https://github.com/luftaquila/ajoumeow/blob/master/README.md#5. 1365)
-[6. 신입 모집 - 새내기 주세요!!!](https://github.com/luftaquila/ajoumeow/blob/master/README.md#6. 신입 모집)
-[7. 서버 로그 - 쓸데없음.](https://github.com/luftaquila/ajoumeow/blob/master/README.md# 서버 로그)
-[8. Dashboard - 리워드 제비뽑기 확률X망겜](https://github.com/luftaquila/ajoumeow/blob/master/README.md#8. Dashboard)
+[1. 관리자 권한 - 나! 나도 임원진이에요!](https://github.com/luftaquila/ajoumeow/blob/master/README.md#1-%EA%B4%80%EB%A6%AC%EC%9E%90-%EA%B6%8C%ED%95%9C)
+[2. 급식 인증 및 삭제 - 밥 주새오](https://github.com/luftaquila/ajoumeow/blob/master/README.md#2-%EA%B8%89%EC%8B%9D-%EC%9D%B8%EC%A6%9D-%EB%B0%8F-%EC%82%AD%EC%A0%9C)
+[3. 설정 - 학기 바꿨더니 로그인이 안 되는데요?](https://github.com/luftaquila/ajoumeow/blob/master/README.md#3-%EC%84%A4%EC%A0%95)
+[4. 회원 관리 - 맘에 안 드는 너, 숙청.](https://github.com/luftaquila/ajoumeow/blob/master/README.md#4-%ED%9A%8C%EC%9B%90-%EA%B4%80%EB%A6%AC)
+[5. 1365 - 봉사시간 많이 모아야 군대 잘 간다](https://github.com/luftaquila/ajoumeow/blob/master/README.md#5-1365)
+[6. 신입 모집 - 새내기 주세요!!!](https://github.com/luftaquila/ajoumeow/blob/master/README.md#6-%EC%8B%A0%EC%9E%85-%EB%AA%A8%EC%A7%91)
+[7. 서버 로그 - 쓸데없음.](https://github.com/luftaquila/ajoumeow/blob/master/README.md#7-%EC%84%9C%EB%B2%84-%EB%A1%9C%EA%B7%B8)
+[8. Dashboard - 리워드 제비뽑기 확률X망겜](https://github.com/luftaquila/ajoumeow/blob/master/README.md#8-dashboard)
 
 ## 0. 들어가기
 ⚠️ 개발자가 나 쓰자고 만든 거라 버그가 많을 수 있습니다.
+
 기능이 원하는 대로 작동하지 않는다면 개발자를 소환해 주세요.
 
 만약 동아리가 먼 미래에까지 살아남아 이 글을 읽는 분들이 개발자가 누군지 모르신다면(쥬륵) 연락 주세요.
+
 개발자 연락처
 * <luftaquila@luftaquila.io>
-* [카카오톡](http://qr.kakao.com/talk/RmgKn.t2Sxgy8I7hwdhuYZQF1vc-) ID: luftaquila
+* [카카오톡](http://qr.kakao.com/talk/RmgKn.t2Sxgy8I7hwdhuYZQF1vc-) / ID: luftaquila
 * [아주대학교 전자공학과 18학번 오병준](https://luftaquila.io)
-
+<br>
 관리자 콘솔은 임원진 여러분에 한해 접속 권한이 부여됩니다.
+
 사이트의 사이드바(☰) 하단에 신분증 모양 아이콘이 접속 버튼입니다.
+
 또는 링크 [luftaquila.io/ajoumeow/console](https://luftaquila.io/ajoumeow/console)에서 접속할 수 있습니다.
+
 관리자 콘솔 링크는 급식인증방 공지로 설정해 두면 인증에 편리합니다.
 
 그럼 관리자 권한을 부여받는 방법부터 알아봅시다.
@@ -43,6 +48,7 @@
 
 ## 2. 급식 인증 및 삭제
 급식 활동은 미유미유의 핵심입니다. 급식 인증은 시스템에 활동했다는 사실을 기록하는 것입니다.
+
 급식 인증이 완료된 활동만 시스템에서 인정되어 자동으로 마일리지가 부여되고, 1365 봉사활동 인증서 생성 시 포함됩니다.
 
 급식 인증 탭에는 세 가지 하위 기능이 있습니다.
@@ -85,8 +91,8 @@
 
 ## 3. 설정
 시스템의 각종 설정값을 바꿀 수 있습니다.
-* 현재 학기 값은 학기가 바뀌면 항상 업데이트 해 주세요. 명단 작성 등 전산 여러 곳에서 중요하게 사용되는 값입니다.
-* 현재 학기 값을 변경하면 모든 회원은 로그아웃됩니다. 다시 새 학기 회원 등록으로 새 명단에 이름을 올려야 로그인할 수 있습니다.
+* ⚠️`현재 학기` 값은 학기가 바뀌면 항상 업데이트 해 주세요. 명단 작성 등 전산 여러 곳에서 중요하게 사용되는 값입니다.
+* ⚠️`현재 학기` 값을 변경하면 모든 회원은 로그아웃됩니다. 다시 새 학기 회원 등록으로 새 명단에 이름을 올려야 로그인할 수 있습니다.
 * 공지사항 값을 변경하면 사이트 방문 시 최초 1회 공지 팝업을 자동 표시합니다.
 * 회원 등록 및 신입 모집은 설정된 기간을 만족하거나 추가 허용 여부가 TRUE일 때, 둘 중 하나만 만족해도 활성화됩니다.
 * 추가 허용 항목은 평소에는 FALSE로 맞춰 놓고 기간외 등록을 희망하는 사람이 있을 때만 잠깐 TRUE로 바꾸는 용도입니다.
@@ -94,6 +100,7 @@
 
 ## 4. 회원 관리
 회원 목록을 관리합니다.
+
 목록에 등록된 회원만 로그인할 수 있습니다.
 * 학번 외 모든 항목은 수정할 수 있습니다.
 * 수정할 값을 클릭하면 입력창이 활성화됩니다.
@@ -105,7 +112,9 @@
 
 ## 5. 1365
 1365 봉사활동 확인서를 자동으로 작성하고 다운로드합니다.
+
 인증서를 생성할 년/월 및 명단 데이터를 선택한 후 다운로드 버튼을 누르세요.
+
 다운로드 버튼을 누르면 10초 내외로 다운로드가 시작됩니다.
 * 팝업 차단을 해제해야 다운로드가 가능합니다.
 
@@ -113,12 +122,14 @@
 신입 모집 설문지 링크와 QR코드가 있습니다.
 
 ⚠️모집을 시작하기 전에 반드시 설정 탭에서 현재 학기 및 신입 모집 관련 설정을 업데이트하세요.
+
 모집 전에 현재 학기를 최신화해야 신청서가 학기별로 제대로 분류됩니다.
 
 현재 학기를 바꾸고, 기존 회원들이 새학기 회원 등록을 하는 동안 신입 모집을 동시에 진행하면 됩니다.
 
 ### 연락처 다운로드
 신청 목록에서 일일히 전화번호를 저장하고 단톡에 초대하는 불상사를 막기 위해 개발했습니다.
+
 연락처 파일을 생성할 학기를 선택하고, 파일 유형을 선택한 뒤 다운로드 버튼을 누르세요.
 
 * Google 연락처 파일을 사용하는 경우
