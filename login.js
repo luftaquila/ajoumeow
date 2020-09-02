@@ -12,7 +12,10 @@ $(function() {
           user.admin = (res.role != '회원');
           load();
           genUserRecord();
-          if(user.admin) $('#admin').css('display', 'block');
+          if(user.admin) {
+            $('#admin').css('display', 'block');
+            $('#adminhelp').css('display', 'block');
+          }
           $('#username').text(res.name);
           $('#userrole').text(res.role);
           $('#userInfo').css('display', 'block');
@@ -37,6 +40,7 @@ $(function() {
           load();
           
           $('#admin').css('display', 'none');
+          $('#adminhelp').css('display', 'none');
           $('#loginForm').css('display', 'block');
           $('#userInfo').css('display', 'none');
           $('.my').removeClass('my');
@@ -72,7 +76,10 @@ function logincheck(user) {
         user.id = res.id;
         user.admin = (res.role != "회원");
         genUserRecord();
-        if(user.admin) $('#admin').css('display', 'block');
+        if(user.admin) {
+          $('#admin').css('display', 'block');
+          $('#adminhelp').css('display', 'block');
+        }
         $('#username').text(user.name);
         $('#userrole').text(res.role);
         $('#userInfo').css('display', 'block');
@@ -83,6 +90,7 @@ function logincheck(user) {
         user.id = '';
         user.admin = false;
         $('#admin').css('display', 'none');
+        $('#adminhelp').css('display', 'none');
         $('#sidebar').css('display', 'block');
         $('#loginForm').css('display', 'block');
         $('#userInfo').css('display', 'none');
