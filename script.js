@@ -32,6 +32,8 @@ function init() {
       $('.calendar-table__row').last().append('<div class="calendar-table__col' + (i === indexOfToday ? ' calendar-table__today calendar-table__event' : '') + '" data-date="' + thisDate.format('yyyy-mm-dd') + '"><div class="calendar-table__item"><div>' + thisDate.format(i ? (thisDate.getDate() === 1 ? 'm/d' : 'd') : 'm/d') + '</div></div></div>');
   }
   
+  weather();
+  
   // Load Table data
   user = {};
   load(logincheck(user));
@@ -51,7 +53,26 @@ function eventListener() {
     
     // Show date contents
     $('#contentArea').css('display', 'block');
-    $('#dateInfo h4').text(new Date($(this).attr('data-date')).format('yyyy년 m월 d일 ddd요일'));
+    let datestring = new Date($(this).attr('data-date')).format('m월 d일 ddd요일');
+    if(weather) {
+      if($(this).hasClass('calendar-table__today')) {
+        let pm10 = weather.current_weather.dust.pm10, pm25 = weather.current_weather.dust.pm25;
+        let pm10color = pm10 > 30 ? pm10 > 80 ? pm10 > 150 ? '#ff5959' : '#fd9b5a' : '#00c73c' : '#32a1ff';
+        let pm25color = pm25 > 15 ? pm25 > 35 ? pm25 > 75 ? '#ff5959' : '#fd9b5a' : '#00c73c' : '#32a1ff';
+        datestring += '&nbsp;&nbsp;&nbsp;<span style="font-weight: normal">' + weather.current_weather.temp + '℃ ' + weather.current_weather.stat +
+          '</span>&nbsp;<img src="/ajoumeow/Resources/weather/icon/now.png" style="width: 1rem; height: 1rem;">&nbsp;&nbsp;&nbsp;' +
+          '<div style="line-height: 0.9rem; vertical-align: middle; display: inline-block; font-weight: normal; font-size: 0.7rem">pm10 : <span style="color: ' + pm10color + '">' + pm10 + '</span>㎍/㎥<br>pm2.5: <span style="color: ' + pm25color + '">' + pm25 + '</span>㎍/㎥</div>';
+      }
+      else {
+        let tgt = weather.weather_forecast.filter(o => o.day == new Date($(this).attr('data-date')).format('mm-dd'));
+        if(tgt[0]) datestring += '&nbsp;&nbsp;&nbsp;<span style="font-weight: normal">' + tgt[0].temp + ' ' + tgt[0].stat + '</span>&nbsp;<img src="/ajoumeow/Resources/weather/icon/' + tgt[0].day + '.png" style="width: 1rem; height: 1rem;">';
+      }
+    }
+    
+    $('#dateInfo h4').html(datestring);
+    
+    //weather
+
     let content = $(this).attr('data-content') ? JSON.parse($(this).attr('data-content')) : [], contentHTML = "";
     
     $('#contents').html('');
@@ -218,6 +239,17 @@ function dateDataToSvgTranslator(courses) {
   
   svgString += `%3C/svg%3E`;
   return svgString;
+}
+
+function weather() {
+  $.ajax({
+    url: '/ajoumeow/Resources/weather/weather.json',
+    cache: false,
+    success: function(res) {
+      weather = res;
+      console.log('Weather Update : ' + new Date(weather.update * 1000).format('yyyy-mm-dd HH:MM:ss'));
+    }
+  });
 }
 
 window.onload = function () {
