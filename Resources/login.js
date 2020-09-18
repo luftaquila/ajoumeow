@@ -105,16 +105,17 @@ function genUserRecord() {
     url: 'https://luftaquila.io/ajoumeow/api/requestUserStat',
     type:'POST',
     data: { id: user.id },
+    cache: false,
     success: function(res) {
       let mileage_this = 0, mileage_total = 0, time_this = 0, time_total = 0, html = '<br>';
       let this_month = new Date().format('yyyy-mm');
       for(let obj of res) {
         if(new Date(obj.date).format('yyyy-mm') == this_month) {
           mileage_this += Number(obj.score);
-          time_this++;
+          if(obj.course.slice(-2) == '코스') time_this++;
         }
         mileage_total += Number(obj.score);
-        time_total++;
+        if(obj.course.slice(-2) == '코스') time_total++;
         html += new Date(obj.date).format('yyyy년 m월 d일') + ' • ' + obj.course + ' • ' + obj.score + '점<br><br>';
       }
       $('#mileage_this').text(mileage_this);
