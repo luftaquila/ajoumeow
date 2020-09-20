@@ -9,7 +9,15 @@
       $('.sidebar .collapse').collapse('hide');
     };
   });
-
+  $('html').click(function(e) {
+  	if(!$(e.target).hasClass('sidebar') && !$(e.target).hasClass('sidebarToggleTop') && !$(e.target).hasClass('sidebarToggle')) {
+	    if(!$(".sidebar").hasClass("toggled")) {
+  	    $("body").addClass("sidebar-toggled");
+    	  $(".sidebar").addClass("toggled");
+    	}
+    }
+	});
+  
   // Close any open menu accordions when window is resized below 768px
   $(window).resize(function() {
     if ($(window).width() < 768) {
