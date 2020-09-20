@@ -160,7 +160,8 @@ function load() {
       $('.calendar-table__item').not('.hovered').css('background-image', 'none').children('div.my').removeClass('my');
       for(let date of recArr) {
         // Set SVG background
-        let svg = dateDataToSvgTranslator(date.courses);
+        let svgwidth = $('div[data-date="' + date.date + '"]').width();
+        let svg = dateDataToSvgTranslator(date.courses, svgwidth);
         $('div[data-date="' + date.date + '"]').attr('data-content', JSON.stringify(date.courses));
         $('div[data-date="' + date.date + '"] > div').css('background-image', svg);
         
@@ -227,17 +228,17 @@ function courseImg(course) {
 }
 
 function getDateFromCalendarStart(plusdate) { return new Date(Date.now() - ((new Date().getDayNum() + 7 - plusdate) * 24 * 3600000)).format('yyyy-mm-dd'); }
-function dateDataToSvgTranslator(courses) {
+function dateDataToSvgTranslator(courses, width) {
   let courseColor = { 1: 'red', 2: 'gold', 3: 'limegreen' };
-  let dotPosition = { CxCyRStrW: [25, 8, 1.8, 1.7], 1: [25], 2: [21, 29], 3: [18, 25, 32] };
-  let svgString = `url("data:image/svg+xml,%3Csvg width='54' height='54' xmlns='http://www.w3.org/2000/svg' version='1.1'%3E`;
+  let dotPosition = { CxCyRStrW: [25 / 54 * width, 8 / 54 * width, 1.7 / 54 * width, 1.3 / 54 * width], 1: [25 / 54 * width], 2: [21 / 54 * width, 29 / 54 * width], 3: [18 / 54 * width, 25 / 54 * width, 32 / 54 * width] };
+  let svgString = `url("data:image/svg+xml,%3Csvg width='` + width + `' height='` + width + `' xmlns='http://www.w3.org/2000/svg' version='1.1'%3E`;
   let courseCount = [0, 0];
   for(let course of courses) if(course.ppl.length) courseCount[0]++;
   
   for(let course of courses) {
     let ppl = course.ppl.length;
     if(!ppl) continue;
-    svgString += `%3Ccircle cx='` + dotPosition[courseCount[0]][courseCount[1]] + `' cy='8' r='1.7' stroke='` + courseColor[course.course] + `' stroke-width='1.3' fill='` + (ppl === 1 ? 'white' : courseColor[course.course]) + `'%3E%3C/circle%3E`;
+    svgString += `%3Ccircle cx='` + dotPosition[courseCount[0]][courseCount[1]] + `' cy='` + dotPosition.CxCyRStrW[1] + `' r='` + dotPosition.CxCyRStrW[2] + `' stroke='` + courseColor[course.course] + `' stroke-width='` + dotPosition.CxCyRStrW[3] + `' fill='` + (ppl === 1 ? 'white' : courseColor[course.course]) + `'%3E%3C/circle%3E`;
     courseCount[1]++;
   }
   

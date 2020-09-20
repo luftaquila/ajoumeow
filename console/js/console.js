@@ -1,5 +1,5 @@
 $(function() {
-  //(function () { var script = document.createElement('script'); script.src="//cdn.jsdelivr.net/npm/eruda"; document.body.appendChild(script); script.onload = function () { eruda.init() } })();
+  (function () { var script = document.createElement('script'); script.src="//cdn.jsdelivr.net/npm/eruda"; document.body.appendChild(script); script.onload = function () { eruda.init() } })();
   $.ajax({
     url:"https://luftaquila.io/ajoumeow/api/loginCheck",
     type: "POST",
@@ -163,8 +163,8 @@ function init() {
       success: function(res) {
         var data = [], str = '';
         for(var obj of res) data.push(obj['Tables_in_ajoumeow']);
-        for(var obj of data) str += '<option value="' + obj + '">' + obj + '</option>';
-        $('#namelist').html(str);
+        for(var obj of data.reverse()) str += '<option value="' + obj + '">' + obj + '</option>';
+        $('.namelist_select').html(str);
         $('#calendar1365').val(new Date().format('yyyy-mm'));
       }
     });
@@ -401,11 +401,11 @@ function clickEventListener() {
   $('#timestamp').change(load);
   $('#download1365').click(function() {
     if($('#calendar1365').val()) {
-      $('#calendar1365, #download1365, #namelist').attr('disabled', true);
+      $('#calendar1365, #download1365, #namelist_1365').attr('disabled', true);
       $.ajax({
         url: "https://luftaquila.io/ajoumeow/api/request1365",
         type: 'POST',
-        data: { month: $('#calendar1365').val(), namelist: $('#namelist').val() },
+        data: { month: $('#calendar1365').val(), namelist: $('#namelist_1365').val() },
         success: function(res) {
           if(res.result) {
             alertify.success('문서 생성이 완료되었습니다.');
@@ -413,7 +413,7 @@ function clickEventListener() {
           }
         },
         error: function(req) { alertify.error(req.responseJSON.error.code); },
-        complete: function() { $('#calendar1365, #download1365, #namelist').attr('disabled', false); }
+        complete: function() { $('#calendar1365, #download1365, #namelist_1365').attr('disabled', false); }
       });
     }
     else alertify.error('년/월을 선택하세요');
