@@ -1,5 +1,6 @@
 /Resources/weather/icon/
 /Resources/weather/*.log
+/Resources/weather/*.json
 /server/node_modules/
 /server/*.pdf
 /server/*.log
