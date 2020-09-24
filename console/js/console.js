@@ -1,5 +1,5 @@
 $(function() {
-  (function () { var script = document.createElement('script'); script.src="//cdn.jsdelivr.net/npm/eruda"; document.body.appendChild(script); script.onload = function () { eruda.init() } })();
+  //(function () { var script = document.createElement('script'); script.src="//cdn.jsdelivr.net/npm/eruda"; document.body.appendChild(script); script.onload = function () { eruda.init() } })();
   $.ajax({
     url:"https://luftaquila.io/ajoumeow/api/loginCheck",
     type: "POST",
@@ -156,6 +156,30 @@ function init() {
       ]
     });
     
+    past_namelist_table = $('#dataTable_2').DataTable({
+      pagingType: "numbers",
+      ajax: {
+        url: "https://luftaquila.io/ajoumeow/api/requestNameList",
+        type: 'POST',
+        data: function(d) {
+          let val = $('#namelist').val();
+          d.semister = val ? val.replace('namelist_', '') : settings['currentSemister'];
+        },
+        dataSrc: ''
+      },
+      columns: [
+        { data: "college" },
+        { data: "department" },
+        { data: "ID" },
+        { data: "name" },
+        { data: "phone" },
+        { data: "birthday" },
+        { data: "1365ID" },
+        { data: "register" },
+        { data: "role" }
+      ]
+    });
+    
     $.ajax({ // Request Namelist DBs
       url: 'https://luftaquila.io/ajoumeow/api/requestNamelistTables',
       type: "POST",
@@ -163,7 +187,7 @@ function init() {
       success: function(res) {
         var data = [], str = '';
         for(var obj of res) data.push(obj['Tables_in_ajoumeow']);
-        for(var obj of data.reverse()) str += '<option value="' + obj + '">' + obj + '</option>';
+        for(var obj of data.reverse()) str += '<option value="' + obj + '">' + obj.replace('namelist_', '') + '학기</option>';
         $('.namelist_select').html(str);
         $('#calendar1365').val(new Date().format('yyyy-mm'));
       }
@@ -552,6 +576,45 @@ function clickEventListener() {
       }, 1000);
     }
     
+  });
+  $('select#namelist').change(function() {
+    let val = $(this).val().replace('namelist_', '');
+    if(val == settings['currentSemister']) {
+      $('#current_namelist').css('display', 'block');
+      $('#past_namelist').css('display', 'none');
+    }
+    else {
+      $('#current_namelist').css('display', 'none');
+      $('#past_namelist').css('display', 'block');
+      past_namelist_table.ajax.reload();
+    }
+  });
+  $('#download_namelist').click(function() {
+    let val = $('#namelist').val().replace('namelist_', '');
+    $.ajax({
+      url: "https://luftaquila.io/ajoumeow/api/requestNameList",
+      type: 'POST',
+      data: 'semister=' + val,
+      success: function(res) {
+        function s2ab(s) {
+ 	        var buf = new ArrayBuffer(s.length); //convert s to arrayBuffer
+          var view = new Uint8Array(buf);  //create uint8array as viewer
+          for (var i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xFF; //convert to octet
+          return buf;
+        }
+        var excelHandler = {
+          getExcelFileName : function() { return val + '학기 명단.xlsx'; },
+          getSheetName : function() { return val + '학기'; },
+          getExcelData : function() { return res; },
+          getWorksheet : function() { return XLSX.utils.json_to_sheet(this.getExcelData()); }
+        }
+        var wb = XLSX.utils.book_new();
+        var newWorksheet = excelHandler.getWorksheet();
+        XLSX.utils.book_append_sheet(wb, newWorksheet, excelHandler.getSheetName());
+        var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+        saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), excelHandler.getExcelFileName());
+      }
+    });
   });
 }
 /*

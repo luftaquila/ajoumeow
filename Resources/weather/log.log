@@ -1,6 +1,6 @@
 Executing scheduled task...
 STARTUP: WEATHER_STATUS_CRAWLER
-  -> 2020-09-20 20:00:02.075764
+  -> 2020-09-24 19:00:01.365296
 
 Loading previous data...OK
 Loading driver...OK
@@ -13,4 +13,4 @@ Processing current dust status...OK
 Writing data info file...OK
 
 TERMINATED: WEATHER_STATUS_CRAWLER
-  -> 2020-09-20 20:00:11.796938
+  -> 2020-09-24 19:00:09.696043

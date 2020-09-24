@@ -12,11 +12,11 @@
 
 [4. 회원 관리 - 맘에 안 드는 너, 숙청.](https://github.com/luftaquila/ajoumeow/blob/master/README.md#4-%ED%9A%8C%EC%9B%90-%EA%B4%80%EB%A6%AC)
 
-[5. 1365 - 봉사시간 많이 모아야 군대 잘 간다](https://github.com/luftaquila/ajoumeow/blob/master/README.md#5-1365)
+[5. 1365 - 봉사시간 모아야 군대가서 꿀빤다](https://github.com/luftaquila/ajoumeow/blob/master/README.md#5-1365)
 
 [6. 신입 모집 - 새내기 주세요!!!](https://github.com/luftaquila/ajoumeow/blob/master/README.md#6-%EC%8B%A0%EC%9E%85-%EB%AA%A8%EC%A7%91)
 
-[7. 서버 로그 - 쓸데없음.](https://github.com/luftaquila/ajoumeow/blob/master/README.md#7-%EC%84%9C%EB%B2%84-%EB%A1%9C%EA%B7%B8)
+[7. 서버 로그 - 노잼.](https://github.com/luftaquila/ajoumeow/blob/master/README.md#7-%EC%84%9C%EB%B2%84-%EB%A1%9C%EA%B7%B8)
 
 [8. Dashboard - 리워드 제비뽑기 확률X망겜](https://github.com/luftaquila/ajoumeow/blob/master/README.md#8-dashboard)
 
@@ -113,14 +113,21 @@
 ## 4. 회원 관리
 회원 목록을 관리합니다.
 
+학기 값을 변경하면 현재 학기 또는 지난 학기 명단을 열람할 수 있습니다.
+
+다운로드 버튼을 누르면 엑셀(.xlsx) 파일로 명단을 다운로드합니다.
+
+### 현재 학기
 목록에 등록된 회원만 로그인할 수 있습니다.
 * 학번 외 모든 항목은 수정할 수 있습니다.
 * 수정할 값을 클릭하면 입력창이 활성화됩니다.
 * 수정할 값을 입력한 후 엔터를 눌러야 반영됩니다.
-* 이전 학기 회원목록 열람과 회원 목록 출력 기능은 아직 구현하지 않은 상태입니다 ㅠ
 
-### 회원 삭제
+#### 회원 삭제
 페이지 하단의 회원 삭제란에 학번을 입력하고 제명 버튼을 누르면 바로 회원이 제명됩니다.
+
+### 지난 학기들
+열람 및 다운로드만 가능합니다.
 
 ## 5. 1365
 1365 봉사활동 확인서를 자동으로 작성하고 다운로드합니다.
