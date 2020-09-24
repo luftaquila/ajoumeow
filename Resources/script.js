@@ -222,8 +222,9 @@ function transmitter(data) {
 }
 
 function courseImg(course) {
+  $('#courseImg').hide();
   $('#spot_modal-title').text(course.replace('-', '코스 ') + '번째 급식소');
-  $('#courseImg').attr('src', '/ajoumeow/Resources/Images/Map/spot_' + course + '.jpg');
+  $('#courseImg').attr('src', '/ajoumeow/Resources/Images/Map/spot_' + course + '.jpg').show();
   MicroModal.show('spot_modal');
 }
 
@@ -263,7 +264,7 @@ window.onload = function () {
       areas = map.getElementsByTagName('area'),
       len = areas.length,
       coords = [],
-      previousWidth = 2500;
+      previousWidth = 2500; // 지도 이미지 파일 가로 픽셀
     for (n = 0; n < len; n++) coords[n] = areas[n].coords.split(',');
     this.resize = function () {
       var n, m, clen,
