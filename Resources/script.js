@@ -279,141 +279,53 @@ function setMap() {
       fullscreenControlOptions: { position: google.maps.ControlPosition.RIGHT_BOTTOM }
     });
     
-    let points = [
-      {
-        label: "1코스 첫 번째",
-        designator: '1-1',
-        pos: {
-          lat: 37.283872,
-          lon : 127.045453
-        },
-        color: 'red',
-        course: 1,
-      },
-      {
-        label: "1코스 두 번째",
-        designator: '1-2',
-        pos: {
-          lat: 37.283128,
-          lon : 127.044639
-        },
-        color: 'red',
-        course: 1,
-      },
-      {
-        label: "1코스 세 번째",
-        designator: '1-3',
-        pos: {
-          lat: 37.282473,
-          lon : 127.044203
-        },
-        color: 'red',
-        course: 1,
-      },
-      {
-        label: "1코스 네 번째",
-        designator: '1-4',
-        pos: {
-          lat: 37.282406,
-          lon : 127.043195
-        },
-        color: 'red',
-        course: 1,
-      },
-      {
-        label: "2코스 첫 번째",
-        designator: '2-1',
-        pos: {
-          lat: 37.282645,
-          lon : 127.045585
-        },
-        color: '#FFEB00',
-        course: 2,
-      },
-      {
-        label: "2코스 두 번째",
-        designator: '2-2',
-        pos: {
-          lat: 37.281436,
-          lon : 127.044547
-        },
-        color: '#FFEB00',
-        course: 2,
-      },
-      {
-        label: "2코스 세 번째",
-        designator: '2-3',
-        pos: {
-          lat: 37.280107,
-          lon : 127.046281
-        },
-        color: '#FFEB00',
-        course: 2,
-      },
-      {
-        label: "3코스 첫 번째",
-        designator: '3-1',
-        pos: {
-          lat: 37.282909,
-          lon : 127.046346
-        },
-        color: 'limegreen',
-        course: 3,
-      },
-      {
-        label: "3코스 두 번째",
-        designator: '3-2',
-        pos: {
-          lat: 37.283509,
-          lon : 127.048132
-        },
-        color: 'limegreen',
-        course: 3,
-      },
-      {
-        label: "3코스 세 번째",
-        designator: '3-3',
-        pos: {
-          lat: 37.284080,
-          lon : 127.048461
-        },
-        color: 'limegreen',
-        course: 3,
-      }
-    ]
-    
-    for(let pnt of points) {
-      let marker = new google.maps.Marker({
-        position: { lat: pnt.pos.lat, lng: pnt.pos.lon },
-    	  map: map,
-      	label: {
-          fontFamily: 'Fontawesome',
-          text: '\uf041',
-          fontSize: '25px',
-          color: pnt.color
-      	},
-        icon: { 
-          url: "/ajoumeow/Resources/Images/Map/marker.png",
-          scale: 1,
-          labelOrigin: new google.maps.Point(0, 0),
-          size: new google.maps.Size(16,16),
-          anchor: new google.maps.Point(0,12)
+    $.ajax({
+      url: '/ajoumeow/Resources/map.json',
+      success: function(res) {
+        for(let pnt of res.points) {
+          let marker = new google.maps.Marker({
+            position: { lat: pnt.pos.lat, lng: pnt.pos.lon },
+    	      map: map,
+          	label: {
+              fontFamily: 'Fontawesome',
+              text: '\uf041',
+              fontSize: '25px',
+              color: pnt.color
+      	    },
+            icon: { 
+              url: "/ajoumeow/Resources/Images/Map/marker.png",
+              scale: 1,
+              labelOrigin: new google.maps.Point(0, 0),
+              size: new google.maps.Size(16,16),
+              anchor: new google.maps.Point(0,12)
+            }
+          });
+      
+          let infowindow = new google.maps.InfoWindow({
+            content: '' + 
+              '<div style="width: 100%; height: 100%">' +
+                '<h2>'+ pnt.label + '</h2>' +
+                '<div>' +
+                  '<img style="margin-top: 0.5rem; width: 100%; height: 100%" src="' + '/ajoumeow/Resources/Images/Map/spot_' + pnt.designator + '.jpg' + '">' +
+                '</div>' +
+              '</div>',
+            pixelOffset: new google.maps.Size(-8, 0)
+          });
+      
+          marker.addListener("click", () => { infowindow.open(map, marker); });
         }
-      });
-      
-      let infowindow = new google.maps.InfoWindow({
-        content: '' + 
-          '<div style="width: 100%; height: 100%">' +
-            '<h2>'+ pnt.label + '</h2>' +
-            '<div>' +
-              '<img style="margin-top: 0.5rem; width: 100%; height: 100%" src="' + '/ajoumeow/Resources/Images/Map/spot_' + pnt.designator + '.jpg' + '">' +
-            '</div>' +
-          '</div>',
-        pixelOffset: new google.maps.Size(-8, 0)
-      });
-      
-      marker.addListener("click", () => { infowindow.open(map, marker); });
-    }
+    
+        for(let rtu of res.routes) {
+          new google.maps.Polyline({
+            path: rtu.coords,
+            strokeColor: rtu.color,
+            strokeOpacity: 0.9,
+            strokeWeight: 2,
+            map: map
+          });
+        }
+      }
+    });
     
     let home = new google.maps.Marker({
       // 동아리방 좌표
@@ -446,7 +358,7 @@ function setMap() {
     });
     
     home.addListener("click", () => { homeInfo.open(map, home); });
-    
+
     return get_location();
   }
   else return get_location();
