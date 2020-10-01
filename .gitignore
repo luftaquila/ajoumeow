@@ -4,3 +4,4 @@
 /server/node_modules/
 /server/*.pdf
 /server/*.log
+/server/*.key

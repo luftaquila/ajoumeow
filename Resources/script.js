@@ -7,7 +7,7 @@ $(function() {
 function init() {
   let indexOfToday = (new Date(new Date().format('yyyy-mm-dd')).getTime() - new Date(getDateFromCalendarStart(0)).getTime()) / (1000 * 60 * 60 * 24);
   let calendar = $('#calendar');
-  $('#calendar-title').text(new Date().format('mmmm yyyy'));
+  //$('#calendar-title').text(new Date().format('mmmm yyyy'));
   
   // Load Notice
   $.ajax({
@@ -117,6 +117,7 @@ function eventListener() {
     
     $('.courseContent').each(function(index, item) {
       if($(item).children('span.addToCourse').length) return;
+      else if($(item).children('span').children('span.namecard').length > 1) return;
       $(item).append("<span class='addToCourse' style='margin: 0 0.3rem;'><span class='ripple' style='display: inline-block; width: 4rem; height: 2rem; line-height: 1.5rem; text-align: center; border-radius: 3px; border: dashed 1px gray; color: gray; padding: 0.2rem;'>+</span></span>");
     });
     $('.addToCourse').on('click', function() {
@@ -176,7 +177,7 @@ function load() {
         if(flag) $('div[data-date="' + date.date + '"] > div > div').addClass('my');
       }
       $('.calendar-table__event').trigger('click');
-    },
+    }
   });
 }
       
@@ -258,30 +259,243 @@ function weather() {
   });
 }
 
-window.onload = function () {
-  var ImageMap = function (map) {
-    var n,
-      areas = map.getElementsByTagName('area'),
-      len = areas.length,
-      coords = [],
-      previousWidth = 2500; // 지도 이미지 파일 가로 픽셀
-    for (n = 0; n < len; n++) coords[n] = areas[n].coords.split(',');
-    this.resize = function () {
-      var n, m, clen,
-        x = document.body.clientWidth / previousWidth;
-      for (n = 0; n < len; n++) {
-        clen = coords[n].length;
-        for (m = 0; m < clen; m++) coords[n][m] *= x;
-        areas[n].coords = coords[n].join(',');
+mapflag = true;
+currentGPS = null;
+currentAccuracy = null;
+
+function setMap() {
+  if(mapflag) {
+    mapflag = false;
+    map = new google.maps.Map(document.getElementById("map"), {
+      center: { lat: 37.283237, lng: 127.045953 },
+      zoom: 17,
+      gestureHandling: 'greedy',
+      zoomControl: true,
+      mapTypeControl: false,
+      scaleControl: true,
+      streetViewControl: false,
+      rotateControl: false,
+      fullscreenControl: true,
+      fullscreenControlOptions: { position: google.maps.ControlPosition.RIGHT_BOTTOM }
+    });
+    
+    let points = [
+      {
+        label: "1코스 첫 번째",
+        designator: '1-1',
+        pos: {
+          lat: 37.283872,
+          lon : 127.045453
+        },
+        color: 'red',
+        course: 1,
+      },
+      {
+        label: "1코스 두 번째",
+        designator: '1-2',
+        pos: {
+          lat: 37.283128,
+          lon : 127.044639
+        },
+        color: 'red',
+        course: 1,
+      },
+      {
+        label: "1코스 세 번째",
+        designator: '1-3',
+        pos: {
+          lat: 37.282473,
+          lon : 127.044203
+        },
+        color: 'red',
+        course: 1,
+      },
+      {
+        label: "1코스 네 번째",
+        designator: '1-4',
+        pos: {
+          lat: 37.282406,
+          lon : 127.043195
+        },
+        color: 'red',
+        course: 1,
+      },
+      {
+        label: "2코스 첫 번째",
+        designator: '2-1',
+        pos: {
+          lat: 37.282645,
+          lon : 127.045585
+        },
+        color: '#FFEB00',
+        course: 2,
+      },
+      {
+        label: "2코스 두 번째",
+        designator: '2-2',
+        pos: {
+          lat: 37.281436,
+          lon : 127.044547
+        },
+        color: '#FFEB00',
+        course: 2,
+      },
+      {
+        label: "2코스 세 번째",
+        designator: '2-3',
+        pos: {
+          lat: 37.280107,
+          lon : 127.046281
+        },
+        color: '#FFEB00',
+        course: 2,
+      },
+      {
+        label: "3코스 첫 번째",
+        designator: '3-1',
+        pos: {
+          lat: 37.282909,
+          lon : 127.046346
+        },
+        color: 'limegreen',
+        course: 3,
+      },
+      {
+        label: "3코스 두 번째",
+        designator: '3-2',
+        pos: {
+          lat: 37.283509,
+          lon : 127.048132
+        },
+        color: 'limegreen',
+        course: 3,
+      },
+      {
+        label: "3코스 세 번째",
+        designator: '3-3',
+        pos: {
+          lat: 37.284080,
+          lon : 127.048461
+        },
+        color: 'limegreen',
+        course: 3,
       }
-      previousWidth = document.body.clientWidth;
-      return true;
-    };
-    window.onresize = this.resize;
-  },
-  imageMap = new ImageMap(document.getElementById('Map'));
-  imageMap.resize();
+    ]
+    
+    for(let pnt of points) {
+      let marker = new google.maps.Marker({
+        position: { lat: pnt.pos.lat, lng: pnt.pos.lon },
+    	  map: map,
+      	label: {
+          fontFamily: 'Fontawesome',
+          text: '\uf041',
+          fontSize: '25px',
+          color: pnt.color
+      	},
+        icon: { 
+          url: "/ajoumeow/Resources/Images/Map/marker.png",
+          scale: 1,
+          labelOrigin: new google.maps.Point(0, 0),
+          size: new google.maps.Size(16,16),
+          anchor: new google.maps.Point(0,12)
+        }
+      });
+      
+      let infowindow = new google.maps.InfoWindow({
+        content: '' + 
+          '<div style="width: 100%; height: 100%">' +
+            '<h2>'+ pnt.label + '</h2>' +
+            '<div>' +
+              '<img style="margin-top: 0.5rem; width: 100%; height: 100%" src="' + '/ajoumeow/Resources/Images/Map/spot_' + pnt.designator + '.jpg' + '">' +
+            '</div>' +
+          '</div>',
+        pixelOffset: new google.maps.Size(-8, 0)
+      });
+      
+      marker.addListener("click", () => { infowindow.open(map, marker); });
+    }
+    
+    let home = new google.maps.Marker({
+      // 동아리방 좌표
+      position: { lat: 37.283438, lng: 127.046015 },
+    	map: map,
+    	label: {
+        fontFamily: 'Fontawesome',
+        text: '\uf3c5',
+        fontSize: '25px',
+        color: 'deepskyblue'
+    	},
+      icon: { 
+        url: "/ajoumeow/Resources/Images/Map/marker.png",
+        scale: 1,
+        labelOrigin: new google.maps.Point(0, 0),
+        size: new google.maps.Size(16,16),
+        anchor: new google.maps.Point(0,12)
+      }
+    });
+    
+    let homeInfo = new google.maps.InfoWindow({
+      content: '' +
+        '<div style="width: 100%; height: 100%">' +
+          '<h2>동아리방</h2>' +
+          '<div>' +
+            '신학생회관 4층 406호' +
+          '</div>' +
+        '</div>',
+      pixelOffset: new google.maps.Size(-8, 0)
+    });
+    
+    home.addListener("click", () => { homeInfo.open(map, home); });
+    
+    return get_location();
+  }
+  else return get_location();
 }
+
+function get_location() { return navigator.geolocation.watchPosition(geo_success, geo_error, { enableHighAccuracy: true, maximumAge: 0 }); }
+function geo_success(position) {
+  let pos = {
+    lat: position.coords.latitude,
+    lng: position.coords.longitude
+  };
+  if(currentGPS) currentGPS.setPosition(pos);
+  else {
+    currentGPS = new google.maps.Marker({
+      position: pos,
+      map: map,
+      label: {
+        fontFamily: 'Fontawesome',
+        text: '\uf276',
+        fontSize: '20px',
+        color: 'hotpink'
+      },
+      icon: {
+        url: "/ajoumeow/Resources/Images/Map/marker.png",
+        scale: 1,
+        labelOrigin: new google.maps.Point(0, 3),
+        size: new google.maps.Size(16,16),
+        anchor: new google.maps.Point(0,12)
+      }
+    });
+  }
+  if(currentAccuracy) {
+    currentAccuracy.setCenter(pos);
+    currentAccuracy.setRadius(position.coords.accuracy);
+  }
+  else {
+    currentAccuracy = new google.maps.Circle({
+      strokeColor: "#FF69B4",
+      strokeOpacity: 0.5,
+      strokeWeight: 1,
+      fillColor: "#FF69B4",
+      fillOpacity: 0.2,
+      map: map,
+      center: pos,
+      radius: position.coords.accuracy,
+    });
+  }
+}
+function geo_error(error) { console.log(error) }
 
 var dateFormat = function () {
   var	token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g,
@@ -363,4 +577,3 @@ dateFormat.i18n = {
 };
 Date.prototype.format = function (mask, utc) { return dateFormat(this, mask, utc); };
 Date.prototype.getDayNum = function() { return this.getDay() ? this.getDay() : 7; }
-

@@ -189,7 +189,7 @@ body {
 header {
   background-color: #fff;
   display: flex;
-  height: 58px;
+  height: 45px;
   justify-content: space-between;
   overflow: hidden;
   position: relative;
@@ -253,7 +253,7 @@ header {
 .calendar-container__title {
   color: #222741;
   font-size: 20px;
-  font-weight: 700;
+  font-weight: 400;
 }
 
 .calendar-table {
