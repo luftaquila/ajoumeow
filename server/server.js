@@ -749,6 +749,11 @@ app.post('//requestUserDetail', async function(req, res) {
   }
 });
 
+app.post('//mapLoad', async function(req, res) {
+  const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
+  logger.info('Google Maps Javascript API map rendering call', { ip: ip, url: 'mapLoad', query: '-', result: 'ID: ' + (req.session.ID ? req.session.ID : 'ANONYMOUS') });
+});
+  
 app.listen(5710, async function() {
   db = await pool.getConnection();
   console.log('Server startup at ' + new Date() + '\nServer is listening on port 5710');

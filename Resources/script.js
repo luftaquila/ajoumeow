@@ -280,6 +280,11 @@ function setMap() {
     });
     
     $.ajax({
+      url: 'https://luftaquila.io/ajoumeow/api/mapLoad',
+      type: 'POST'
+    });
+    
+    $.ajax({
       url: '/ajoumeow/Resources/map.json',
       success: function(res) {
         for(let pnt of res.points) {

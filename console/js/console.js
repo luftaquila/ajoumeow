@@ -567,7 +567,7 @@ function clickEventListener() {
           $('#poptext').text('레이저포인터 쫓는 중...');
           setTimeout(function() {
             $('#popgif').attr('src', '/ajoumeow/Resources/Images/thinking.gif');
-            $('#poptext').text('생각하는 척 하는 중...');
+            $('#poptext').html('생각하는 척 하는 중...<br><span style="color: transparent">당첨 확률 : 0%</span>');
             setTimeout(function() {
               $('#poptext').html('당첨자는 ' + key.name + ' 님 이니라<br>당첨 확률 : ' + Math.round(key.score / sum * 1000) / 10 + '%');
             }, 5000);
