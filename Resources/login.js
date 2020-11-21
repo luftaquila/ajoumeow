@@ -22,11 +22,6 @@ $(function() {
           $('#userrole').text(res.role);
           $('#userInfo').css('display', 'block');
           $('#loginForm').css('display', 'none');
-            
-          if(Cookies.get('versionInfo') != res.version) {
-            Cookies.set('versionInfo', res.version, {expires : 7});
-            MicroModal.show('notice_modal');
-          }
         }
         else toastr["error"]("등록되지 않은 학번입니다.");
       }
@@ -92,10 +87,6 @@ function logincheck(user) {
         $('#userInfo').css('display', 'block');
         $('#loginForm').css('display', 'none');
         
-        if(Cookies.get('versionInfo') != res.version) {
-          Cookies.set('versionInfo', res.version, {expires : 7});
-          MicroModal.show('notice_modal');
-        }
         Cookies.set('currentSemister', res.semister, { expires : 180 });
       }
       else {
