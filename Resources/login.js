@@ -16,7 +16,7 @@ $(function() {
           genUserRecord();
           if(user.admin) {
             $('#admin').css('display', 'block');
-            $('#adminhelp').css('display', 'block');
+            //$('#adminhelp').css('display', 'block');
           }
           $('#username').text(res.name);
           $('#userrole').text(res.role);
@@ -42,7 +42,7 @@ $(function() {
           load();
           
           $('#admin').css('display', 'none');
-          $('#adminhelp').css('display', 'none');
+          //$('#adminhelp').css('display', 'none');
           $('#loginForm').css('display', 'block');
           $('#userInfo').css('display', 'none');
           $('.my').removeClass('my');
@@ -80,7 +80,7 @@ function logincheck(user) {
         genUserRecord();
         if(user.admin) {
           $('#admin').css('display', 'block');
-          $('#adminhelp').css('display', 'block');
+          //$('#adminhelp').css('display', 'block');
         }
         $('#username').text(user.name);
         $('#userrole').text(res.role);
@@ -94,7 +94,7 @@ function logincheck(user) {
         user.id = '';
         user.admin = false;
         $('#admin').css('display', 'none');
-        $('#adminhelp').css('display', 'none');
+        //$('#adminhelp').css('display', 'none');
         $('#loginForm').css('display', 'block');
         $('#userInfo').css('display', 'none');
         if(!Cookies.get('isNew')) { startIntro(); }
@@ -190,7 +190,7 @@ function startIntro() {
       element: document.querySelector('#mapTrig'),
       intro: `<span style="font-size: 0.9rem"><b>급식소 지도</b> 버튼이에요.<br><br>지도에서 급식소와 동방의 위치를 보여줍니다.<br>급식 코스가 헷갈릴 때 사용하세요!</span>`
     }, {
-      intro: `<span style="font-size: 0.9rem">이 가이드를 다시 보려면 <i class="far fa-question-circle"></i> 메뉴에서 <b><i class='fas fa-terminal'></i> 튜토리얼 다시 보기</b>를 누르세요!</span>`
+      intro: `<span style="font-size: 0.9rem">이 가이드를 다시 보려면 <i class="far fa-question-circle"></i> 메뉴에서 <b><i class='fas fa-book'></i> 튜토리얼</b>를 누르세요!</span>`
     }],
     exitOnOverlayClick: false,
     showStepNumbers: false,
