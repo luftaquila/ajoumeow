@@ -182,7 +182,7 @@ function load() {
 }
       
 function validator(type, target) {
-  if(!user.id) return toastr['error']('INVAILD_PAYLOAD');
+  if(!user.id) return toastr['error']('로그인을 해 주세요!<br>ERR: INVAILD_PAYLOAD');
   transmitter({
     type: type,
     date: target.date,
@@ -203,7 +203,13 @@ function transmitter(data) {
         ID: data.id,
         name: data.name
       },
-      success: load
+      success: load,
+      error: function(e) {
+        if(e.status == 406) {
+          let msg = JSON.parse(e.responseText);
+          if(msg.error.code == 'DUP_RECORD') toastr['error']('이미 신청하셨습니다!<br>ERR: ' + msg.error.code);
+        }
+      }
     });
   }
   else if(data.type == 'delete') {

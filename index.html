@@ -125,7 +125,7 @@
           </table><br>
           <span id='historyDispenser' style="color: #0366d6;" onclick='$("#sidebar").css("display", "none"); MicroModal.show("record_modal");' >내 급식 기록 보기</span><br><br><br>
           <a id='admin' style='color: #0366d6' onclick="window.location.href = '/ajoumeow/console';" style='display: none'>관리자 콘솔</a><br>
-          <a id='adminhelp' style='color: #0366d6' onclick="window.location.href = 'https://github.com/luftaquila/ajoumeow';" style='display: none;'>관리자 도움말!</a>
+          <!--<a id='adminhelp' style='color: #0366d6' onclick="window.location.href = 'https://github.com/luftaquila/ajoumeow';" style='display: none;'>관리자 도움말!</a>-->
         </div><br>
         <a onclick='window.location.href = "https://luftaquila.io";' style="color: #aaa; text-decoration: none; font-size: 0.7rem">©<script>document.write(new Date().getFullYear())</script> LUFT - AQUILA.</a>
       </div>
@@ -182,12 +182,13 @@
                 </ol>
               <li style='font-weight: bold; margin-top: 1rem;'>삭제하기</li>
                 <ol style='padding-left: 1rem'>
-                  1. 삭제하고 싶은 이름표 <span class='ripple namecard example' style='display: inline-block; font-size: 0.5rem; width: 2rem; height: 1rem; line-height: 0.9rem; text-align: center; border-radius: 3px; border: solid 1px lightcoral; background-color: lightcoral; color: white;'>관리자</span> 를 누르고,<br>
-                  2. 다시 한 번 삭제할 이름표 <span class='ripple namecard deleteActiveExample example' style='display: inline-block; font-size: 0.5rem; width: 2rem; height: 1rem; line-height: 0.9rem; text-align: center; border-radius: 3px; border: solid 1px lightcoral; background-color: lightcoral; color: white;'>관리자</span> 를 클릭합니다.<br>
+                  1. 삭제하고 싶은 이름표 <span class='ripple namecard example' style='display: inline-block; font-size: 0.5rem; width: 2rem; height: 1rem; line-height: 0.9rem; text-align: center; border-radius: 3px; border: solid 1px lightcoral; background-color: lightcoral; color: white;'>고양이</span> 를 누르고,<br>
+                  2. 다시 한 번 삭제할 이름표 <span class='ripple namecard deleteActiveExample example' style='display: inline-block; font-size: 0.5rem; width: 2rem; height: 1rem; line-height: 0.9rem; text-align: center; border-radius: 3px; border: solid 1px lightcoral; background-color: lightcoral; color: white;'>고양이</span> 를 클릭합니다.<br>
                 </ol>
             </div>
             <div style="font-size: 1rem; color: #333; text-align: right; margin-top: 1rem">
-              <a class="btn blue" onclick='MicroModal.close("help_modal"); startIntro();'><i class='fas fa-terminal'></i> 튜토리얼 다시 보기</a>
+              <a class='btn purple' href='https://github.com/luftaquila/ajoumeow'><i class='fab fa-github'></i> 임원진 가이드</a>
+              <a class="btn green" onclick='MicroModal.close("help_modal"); startIntro();'><i class='fas fa-book'></i>&nbsp;&nbsp;튜토리얼</a>
             </div>
           </main>
         </div>
