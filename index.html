@@ -13,11 +13,14 @@
   
   <link rel="stylesheet" href="/ajoumeow/Resources/style.css">
   <link rel="stylesheet" href="/ajoumeow/Resources/Libraries/micromodal/micromodal.min.css" />
+  <link rel="stylesheet" href="/ajoumeow/Resources/Libraries/intro.js/introjs.min.css" />
   <link rel="stylesheet" href="/ajoumeow/Resources/Libraries/toastr/toastr.min.css" />
   <link rel="stylesheet" href="/ajoumeow/Resources/Libraries/btn.css" />
 
+  <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Single+Day&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
   <script src="https://kit.fontawesome.com/291664cdf8.js" crossorigin="anonymous"></script>
@@ -51,10 +54,10 @@
   <div class="main-container-wrapper">
     <header>
       <!--<h1 style="margin: 0 auto; font-size: 1.3rem">미유미유</h1>-->
-      <span class="header__btn header__btn--left" style="font-size: 1.7rem; left: 0rem;" id='notice' onclick='MicroModal.show("notice_modal");'><i class="fas fa-exclamation-circle"></i></span>
-      <span class="header__btn header__btn--left" style="font-size: 1.7rem; left: 2.5rem;" id='help' onclick='MicroModal.show("help_modal");'><i class="far fa-question-circle"></i></span>
-      <span class="header__btn header__btn--right" style="font-size: 1.7rem; right: 2.5rem;" id='direction' onclick='posID = setMap(); MicroModal.show("map_modal", { onClose: function() { navigator.geolocation.clearWatch(posID); }});'><i class='fas fa-street-view'></i></span>
-      <span class="header__btn header__btn--right" style="font-size: 1.7rem; right: 0rem;" id='sidebar_open' onclick="$('#sidebar').css('display', 'block');"><i class='fas fa-bars'></i></span>
+      <span id='noticeTrig' class="header__btn header__btn--left" style="font-size: 1.7rem; left: 0rem;" id='notice' onclick='MicroModal.show("notice_modal");'><i class="fas fa-exclamation-circle"></i></span>
+      <span id='helpTrig' class="header__btn header__btn--left" style="font-size: 1.7rem; left: 2.5rem;" id='help' onclick='MicroModal.show("help_modal");'><i class="far fa-question-circle"></i></span>
+      <span id='mapTrig' class="header__btn header__btn--right" style="font-size: 1.7rem; right: 2.5rem;" id='direction' onclick='posID = setMap(); MicroModal.show("map_modal", { onClose: function() { navigator.geolocation.clearWatch(posID); }});'><i class='fas fa-street-view'></i></span>
+      <span id='sidebarTrig' class="header__btn header__btn--right" style="font-size: 1.7rem; right: 0rem;" id='sidebar_open' onclick="$('#sidebar').css('display', 'block');"><i class='fas fa-bars'></i></span>
     </header>
     <main>
       <div class="calendar-container">
@@ -153,35 +156,38 @@
           </header>
           <main class="modal__content" id="help_modal-content">
             <div style="font-size: 1rem; color: #333; text-align: center">
-              <li style='font-weight: bold'>날짜 표시와 색깔</li>
-                달력의 날짜는 다음과 같이 표시됩니다. 
-                <div class='calendar-table__item hovered'>
+                <div style='font-size: 0.9rem; margin: 0.5rem 0'>날짜 위의 점들은 다양한 정보를 알려줍니다.</div>                <div class='calendar-table__item hovered'>
                   <div class='my'>
-                    9/1
+                    5/12
                   </div>
                 </div>
-                <div style='font-size: 0.9rem; margin: 0.5rem 0'>날짜 위의 점들은 신청자 정보를 알려줍니다.</div>
-                <div style='margin: 0.5rem 0'>
-                  <span style='color: red'>빨간색</span> : 1코스&nbsp;&nbsp;&nbsp;&nbsp;
-                  <span style='color: gold'>노란색</span> : 2코스&nbsp;&nbsp;&nbsp;&nbsp;
-                  <span style='color: limegreen'>연두색</span> : 3코스<br>
+                <div style='font-size: 0.9rem; margin: 0.5rem 0'>점의 색깔은 코스를 나타내요.</div>
+                <div>
+                  <span style='color: red'>1코스</span>&nbsp;&nbsp;&nbsp;&nbsp;
+                  <span style='color: gold'>2코스</span>&nbsp;&nbsp;&nbsp;&nbsp;
+                  <span style='color: limegreen'>3코스</span><br>
                 </div>
-                <div style='margin: 0.5rem 0'>
-                  속이 빈 점 (<div style='display: inline-block; width: 0.8rem; height: 0.8rem; border: 3px solid gold; border-radius: 50%'></div>) : 1명&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                  속이 꽉 찬 점 (<div style='display: inline-block; width: 0.8rem; height: 0.8rem; border: 3px solid limegreen; background-color: limegreen; border-radius: 50%'></div>) : 2명 이상
+                <div style='font-size: 0.9rem; margin: 0.5rem 0'>점의 모양은 인원 수를 나타내요.</div>
+                <div>
+                  <div style='display: inline-block; width: 0.8rem; height: 0.8rem; border: 3px solid black; border-radius: 50%'></div> : 1명&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  <div style='display: inline-block; width: 0.8rem; height: 0.8rem; border: 3px solid black; background-color: black; border-radius: 50%'></div> : 2명 이상
                 </div>
-                <div style='margin: 0.5rem 0; font-size: 0.9rem;'>날짜 주위의 녹색 원은 <mark>내가 신청한 날짜일 때</mark> 표시됩니다.</div>
-              <li style='font-weight: bold; margin-top: 2rem;'>신청하기</li>
-                <ol>
-                  1. 원하는 날짜를 선택합니다.<br>
-                  2. 달력 하단의 <div style='display: inline-block; line-height: 1rem; background-color: rgb(33, 150, 243); height: 1rem; width: 1rem; border-radius: 50%; color: white'>+</div> 버튼을 클릭합니다.<br>
-                  3. 원하는 코스에 표시된 <span class='ripple' style='display: inline-block; width: 2rem; height: 1rem; line-height: 0.9rem; text-align: center; border-radius: 3px; border: dashed 1px gray; color: gray;'>+</span> 버튼을 클릭합니다.
+                <div style='margin: 0.5rem 0; font-size: 0.9rem;'><mark>내가 신청한 날</mark>에는 <div style='display: inline-block; width: 0.8rem; height: 0.8rem; border: 0.1rem solid #90ee90; border-radius: 50%'></div>가 날짜 주위에 표시됩니다.</div>
+            </div>
+            <div style="font-size: 1rem; color: #333; text-align: left">
+              <li style='font-weight: bold; margin-top: 1rem;'>신청하기</li>
+                <ol style='padding-left: 1rem'>
+                  1. 원하는 날짜를 골라 <div style='text-align: center; display: inline-block; line-height: 1rem; background-color: rgb(33, 150, 243); height: 1rem; width: 1rem; border-radius: 50%; color: white'>+</div> 를 누른 뒤,<br>
+                  3. 원하는 코스에 표시된 <span class='ripple' style='display: inline-block; width: 2rem; height: 1rem; line-height: 0.9rem; text-align: center; border-radius: 3px; border: dashed 1px gray; color: gray;'>+</span> 를 클릭합니다.
                 </ol>
-              <li style='font-weight: bold; margin-top: 2rem;'>삭제하기</li>
-                <ol>
-                  1. 삭제하고 싶은 이름표 <span class='ripple namecard example' style='display: inline-block; font-size: 0.5rem; width: 2rem; height: 1rem; line-height: 0.9rem; text-align: center; border-radius: 3px; border: solid 1px lightcoral; background-color: lightcoral; color: white;'>관리자</span> 를 클릭합니다.<br>
+              <li style='font-weight: bold; margin-top: 1rem;'>삭제하기</li>
+                <ol style='padding-left: 1rem'>
+                  1. 삭제하고 싶은 이름표 <span class='ripple namecard example' style='display: inline-block; font-size: 0.5rem; width: 2rem; height: 1rem; line-height: 0.9rem; text-align: center; border-radius: 3px; border: solid 1px lightcoral; background-color: lightcoral; color: white;'>관리자</span> 를 누르고,<br>
                   2. 다시 한 번 삭제할 이름표 <span class='ripple namecard deleteActiveExample example' style='display: inline-block; font-size: 0.5rem; width: 2rem; height: 1rem; line-height: 0.9rem; text-align: center; border-radius: 3px; border: solid 1px lightcoral; background-color: lightcoral; color: white;'>관리자</span> 를 클릭합니다.<br>
                 </ol>
+            </div>
+            <div style="font-size: 1rem; color: #333; text-align: right; margin-top: 1rem">
+              <a class="btn blue" onclick='MicroModal.close("help_modal"); startIntro();'><i class='fas fa-terminal'></i> 튜토리얼 다시 보기</a>
             </div>
           </main>
         </div>
@@ -242,6 +248,7 @@
   <script src='/ajoumeow/Resources/Libraries/micromodal/micromodal.min.js'></script>
   <script src='/ajoumeow/Resources/Libraries/toastr/toastr.min.js'></script>
   <script src='/ajoumeow/Resources/Libraries/js.cookie.min.js'></script>
+  <script src='/ajoumeow/Resources/Libraries/intro.js/intro.min.js'></script>
   <script src="/ajoumeow/Resources/script.js"></script>
   <script src="/ajoumeow/Resources/login.js"></script>
 </body>

@@ -53,15 +53,7 @@ app.use(session({
 }));
 
 app.get('/', async function(req, res) {
-  console.log(new Date(), 'start')
-  let record = await db.query("SELECT * FROM record;")
-  let namelist = await db.query("SELECT * FROM `namelist_20-1`;");
-  res.status(200)
-  for(let obj of record) {
-    let target = namelist.find(o => o.name == obj.name);
-    if(target) await db.query("UPDATE record SET ID=" + target.ID + " WHERE name='" + obj.name + "';");
-  }
-  console.log(new Date(), 'ok')
+  
 });
 
 app.post('//loginCheck', async function(req, res) {
@@ -71,16 +63,16 @@ app.post('//loginCheck', async function(req, res) {
     if(req.session.isLogin) {
       query = 'SELECT name, ID, role FROM `namelist_' + await settings('currentSemister') + "` WHERE ID='" + req.session.ID + "';";
       result = await db.query(query);
-      res.send({ 'name' : result[0].name, 'id' : result[0].ID, 'role' : result[0].role });
+      res.send({ 'name' : result[0].name, 'id' : result[0].ID, 'role' : result[0].role, semister: await settings('currentSemister') });
       logger.info('세션의 로그인 여부를 확인합니다.', { ip: ip, url: 'loginCheck', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
     }
     else {
-      res.send({ 'name' : null, 'id' : null, 'role' : null });
+      res.send({ 'name' : null, 'id' : null, 'role' : null, semister: await settings('currentSemister') });
       logger.info('세션의 로그인 여부를 확인합니다.', { ip: ip, url: 'loginCheck', query: '-', result: 'Not logged in.' });
     }
   }
   catch(e) {
-    res.send({ 'name' : null, 'id' : null, 'role' : null });
+    res.send({ 'name' : null, 'id' : null, 'role' : null, semister: await settings('currentSemister') });
     logger.error('세션의 로그인 여부를 확인하는 중에 오류가 발생했습니다.', { ip: ip, url: 'loginCheck', query: query ? query : 'Query String Not generated.', result: e.toString()});
   }
 });
@@ -95,11 +87,11 @@ app.post('//login', async function(req, res) {
       req.session.touch();
       req.session.ID = req.body['ID'];
       req.session.isLogin = true;
-      res.send({ 'name' : result[0].name, 'id' : result[0].ID, 'role' : result[0].role });
+      res.send({ 'name' : result[0].name, 'id' : result[0].ID, 'role' : result[0].role, semister: await settings('currentSemister') });
       logger.info('로그인을 시도합니다.', { ip: ip, url: 'login', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
     }
     else {
-      res.send({ 'name' : null, 'id' : null, 'role' : null });
+      res.send({ 'name' : null, 'id' : null, 'role' : null, semister: await settings('currentSemister') });
       logger.info('로그인을 시도합니다.', { ip: ip, url: 'login', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
     } 
   }

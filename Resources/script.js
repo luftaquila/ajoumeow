@@ -13,13 +13,7 @@ function init() {
   $.ajax({
     url: 'https://luftaquila.io/ajoumeow/api/requestNotice',
     type: 'POST',
-    success: function(res) {
-      $('#notice_content').html(res.notice);
-      if(Cookies.get('versionInfo') != res.version) {
-        Cookies.set('versionInfo', res.version, {expires : 7});
-        MicroModal.show('notice_modal');
-      }
-    }
+    success: function(res) { $('#notice_content').html(res.notice); }
   });
   
   // Draw Calendar
