@@ -15,7 +15,7 @@ html, body {
 body {
   -webkit-tap-highlight-color: transparent;
   -webkit-font-smoothing: antialiased;
-  font-family: "Montserrat", sans-serif;
+  font-family: "Nanum Gothic", "Montserrat", sans-serif!important;
   text-rendering: optimizeLegibility;
   background: #fcfcfc;
 }
@@ -221,12 +221,16 @@ header {
 }
 .header__btn--left {
   left: 0px;
-  padding-left: 15px;
+  margin-left: 15px;
+  margin-top: 10px;
+  padding-top: 0px;
   text-align: left;
 }
 .header__btn--right {
-  padding-right: 17px;
   right: 0px;
+  margin-right: 17px;
+  margin-top: 10px;
+  padding-top: 0px;
   text-align: right;
 }
 
