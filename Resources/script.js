@@ -5,6 +5,7 @@ $(function() {
 });
 
 function init() {
+  user = {};
   let indexOfToday = (new Date(new Date().format('yyyy-mm-dd')).getTime() - new Date(getDateFromCalendarStart(0)).getTime()) / (1000 * 60 * 60 * 24);
   let calendar = $('#calendar');
   //$('#calendar-title').text(new Date().format('mmmm yyyy'));
@@ -13,7 +14,13 @@ function init() {
   $.ajax({
     url: 'https://luftaquila.io/ajoumeow/api/requestNotice',
     type: 'POST',
-    success: function(res) { $('#notice_content').html(res.notice); }
+    success: function(res) {
+      $('#notice_content').html(res.notice);
+      if(user && Cookies.get('versionInfo') != res.version) {
+        Cookies.set('versionInfo', res.version, {expires : 7});
+        MicroModal.show('notice_modal');
+      }
+    }
   });
   
   // Draw Calendar
@@ -29,7 +36,6 @@ function init() {
   weather();
   
   // Load Table data
-  user = {};
   load(logincheck(user));
 }
 
