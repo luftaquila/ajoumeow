@@ -741,6 +741,18 @@ app.post('//requestUserDetail', async function(req, res) {
   }
 });
 
+app.post('//getMemberIdByName', async function(req, res) {
+  try {
+    let semister = await settings('currentSemister');
+    let result = await db.query("SELECT `ID` FROM `namelist_" + semister + "` WHERE `name`='" + req.body.name + "';");
+    if(result.length == 1) res.send(result);
+    else if(!result.length) res.send([{ ID: 0 }]);
+    else if(result.length > 1) res.send([{ ID: -1 }]);
+  }
+  catch(e) { console.error(e); }
+});
+  
+
 app.post('//mapLoad', async function(req, res) {
   const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
   logger.info('Google Maps Javascript API map rendering call', { ip: ip, url: 'mapLoad', query: '-', result: 'ID: ' + (req.session.ID ? req.session.ID : 'ANONYMOUS') });
@@ -754,7 +766,7 @@ app.listen(5710, async function() {
     try {
       let query = 'SHOW TABLES;';
       let result = await db.query(query);
-      logger.info('DB connection check.', { ip: 'LOCALHOST', url: 'SERVER', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result) });
+      //logger.info('DB connection check.', { ip: 'LOCALHOST', url: 'SERVER', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result) });
     }
     catch(e) {
       /*

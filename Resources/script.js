@@ -1,5 +1,4 @@
 $(function() {
-  //(function () { var script = document.createElement('script'); script.src="//cdn.jsdelivr.net/npm/eruda"; document.body.appendChild(script); script.onload = function () { eruda.init() } })();
   init();
   eventListener();
 });
@@ -93,6 +92,11 @@ function eventListener() {
         $('#contents').append('<div style="margin-bottom: 0.1rem; margin-top: 0.5rem"><h4>' + obj.course + '코스</h4></div>').append(pplHTML);
       }
     }
+    
+    if(user.admin) $('.namecard').not('.example').addClass('partner');
+    if(user.id) $('.namecard[data-id=' + user.id + ']').closest('div').children('span').children('span.namecard').addClass('partner');
+    for(let namecard of $('.namecard').not('.partner').not('.example')) $(namecard).text($(namecard).text()[0] + $(namecard).text().slice(1).replace(/./g , '○'));
+    
     $('.namecard').not('.example').on('click', function() {
       $('.deleteActive').removeClass('deleteActive');
       if(user.admin || (!$('.calendar-table__event').hasClass('calendar-table__inactive') && user.id && user.id == $(this).attr('data-id'))) $(this).addClass('deleteActive');
@@ -132,6 +136,8 @@ function eventListener() {
   $('.sidebar_overlay').click(function() { 
     $('#sidebar').css('display', 'none');
   }).children().click(function() { return false; });
+  $('#magic').click(function() { (function () { var script = document.createElement('script'); script.src="//cdn.jsdelivr.net/npm/eruda"; document.body.appendChild(script); script.onload = function () { eruda.init() } })();
+ });
 }
 
 function load() {
