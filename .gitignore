@@ -6,3 +6,5 @@
 /server/*.pdf
 /server/*.log
 /server/*.key
+
+**/.env
