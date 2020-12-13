@@ -1,18 +1,19 @@
+require('dotenv').config();
 const fs = require('fs');
-const ejs = require('ejs');
+const envfile = require('envfile');
 const request = require('request');
 const express = require('express');
 const mariadb = require('mariadb');
 const winston = require('winston');
+const nodeKakao = require('node-kakao');
 const dateformat = require('dateformat');
-const bodyParser = require('body-parser');
 const session = require('express-session');
 const sessionDatabase = require('express-mysql-session')(session);
 const DBOptions = {
-  host: 'localhost', 
-  user:'ajoumeow',
-  //password: '',
-  database: 'ajoumeow',
+  host: process.env.DBHost, 
+  user: process.env.DBUser,
+  password: process.env.DBPW,
+  database: process.env.DBName,
   idleTimeout: 0
 };
 const pool = mariadb.createPool(DBOptions);
@@ -23,7 +24,7 @@ let logger = new winston.createLogger({
   transports: [
     new winston.transports.File({
       level: 'info',
-      filename: '/home/luftaquila/HDD/ajoumeow/server/server.log',
+      filename: 'server.log',
       maxsize: 10485760, //10MB
       maxFiles: 1,
       showLevel: true,
@@ -38,14 +39,13 @@ let logger = new winston.createLogger({
   exitOnError: false,
 });
 
+const client = new nodeKakao.TalkClient(process.env.TalkClientName, process.env.TalkClientUUID);
+client.login(process.env.TalkClientLoginID, process.env.TalkClientLoginPW, true).then(kakaoClient);
+
 const app = express();
-//app.use('/', express.static('../'));
-app.set("view engine", "ejs");
-app.set('views', 'views');
-app.engine('html', ejs.renderFile);
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());
 app.use(session({
- secret: '@+*LU_Ft%AQuI-|!la#@$',
+ secret: process.env.sessionSecret,
  resave: false,
  saveUninitialized: true,
  store: sessionDB,
@@ -784,6 +784,152 @@ app.listen(5710, async function() {
   }, 300000);
     
 });
+
+async function kakaoClient() {
+  console.log('Login successful. Main client is in startup.');
+  
+  client.on('message', async chat => {
+    
+    if(chat.channel.id == process.env.verifyChannelId) { //284687032997214
+      chat.markChatRead(); // Read incoming chat
+      // Only handle message with keywords
+      if(chat.text.includes('인증') && chat.text.includes('코스') && ((chat.text.includes('월') && chat.text.includes('일')) || chat.text.includes('/'))) {
+        // Recognizable datestring: m월d일, m월 d일, m/d
+        let targetDate = chat.text.match(/\b(\d+)\/(\d+)\b/) || chat.text.match(/(\d+)월 (\d+)일/) || chat.text.match(/(\d+)월(\d+)일/);
+        if(targetDate) { // if date detected
+          let targetMonth = targetDate[1];
+          let targetDay = targetDate[2];
+          let currentYear = new Date().getFullYear();
+          let current = new Date();
+          const dateList = [new Date(currentYear, Number(targetMonth) - 1, Number(targetDay)), new Date(Number(currentYear) - 1, Number(targetMonth) - 1, Number(targetDay)), new Date(Number(currentYear) + 1, Number(targetMonth) - 1, Number(targetDay))]
+          dateList.sort((a, b) => { return Math.abs(current - a) - Math.abs(current - b); });
+          targetDate = dateList[0]; // get nearest target date
+
+          // detect target courses and members
+          let targetCourses = chat.text.match(/\b(?=\w*[코스])\w+\b/g);
+          let targetMembers = chat.text.match(/(?<![가-힣])[가-힣]{3}(?![가-힣])/g);
+          if(targetCourses && targetMembers) { // if courses and members detected
+
+            // Score table
+            let score = { weekday: { solo: 1.5, dual: 1}, weekend: { solo: 2, dual: 1.5} }
+            
+            // Detect target date is weekand and number of people
+            let isWeekEnd = targetDate.getDayNum() > 5 ? 'weekend' : 'weekday';
+            let isSolo = targetMembers.length == 1 ? 'solo' : 'dual';
+
+            for(let i in targetMembers) { // get member student id with name
+              let res = await postRequest('https://luftaquila.io/ajoumeow/api/getMemberIdByName', { name: targetMembers[i] });
+              let id = JSON.parse(res)[0].ID;
+              if(id > 0) targetMembers[i] = { name: targetMembers[i], id: JSON.parse(res)[0].ID };
+              else if(!id) return chat.channel.sendText(targetMembers[i] + ' 회원님 사이트에 회원등록되지 않아 인증이 불가능합니다.\nC: ERR_NO_ENTRY_DETECTED');
+              else if(id < 0) return chat.channel.sendText(targetMembers[i] + ' 회원님 동명이인이 존재하여 자동 인증이 불가능합니다.\nC: ERR_MULTIPLE_ENTRY_DETECTED');
+            }
+
+            // writing payload
+            let payload = [];
+            for(let course of targetCourses) { 
+              for(let member of targetMembers) {
+                payload.push({
+                  ID: member.id, name: member.name,
+                  date: dateformat(targetDate, 'yyyy-mm-dd'), course: course + '코스',
+                  score: score[isWeekEnd][isSolo]
+                });
+              }
+            }
+            
+            // send verify data to ajoumeow server
+            let res = await postRequest('https://luftaquila.io/ajoumeow/api/verify', { data: JSON.stringify(payload) });
+            if(JSON.parse(res).result == true) {
+              
+              let resultString = greetings();
+              
+              resultString += payload[0].date + '일자 급식 확인되었습니다!';
+              for(let obj of payload) resultString += '\n' + obj.name + ' 회원님 ' + obj.course + ' ' + obj.score + '점';
+              chat.channel.sendText(resultString);
+            }
+          }
+        }
+      }
+    }
+  });
+  
+  client.on('user_join', async (channel, user) => {
+    let info = channel.getUserInfo(user);
+    if(!info) return;
+    
+    let channelName = channel.Name, channelId = channel.Id;
+    let userName = info.Nickname, userId = info.Id;
+    
+    if(userId == process.env.myUserId) {
+      // if myself invited to chatroom, update channelId
+      if(channelName.includes('미유미유') && channelName.includes('인증')) {
+        process.env.verifyChannelId = channelId;
+        
+        let envFile = envfile.parse(fs.readFileSync('./.env'));
+        envFile.verifyChannelId = channelId;
+        fs.writeFileSync('./.env', envfile.stringify(envFile));
+      }
+        
+      else if(channelName.includes('미유미유') && channelName.includes('공지')) {
+        process.env.noticeChannelId = channelId;
+        
+        let envFile = envfile.parse(fs.readFileSync('./.env'));
+        envFile.noticeChannelId = channelId;
+        fs.writeFileSync('./.env', envfile.stringify(envFile));
+      }
+        
+      else if(channelName.includes('미유미유') && channelName.includes('단톡')) {
+        process.env.talkChannelId = channelId;
+        
+        let envFile = envfile.parse(fs.readFileSync('./.env'));
+        envFile.talkChannelId = channel
+        fs.writeFileSync('./.env', envfile.stringify(envFile));
+      }
+    }
+    
+    else { // if others invited to chatroom
+      // send greeting or notices
+      if(channelId == process.env.verifyChannelId) {
+        channel.sendText('미유미유 급식 인증방입니다! 급식 인증 외 채팅은 자제해 주세요!');
+      }
+        
+      else if(channelId == process.env.noticeChannelId) {
+        
+      }
+        
+      else if(channelId == process.env.talkChannelId) {
+        channel.sendText('안녕하세요! 미유미유 단톡방입니다!!');
+      }
+    }
+  });
+  
+  async function postRequest(url, data) {
+    return new Promise(function(resolve, reject) {
+      request.post({
+        url: url,
+        form: data,
+      }, function(err, resp, body) {
+        if (err) reject(err);
+        else resolve(body);
+      });
+    });
+  }
+  
+  function greetings() {
+    /*
+    // 주말일 때
+    // 날씨가 추울 때
+    // 그냥
+    let weekend = ['주말에 수고하셨어요!'];
+    let coldweather = ['추운 날씨에 고생하셨어요!'];
+    let normal = ['수고하셨습니다!'];
+    let target = cold ? coldweather : (new Date().isWeekend ? weekend : normal);
+    let greet = target[Math.floor(Math.random() * target.length)];
+    */
+    return '';
+  }
+}
+
 
 async function settings(name) {
   let res = await db.query(`SELECT name, value FROM settings WHERE name='` + name + `';`);
