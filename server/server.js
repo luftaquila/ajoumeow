@@ -7,6 +7,7 @@ const mariadb = require('mariadb');
 const winston = require('winston');
 const nodeKakao = require('node-kakao');
 const dateformat = require('dateformat');
+const bodyParser = require('body-parser');
 const session = require('express-session');
 const sessionDatabase = require('express-mysql-session')(session);
 const DBOptions = {
@@ -43,7 +44,8 @@ const client = new nodeKakao.TalkClient(process.env.TalkClientName, process.env.
 client.login(process.env.TalkClientLoginID, process.env.TalkClientLoginPW, true).then(kakaoClient);
 
 const app = express();
-app.use(express.json());
+//app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(session({
  secret: process.env.sessionSecret,
  resave: false,
