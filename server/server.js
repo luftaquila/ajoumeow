@@ -1,4 +1,6 @@
 require('dotenv').config();
+require('../../res/dateFormat.js');
+
 const fs = require('fs');
 const envfile = require('envfile');
 const request = require('request');
