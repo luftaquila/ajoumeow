@@ -793,9 +793,8 @@ async function kakaoClient() {
   console.log('Login successful. Main client is in startup.');
   
   client.on('message', async chat => {
-    
-    if(chat.channel.id == process.env.verifyChannelId) { //284687032997214
-      chat.markChatRead(); // Read incoming chat
+    chat.markChatRead(); // Read incoming chat
+    if(chat.channel.id == process.env.verifyChannelId) {
       // Only handle message with keywords
       if(chat.text.includes('인증') && chat.text.includes('코스') && ((chat.text.includes('월') && chat.text.includes('일')) || chat.text.includes('/'))) {
         // Recognizable datestring: m월d일, m월 d일, m/d
@@ -810,7 +809,7 @@ async function kakaoClient() {
           targetDate = dateList[0]; // get nearest target date
 
           // detect target courses and members
-          let targetCourses = chat.text.match(/\b(?=\w*[코스])\w+\b/g);
+          let targetCourses = chat.text.match(/\b(?=\d*[코스])\w+\b/g);
           let targetMembers = chat.text.match(/(?<![가-힣])[가-힣]{3}(?![가-힣])/g);
           if(targetCourses && targetMembers) { // if courses and members detected
 
@@ -848,7 +847,7 @@ async function kakaoClient() {
               let resultString = greetings();
               
               resultString += payload[0].date + '일자 급식 확인되었습니다!';
-              for(let obj of payload) resultString += '\n' + obj.name + ' 회원님 ' + obj.course + ' ' + obj.score + '점';
+              for(let obj of payload) resultString += '\n' + obj.name + ' 회원님 ' + obj.course + ' 마일리지 ' + obj.score + '점';
               chat.channel.sendText(resultString);
             }
           }
