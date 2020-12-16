@@ -811,7 +811,8 @@ async function kakaoClient() {
           // detect target courses and members
           let targetCourses = chat.text.match(/\b(?=\d*[코스])\w+\b/g);
           let targetMembers = chat.text.match(/(?<![가-힣])[가-힣]{3}(?![가-힣])/g);
-          if(targetCourses && targetMembers) { // if courses and members detected
+          targetMembers = targetMembers.filter(o => !(new RegExp('사진').test(o)) );
+          if(targetCourses && targetMembers) { // if courses and members are detected
 
             // Score table
             let score = { weekday: { solo: 1.5, dual: 1}, weekend: { solo: 2, dual: 1.5} }
