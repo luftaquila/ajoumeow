@@ -9,6 +9,7 @@ const mariadb = require('mariadb');
 const winston = require('winston');
 const nodeKakao = require('node-kakao');
 const dateformat = require('dateformat');
+const schedule = require('node-schedule');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const sessionDatabase = require('express-mysql-session')(session);
@@ -792,6 +793,31 @@ app.listen(5710, async function() {
 async function kakaoClient() {
   console.log('Login successful. Main client is in startup.');
   
+  const alert_schedule = schedule.scheduleJob('0 0 15 * * *', async () => { // 3pm at every day    
+    const target = client.channelManager.map.get(process.env.talkChannelId);
+    const result = await db.query("SELECT * FROM record WHERE date BETWEEN '" + dateformat(new Date(), 'yyyy-mm-dd') + "' AND '" + dateformat(new Date(), 'yyyy-mm-dd') + "' ORDER BY date, course, timestamp;");
+    let resultString = '안녕하세요! 오늘 급식 신청해주신 분들은\n';
+    let noUserCourse = [];
+    for(let i = 1; i < 4; i++) {
+      const course = result.filter(o => o.course == i + '코스');
+      if(course.length) {
+        resultString += i + '코스 ';
+        for(let obj of course) resultString += obj.name + ', ';
+        resultString = resultString.slice(0, -2) + ' 님\n';
+      }
+      else noUserCourse.push(i);
+    }
+    resultString += '입니다. 오늘도 잘 부탁드려요 :D\n\n';
+    
+    for(let course of noUserCourse) { resultString += (course + ', '); }
+    resultString = resultString.slice(0, -2) + '코스에 신청자가 없습니다! 도와주세요ㅠㅠ\n\n';
+    
+    const wth = JSON.parse(fs.readFileSync('../Resources/weather/weather.json').toString()).current_weather
+    resultString += `오늘 아주대는 ${wth.stat}, ${wth.temp}℃에요!\n미세먼지는 ${wth.dust.pm10}㎍/㎥, 초미세먼지는 ${wth.dust.pm25}㎍/㎥입니다.`;
+    
+    await target.sendText(resultString);
+  });
+  
   client.on('message', async chat => {
     chat.markChatRead(); // Read incoming chat
     if(chat.channel.id == process.env.verifyChannelId) {
@@ -825,8 +851,8 @@ async function kakaoClient() {
               let res = await postRequest('https://luftaquila.io/ajoumeow/api/getMemberIdByName', { name: targetMembers[i] });
               let id = JSON.parse(res)[0].ID;
               if(id > 0) targetMembers[i] = { name: targetMembers[i], id: JSON.parse(res)[0].ID };
-              else if(!id) return chat.channel.sendText(targetMembers[i] + ' 회원님 사이트에 회원등록되지 않아 인증이 불가능합니다.\nC: ERR_NO_ENTRY_DETECTED');
-              else if(id < 0) return chat.channel.sendText(targetMembers[i] + ' 회원님 동명이인이 존재하여 자동 인증이 불가능합니다.\nC: ERR_MULTIPLE_ENTRY_DETECTED');
+              else if(!id) return chat.channel.sendTemplate(new nodeKakao.AttachmentTemplate(nodeKakao.ReplyAttachment.fromChat(chat), targetMembers[i] + ' 회원님 사이트에 회원등록되지 않아 인증이 불가능합니다.\nC: ERR_NO_ENTRY_DETECTED'));
+              else if(id < 0) return chat.channel.sendTemplate(new nodeKakao.AttachmentTemplate(nodeKakao.ReplyAttachment.fromChat(chat), targetMembers[i] + ' 회원님 동명이인이 존재하여 자동 인증이 불가능합니다.\nC: ERR_MULTIPLE_ENTRY_DETECTED'));
             }
 
             // writing payload
@@ -849,7 +875,8 @@ async function kakaoClient() {
               
               resultString += payload[0].date + '일자 급식 확인되었습니다!';
               for(let obj of payload) resultString += '\n' + obj.name + ' 회원님 ' + obj.course + ' 마일리지 ' + obj.score + '점';
-              chat.channel.sendText(resultString);
+              chat.channel.sendTemplate(new nodeKakao.AttachmentTemplate(nodeKakao.ReplyAttachment.fromChat(chat), resultString));
+              logger.info('Bot auto verifing confirmed.', { ip: 'LOCALHOST', url: 'BOT', query: JSON.stringify(payload), result: res });
             }
           }
         }
@@ -864,6 +891,7 @@ async function kakaoClient() {
     let channelName = channel.Name, channelId = channel.Id;
     let userName = info.Nickname, userId = info.Id;
     
+    
     if(userId == process.env.myUserId) {
       // if myself invited to chatroom, update channelId
       if(channelName.includes('미유미유') && channelName.includes('인증')) {
@@ -872,6 +900,7 @@ async function kakaoClient() {
         let envFile = envfile.parse(fs.readFileSync('./.env'));
         envFile.verifyChannelId = channelId;
         fs.writeFileSync('./.env', envfile.stringify(envFile));
+        logger.info('Bot detected verify chatroom.', { ip: 'LOCALHOST', url: 'BOT', query: 'on user_join', result: channelId });
       }
         
       else if(channelName.includes('미유미유') && channelName.includes('공지')) {
@@ -880,6 +909,7 @@ async function kakaoClient() {
         let envFile = envfile.parse(fs.readFileSync('./.env'));
         envFile.noticeChannelId = channelId;
         fs.writeFileSync('./.env', envfile.stringify(envFile));
+        logger.info('Bot detected notice chatroom.', { ip: 'LOCALHOST', url: 'BOT', query: 'on user_join', result: channelId });
       }
         
       else if(channelName.includes('미유미유') && channelName.includes('단톡')) {
@@ -888,10 +918,16 @@ async function kakaoClient() {
         let envFile = envfile.parse(fs.readFileSync('./.env'));
         envFile.talkChannelId = channel
         fs.writeFileSync('./.env', envfile.stringify(envFile));
+        logger.info('Bot detected common chatroom.', { ip: 'LOCALHOST', url: 'BOT', query: 'on user_join', result: channelId });
       }
     }
     
     else { // if others invited to chatroom
+      
+      // ignore if multiple users invited during under 5s term.
+      if(!global.userJoinTime) global.userJoinTime = Number(new Date());
+      else if((Number(new Date()) - global.userJoinTime) < 5000) return (global.userJoinTime = Number(new Date()));
+
       // send greeting or notices
       if(channelId == process.env.verifyChannelId) {
         channel.sendText('미유미유 급식 인증방입니다! 급식 인증 외 채팅은 자제해 주세요!');
@@ -930,7 +966,7 @@ async function kakaoClient() {
     let target = cold ? coldweather : (new Date().isWeekend ? weekend : normal);
     let greet = target[Math.floor(Math.random() * target.length)];
     */
-    return '';
+    return '수고하셨습니다!\n';
   }
 }
 
