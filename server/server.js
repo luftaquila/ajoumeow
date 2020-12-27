@@ -894,6 +894,8 @@ async function kakaoClient() {
     
     if(userId == process.env.myUserId) {
       // if myself invited to chatroom, update channelId
+      channelId = channelId.toString();
+      
       if(channelName.includes('미유미유') && channelName.includes('인증')) {
         process.env.verifyChannelId = channelId;
         
@@ -923,7 +925,6 @@ async function kakaoClient() {
     }
     
     else { // if others invited to chatroom
-      
       // ignore if multiple users invited during under 5s term.
       if(!global.userJoinTime) global.userJoinTime = Number(new Date());
       else if((Number(new Date()) - global.userJoinTime) < 5000) return (global.userJoinTime = Number(new Date()));
