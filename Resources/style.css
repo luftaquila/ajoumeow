@@ -20,6 +20,10 @@ body {
   background: #fcfcfc;
 }
 
+h2, h3, div.modal__container {
+  font-family: 'Nanum Gothic';
+}
+
 .my {
     border-radius: 50%;
     width: 1.5rem;
