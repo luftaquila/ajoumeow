@@ -23,7 +23,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+
   <script src="https://kit.fontawesome.com/291664cdf8.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="/res/fontawesome5/css/all.min.css">
+  
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-102734518-4"></script>
   <script>
@@ -56,7 +59,8 @@
       <!--<h1 style="margin: 0 auto; font-size: 1.3rem">미유미유</h1>-->
       <span id='noticeTrig' class="header__btn header__btn--left" style="font-size: 1.7rem; left: 0rem;" id='notice' onclick='MicroModal.show("notice_modal");'><i class="fas fa-exclamation-circle"></i></span>
       <span id='helpTrig' class="header__btn header__btn--left" style="font-size: 1.7rem; left: 2.5rem;" id='help' onclick='MicroModal.show("help_modal");'><i class="far fa-question-circle"></i></span>
-      <span id='mapTrig' class="header__btn header__btn--right" style="font-size: 1.7rem; right: 2.5rem;" id='direction' onclick='posID = setMap(); MicroModal.show("map_modal", { onClose: function() { navigator.geolocation.clearWatch(posID); }});'><i class='fas fa-street-view'></i></span>
+      <span id='mapTrig' class="header__btn header__btn--right" style="font-size: 1.7rem; right: 5.3rem;" id='direction' onclick='posID = setMap(); MicroModal.show("map_modal", { onClose: function() { navigator.geolocation.clearWatch(posID); }});'><i class='fas fa-street-view'></i></span>
+      <span id='guideTrig' class="header__btn header__btn--right" style="font-size: 1.7rem; right: 2.5rem;" id='guide' onclick='MicroModal.show("guide_modal");'><i class='fas fa-fish'></i></span>
       <span id='sidebarTrig' class="header__btn header__btn--right" style="font-size: 1.7rem; right: 0rem;" id='sidebar_open' onclick="$('#sidebar').css('display', 'block');"><i class='fas fa-bars'></i></span>
     </header>
     <main>
@@ -123,7 +127,7 @@
             <tr><td>&nbsp;</td><td style='text-align: left'>전체</td><td style='text-align: right;'><span id='time_total'></span>시간</td></tr>
             <tr><td>&nbsp;</td><td style='text-align: left'>이번 달</td><td style='text-align: right;'><span id='time_this'></span>시간</td></tr>
           </table><br>
-          <span id='historyDispenser' style="color: #0366d6;" onclick='$("#sidebar").css("display", "none"); MicroModal.show("record_modal");' >내 급식 기록 보기</span><br><br><br>
+          <span id='historyDispenser' style="color: #0366d6;" onclick='$("#sidebar").css("display", "none"); MicroModal.show("record_modal");' >내 급식 기록</span><br><br><br>
           <a id='admin' style='color: #0366d6' onclick="window.location.href = '/ajoumeow/console';" style='display: none'>관리자 콘솔</a><br>
           <!--<a id='adminhelp' style='color: #0366d6' onclick="window.location.href = 'https://github.com/luftaquila/ajoumeow';" style='display: none;'>관리자 도움말!</a>-->
         </div><br>
@@ -131,7 +135,7 @@
       </div>
     </div>
   </div>
-  <div id='modals' style='z-index: 30'>
+  <div id='modals' style="z-index: 30;">
     <div class="modal micromodal-slide" id="notice_modal" aria-hidden="true">
       <div class="modal__overlay" tabindex="-1" data-micromodal-close>
         <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="notice_modal-title">
@@ -177,13 +181,13 @@
             <div style="font-size: 1rem; color: #333; text-align: left">
               <li style='font-weight: bold; margin-top: 1rem;'>신청하기</li>
                 <ol style='padding-left: 1rem'>
-                  1. 원하는 날짜를 골라 <div id='magic' style='text-align: center; display: inline-block; line-height: 1rem; background-color: rgb(33, 150, 243); height: 1rem; width: 1rem; border-radius: 50%; color: white'>+</div> 를 누른 뒤,<br>
-                  3. 원하는 코스에 표시된 <span class='ripple' style='display: inline-block; width: 2rem; height: 1rem; line-height: 0.9rem; text-align: center; border-radius: 3px; border: dashed 1px gray; color: gray;'>+</span> 를 클릭합니다.
+                  1. 원하는 날짜를 골라 <div id='magic' style='text-align: center; display: inline-block; line-height: 1rem; background-color: rgb(33, 150, 243); height: 1rem; width: 1rem; border-radius: 50%; color: white'>+</div> 를 탭합니다.<br>
+                  2. 원하는 코스에 표시된 <span class='ripple' style='display: inline-block; width: 2rem; height: 1rem; line-height: 0.9rem; text-align: center; border-radius: 3px; border: dashed 1px gray; color: gray;'>+</span> 를 탭합니다.
                 </ol>
               <li style='font-weight: bold; margin-top: 1rem;'>삭제하기</li>
                 <ol style='padding-left: 1rem'>
-                  1. 삭제하고 싶은 이름표 <span class='ripple namecard example' style='display: inline-block; font-size: 0.5rem; width: 2rem; height: 1rem; line-height: 0.9rem; text-align: center; border-radius: 3px; border: solid 1px lightcoral; background-color: lightcoral; color: white;'>고양이</span> 를 누르고,<br>
-                  2. 다시 한 번 삭제할 이름표 <span class='ripple namecard deleteActiveExample example' style='display: inline-block; font-size: 0.5rem; width: 2rem; height: 1rem; line-height: 0.9rem; text-align: center; border-radius: 3px; border: solid 1px lightcoral; background-color: lightcoral; color: white;'>고양이</span> 를 클릭합니다.<br>
+                  1. 삭제하고 싶은 이름표 <span class='ripple namecard example' style='display: inline-block; font-size: 0.5rem; width: 2rem; height: 1rem; line-height: 0.9rem; text-align: center; border-radius: 3px; border: solid 1px lightcoral; background-color: lightcoral; color: white;'>고양이</span> 를 탭하고,<br>
+                  2. 다시 한 번 삭제할 이름표 <span class='ripple namecard deleteActiveExample example' style='display: inline-block; font-size: 0.5rem; width: 2rem; height: 1rem; line-height: 0.9rem; text-align: center; border-radius: 3px; border: solid 1px lightcoral; background-color: lightcoral; color: white;'>고양이</span> 를 탭합니다.<br>
                 </ol>
             </div>
             <div style="font-size: 1rem; color: #333; text-align: right; margin-top: 1rem">
@@ -214,17 +218,77 @@
         </div>
       </div>
     </div>
-    <div class="modal micromodal-slide" id="spot_modal" aria-hidden="true">
+    <div class="modal micromodal-slide" id="guide_modal" aria-hidden="true">
       <div class="modal__overlay" tabindex="-1" data-micromodal-close>
-        <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="spot_modal-title">
-          <header class="modal__header">
-            <h2 class="modal__title" id="spot_modal-title">1코스 첫번째</h2>
+        <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="guide_modal-title">
+          <header class="modal__header" style='height: 1.5rem'>
+            <h2 class="modal__title" id="guide_modal-title">급식 가이드</h2>
             <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
           </header>
-          <main class="modal__content" id="spot_modal-content">
-            <div style="position: relative">
-              <img id='courseImg' src="" style="width:100%;">
-            </div>
+          <main class="modal__content" id="guide_modal-content" style='padding: 1rem 1rem 0'>
+            <article>
+              <h3><i class='fas fa-home'></i> 동아리방</h3>
+              <div style='font-size:0.9rem; padding-left: 1rem;'>
+                급식에 필요한 물건들은 동아리방에 있습니다!<br>
+                <mark>신학생회관 406호</mark>에서 물건을 챙겨주세요.<br>
+                <div style='font-size: 0.8rem; padding-left: 0.8rem; padding-top: 0.5rem;'>
+                  <i class='fas fa-user-check' style='color: green'></i> 신학생회관 출입에는 등록된 학생증이 필요합니다. 학생증 등록은 임원진에게, 학생증 미 소지시에는 신학생회관 상황실(<a href="tel:031-219-2245">031-219-2245</a>)에 연락하세요!
+                </div>
+              </div>
+            </article>
+            <br>
+            <article>
+              <h3><i class='fas fa-pump-soap'></i> 준비물</h3>
+              <div style='font-size:0.9rem; padding-left: 1rem;'>
+                <ol>
+                  <li style='margin-bottom: 0.5rem'>
+                    <b>일해라 캔따개</b>
+                    <div style='padding-left: 0.5rem'>
+                      동방 앞 복도에 사물함이 있어요. 맨 위 칸에는 참치캔과 영양제 2종류, 중간 칸에는 젓가락이 있습니다. 영양제를 각각 한 스푼씩 참치캔에 넣고 젓가락으로 잘 섞어 주세요.
+                    </div>
+                  </li>
+                  <li style='margin-bottom: 0.5rem'>
+                    <b>내 밥은 걸러도 고양이 밥은</b>
+                    <div style='padding-left: 0.5rem'>
+                      물통과 사료통도 챙겨주세요! 사료통에 사료가 별로 없다면 사물함 옆 사료 봉지에서 채워주세요.
+                    </div>
+                  </li>
+                  <li style='margin-bottom: 0.5rem'>
+                    <b>거기 인간, 물 좀 주시오</b>
+                    <div style='padding-left: 0.5rem'>
+                      신학 1, 3층의 식수대에서 물통에 물을 채우면 준비 끝! 겨울에는 미지근한 물로 채워주세요.
+                    </div>
+                  </li>
+                </ol>
+              </div>
+            </article>
+            <br>
+            <article>
+              <h3><i class='fas fa-meat'></i> 바압</h3>
+              <div style='font-size:0.9rem; padding-left: 1rem;'>
+                &nbsp;&nbsp;모든 급식소에는 물그릇과 사료그릇이 하나씩 있어요. 가져가신 물과 사료로 빈 그릇을 채워주세요.<br>&nbsp;&nbsp;
+                코스를 잘 모른다면 <b>급식 지도 <i class="fas fa-street-view"></i></b> 의 도움을 받으세요.<br>&nbsp;&nbsp;
+                <mark>급식 인증을 위해 사진</mark> 찍는 걸 잊지 마세요!
+              </div>
+            </article>
+            <br>
+            <article>
+              <h3><i class='fas fa-camera-retro'></i> 마무으리</h3>
+              <div style='font-size:0.9rem; padding-left: 1rem;'>
+                급식이 끝나면 다 쓴 참치캔과 나무젓가락, 물통 속 물은 꼭 버려 주세요! 미유미유 급식인증방에 사진과 함께 <mark>급식 인증</mark>을 해 주시면 급식이 끝납니다.
+              </div>
+            </article>
+            <br>
+            <article>
+              <h3><i class='fas fa-key'></i> 잠깐!</h3>
+              <div style='font-size:0.9rem; padding-left: 1rem;'>
+                <ul>
+                  <li style='margin-bottom: 0.5rem'>급식 인증을 해 주셔야 봉사시간을 드릴 수 있어요. 깜빡하시면 안 돼요!</li>
+                  <li style='margin-bottom: 0.5rem'>급식 권장 시간은 오후 6시에요. 이 시간에 급식이 어렵다면 정오 ~ 자정 사이에 급식을 해 주세요. 오전에는 밥이 많이 남아 있답니다.</li>
+                  <li style='margin-bottom: 0.5rem'>당일에 갑자기 급식을 취소하실 때에는 반드시 단톡방에서 대타를 구해 주세요!</li>
+                </ul>
+              </div>
+            </article>
           </main>
         </div>
       </div>

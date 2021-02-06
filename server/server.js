@@ -792,8 +792,11 @@ app.listen(5710, async function() {
 
 async function kakaoClient() {
   console.log('Login successful. Main client is in startup.');
-  
-  const alert_schedule = schedule.scheduleJob('0 0 15 * * *', async () => { // 3pm at every day    
+  logger.info('Bot startup.', { ip: 'LOCALHOST', url: 'BOT', query: 'kakaoClient();', result: 'OK' });
+
+  const alert_schedule = schedule.scheduleJob('0 0 15 * * *', async () => { // 3pm at every day
+    logger.info('Bot scheduled alert.', { ip: 'LOCALHOST', url: 'BOT', query: 'schedule.scheduleJob();', result: 'OK' });
+
     const target = client.channelManager.map.get(process.env.talkChannelId);
     const result = await db.query("SELECT * FROM record WHERE date BETWEEN '" + dateformat(new Date(), 'yyyy-mm-dd') + "' AND '" + dateformat(new Date(), 'yyyy-mm-dd') + "' ORDER BY date, course, timestamp;");
     let resultString = '안녕하세요! 오늘 급식 신청해주신 분들은\n';
@@ -890,7 +893,6 @@ async function kakaoClient() {
     
     let channelName = channel.Name, channelId = channel.Id;
     let userName = info.Nickname, userId = info.Id;
-    
     
     if(userId == process.env.myUserId) {
       // if myself invited to chatroom, update channelId
