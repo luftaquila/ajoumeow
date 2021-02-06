@@ -199,11 +199,23 @@ app.post('//modifySettings', async function(req, res) {
     result = await db.query(query);
     res.send({ 'result' : true });
     logger.info('설정값 변경을 시도합니다.', { ip: ip, url: 'modifySettings', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
+    
+    if(req.body.editParam == 'currentSemister') {
+      const target = client.channelManager.map.get(process.env.noticeChannelId);
+      await target.sendText('시스템 현재 학기가 변경되었습니다!\n\n 기존 회원 분들은 사이트의 회원 등록 - 기존 회원 메뉴를 통해 새 학기 명단에 다시 등록해 주세요. 새 학기에도 화이팅!');
+    }
   }
   catch(e) { 
     res.send({ 'result' : null, 'error' : e.toString() });
     logger.error('설정값 변경 중에 오류가 발생했습니다.', { ip: ip, url: 'modifySettings', query: query ? query : 'Query String Not generated.', result: e.toString()});
   }
+  try {
+    if(req.body.editParam == 'currentSemister') {
+      const target = client.channelManager.map.get(process.env.noticeChannelId);
+      await target.sendText('시스템 현재 학기가 변경되었습니다!\n\n 기존 회원 분들은 사이트의 회원 등록 - 기존 회원 메뉴를 통해 새 학기 명단에 다시 등록해 주세요. 새 학기에도 화이팅!');
+    }
+  }
+  catch(e) { }
 });
 
 app.post('//records', async function(req, res) {
@@ -812,8 +824,11 @@ async function kakaoClient() {
     }
     resultString += '입니다. 오늘도 잘 부탁드려요 :D\n\n';
     
-    for(let course of noUserCourse) { resultString += (course + ', '); }
-    resultString = resultString.slice(0, -2) + '코스에 신청자가 없습니다! 도와주세요ㅠㅠ\n\n';
+    if(noUserCourse.length) {
+      if(noUserCourse.length == 3) resultString = '';
+      for(let course of noUserCourse) { resultString += (course + ', '); }
+      resultString = resultString.slice(0, -2) + '코스에 신청자가 없습니다! 도와주세요ㅠㅠ\n\n';
+    }
     
     const wth = JSON.parse(fs.readFileSync('../Resources/weather/weather.json').toString()).current_weather
     resultString += `오늘 아주대는 ${wth.stat}, ${wth.temp}℃에요!\n미세먼지는 ${wth.dust.pm10}㎍/㎥, 초미세먼지는 ${wth.dust.pm25}㎍/㎥입니다.`;
@@ -854,8 +869,8 @@ async function kakaoClient() {
               let res = await postRequest('https://luftaquila.io/ajoumeow/api/getMemberIdByName', { name: targetMembers[i] });
               let id = JSON.parse(res)[0].ID;
               if(id > 0) targetMembers[i] = { name: targetMembers[i], id: JSON.parse(res)[0].ID };
-              else if(!id) return chat.channel.sendTemplate(new nodeKakao.AttachmentTemplate(nodeKakao.ReplyAttachment.fromChat(chat), targetMembers[i] + ' 회원님 사이트에 회원등록되지 않아 인증이 불가능합니다.\nC: ERR_NO_ENTRY_DETECTED'));
-              else if(id < 0) return chat.channel.sendTemplate(new nodeKakao.AttachmentTemplate(nodeKakao.ReplyAttachment.fromChat(chat), targetMembers[i] + ' 회원님 동명이인이 존재하여 자동 인증이 불가능합니다.\nC: ERR_MULTIPLE_ENTRY_DETECTED'));
+              else if(!id) return chat.channel.sendTemplate(new nodeKakao.AttachmentTemplate(nodeKakao.ReplyAttachment.fromChat(chat), targetMembers[i] + ' 회원님이 회원 명단에 없어 자동 인증에 실패했습니다.\nC: ERR_NO_ENTRY_DETECTED'));
+              else if(id < 0) return chat.channel.sendTemplate(new nodeKakao.AttachmentTemplate(nodeKakao.ReplyAttachment.fromChat(chat), targetMembers[i] + ' 회원님 동명이인이 존재하여 자동 인증이 불가능합니다. 관리자가 직접 인증해 주세요.'));
             }
 
             // writing payload
@@ -873,11 +888,9 @@ async function kakaoClient() {
             // send verify data to ajoumeow server
             let res = await postRequest('https://luftaquila.io/ajoumeow/api/verify', { data: JSON.stringify(payload) });
             if(JSON.parse(res).result == true) {
-              
               let resultString = greetings();
-              
-              resultString += payload[0].date + '일자 급식 확인되었습니다!';
-              for(let obj of payload) resultString += '\n' + obj.name + ' 회원님 ' + obj.course + ' 마일리지 ' + obj.score + '점';
+              resultString += '시스템에 급식 활동을 등록했습니다.';
+              for(let obj of payload) resultString += '\n' + dateformat(payload[0].date, 'yyyy년 m월 d일 ') + obj.name + '님 ' + obj.course + '(' + obj.score + '점)';
               chat.channel.sendTemplate(new nodeKakao.AttachmentTemplate(nodeKakao.ReplyAttachment.fromChat(chat), resultString));
               logger.info('Bot auto verifing confirmed.', { ip: 'LOCALHOST', url: 'BOT', query: JSON.stringify(payload), result: res });
             }
@@ -961,11 +974,12 @@ async function kakaoClient() {
   function greetings() {
     /*
     // 주말일 때
-    // 날씨가 추울 때
-    // 그냥
     let weekend = ['주말에 수고하셨어요!'];
+    // 날씨가 추울 때
     let coldweather = ['추운 날씨에 고생하셨어요!'];
+    // 그냥
     let normal = ['수고하셨습니다!'];
+    
     let target = cold ? coldweather : (new Date().isWeekend ? weekend : normal);
     let greet = target[Math.floor(Math.random() * target.length)];
     */
