@@ -4,21 +4,21 @@
 임원진 여러분을 위한 관리자 메뉴 사용설명서입니다.
 
 ### 빠른 목차
-[1. 관리자 권한 - 나! 나도 임원진이에요!](https://github.com/luftaquila/ajoumeow/blob/master/README.md#1-%EA%B4%80%EB%A6%AC%EC%9E%90-%EA%B6%8C%ED%95%9C)
+[1. 관리자 권한 - 나! 나도 임원진이에요!](https://github.com/luftaquila/ajoumeow#1-%EA%B4%80%EB%A6%AC%EC%9E%90-%EA%B6%8C%ED%95%9C)
 
-[2. 급식 인증 및 삭제 - 밥 주새오](https://github.com/luftaquila/ajoumeow/blob/master/README.md#2-%EA%B8%89%EC%8B%9D-%EC%9D%B8%EC%A6%9D-%EB%B0%8F-%EC%82%AD%EC%A0%9C)
+[2. 급식 인증 및 삭제 - 밥 주새오](https://github.com/luftaquila/ajoumeow#2-%EA%B8%89%EC%8B%9D-%EC%9D%B8%EC%A6%9D-%EB%B0%8F-%EC%82%AD%EC%A0%9C)
 
-[3. 설정 - 학기 바꿨더니 로그인이 안 되는데요?](https://github.com/luftaquila/ajoumeow/blob/master/README.md#3-%EC%84%A4%EC%A0%95)
+[3. 설정 - 학기 바꿨더니 로그인이 안 되는데요?](https://github.com/luftaquila/ajoumeow#3-%EC%84%A4%EC%A0%95)
 
-[4. 회원 관리 - 맘에 안 드는 너, 숙청.](https://github.com/luftaquila/ajoumeow/blob/master/README.md#4-%ED%9A%8C%EC%9B%90-%EA%B4%80%EB%A6%AC)
+[4. 회원 관리 - 맘에 안 드는 너, 숙청.](https://github.com/luftaquila/ajoumeow#4-%ED%9A%8C%EC%9B%90-%EA%B4%80%EB%A6%AC)
 
-[5. 1365 - 봉사시간 모아야 군대가서 꿀빤다](https://github.com/luftaquila/ajoumeow/blob/master/README.md#5-1365)
+[5. 1365 - 봉사시간 모아야 군대가서 꿀빤다](https://github.com/luftaquila/ajoumeow#5-1365)
 
-[6. 신입 모집 - 새내기 주세요!!!](https://github.com/luftaquila/ajoumeow/blob/master/README.md#6-%EC%8B%A0%EC%9E%85-%EB%AA%A8%EC%A7%91)
+[6. 신입 모집 - 새내기 주세요!!!](https://github.com/luftaquila/ajoumeow#6-%EC%8B%A0%EC%9E%85-%EB%AA%A8%EC%A7%91)
 
-[7. 서버 로그 - #&*(%#@?](https://github.com/luftaquila/ajoumeow/blob/master/README.md#7-%EC%84%9C%EB%B2%84-%EB%A1%9C%EA%B7%B8)
+[7. 서버 로그 - #&*(%#@?](https://github.com/luftaquila/ajoumeow#7-%EC%84%9C%EB%B2%84-%EB%A1%9C%EA%B7%B8)
 
-[8. Dashboard - 리워드 제비뽑기 확률X망겜](https://github.com/luftaquila/ajoumeow/blob/master/README.md#8-dashboard)
+[8. Dashboard - 리워드 제비뽑기 확률X망겜](https://github.com/luftaquila/ajoumeow#8-dashboard)
 
 [9. 카카오톡 봇 - 미유미유의 망령](https://github.com/luftaquila/ajoumeow#9-%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%86%A1-%EB%B4%87)
 
