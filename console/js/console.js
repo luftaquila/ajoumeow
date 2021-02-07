@@ -14,6 +14,14 @@ $(function() {
 });
 
 function init() {
+  $('#sidebarToggleTop').click();
+  $('#timestamp').datepicker({
+    format: "yyyy-mm-dd",
+    todayBtn: "linked",
+    language: "ko",
+    todayHighlight: true
+  });
+  
   $.when(
     $.ajax({ // Request settings
       url: "https://luftaquila.io/ajoumeow/api/requestSettings",
@@ -21,20 +29,61 @@ function init() {
       dataType: 'json',
       success: function(res) {
         settings = res;
+        
+        // load semister settings
         $('#currentYear').val(settings['currentSemister'].split('-')[0]);
         $('#currentSemister').val(settings['currentSemister'].split('-')[1]);
-        $('#isAdditionalApplyAllowed').val(settings['isAllowAdditionalApply'].toUpperCase()).attr('selected', 'selected');
-        $('#isAdditionalRegisterAllowed').val(settings['isAllowAdditionalRegister'].toUpperCase()).attr('selected', 'selected');
-        $('#notice').val(settings['notice'].split('$')[1].replace('<br>', '\n'));
-        try {
-          document.getElementById('applyStartDate').valueAsDate = new Date(new Date(settings['applyTerm'].split('~')[0]) - (-1) * 9 * 3600 * 1000);
-          document.getElementById('applyEndDate').valueAsDate = new Date(new Date(settings['applyTerm'].split('~')[1]) - (-1) * 9 * 3600 * 1000);
-          document.getElementById('registerStartDate').valueAsDate = new Date(new Date(settings['registerTerm'].split('~')[0]) - (-1) * 9 * 3600 * 1000);
-          document.getElementById('registerEndDate').valueAsDate = new Date(new Date(settings['registerTerm'].split('~')[1]) - (-1) * 9 * 3600 * 1000); 
+        
+        // load apply settings
+        if(settings['isApply'] == 'TRUE') { // setting is ON
+          $('#isApply').attr('checked', false);
+          $('#isApplyRestricted_container').css('opacity', '1').find('input').attr('disabled', false);
+          
+          if(settings['isApplyRestricted'] == 'TRUE') {
+            $('#isApplyRestricted').attr('checked', false);
+            $('#isApplyRestrictedCalendar_container').css('opacity', '1').find('input').attr('disabled', false);
+          }
+          else {
+            $('#isApplyRestricted').attr('checked', true);
+            $('#isApplyRestrictedCalendar_container').css('opacity', '0.2').find('input').attr('disabled', true);
+          }
         }
-        catch(e) { }
-        $('#settingsContent input, #settingsContent select').attr('disabled', false);
-        $('#1365Content input, #1365Content select').attr('disabled', false);
+        else { // setting is OFF
+          $('#isApply').attr('checked', true);
+          $('#isApplyRestricted_container').css('opacity', '0.2').find('input').attr('disabled', true);
+
+        }
+          
+        
+        // load register settings
+        if(settings['isRegister'] == 'TRUE') {
+          $('#isRegister').attr('checked', false);
+          $('#isRegisterRestricted_container').css('opacity', '1').find('input').attr('disabled', false);
+          
+          if(settings['isRegisterRestricted'] == 'TRUE') {
+            $('#isRegisterRestricted').attr('checked', false);
+            $('#isRegisterRestrictedCalendar_container').css('opacity', '1').find('input').attr('disabled', false);
+          }
+          else {
+            $('#isRegisterRestricted').attr('checked', true);
+            $('#isRegisterRestrictedCalendar_container').css('opacity', '0.2').find('input').attr('disabled', true);
+          }
+        }
+        else {
+          $('#isRegister').attr('checked', true);
+          $('#isRegisterRestricted_container').css('opacity', '0.2').find('input').attr('disabled', true);
+        }
+        
+        // load notice
+        $('#notice').val(settings['notice'].split('$')[1].replace('<br>', '\n'));
+        
+        // load calendars
+        document.getElementById('applyStartDate').valueAsDate = new Date(new Date(settings['applyTerm'].split('~')[0]) - (-1) * 9 * 3600 * 1000);
+        document.getElementById('applyEndDate').valueAsDate = new Date(new Date(settings['applyTerm'].split('~')[1]) - (-1) * 9 * 3600 * 1000);
+        document.getElementById('registerStartDate').valueAsDate = new Date(new Date(settings['registerTerm'].split('~')[0]) - (-1) * 9 * 3600 * 1000);
+        document.getElementById('registerEndDate').valueAsDate = new Date(new Date(settings['registerTerm'].split('~')[1]) - (-1) * 9 * 3600 * 1000);
+
+        
       }
     }),
     $.ajax({
@@ -193,7 +242,7 @@ function init() {
       }
     });
     
-    $('#timestamp').val(new Date().format('yyyy-mm-dd'));
+    $('#timestamp').datepicker('update', new Date().format('yyyy-mm-dd'));
     load();
   });
 }
@@ -210,11 +259,11 @@ async function load() {
     url: 'https://luftaquila.io/ajoumeow/api/requestVerifyList',
     type: 'POST',
     dataType: 'json',
-    data: { date: $('#timestamp').val() },
+    data: { date: $('#timestamp').datepicker('getDate').format('yyyy-mm-dd') },
     success: function(res) { record = res.record; verify = res.verify }
   });
   
-  $("#autolist").html('').prepend("<div style='margin-top: 5px; margin-bottom: -10px'><label><input type='checkbox' id='boost' value='test'>&nbsp;마일리지 상향 지급하기<br><li style='font-size: 0.8rem'>시험 기간, 연휴 등 급식이 어려울 때 체크합니다.</li></input></label></div><hr style='width: 100%'>");
+  $("#autolist").html('').prepend("<div style='margin-top: 5px; margin-bottom: -10px'><label><input type='checkbox' id='boost' value='test'>&nbsp;마일리지 상향 지급하기</input></label></div><hr style='width: 100%'>");
   for(var obj of record) $('#autolist').append("<div><label><input type='checkbox' name='recordList' checked='checked' value='" + obj.ID + '/' + obj.name + '/' + obj.course + "'>&nbsp;" + obj.ID + ' ' + obj.name + ' / ' + obj.course + "</input></label></div>");
   
   $('#deletelist').html('<br>');
@@ -222,7 +271,6 @@ async function load() {
 }
 
 $("#DATA a#submit").click( function(event) {
-  $('.container-fluid input, .container-fluid select, .container-fluid a').attr('disabled', true);
   var operation = $('input[name=verifyType]:checked').val();
   
   if(operation == 'auto') {
@@ -232,7 +280,7 @@ $("#DATA a#submit").click( function(event) {
       var tmp = $(obj).val().split('/');
       payload.push({
         'ID' : tmp[0],
-        'date' : $('#timestamp').val(),
+        'date' : $('#timestamp').datepicker('getDate').format('yyyy-mm-dd'),
         'name' : tmp[1],
         'course' : tmp[2],
         'score' : null
@@ -242,14 +290,13 @@ $("#DATA a#submit").click( function(event) {
     for(var obj of customlist) {
       payload.push({
         'ID' : $(obj).next().val(),
-        'date' : $('#timestamp').val(),
+        'date' : $('#timestamp').datepicker('getDate').format('yyyy-mm-dd'),
         'name' : $(obj).next().next().val(),
         'course' : $(obj).next().next().next().val() + '코스',
         'score' : null
       });
     }
     if(validator(payload)) scoreProvider(payload);
-    else $('.container-fluid input, .container-fluid select, .container-fluid a').attr('disabled', false);
   }
   
   else if(operation == 'manual') {
@@ -258,14 +305,13 @@ $("#DATA a#submit").click( function(event) {
     for(var obj of manuallist) {
       payload.push({
         'ID' : $(obj).next().val(),
-        'date' : $('#timestamp').val(),
+        'date' : $('#timestamp').datepicker('getDate').format('yyyy-mm-dd'),
         'name' : $(obj).next().next().val(),
         'course' : $(obj).next().next().next().next().next().val(),
         'score' : $(obj).next().next().next().next().val()
       });
     }
     if(validator(payload)) transmitter(payload);
-    else $('.container-fluid input, .container-fluid select, .container-fluid a').attr('disabled', false);
   }
   
   else if(operation == 'delete') {
@@ -275,7 +321,7 @@ $("#DATA a#submit").click( function(event) {
       var tmp = $(obj).val().split('/');
       payload.push({
         'ID' : tmp[0],
-        'date' : $('#timestamp').val(),
+        'date' : $('#timestamp').datepicker('getDate').format('yyyy-mm-dd'),
         'name' : tmp[1],
         'course' : tmp[2]
       });
@@ -286,14 +332,12 @@ $("#DATA a#submit").click( function(event) {
         type: 'POST',
         data: { data : JSON.stringify(payload) },
         success: function() {
-          $('.container-fluid input, .container-fluid select, .container-fluid a').attr('disabled', false);
           alertify.error('삭제되었습니다.');
           $('#deletelist').val('');
           load();
         }
       });
     }
-    else $('.container-fluid input, .container-fluid select, .container-fluid a').attr('disabled', false);
   }
   event.preventDefault();
 });
@@ -324,7 +368,7 @@ function scoreProvider(payload) {
       dual : (boost ? 2 : 1.5)
     }
   }
-  var isWeekEnd = new Date($('#timestamp').val()).getDayNum() > 5;
+  var isWeekEnd = new Date($('#timestamp').datepicker('getDate').format('yyyy-mm-dd')).getDayNum() > 5;
   for(var i = 1; i <= 3; i++) {
     var counter = 0;
     for(var obj of payload) if(obj.course == i + '코스') counter++;
@@ -345,7 +389,6 @@ function transmitter(payload) {
     dataType: 'json',
     data: { data: JSON.stringify(payload) },
     success: function() {
-      $('.container-fluid input, .container-fluid select, .container-fluid a').attr('disabled', false);
       alertify.success('인증되었습니다.');
       $('#autolist').html('');
       $('#manuallist').html('');
@@ -403,26 +446,77 @@ function clickEventListener() {
       else $(this).next().val('');
     });
   });
+  
   $('.setting').change(function() {
-    var obj = $(this).attr('class'), req;
-    if     (obj.includes('settingSemister')) req = ['currentSemister', $('#currentYear').val() + '-' + $('#currentSemister').val()];
-    else if(obj.includes('settingApplyCalendar')) req = ['applyTerm', $('#applyStartDate').val() + '~' + $('#applyEndDate').val()];
-    else if(obj.includes('settingAdditionalApply')) req = ['isAllowAdditionalApply', $('#isAdditionalApplyAllowed').val()];
-    else if(obj.includes('settingRegisterCalendar')) req = ['registerTerm', $('#registerStartDate').val() + '~' + $('#registerEndDate').val()];
-    else if(obj.includes('settingAdditionalRegister')) req = ['isAllowAdditionalRegister', $('#isAdditionalRegisterAllowed').val()];
-    else if(obj.includes('notice')) req = ['notice', $('#notice').val()];
+    var obj = $(this).attr('class').split(' '), req = {};
+    console.log(obj)
+    if (obj.includes('settingSemister')) { // 학기 설정
+      req.param = 'currentSemister';
+      req.data = $('#currentYear').val() + '-' + $('#currentSemister').val();
+    }
+    else if(obj.includes('settingApply')) { // 회원 등록 허용 여부
+      req.param = 'isApply';
+      req.data = !$('#isApply').is(':checked');
+      req.data = req.data.toString().toUpperCase();
+      
+      if(!$('#isApply').is(':checked')) $('#isApplyRestricted_container').css('opacity', '1').find('input').attr('disabled', false);
+      else $('#isApplyRestricted_container').css('opacity', '0.2').find('input').attr('disabled', true);
+      if(!$('#isApplyRestricted').is(':checked')) $('#isApplyRestrictedCalendar_container').css('opacity', '1').find('input').attr('disabled', false);
+      else $('#isApplyRestrictedCalendar_container').css('opacity', '0.2').find('input').attr('disabled', true);
+    }
+    else if(obj.includes('settingApplyRestricted')) { // 회원등록 기간 제한 여부
+      req.param = 'isApplyRestricted';
+      req.data = !$('#isApplyRestricted').is(':checked');
+      req.data = req.data.toString().toUpperCase();
+      
+      if(!$('#isApplyRestricted').is(':checked')) $('#isApplyRestrictedCalendar_container').css('opacity', '1').find('input').attr('disabled', false);
+      else $('#isApplyRestrictedCalendar_container').css('opacity', '0.2').find('input').attr('disabled', true);
+    }
+    else if(obj.includes('settingApplyCalendar')) { // 회원등록 기간 설정
+      req.param = 'applyTerm';
+      req.data = $('#applyStartDate').val() + '~' + $('#applyEndDate').val();
+    }
+    else if(obj.includes('settingRegister')) { // 신입 모집 허용 여부
+      req.param = 'isRegister';
+      req.data = !$('#isRegister').is(':checked');
+      req.data = req.data.toString().toUpperCase();
+      
+      if(!$('#isRegister').is(':checked')) $('#isRegisterRestricted_container').css('opacity', '1').find('input').attr('disabled', false);
+      else $('#isRegisterRestricted_container').css('opacity', '0.2').find('input').attr('disabled', true);      
+      if(!$('#isRegisterRestricted').is(':checked')) $('#isRegisterRestrictedCalendar_container').css('opacity', '1').find('input').attr('disabled', false);
+      else $('#isRegisterRestrictedCalendar_container').css('opacity', '0.2').find('input').attr('disabled', true);
+    }
+    else if(obj.includes('settingRegisterRestricted')) { // 신입 모집 기간 제한 여부
+      req.param = 'isRegisterRestricted';
+      req.data = !$('#isRegisterRestricted').is(':checked');
+      req.data = req.data.toString().toUpperCase();
+      
+      if(!$('#isRegisterRestricted').is(':checked')) $('#isRegisterRestrictedCalendar_container').css('opacity', '1').find('input').attr('disabled', false);
+      else $('#isRegisterRestrictedCalendar_container').css('opacity', '0.2').find('input').attr('disabled', true);
+    }
+    else if(obj.includes('settingRegisterCalendar')) { // 신입 모집 기간 설정
+      req.param = 'registerTerm';
+      req.data = $('#registerStartDate').val() + '~' + $('#registerEndDate').val();
+    }
+    else if(obj.includes('notice')) {
+      req.param = 'notice';
+      req.data = $('#notice').val();
+    }
     
     $.ajax({
       type: 'POST',
       url: 'https://luftaquila.io/ajoumeow/api/modifySettings',
-      data: { 'editParam' : req[0], 'editData' : req[1] },
+      data: { 'editParam' : req.param, 'editData' : req.data },
       success: function(res) { 
         if(res.result) alertify.success('설정이 변경되었습니다');
         else alertify.error('설정 변경에 실패하였습니다')},
       error: function() { alertify.error('설정 변경에 실패하였습니다.<br>다시 시도해 주세요'); }
     });
   });
-  $('#timestamp').change(load);
+  $('#timestamp').datepicker().on('changeDate', function(e) {
+    console.log(e);
+    load();
+  });
   $('#download1365').click(function() {
     if($('#calendar1365').val()) {
       $('#calendar1365, #download1365, #namelist_1365').attr('disabled', true);
@@ -493,7 +587,7 @@ function clickEventListener() {
       settingchange: ['modifySettings'],
       memberchange: ['apply', 'modifyMember', 'deleteMember'],
       '1365' : ['request1365'],
-      others : ['requestApply', 'requestRegister', 'SERVER']
+      others : ['requestApply', 'requestRegister', 'SERVER', 'BOT']
     };
     for(var obj of logData) {
       for(var type of logtype) {

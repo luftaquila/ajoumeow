@@ -8,11 +8,15 @@
     <meta name="author" content="">
     <title>급식 인증</title>
     <!-- Custom fonts for this template-->
-    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/res/fontawesome5/css/all.min.css">
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
+
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
     <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <link rel='stylesheet' href='/res/toggleSwitch.css' />
+    <link rel='stylesheet' href='/res/bootstrap-datepicker/css/bootstrap-datepicker.min.css' />    
     <link rel='stylesheet' href='/ajoumeow/Resources/Libraries/alertify/alertify.core.css' />
     <link rel='stylesheet' href='/ajoumeow/Resources/Libraries/alertify/alertify.default.css' />
     <link rel="stylesheet" href="/ajoumeow/Resources/Libraries/micromodal/micromodal.min.css" />
@@ -113,7 +117,7 @@
               </div>
             </form> -->
             
-            <a style='color: #0366d6' onclick="window.location.href = 'https://github.com/luftaquila/ajoumeow';"><i class='far fa-question-circle'></i> 사용설명서</a>
+            <a style='color: #0366d6; font-size: 1.2rem; margin-left: 1rem;' onclick="window.location.href = 'https://github.com/luftaquila/ajoumeow';"><i class='far fa-question-circle'></i>&ensp;도움말</a>
 
             
             <!-- Topbar Navbar -->
@@ -142,47 +146,70 @@
           <!-- Begin Page Content -->
           <div class="container-fluid" id='authContent'>
             <!-- Page Heading -->
-            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <div class="d-sm-flex align-items-center justify-content-between mb-4" style='margin-bottom: 0.5rem!important'>
               <h1 class="h3 mb-0 text-gray-800">급식 인증</h1>
             </div>
+            <div style='padding-left: 0.8rem; margin-bottom: 1rem; font-size: 0.85rem;'>
+              관리자의 급식 인증이 완료된 활동만 시스템에서 인정됩니다.<br>
+              인증된 활동만이 1365 봉사활동 인증서 생성에 포함됩니다.
+            </div>
             <form id="DATA" class='text-gray-700'>
-              <input id="timestamp" class='btn btn-secondary' style='margin: 100 0;' type="date" name="timestamp" value="" />
-              &nbsp;&nbsp;
-              <a id="submit" href="#" class="btn btn-success btn-icon-split" style='width: 30; height: 5;'>
-              <span class="text">인증</span>
-              </a>
+              <div id='timestamp' style='color: #333'></div>
+              <!--<input id="timestamp" class='btn btn-secondary' style='margin: 100 0;' type="date" name="timestamp" value="" />-->
               <br>
-              <span id='latestConfirm' style="font-size: 0.9rem">마지막 인증 기록 : Loading...</span>
+              <span id='latestConfirm' style="font-size: 0.9rem">마지막 인증 기록 : Loading...</span>&ensp;&ensp;&ensp;
+              <a id="submit" class="btn btn-success btn-icon-split" style='width: 30; height: 5; color: #fff'>
+                <span class="text">인증</span>
+              </a>
               <br><br>
-              <label><input type='radio' name='verifyType' value="auto" checked='checked'>&nbsp;급식 인증</input></label>&nbsp;&nbsp;
-              <label><input type='radio' name='verifyType' value='manual'>&nbsp;기타 인증</input></label>&nbsp;&nbsp;
-              <label><input type='radio' name='verifyType' value='delete'>&nbsp;인증 삭제</input></label>
+              <label><input type='radio' name='verifyType' value="auto" checked='checked'>&nbsp;급식 인증</label>&ensp;&ensp;
+              <label><input type='radio' name='verifyType' value='manual'>&nbsp;기타 인증</label>&ensp;&ensp;
+              <label><input type='radio' name='verifyType' value='delete'>&nbsp;인증 삭제</label>
+
               <div id='auto'>
                 <div id="autolist"></div>
-                <span id='autoadd'>&nbsp;+ 추가</span>
-                <div style='font-size: 0.8rem'>
-                  <br>
-                  <li>되도록 한 날짜의 급식 인증은 한 번에 해 주세요.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;한 코스에 두 사람이 급식한 경우, 따로따로 인증하면 점수가 잘못 지급됩니다.</li>
-                  <li>급식 인증방에 인증한 사람만 체크한 후 인증을 진행해 주세요.</li>
-                  <li>목록에 없는 회원을 인증하려면 +추가 버튼을 누르면 됩니다.</li>
-                  <li>동명이인 식별을 위해 인증 추가는 학번으로만 가능합니다.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;학번을 맞게 입력하면 이름은 자동완성됩니다.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;회원 관리 메뉴의 검색창을 이용하면 이름으로 학번을 알아낼 수 있습니다.</li>
+                <span id='autoadd' class='btn btn-primary' style='padding: 0.2rem 0.5rem; margin-top: 0.3rem;'><i class='fas fa-plus-square'></i> 추가</span><br>
+                <div style='font-size: 0.87rem; margin-top: 2rem;'>
+                  <ol style='padding-left: 1.5rem;'>
+                    <li>날짜를 선택하면 해당일의 급식 신청자가 모두 표시됩니다.</li>
+                    <li>인증하고자 하는 회원(카톡 급식인증방에 인증한 회원)만 좌측의 체크박스에 체크합니다.<br>기본값은 다 체크된 상태입니다. 실제로 활동하지 않은 회원은 체크를 해제하세요.</li>
+                    <li>시험 기간이나 방학 및 공휴일, 악천후 등 급식이 어려울 땐 마일리지를 상향 지급합니다. 이럴 때 상향 지급 체크박스를 체크하세요.</li>
+                    <li><kbd>인증</kbd> 을 탭해 서버로 인증 기록을 전송합니다.</li>
+                  </ol><br>
+                  <ul class='fa-ul'>
+                    <li>
+                      <span class='fa-li'><i class='fas fa-engine-warning' style='color: #e99f00'></i></span>
+                      급식 인증은 기타 인증 메뉴로 인증하면 안 됩니다!<br>
+                      기타 인증 메뉴로 인증하면 급식 마일리지 및 봉사활동 확인서에서 누락됩니다.
+                    </li>
+                    <li>
+                      <span class='fa-li'><i class='fas fa-engine-warning' style='color: #e99f00'></i></span>
+                      같은 날 같은 코스 급식자는 무조건 한 번에! 인증해야 합니다.<br>
+                      동일 코스의 급식자를 따로 인증하면 2인이 아닌 1인 급식으로 마일리지가 잘못 지급됩니다.
+                    </li>
+                  </ul>
                 </div>
               </div>
               <div id='manual' style="display:none">
                 <div id='manuallist'></div>
-                <span id='manualadd'>&nbsp;+ 추가</span>
-                <div style='font-size: 0.8rem'>
-                  <br>
-                  <li>동아리박람회 등 급식 외 활동의 마일리지를 지급합니다.</li>
-                  <li>날짜는 오늘 날짜가 아니라 활동한 날짜로 설정하세요.</li>
-                  <li>지급 인원이 둘 이상일 때 >지급 사유 통일하기 버튼을 누르면<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;모든 항목의 지급 사유가 첫 번째 항목의 사유로 통일됩니다.</li>
+                <span id='manualadd' class='btn btn-primary' style='padding: 0.2rem 0.5rem; margin-top: 0.3rem;'><i class='fas fa-plus-square'></i> 추가</span>
+                <div style='font-size: 0.87rem; margin-top: 2rem;'>
+                  동아리박람회나 봉사활동 등 급식 외 활동에 대한 마일리지를 지급합니다.
+                  <ul>
+                    <li>날짜는 오늘 날짜가 아니라 활동한 날짜로 설정하세요.</li>
+                    <li><kbd><i class='fas fa-plus-square'></i> 추가</kbd> 를 탭해 입력 필드를 추가합니다.</li>
+                    <li>인원이 둘 이상일 때 >지급 사유 통일하기를 누르면 모든 지급 사유가 첫 번째 항목의 사유로 자동 입력됩니다.</li>
+                  </ul>
                 </div>
               </div>
               <div id='delete' style='display: none'>
                 <div id='deletelist'></div>
-                <div style='font-size: 0.8rem'>
-                  <br>
-                  <li>이미 인증한 내역을 삭제합니다.</li>
+                <div style='font-size: 0.87rem; margin-top: 2rem;'>
+                  이미 인증한 기록을 삭제합니다.
+                  <ul>
+                    <li>삭제할 기록이 있는 날짜를 선택하면 해당일에 인증된 모든 기록이 표시됩니다.</li>
+                    <li>삭제할 기록만 체크한 후, 삭제 버튼을 탭합니다.</li>
+                  </ul>
                 </div>
               </div>
             </form>
@@ -193,77 +220,99 @@
             <div class="d-sm-flex align-items-center justify-content-between mb-4">
               <h1 class="h3 mb-0 text-gray-800">설정</h1>
             </div>
-            <table style='border-spacing: 7 10; margin-left: -5; margin-top: -10; font-size: 0.8rem'>
-              <tr>
-                <td>현재 학기&nbsp;</td>
-                <td>
+            <div>
+              <div id='currentSemister_container'>
+                <b>현재 학기</b>
+                <div style='display: inline-block; margin-left: 3rem;'>
                   <input id='currentYear' class='setting settingSemister' type="number" min=20 max=99 maxlength=2 style='width: 30; text-align: center' required/> - 
                   <select id='currentSemister' class='setting settingSemister' required>
                     <option>1</option>
                     <option>2</option>
                   </select>
                   학기
-                </td>
-                <td></td>
-              </tr>
-              <tr><td colspan=2>⚠️현재 학기를 바꾸면 모든 회원이 로그아웃되고 다시 새 학기 회원 등록을 해야 합니다.</td><td></td></tr>
-              <tr>
-                <td>&nbsp;</td>
-              </tr>
-              <tr>
-                <td>회원 등록 기간&nbsp;</td>
-                <td><input class='setting settingCalendar settingApplyCalendar' style="width: 100px;" id="applyStartDate" type="date" value="" />&nbsp;&nbsp;~&nbsp;&nbsp;<input class='setting settingCalendar settingApplyCalendar' style='width: 100px' id="applyEndDate" type="date" value="" /></td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>추가 등록 허용&nbsp;</td>
-                <td>
-                  <select id='isAdditionalApplyAllowed' class='setting settingAdditionalApply'>
-                    <option>TRUE</option>
-                    <option>FALSE</option>
-                  </select>
-                </td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>&nbsp;</td>
-              </tr>
-              <tr>
-                <td>신입 모집 기간&nbsp;</td>
-                <td><input class='setting settingCalendar settingRegisterCalendar' style='width: 100px' id="registerStartDate" type="date" value="" />&nbsp;&nbsp;~&nbsp;&nbsp;<input class='setting settingCalendar settingRegisterCalendar' style="width: 100px" id="registerEndDate" type="date" value="" /></td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>추가 모집 허용&nbsp;</td>
-                <td>
-                  <select id='isAdditionalRegisterAllowed' class='setting settingAdditionalRegister'>
-                    <option>TRUE</option>
-                    <option>FALSE</option>
-                  </select>
-                </td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>&nbsp;</td>
-              </tr>
-              <tr>
-                <td>공지사항</td>
-              </tr>
-              <tr>
-                <td colspan='3'><textarea class='setting notice' id='notice' style='width: 100%; height: 70px'></textarea></td>
-              </tr>
-            </table>
+                </div>
+              </div>
+              
+              <div id='isApply_container' style='margin-top: 1.5rem;'>
+                <b>회원 등록</b>
+                <div style='display: inline-block; margin-left: 3rem;'>
+                  <label class="rocker rocker-small" style='font-size: 0.5rem; margin: 0rem; vertical-align: middle'>
+                    <input id='isApply' class='setting settingApply' type="checkbox" checked>
+                    <span class="switch-left">OFF</span>
+                    <span class="switch-right">ON</span>
+                  </label>
+                </div>
+              </div>
+              
+              <div id='isApplyRestricted_container' style='padding-left: 2rem; margin-top: 0.5rem'>
+                <b>등록 허용기간 제한</b>
+                <div style='display: inline-block; margin-left: 3rem;'>
+                  <label class="rocker rocker-small" style='font-size: 0.5rem; margin: 0rem; vertical-align: middle'>
+                    <input id='isApplyRestricted' class='setting settingApplyRestricted' type="checkbox" checked>
+                    <span class="switch-left">OFF</span>
+                    <span class="switch-right">ON</span>
+                  </label>
+                </div>
+                <div id='isApplyRestrictedCalendar_container' style='margin-left: 1.5rem;'>
+                  허용 기간<br>
+                  <span style='font-size: 0.7rem'>
+                    <input class='setting settingCalendar settingApplyCalendar' id="applyStartDate" type="date" value="" />
+                    &ensp; ~ &ensp;
+                    <input class='setting settingCalendar settingApplyCalendar' id="applyEndDate" type="date" value="" />
+                  </span>
+                </div>
+              </div>
+
+              <div id='isRegister_container' style='margin-top: 1.5rem;'>
+                <b>신입 모집</b>
+                <div style='display: inline-block; margin-left: 3rem;'>
+                  <label class="rocker rocker-small" style='font-size: 0.5rem; margin: 0rem; vertical-align: middle'>
+                    <input id='isRegister' class='setting settingRegister' type="checkbox" checked>
+                    <span class="switch-left">OFF</span>
+                    <span class="switch-right">ON</span>
+                  </label>
+                </div>
+              </div>
+              
+              <div id='isRegisterRestricted_container' style='padding-left: 2rem; margin-top: 0.5rem'>
+                <b>모집 허용기간 제한</b>
+                <div style='display: inline-block; margin-left: 3rem;'>
+                  <label class="rocker rocker-small" style='font-size: 0.5rem; margin: 0rem; vertical-align: middle'>
+                    <input id='isRegisterRestricted' class='setting settingRegisterRestricted' type="checkbox" checked>
+                    <span class="switch-left">OFF</span>
+                    <span class="switch-right">ON</span>
+                  </label>
+                </div>
+                <div id='isRegisterRestrictedCalendar_container' style='margin-left: 1.5rem;'>
+                  허용 기간<br>
+                  <span style='font-size: 0.7rem'>
+                    <input class='setting settingCalendar settingRegisterCalendar' id="registerStartDate" type="date" value="" />
+                    &ensp; ~ &ensp;
+                    <input class='setting settingCalendar settingRegisterCalendar' id="registerEndDate" type="date" value="" />
+                  </span>
+                </div>
+              </div>
+              
+              <div style='margin-top: 1.5rem;'>
+                <b>공지사항</b><br>
+                <textarea class='setting notice' id='notice' style='width: 20rem; height: 4rem; font-size: 0.8rem; line-height: 1rem;'></textarea>
+              </div>
+            </div>
+            
             <br>
-            <div style='font-size: 0.8rem'>
-              <li style='font-weight: bold'>현재 학기 값은 학기가 바뀌면 항상 업데이트 해 주세요.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;명단 작성 등 전산 여러 곳에서 중요하게 사용되는 값입니다.<br><br></li>
-              <li>공지사항은 값을 변경할 때마다 급식표 페이지 방문 시 자동으로 팝업을 표시합니다. 자동 팝업은 값 변경 후 최초 1회만 표시됩니다. 이후에는 사용자가 공지사항 메뉴를 눌러야 팝업이 보여집니다.<br><br></li>
-              <li>
-              회원 등록과 신입 모집은 오늘 날짜가 설정 기간에 포함되거나<br>
-              추가 허용 여부가 TRUE일 때, 둘 중 하나만 만족해도 활성화됩니다.<br><br></li>
-              <li>
-              추가 허용 항목은 평소에는 FALSE로 맞춰 놓고<br>
-              기간외 등록을 희망하는 사람이 있을 때 잠깐 TRUE로 바꿨다가<br>
-              해당 사람이 등록을 마치면 다시 FALSE로 바꾸면 됩니다.</li>
+            <div style='font-size: 0.9rem'>
+              <ul class='fa-ul'>
+                <li style='font-weight: bold'>
+                  <span class='fa-li'><i class='fas fa-engine-warning' style='color: #e99f00'></i></span> 현재 학기 값은 학기가 바뀌면 항상 업데이트 해 주세요.<br>
+                  명단 작성 등 전산 전체에서 중요하게 사용되는 값입니다.
+                </li><br>
+                <li style='font-weight: bold'>
+                  <span class='fa-li'><i class='fas fa-engine-warning' style='color: #e99f00'></i></span> 현재 학기 값을 변경하면 모든 회원은 로그아웃됩니다.<br>
+                  변경된 새 학기 회원 목록에 새로 등록해야 로그인할 수 있습니다.<br>
+                  반드시 학기를 변경한 후 회원들에게 회원 등록을 다시 해야 한다고 공지하세요.
+                </li><br>
+                <li><span class='fa-li'><i class='fas fa-lightbulb-exclamation' style='color: green'></i></span>공지사항 값을 변경하면 사이트 방문 시 최초 1회 공지 팝업이 표시됩니다.</li>
+              </ul>
             </div>
             <!--<select id='namelist-config'></select><br>-->
             <div id='namelistWrap'></div>
@@ -276,29 +325,30 @@
             
             학기 : <select id='namelist' class='namelist_select'></select>&nbsp;&nbsp;&nbsp;
             <div style='margin: 0px; text-align: right; display: inline-block;'>
-              <a id="download_namelist" href="#" class="btn btn-success btn-icon-split" style='width: 30; height: 5; margin: 0;'>
-              <span class='text'>다운로드</span>
+              <a id="download_namelist" href="#" class="btn btn-success btn-icon-split">
+                <span class='text'>다운로드</span>
               </a>
             </div>
-            <br><br>
-            <li style='font-size: 0.8rem'>다운로드를 누르면 엑셀(.xlsx) 형식으로 명단을 저장합니다.</li>
-          
+            <br>
+            <li style='font-size: 0.8rem; margin-top: 0.3rem;'>다운로드를 누르면 엑셀(.xlsx) 형식으로 명단을 저장합니다.</li><br>
             <div id='current_namelist' class="table-responsive">
-              <div style='font-size: 0.8rem'>
-                <li>회원 목록을 관리합니다. 학번 외 모든 항목은 수정할 수 있습니다.</li>
-                <li>수정할 값을 클릭하면 입력창이 활성화됩니다.<br>수정할 값을 입력한 후 엔터를 누르면 수정됩니다.</li>
-                <li>
-                  직책이 '회원'이 아닌 사람에게는 모두 관리자 권한이 부여됩니다.<br>
-                  관리자는 다음과 같은 권한을 갖습니다.
-                  <ul>
-                    <li>관리자 페이지 접속</li>
-                    <li>급식표의 모든 셀에 대한 수정<br>이는 일반 회원은 수정할 수 없는 다음의 경우를 포함합니다.</li>
-                    <ul>
-                      <li>이미 지난 날짜에 대한 삭제</li>
-                      <li>본인이 신청하지 않은 급식에 대한 삭제</li>
-                    </ul>
-                  </ul>
-                </li>
+              <div style='font-size: 0.9rem'>
+                <b style='font-size: 1.2rem;'>현재 학기</b>
+                <ul>
+                  <li>목록에 등록된 회원만 로그인할 수 있습니다.</li>
+                  <li>학번 외 모든 항목은 수정할 수 있습니다.<br>학번 수정은 제명 후 재등록으로만 가능합니다.</li>
+                  <li>수정할 값을 클릭하면 입력창이 활성화됩니다.</li>
+                  <li>수정할 값을 입력한 후 엔터를 누르면 수정됩니다.</li>
+                </ul>
+                
+                <b>관리자 권한</b><br>
+                &emsp;직책이 <kbd>회원</kbd>이 아닌 모든 사람에게 부여됩니다. 관리자는
+                <ul>
+                  <li>관리자 콘솔에 접속할 수 있습니다.</li>
+                  <li>급식표에서 모든 회원을 가림 처리하지 않고 실명으로 표시합니다.</li>
+                  <li>일반 사용자는 아직 지나지 않은 날짜의 본인이 신청한 급식만 삭제할 수 있지만,<br>관리자는 지난 날짜와 타인이 신청한 모든 급식을 삭제할 수 있습니다.</li>
+                </ul>
+                <i class='fas fa-engine-warning' style='color: #e99f00'></i> 새 관리자 등록은 기존 임원진만 가능합니다.<br>임원진 교체 시 <i class='fas fa-fire' style='color: red'></i>반드시<i class='fas fa-fire' style='color: red'></i> 신규 임원진에게 관리자 권한을 부여하고 가세요.
               </div>
               <br>
               <table class="table table-bordered" id="dataTable" width="100%" style='table-layout: fixed; text-align: center' cellspacing="0">
@@ -348,13 +398,14 @@
                 <a id="memberDeleteConfirm" href="#" class="btn btn-danger btn-icon-split" style='width: 30; height: 5;'>
                   <span class='text'>제명</span>
                 </a><br><br>
-                <li>경고! 제명 버튼을 누르면 별도의 확인 없이 바로 회원이 제명되고, 재등록하지 않는 한 복구가 불가능합니다! 신중하게 누르세요!</li>
+                <i class='fas fa-engine-warning' style='color: #e99f00'></i> 제명 버튼을 누르면 별도의 확인 없이 바로 회원이 제명되고, 재등록하지 않는 한 복구가 불가능합니다! 신중하게 누르세요!
                 <br>
               </div>
             </div>
             <div id='past_namelist' class="table-responsive" style='display: none;'>
-              <div style='font-size: 0.8rem'>
-                <li>지난 학기 회원 목록을 열람합니다. 수정은 불가능합니다.</li>
+              <div style='font-size: 0.9rem'>
+                <b style='font-size: 1.2rem;'>지난 학기</b>
+                <li>열람 및 다운로드만 가능합니다. 수정은 불가능합니다.</li>
               </div>
               <br>
               <table class="table table-bordered" id="dataTable_2" width="100%" style='table-layout: fixed; text-align: center' cellspacing="0">
@@ -403,10 +454,11 @@
             <div class="d-sm-flex align-items-center justify-content-between mb-4">
               <h1 class="h3 mb-0 text-gray-800">1365 인증서</h1>
             </div>
-            <div style='font-size:0.8rem'>
+            <div style='font-size:0.9rem'>
               <li>1365 봉사활동 확인서를 자동으로 작성한 후 다운로드합니다.</li>
               <li>인증서를 생성할 년/월 및 명단 데이터를 선택한 후 다운로드 버튼을 누르세요.</li>
               <li>다운로드 버튼을 누르면 10초 내외로 다운로드가 시작됩니다.</li>
+              <li>팝업 차단을 해제해야 다운로드가 가능합니다. (아마도)</li>
             </div>
             <br>
             <table style="border-collapse: separate; border-spacing: 10px;">
@@ -430,9 +482,7 @@
             <div class="d-sm-flex align-items-center justify-content-between mb-4">
               <h1 class="h3 mb-0 text-gray-800">신입 모집</h1>
             </div>
-            <ul>
-              <li style='font-size: 0.9rem'>⚠️ 설문지 링크 공개 전에 반드시 <span style='font-weight: bold;'>설정</span> 탭에서 <mark>현재 학기</mark> 및 <mark>신입 모집</mark> 관련 설정을 업데이트하십시오. 특히 <mark>현재 학기</mark>는 반드시 신입 회원을 모집하는 학기로 설정해야 합니다.</li>
-            </ul>
+            <i class='fas fa-engine-warning' style='color: #e99f00'></i> 설문지 배포 전에 반드시 <span style='font-weight: bold;'>설정</span> 탭에서 <mark>현재 학기</mark> 및 <mark>신입 모집</mark> 관련 설정을 업데이트하세요.<br>특히 <mark>현재 학기</mark>는 반드시 신입 회원을 모집하는 학기로 설정해야 합니다.<br><br>
             신입 모집 설문지 : <a href='https://luftaquila.io/ajoumeow/register/'>luftaquila.io/ajoumeow/register/</a><br>
             설문지 링크 QR코드 : <br><img src='/ajoumeow/Resources/Images/frame.png'><br><br>
             <a href="https://docs.google.com/spreadsheets/d/14fRlX0UWFbMzDjhueOPi9ivZFE799kui6-1UixzgvWg/edit?usp=drivesdk">> 모집 설문지 응답 시트</a><br><br>
@@ -528,6 +578,10 @@
                   </div>
                 </div>
               </div>
+              뽑힐 확률은 마일리지의 총합 대비 비율입니다.<br>
+              즉, <code>본인 마일리지 ÷ 목록의 마일리지 총합 × 100(%)</code> 입니다.<br>
+              리워드 지급 정책에 따라 자유롭게 이용하시면 됩니다.
+
             </div>
           </div>
           <div class="container-fluid text-gray-700" id='logContent' style='display: none;'>
@@ -537,9 +591,8 @@
             </div>
             <h6>서버 로그를 열람합니다.</h6>
             <div style='font-size: 0.8rem; margin-bottom: 10px'>
-              <li>체크박스가 체크된 범주의 로그만 표시됩니다.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;요청의 대다수는 페이지를 로딩할 때 발생합니다.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;페이지 로드 체크박스를 해제하면 보다 중요한 로그만 볼 수 있습니다.</li>
+              <li>체크박스가 체크된 범주의 로그만 표시합니다.</li>
               <li>오류 체크박스에 체크하면 오류 기록만 표시합니다.</li>
-              <li>로그는 일정 크기를 초과하면 삭제됩니다</li>
             </div>
             <label><input type='checkbox' name='iserror' value='error'> 오류</label>
             <hr width='100%' style='margin: 0 0 10px 0'>
@@ -652,6 +705,8 @@
     <script src='js/datatable-editor.js'></script>
     <script src='/ajoumeow/Resources/Libraries/alertify/alertify.min.js'></script>
     <script src='/ajoumeow/Resources/Libraries/micromodal/micromodal.min.js'></script>
+    <script src='/res/bootstrap-datepicker/js/bootstrap-datepicker.min.js'></script>
+    <script src='/res/bootstrap-datepicker/js/bootstrap-datepicker.ko.min.js'></script>
     
     <!-- For excel export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.14.3/xlsx.full.min.js"></script>
