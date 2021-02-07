@@ -199,11 +199,6 @@ app.post('//modifySettings', async function(req, res) {
     result = await db.query(query);
     res.send({ 'result' : true });
     logger.info('설정값 변경을 시도합니다.', { ip: ip, url: 'modifySettings', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
-    
-    if(req.body.editParam == 'currentSemister') {
-      const target = client.channelManager.map.get(process.env.noticeChannelId);
-      await target.sendText('시스템 현재 학기가 변경되었습니다!\n\n 기존 회원 분들은 사이트의 회원 등록 - 기존 회원 메뉴를 통해 새 학기 명단에 다시 등록해 주세요. 새 학기에도 화이팅!');
-    }
   }
   catch(e) { 
     res.send({ 'result' : null, 'error' : e.toString() });

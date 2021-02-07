@@ -1,3 +1,7 @@
+body {
+  font-family: 'Nanum Gothic'
+}
+
 a[disabled="disabled"] {
         pointer-events: none;
 }

@@ -16,9 +16,11 @@
 
 [6. 신입 모집 - 새내기 주세요!!!](https://github.com/luftaquila/ajoumeow/blob/master/README.md#6-%EC%8B%A0%EC%9E%85-%EB%AA%A8%EC%A7%91)
 
-[7. 서버 로그 - 노잼.](https://github.com/luftaquila/ajoumeow/blob/master/README.md#7-%EC%84%9C%EB%B2%84-%EB%A1%9C%EA%B7%B8)
+[7. 서버 로그 - #&*(%#@?](https://github.com/luftaquila/ajoumeow/blob/master/README.md#7-%EC%84%9C%EB%B2%84-%EB%A1%9C%EA%B7%B8)
 
 [8. Dashboard - 리워드 제비뽑기 확률X망겜](https://github.com/luftaquila/ajoumeow/blob/master/README.md#8-dashboard)
+
+[9. 카카오톡 봇 - 미유미유의 망령](https://github.com/luftaquila/ajoumeow#9-%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%86%A1-%EB%B4%87)
 
 ## 0. 들어가기
 ⚠️ 개발자가 나 쓰자고 만든 거라 버그가 많을 수 있습니다.
@@ -178,6 +180,8 @@
 ## 9. 카카오톡 봇
 미유미유 카카오톡 채팅방에 `미유미유의 망령` 닉네임으로 봇이 실행중입니다.  
 
+봇을 계속 사용하고 싶다면 채팅방에 미유미유의 망령을 초대하세요.
+
 봇은 채팅방 이름의 `단톡`, `공지`, `인증` 이라는 문구를 인식하여 채팅방을 구분합니다.  
 
 주요 기능은 다음과 같습니다.
@@ -187,7 +191,7 @@
 ⚠️ 봇은 번거로운 인증을 대신 수행해 줄 뿐입니다. 데이터의 유효성과 누락 유무는 관리자가 확인해야 합니다.
 * 새 회원이 단톡에 초대되면 환영 메시지를 보냅니다.  
 단, 5초 이내에 반복적으로 초대되는 경우 최초 1회만 시행합니다.
-* 학기가 변경되면 신규 회원의 재등록 공지 메시지를 표시합니다.
+* 학기가 변경되면 기존 회원 재등록 공지 메시지를 공지방에 보냅니다.
 
 봇은 카카오톡 공식 API를 이용하는 것이 아니므로 언제든지 작동을 중지할 수 있습니다.
     

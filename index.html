@@ -160,23 +160,22 @@
           </header>
           <main class="modal__content" id="help_modal-content">
             <div style="font-size: 1rem; color: #333; text-align: center">
-                <div style='font-size: 0.9rem; margin: 0.5rem 0'>날짜 위의 점들은 다양한 정보를 알려줍니다.</div>                <div class='calendar-table__item hovered'>
+                <div style='font-size: 0.9rem; margin: 0.5rem 0'>날짜 위 점들의 <b>색깔</b>은 <b>코스</b>, <b>모양</b>은 <b>인원 수</b>를 나타내요.</div>
+                <div class='calendar-table__item hovered'>
                   <div class='my'>
                     5/12
                   </div>
                 </div>
-                <div style='font-size: 0.9rem; margin: 0.5rem 0'>점의 색깔은 코스를 나타내요.</div>
                 <div>
-                  <span style='color: red'>1코스</span>&nbsp;&nbsp;&nbsp;&nbsp;
-                  <span style='color: gold'>2코스</span>&nbsp;&nbsp;&nbsp;&nbsp;
-                  <span style='color: limegreen'>3코스</span><br>
+                  <span style='color: red'>1코스</span>&emsp;
+                  <span style='color: gold'>2코스</span>&emsp;
+                  <span style='color: limegreen'>3코스</span>
                 </div>
-                <div style='font-size: 0.9rem; margin: 0.5rem 0'>점의 모양은 인원 수를 나타내요.</div>
                 <div>
-                  <div style='display: inline-block; width: 0.8rem; height: 0.8rem; border: 3px solid black; border-radius: 50%'></div> : 1명&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                  <div style='display: inline-block; width: 0.8rem; height: 0.8rem; border: 3px solid black; background-color: black; border-radius: 50%'></div> : 2명 이상
+                  <i class='far fa-circle'></i> <i class='far fa-equals'></i> <i class='fas fa-male'></i>&emsp;
+                  <i class='fas fa-circle'></i> <i class='far fa-equals'></i> <i class='fas fa-male'></i><i class='fas fa-male'></i><i class='fas fa-male'></i>
                 </div>
-                <div style='margin: 0.5rem 0; font-size: 0.9rem;'><mark>내가 신청한 날</mark>에는 <div style='display: inline-block; width: 0.8rem; height: 0.8rem; border: 0.1rem solid #90ee90; border-radius: 50%'></div>가 날짜 주위에 표시됩니다.</div>
+                <div style='margin: 0.5rem 0; font-size: 0.9rem;'><mark>내가 신청한 날</mark>에는 날짜 주위에 <i class='far fa-circle' style='color: lightgreen'></i>이 표시됩니다.</div>
             </div>
             <div style="font-size: 1rem; color: #333; text-align: left">
               <li style='font-weight: bold; margin-top: 1rem;'>신청하기</li>
@@ -186,7 +185,7 @@
                 </ol>
               <li style='font-weight: bold; margin-top: 1rem;'>삭제하기</li>
                 <ol style='padding-left: 1rem'>
-                  1. 삭제하고 싶은 이름표 <span class='ripple namecard example' style='display: inline-block; font-size: 0.5rem; width: 2rem; height: 1rem; line-height: 0.9rem; text-align: center; border-radius: 3px; border: solid 1px lightcoral; background-color: lightcoral; color: white;'>고양이</span> 를 탭하고,<br>
+                  1. 삭제하고 싶은 이름표 <span class='ripple namecard example' style='display: inline-block; font-size: 0.5rem; width: 2rem; height: 1rem; line-height: 0.9rem; text-align: center; border-radius: 3px; border: solid 1px lightcoral; background-color: lightcoral; color: white;'>고양이</span> 를 탭합니다.<br>
                   2. 다시 한 번 삭제할 이름표 <span class='ripple namecard deleteActiveExample example' style='display: inline-block; font-size: 0.5rem; width: 2rem; height: 1rem; line-height: 0.9rem; text-align: center; border-radius: 3px; border: solid 1px lightcoral; background-color: lightcoral; color: white;'>고양이</span> 를 탭합니다.<br>
                 </ol>
             </div>
@@ -225,14 +224,14 @@
             <h2 class="modal__title" id="guide_modal-title">급식 가이드</h2>
             <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
           </header>
-          <main class="modal__content" id="guide_modal-content" style='padding: 1rem 1rem 0'>
+          <main class="modal__content" id="guide_modal-content" style='padding-top: 1rem;'>
             <article>
               <h3><i class='fas fa-home'></i> 동아리방</h3>
               <div style='font-size:0.9rem; padding-left: 1rem;'>
                 급식에 필요한 물건들은 동아리방에 있습니다!<br>
                 <mark>신학생회관 406호</mark>에서 물건을 챙겨주세요.<br>
                 <div style='font-size: 0.8rem; padding-left: 0.8rem; padding-top: 0.5rem;'>
-                  <i class='fas fa-user-check' style='color: green'></i> 신학생회관 출입에는 등록된 학생증이 필요합니다. 학생증 등록은 임원진에게, 학생증 미 소지시에는 신학생회관 상황실(<a href="tel:031-219-2245">031-219-2245</a>)에 연락하세요!
+                  <i class='fas fa-user-check' style='color: green'></i> 신학생회관 출입에는 등록된 학생증이 필요합니다. 학생증 등록은 임원진에게, 학생증 미 소지시에는 신학생회관 상황실 <a href="tel:031-219-2245" style='text-decoration:none;'><i class='fas fa-phone-alt'></i> 031-219-2245</a> 에 연락하세요!
                 </div>
               </div>
             </article>
@@ -244,19 +243,19 @@
                   <li style='margin-bottom: 0.5rem'>
                     <b>일해라 캔따개</b>
                     <div style='padding-left: 0.5rem'>
-                      동방 앞 복도에 사물함이 있어요. 맨 위 칸에는 참치캔과 영양제 2종류, 중간 칸에는 젓가락이 있습니다. 영양제를 각각 한 스푼씩 참치캔에 넣고 젓가락으로 잘 섞어 주세요.
+                      동방 앞 복도에 사물함이 있어요. 맨 위 칸에는 <b>참치캔 <i class='fas fa-drum-steelpan'></i></b> 과 <b>영양제 <i class='fas fa-prescription-bottle-alt'></i></b> 2종류, 중간 칸에는 <b>젓가락</b>이 있습니다. 영양제를 각각 한 스푼씩 참치캔에 넣고 젓가락으로 잘 섞어 주세요.
                     </div>
                   </li>
                   <li style='margin-bottom: 0.5rem'>
                     <b>내 밥은 걸러도 고양이 밥은</b>
                     <div style='padding-left: 0.5rem'>
-                      물통과 사료통도 챙겨주세요! 사료통에 사료가 별로 없다면 사물함 옆 사료 봉지에서 채워주세요.
+                      <b>물통 <i class='fas fa-jug'></i></b> 과 <b>사료통 <i class='fas fa-toolbox'></i></b> 도 챙겨주세요! 사료통에 사료가 별로 없다면 사물함 옆 사료 봉지에서 채워주세요.
                     </div>
                   </li>
                   <li style='margin-bottom: 0.5rem'>
                     <b>거기 인간, 물 좀 주시오</b>
                     <div style='padding-left: 0.5rem'>
-                      신학 1, 3층의 식수대에서 물통에 물을 채우면 준비 끝! 겨울에는 미지근한 물로 채워주세요.
+                      신학 1, 3층의 식수대에서 물통에 <b>물 <i class='fas fa-faucet'></i></b> 을 채우면 준비 끝! 겨울에는 미지근한 물로 채워주세요.
                     </div>
                   </li>
                 </ol>
@@ -266,26 +265,28 @@
             <article>
               <h3><i class='fas fa-meat'></i> 바압</h3>
               <div style='font-size:0.9rem; padding-left: 1rem;'>
-                &nbsp;&nbsp;모든 급식소에는 물그릇과 사료그릇이 하나씩 있어요. 가져가신 물과 사료로 빈 그릇을 채워주세요.<br>&nbsp;&nbsp;
-                코스를 잘 모른다면 <b>급식 지도 <i class="fas fa-street-view"></i></b> 의 도움을 받으세요.<br>&nbsp;&nbsp;
-                <mark>급식 인증을 위해 사진</mark> 찍는 걸 잊지 마세요!
-              </div>
-            </article>
-            <br>
-            <article>
-              <h3><i class='fas fa-camera-retro'></i> 마무으리</h3>
-              <div style='font-size:0.9rem; padding-left: 1rem;'>
-                급식이 끝나면 다 쓴 참치캔과 나무젓가락, 물통 속 물은 꼭 버려 주세요! 미유미유 급식인증방에 사진과 함께 <mark>급식 인증</mark>을 해 주시면 급식이 끝납니다.
-              </div>
-            </article>
-            <br>
-            <article>
-              <h3><i class='fas fa-key'></i> 잠깐!</h3>
-              <div style='font-size:0.9rem; padding-left: 1rem;'>
                 <ul>
-                  <li style='margin-bottom: 0.5rem'>급식 인증을 해 주셔야 봉사시간을 드릴 수 있어요. 깜빡하시면 안 돼요!</li>
-                  <li style='margin-bottom: 0.5rem'>급식 권장 시간은 오후 6시에요. 이 시간에 급식이 어렵다면 정오 ~ 자정 사이에 급식을 해 주세요. 오전에는 밥이 많이 남아 있답니다.</li>
-                  <li style='margin-bottom: 0.5rem'>당일에 갑자기 급식을 취소하실 때에는 반드시 단톡방에서 대타를 구해 주세요!</li>
+                  <li style='margin-bottom: 0.3rem'>모든 급식소에는 물그릇과 사료그릇이 하나씩 있어요. 가져가신 물과 사료로 빈 그릇을 채워주세요.</li>
+                  <li style='margin-bottom: 0.3rem'>코스를 잘 모른다면 <b>급식 지도 <i class="fas fa-street-view"></i></b> 의 도움을 받으세요.</li>
+                  <li style='margin-bottom: 0.3rem'><mark>급식 인증을 위해 사진</mark> 찍는 걸 잊지 마세요!</li>
+                </ul>
+              </div>
+            </article>
+            <br>
+            <article>
+              <h3><i class='fas fa-camera-retro'></i> 마무리</h3>
+              <div style='font-size:0.9rem; padding-left: 1rem;'>
+                <li>급식이 끝나면 다 쓴 참치캔과 나무젓가락, 물통 속 물은 꼭 버려 주세요! 미유미유 급식인증방에 사진과 함께 <mark>급식 인증</mark>을 해 주시면 급식이 끝납니다.</li>
+              </div>
+            </article>
+            <br>
+            <article>
+              <h3><i class='fas fa-star'></i> 잠깐!</h3>
+              <div style='font-size:0.9rem; padding-left: 1rem;'>
+                <ul class='fa-ul' style='margin-left: 1.5rem'>
+                  <li style='margin-bottom: 0.3rem'><span class='fa-li'><i class='fa fa-check-square'></i></span>급식 인증을 해 주셔야 봉사시간을 드릴 수 있어요. 깜빡하시면 안 돼요!</li>
+                  <li style='margin-bottom: 0.3rem'><span class='fa-li'><i class='fa fa-clock'></i></span>급식 권장 시간은 오후 6시에요. 이 시간에 급식이 어렵다면 정오 ~ 자정 사이에 급식을 해 주세요. 오전에는 밥이 많이 남아 있답니다.</li>
+                  <li style='margin-bottom: 0.3rem'><span class='fa-li'><i class='fa fa-comment-slash'></i></span>당일에 갑자기 급식을 취소하실 때에는 반드시 단톡방에서 대타를 구해 주세요!</li>
                 </ul>
               </div>
             </article>
