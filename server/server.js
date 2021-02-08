@@ -152,12 +152,21 @@ app.post('//apply', async function(req, res) {
 
 app.post('//requestApply', async function(req, res) {
   const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
+  let result;
   try {
-    let applyTerm = await settings('applyTerm'), result;
-    applyTerm = applyTerm.split('~');
-  
-    if((new Date() > new Date(applyTerm[0]) && new Date() < new Date(new Date(applyTerm[1]).getTime() + 60 * 60 * 24 * 1000)) || (await settings('isAllowAdditionalApply') == 'TRUE'))
-      result = { 'result' : true, 'semister' : await settings('currentSemister') };
+    if(await settings('isApply') == 'TRUE') {
+      if(await settings('isApplyRestricted') == 'TRUE') {
+        let applyTerm = await settings('applyTerm');
+        applyTerm = applyTerm.split('~');
+        if((new Date() > new Date(applyTerm[0]) && new Date() < new Date(new Date(applyTerm[1]).getTime() + 60 * 60 * 24 * 1000))) {
+          result = { 'result' : true, 'semister' : await settings('currentSemister') }        
+        }
+        else result = { result: null };
+      }
+      else {
+        result = { 'result' : true, 'semister' : await settings('currentSemister') }        
+      }
+    }
     else result = { result: null };
   
     res.send(result);
@@ -170,13 +179,23 @@ app.post('//requestApply', async function(req, res) {
 
 app.post('//requestRegister', async function(req, res) {
   const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
+  let result;
   try {
-    let registerTerm = await settings('registerTerm'), result;
-    registerTerm = registerTerm.split('~');
-  
-    if((new Date() > new Date(registerTerm[0]) && new Date() < new Date(new Date(registerTerm[1]).getTime() + 60 * 60 * 24 * 1000)) || (await settings('isAllowAdditionalRegister') == 'TRUE'))
-      result = { 'result' : true, 'semister' : await settings('currentSemister') };
-    else result = { 'result' : null };
+    if(await settings('isRegister') == 'TRUE') {
+      if(await settings('isRegisterRestricted') == 'TRUE') {
+        let registerTerm = await settings('registerTerm');
+        registerTerm = registerTerm.split('~');
+        if((new Date() > new Date(registerTerm[0]) && new Date() < new Date(new Date(registerTerm[1]).getTime() + 60 * 60 * 24 * 1000))) {
+          result = { 'result' : true, 'semister' : await settings('currentSemister') }        
+        }
+        else result = { result: null };
+      }
+      else {
+        result = { 'result' : true, 'semister' : await settings('currentSemister') }        
+      }
+    }
+    else result = { result: null };
+    
     res.send(result);
     //logger.info('회원 가입 가능 여부를 확인합니다.', { ip: ip, url: 'requestRegister', query: '-', result: JSON.stringify(result)});
   }
