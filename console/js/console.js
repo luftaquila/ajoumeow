@@ -1,11 +1,11 @@
 $(function() {
   //(function () { var script = document.createElement('script'); script.src="//cdn.jsdelivr.net/npm/eruda"; document.body.appendChild(script); script.onload = function () { eruda.init() } })();
   $.ajax({
-    url:"https://luftaquila.io/ajoumeow/api/loginCheck",
+    url:"api/loginCheck",
     type: "POST",
     dataType: 'json',
     success: function(response) {
-      if(!response.role || response.role == '회원') window.location.href = "https://luftaquila.io/ajoumeow/403.html";
+      if(!response.role || response.role == '회원') window.location.href = "403.html";
       else $('#welcomeMSG').text(response.name + '(관리자)님 안녕하세요.');
     }
   });
@@ -24,7 +24,7 @@ function init() {
   
   $.when(
     $.ajax({ // Request settings
-      url: "https://luftaquila.io/ajoumeow/api/requestSettings",
+      url: "api/requestSettings",
       type: "POST",
       dataType: 'json',
       success: function(res) {
@@ -87,7 +87,7 @@ function init() {
       }
     }),
     $.ajax({
-      url: 'https://luftaquila.io/ajoumeow/api/requestNameList',
+      url: 'api/requestNameList',
       type: 'POST',
       dataType: 'json',
       data: { 'semister' : 'this' },
@@ -97,7 +97,7 @@ function init() {
     membertable = $('#dataTable').DataTable({
       pagingType: "numbers",
       ajax: {
-        url: "https://luftaquila.io/ajoumeow/api/requestNameList",
+        url: "api/requestNameList",
         type: 'POST',
         data: { 'semister' : settings['currentSemister'] },
         dataSrc: ''
@@ -128,7 +128,7 @@ function init() {
        ],
        onEdited : function(prev, changed, index, cell) {
          $.ajax({
-           url: 'https://luftaquila.io/ajoumeow/api/modifyMember',
+           url: 'api/modifyMember',
            type: 'POST',
            dataType: 'json',
            data: cell.row(index.row).data(),
@@ -156,7 +156,7 @@ function init() {
     });
     
     $.ajax({
-      url: 'https://luftaquila.io/ajoumeow/api/requestStat',
+      url: 'api/requestStat',
       type: 'POST',
       success: function(res) {
         var percent = (res.people / res.total * 100).toFixed(1) + '%';
@@ -167,7 +167,7 @@ function init() {
     });
     
     $.ajax({
-      url: "https://luftaquila.io/ajoumeow/api/requestLogs",
+      url: "api/requestLogs",
       type: 'POST',
       success: function(res) { logData = res; }
     }).done(function() {
@@ -192,7 +192,7 @@ function init() {
       lengthChange: false,
       order: [[ 1, 'desc' ]],
       ajax: {
-        url: "https://luftaquila.io/ajoumeow/api/requestStatistics",
+        url: "api/requestStatistics",
         type: 'POST',
         data: function(d) {
           d.type = $('input[name=statisticsType]:checked').val();
@@ -208,7 +208,7 @@ function init() {
     past_namelist_table = $('#dataTable_2').DataTable({
       pagingType: "numbers",
       ajax: {
-        url: "https://luftaquila.io/ajoumeow/api/requestNameList",
+        url: "api/requestNameList",
         type: 'POST',
         data: function(d) {
           let val = $('#namelist').val();
@@ -230,7 +230,7 @@ function init() {
     });
     
     $.ajax({ // Request Namelist DBs
-      url: 'https://luftaquila.io/ajoumeow/api/requestNamelistTables',
+      url: 'api/requestNamelistTables',
       type: "POST",
       dataType: 'json',
       success: function(res) {
@@ -250,13 +250,13 @@ function init() {
 async function load() {
   var record, verify;
   $.ajax({
-    url: 'https://luftaquila.io/ajoumeow/api/requestLatestVerify',
+    url: 'api/requestLatestVerify',
     type: 'POST',
     success: function(res) { $('#latestConfirm').text('마지막 인증 기록 : ' + new Date(res[0].date).format('yyyy-mm-dd')); }
   });
   
   await $.ajax({
-    url: 'https://luftaquila.io/ajoumeow/api/requestVerifyList',
+    url: 'api/requestVerifyList',
     type: 'POST',
     dataType: 'json',
     data: { date: $('#timestamp').datepicker('getDate').format('yyyy-mm-dd') },
@@ -328,7 +328,7 @@ $("#DATA a#submit").click( function(event) {
     }
     if(validator(payload)) {
       $.ajax({
-        url: 'https://luftaquila.io/ajoumeow/api/deleteVerify',
+        url: 'api/deleteVerify',
         type: 'POST',
         data: { data : JSON.stringify(payload) },
         success: function() {
@@ -384,7 +384,7 @@ function scoreProvider(payload) {
 
 function transmitter(payload) {
   $.ajax({
-    url: 'https://luftaquila.io/ajoumeow/api/verify',
+    url: 'api/verify',
     type: 'POST',
     dataType: 'json',
     data: { data: JSON.stringify(payload) },
@@ -505,7 +505,7 @@ function clickEventListener() {
     
     $.ajax({
       type: 'POST',
-      url: 'https://luftaquila.io/ajoumeow/api/modifySettings',
+      url: 'api/modifySettings',
       data: { 'editParam' : req.param, 'editData' : req.data },
       success: function(res) { 
         if(res.result) alertify.success('설정이 변경되었습니다');
@@ -521,13 +521,13 @@ function clickEventListener() {
     if($('#calendar1365').val()) {
       $('#calendar1365, #download1365, #namelist_1365').attr('disabled', true);
       $.ajax({
-        url: "https://luftaquila.io/ajoumeow/api/request1365",
+        url: "api/request1365",
         type: 'POST',
         data: { month: $('#calendar1365').val(), namelist: $('#namelist_1365').val() },
         success: function(res) {
           if(res.result) {
             alertify.success('문서 생성이 완료되었습니다.');
-            window.open('https://luftaquila.io/ajoumeow/api/download1365');
+            window.open('api/download1365');
           }
         },
         error: function(req) { alertify.error(req.responseJSON.error.code); },
@@ -614,7 +614,7 @@ function clickEventListener() {
   });
   $('#memberDeleteConfirm').click(function() {
     $.ajax({
-      url: 'https://luftaquila.io/ajoumeow/api/deleteMember',
+      url: 'api/deleteMember',
       type: 'POST',
       data: { delete: $('#deletemember').val() },
       success: function(res) {
@@ -686,7 +686,7 @@ function clickEventListener() {
   $('#download_namelist').click(function() {
     let val = $('#namelist').val().replace('namelist_', '');
     $.ajax({
-      url: "https://luftaquila.io/ajoumeow/api/requestNameList",
+      url: "api/requestNameList",
       type: 'POST',
       data: 'semister=' + val,
       success: function(res) {

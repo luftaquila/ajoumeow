@@ -1,10 +1,10 @@
 /Resources/weather/icon/
+/Resources/videos/
 /Resources/weather/*.log
 /Resources/weather/*.json
-/Resources/videos/
+
 /server/node_modules/
+/server/logs/
 /server/*.pdf
-/server/*.log
-/server/*.key
 
 **/.env

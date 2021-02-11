@@ -4,8 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "test": "npx nodemon --exec babel-node app.js",
+    "start": "npx babel-node app.js"
   },
   "repository": {
     "type": "git",
@@ -18,20 +18,27 @@
   },
   "homepage": "https://github.com/luftaquila/ajoumeow#readme",
   "dependencies": {
+    "axios": "^0.21.1",
     "body-parser": "^1.19.0",
-    "dateformat": "^3.0.3",
+    "dateformat": "^4.5.1",
     "dotenv": "^8.2.0",
-    "ejs": "^3.1.6",
     "envfile": "^6.14.0",
     "express": "^4.17.1",
-    "express-mysql-session": "^2.1.5",
-    "express-session": "^1.17.1",
-    "forever-monitor": "^3.0.3",
+    "jsonwebtoken": "^8.5.1",
     "mariadb": "^2.5.2",
-    "moment-timezone": "^0.5.33",
     "node-kakao": "^3.1.8",
-    "node-schedule": "^1.3.3",
-    "request": "^2.88.2",
-    "winston": "^3.3.3"
+    "node-schedule": "^2.0.0",
+    "webpack": "^5.21.2",
+    "winston": "^3.3.3",
+    "winston-daily-rotate-file": "^4.5.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.12.13",
+    "@babel/core": "^7.12.13",
+    "@babel/node": "^7.12.13",
+    "@babel/plugin-transform-classes": "^7.12.13",
+    "@babel/polyfill": "^7.12.1",
+    "@babel/preset-env": "^7.12.13",
+    "babel-loader": "^8.2.2"
   }
 }

@@ -1,116 +1,80 @@
-require('dotenv').config();
-require('../../res/dateFormat.js');
+//import fs from 'fs';
+import dotenv from 'dotenv'
+import express from 'express';
+import jwt from 'jsonwebtoken';
+import dateformat from 'dateformat';
+import bodyParser from 'body-parser';
 
-const fs = require('fs');
-const envfile = require('envfile');
-const request = require('request');
-const express = require('express');
-const mariadb = require('mariadb');
-const winston = require('winston');
-const nodeKakao = require('node-kakao');
-const dateformat = require('dateformat');
-const schedule = require('node-schedule');
-const bodyParser = require('body-parser');
-const session = require('express-session');
-const sessionDatabase = require('express-mysql-session')(session);
-const DBOptions = {
-  host: process.env.DBHost, 
-  user: process.env.DBUser,
-  password: process.env.DBPW,
-  database: process.env.DBName,
-  idleTimeout: 0
-};
-const pool = mariadb.createPool(DBOptions);
-const sessionDB = new sessionDatabase(DBOptions);
-let db;
+import logger from '../config/winston';
+import util from '../controllers/util/util.js';
+import Response from '../controllers/util/response.js';
 
-let logger = new winston.createLogger({
-  transports: [
-    new winston.transports.File({
-      level: 'info',
-      filename: 'server.log',
-      maxsize: 10485760, //10MB
-      maxFiles: 1,
-      showLevel: true,
-      format: winston.format.combine(
-        winston.format.timestamp({
-          format: 'YYYY-MM-DD HH:mm:ss'
-        }),
-        winston.format.json()
-      )
-    })
-  ],
-  exitOnError: false,
-});
+dotenv.config();
 
-const client = new nodeKakao.TalkClient(process.env.TalkClientName, process.env.TalkClientUUID);
-client.login(process.env.TalkClientLoginID, process.env.TalkClientLoginPW, true).then(kakaoClient);
+let router = express.Router();
+router.use(bodyParser.urlencoded({ extended: true }));
 
-const app = express();
-//app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(session({
- secret: process.env.sessionSecret,
- resave: false,
- saveUninitialized: true,
- store: sessionDB,
- cookie: { maxAge: 365 * 24 * 60 * 60 * 1000 }
-}));
+//const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
 
-app.get('/', async function(req, res) {
-  
-});
-
-app.post('//loginCheck', async function(req, res) {
-  const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
-  let query = true, result;
+router.post('/login', async function(req, res) {
   try {
-    if(req.session.isLogin) {
-      query = 'SELECT name, ID, role FROM `namelist_' + await settings('currentSemister') + "` WHERE ID='" + req.session.ID + "';";
-      result = await db.query(query);
-      res.send({ 'name' : result[0].name, 'id' : result[0].ID, 'role' : result[0].role, semister: await settings('currentSemister') });
-      logger.info('세션의 로그인 여부를 확인합니다.', { ip: ip, url: 'loginCheck', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
+    if(req.body.id) { // if id field exists
+      const result = await util.query(`SELECT name, ID, role FROM \`namelist_${await util.getSettings('currentSemister')}\` WHERE ID='${req.body.id}';`);
+      const semister = await util.getSettings('currentSemister');
+
+      if(result.length) { // if corresponding user exists
+        const token = jwt.sign(req.body, process.env.JWTSecret, { expiresIn: '365d' });
+        const statistics = await util.query(`SELECT date, course, score FROM verify WHERE id=${req.body.id} ORDER BY date DESC;`);
+        res.status(200).json(new Response('success', token, { user: result[0], statistics: statistics, semister: semister }));
+      }
+      else // if no corresponding user exists
+        res.status(400).json(new Response('error', semister, 'ERR_NOT_REGISTERED'));
     }
-    else {
-      res.send({ 'name' : null, 'id' : null, 'role' : null, semister: await settings('currentSemister') });
-      logger.info('세션의 로그인 여부를 확인합니다.', { ip: ip, url: 'loginCheck', query: '-', result: 'Not logged in.' });
-    }
+    else // if id field does not exists
+      res.status(400).json(new Response('error', '', 'ERR_INVAILD_ID'));
   }
   catch(e) {
-    res.send({ 'name' : null, 'id' : null, 'role' : null, semister: await settings('currentSemister') });
-    logger.error('세션의 로그인 여부를 확인하는 중에 오류가 발생했습니다.', { ip: ip, url: 'loginCheck', query: query ? query : 'Query String Not generated.', result: e.toString()});
+    //logger.error();
+    console.log(e);
+    res.status(500).json(new Response('error', '', 'ERR_UNKNOWN'));
   }
 });
 
-app.post('//login', async function(req, res) {
-  const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
-  let query, result;
+router.post('/autologin', util.isLogin, async function(req, res) {
   try {
-    query = 'SELECT name, ID, role FROM `namelist_' + await settings('currentSemister') + "` WHERE ID='" + req.body['ID'] + "';";
-    result = await db.query(query);
-    if(result[0]) {
-      req.session.touch();
-      req.session.ID = req.body['ID'];
-      req.session.isLogin = true;
-      res.send({ 'name' : result[0].name, 'id' : result[0].ID, 'role' : result[0].role, semister: await settings('currentSemister') });
-      logger.info('로그인을 시도합니다.', { ip: ip, url: 'login', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
+    if(req.decoded.id) { // if id field exists
+      const result = await util.query(`SELECT name, ID, role FROM \`namelist_${await util.getSettings('currentSemister')}\` WHERE ID='${req.decoded.id}';`);
+      const semister = await util.getSettings('currentSemister');
+
+      if(result.length) { // if corresponding user exists
+        const statistics = await util.query(`SELECT date, course, score FROM verify WHERE id=${req.decoded.id} ORDER BY date DESC;`);
+        res.status(200).json(new Response('success', null, { user: result[0], statistics: statistics, semister: semister }));
+      }
+      else // if no corresponding user exists
+        res.status(400).json(new Response('error', semister, 'ERR_NOT_REGISTERED'));
     }
-    else {
-      res.send({ 'name' : null, 'id' : null, 'role' : null, semister: await settings('currentSemister') });
-      logger.info('로그인을 시도합니다.', { ip: ip, url: 'login', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
-    } 
+    else // if id field does not exists
+      res.status(400).json(new Response('error', '', 'ERR_INVAILD_ID'));
   }
   catch(e) {
-    logger.error('로그인 시도 중에 오류가 발생했습니다.', { ip: ip, url: 'login', query: query ? query : 'Query String Not generated.', result: e.toString()});
+    //logger.error();
+    console.log(e);
+    res.status(500).json(new Response('error', '', 'ERR_UNKNOWN'));
   }
 });
 
-app.post('//logout', async function(req, res) {
-  const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
+router.post('/logout', util.isLogin, async function(req, res) {
   req.session.destroy();
   res.send({ 'result' : 'success' });
   logger.info('로그아웃을 시도합니다.', { ip: ip, url: 'logout', query: 'logout', result: 'ok'});
 });
+
+
+export default router
+
+
+
+/*
 
 app.post('//apply', async function(req, res) {
   const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
@@ -503,36 +467,6 @@ app.post('//request1365', async function(req, res) {
       }
     }
   }
-  /*
-  const getDaysInMonth = (month, year) => (new Array(31)).fill('').map((v, i) => new Date(year, month - 1, i + 1)).filter(v => v.getMonth() === month - 1);
-  let [year, month] = req.body.month.split('-'), data = [];
-
-  for(let date of getDaysInMonth(Number(month), Number(year))) {
-    let people = [];
-    for(let record of verify) {
-      if(+record.date == +date) {
-        let person = people.find(o => o.ID == record.ID);
-        if(person) person.hour++;
-        else {
-          let human = namelist.find(o => o.ID == record.ID);
-          if(human) {
-            people.push({
-              ID: human.ID,
-              name : human.name,
-              birthday: human.birthday,
-              '1365ID' : human['1365ID'],
-              hour : 1
-            });
-          }
-        }
-      }
-    }
-    data.push({
-      date: date,
-      people: people
-    });
-  }
-  */
   request.post({
     url: 'https://script.google.com/macros/s/AKfycbw3VnMUXHLQJY5Te8aFX1uJLR0wQt2y5XMvvNaLQnPbLJ59UiQ/exec',
     body: JSON.stringify(data),
@@ -789,234 +723,8 @@ app.post('//mapLoad', async function(req, res) {
   logger.info('Google Maps Javascript API map rendering call', { ip: ip, url: 'mapLoad', query: '-', result: 'ID: ' + (req.session.ID ? req.session.ID : 'ANONYMOUS') });
 });
   
-app.listen(5710, async function() {
-  db = await pool.getConnection();
-  console.log('Server startup at ' + new Date() + '\nServer is listening on port 5710');
-  logger.info('Server Startup.', { ip: 'LOCALHOST', url: 'SERVER', query: '-', result: 'Server listening on port 5710'});
-  setInterval(async function() {
-    try {
-      let query = 'SHOW TABLES;';
-      let result = await db.query(query);
-      //logger.info('DB connection check.', { ip: 'LOCALHOST', url: 'SERVER', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result) });
-    }
-    catch(e) {
-      /*
-      logger.info('DB connection closed. Attempting Restart', { ip: 'LOCALHOST', url: 'SERVER', query: 'SIGRESTART', result: '-' });
-      let cmd = '/usr/local/bin/node /home/luftaquila/HDD/ajoumeow/server/server.js';
-      let exec = require('child_process').exec;
-      exec(cmd, function() {
-        process.kill();
-      });
-      */
-      
-      db = await pool.getConnection();
-      logger.info('DB connection closed. Attempting reconnect.', { ip: 'LOCALHOST', url: 'SERVER', query: 'pool.getConnection()', result: JSON.stringify(db) });
-    }
-  }, 300000);
-    
-});
-
-async function kakaoClient() {
-  console.log('Login successful. Main client is in startup.');
-  logger.info('Bot startup.', { ip: 'LOCALHOST', url: 'BOT', query: 'kakaoClient();', result: 'OK' });
-
-  const alert_schedule = schedule.scheduleJob('0 0 15 * * *', async () => { // 3pm at every day
-    logger.info('Bot scheduled alert.', { ip: 'LOCALHOST', url: 'BOT', query: 'schedule.scheduleJob();', result: 'OK' });
-
-    const target = client.channelManager.map.get(process.env.talkChannelId);
-    const result = await db.query("SELECT * FROM record WHERE date BETWEEN '" + dateformat(new Date(), 'yyyy-mm-dd') + "' AND '" + dateformat(new Date(), 'yyyy-mm-dd') + "' ORDER BY date, course, timestamp;");
-    let resultString = '안녕하세요! 오늘 급식 신청해주신 분들은\n';
-    let noUserCourse = [];
-    for(let i = 1; i < 4; i++) {
-      const course = result.filter(o => o.course == i + '코스');
-      if(course.length) {
-        resultString += i + '코스 ';
-        for(let obj of course) resultString += obj.name + ', ';
-        resultString = resultString.slice(0, -2) + ' 님\n';
-      }
-      else noUserCourse.push(i);
-    }
-    resultString += '입니다. 오늘도 잘 부탁드려요 :D\n\n';
-    
-    if(noUserCourse.length) {
-      if(noUserCourse.length == 3) resultString = '';
-      for(let course of noUserCourse) { resultString += (course + ', '); }
-      resultString = resultString.slice(0, -2) + '코스에 신청자가 없습니다! 도와주세요ㅠㅠ\n\n';
-    }
-    
-    const wth = JSON.parse(fs.readFileSync('../Resources/weather/weather.json').toString()).current_weather
-    resultString += `오늘 아주대는 ${wth.stat}, ${wth.temp}℃에요!\n미세먼지는 ${wth.dust.pm10}㎍/㎥, 초미세먼지는 ${wth.dust.pm25}㎍/㎥입니다.`;
-    
-    await target.sendText(resultString);
-  });
-  
-  client.on('message', async chat => {
-    chat.markChatRead(); // Read incoming chat
-    if(chat.channel.id == process.env.verifyChannelId) {
-      // Only handle message with keywords
-      if(chat.text.includes('인증') && chat.text.includes('코스') && ((chat.text.includes('월') && chat.text.includes('일')) || chat.text.includes('/'))) {
-        // Recognizable datestring: m월d일, m월 d일, m/d
-        let targetDate = chat.text.match(/\b(\d+)\/(\d+)\b/) || chat.text.match(/(\d+)월 (\d+)일/) || chat.text.match(/(\d+)월(\d+)일/);
-        if(targetDate) { // if date detected
-          let targetMonth = targetDate[1];
-          let targetDay = targetDate[2];
-          let currentYear = new Date().getFullYear();
-          let current = new Date();
-          const dateList = [new Date(currentYear, Number(targetMonth) - 1, Number(targetDay)), new Date(Number(currentYear) - 1, Number(targetMonth) - 1, Number(targetDay)), new Date(Number(currentYear) + 1, Number(targetMonth) - 1, Number(targetDay))]
-          dateList.sort((a, b) => { return Math.abs(current - a) - Math.abs(current - b); });
-          targetDate = dateList[0]; // get nearest target date
-
-          // detect target courses and members
-          let targetCourses = chat.text.match(/\b(?=\d*[코스])\w+\b/g);
-          let targetMembers = chat.text.match(/(?<![가-힣])[가-힣]{3}(?![가-힣])/g);
-          targetMembers = targetMembers.filter(o => !(new RegExp('사진').test(o)) );
-          if(targetCourses && targetMembers) { // if courses and members are detected
-
-            // Score table
-            let score = { weekday: { solo: 1.5, dual: 1}, weekend: { solo: 2, dual: 1.5} }
-            
-            // Detect target date is weekand and number of people
-            let isWeekEnd = targetDate.getDayNum() > 5 ? 'weekend' : 'weekday';
-            let isSolo = targetMembers.length == 1 ? 'solo' : 'dual';
-
-            for(let i in targetMembers) { // get member student id with name
-              let res = await postRequest('https://luftaquila.io/ajoumeow/api/getMemberIdByName', { name: targetMembers[i] });
-              let id = JSON.parse(res)[0].ID;
-              if(id > 0) targetMembers[i] = { name: targetMembers[i], id: JSON.parse(res)[0].ID };
-              else if(!id) return chat.channel.sendTemplate(new nodeKakao.AttachmentTemplate(nodeKakao.ReplyAttachment.fromChat(chat), targetMembers[i] + ' 회원님이 회원 명단에 없어 자동 인증에 실패했습니다.\nC: ERR_NO_ENTRY_DETECTED'));
-              else if(id < 0) return chat.channel.sendTemplate(new nodeKakao.AttachmentTemplate(nodeKakao.ReplyAttachment.fromChat(chat), targetMembers[i] + ' 회원님 동명이인이 존재하여 자동 인증이 불가능합니다. 관리자가 직접 인증해 주세요.'));
-            }
-
-            // writing payload
-            let payload = [];
-            for(let course of targetCourses) { 
-              for(let member of targetMembers) {
-                payload.push({
-                  ID: member.id, name: member.name,
-                  date: dateformat(targetDate, 'yyyy-mm-dd'), course: course + '코스',
-                  score: score[isWeekEnd][isSolo]
-                });
-              }
-            }
-            
-            // send verify data to ajoumeow server
-            let res = await postRequest('https://luftaquila.io/ajoumeow/api/verify', { data: JSON.stringify(payload) });
-            if(JSON.parse(res).result == true) {
-              let resultString = greetings();
-              resultString += '시스템에 급식 활동을 등록했습니다.';
-              for(let obj of payload) resultString += '\n' + dateformat(payload[0].date, 'yyyy년 m월 d일 ') + obj.name + '님 ' + obj.course + '(' + obj.score + '점)';
-              chat.channel.sendTemplate(new nodeKakao.AttachmentTemplate(nodeKakao.ReplyAttachment.fromChat(chat), resultString));
-              logger.info('Bot auto verifing confirmed.', { ip: 'LOCALHOST', url: 'BOT', query: JSON.stringify(payload), result: res });
-            }
-          }
-        }
-      }
-    }
-  });
-  
-  client.on('user_join', async (channel, user) => {
-    let info = channel.getUserInfo(user);
-    if(!info) return;
-    
-    let channelName = channel.Name, channelId = channel.Id;
-    let userName = info.Nickname, userId = info.Id;
-    
-    if(userId == process.env.myUserId) {
-      // if myself invited to chatroom, update channelId
-      channelId = channelId.toString();
-      
-      if(channelName.includes('미유미유') && channelName.includes('인증')) {
-        process.env.verifyChannelId = channelId;
-        
-        let envFile = envfile.parse(fs.readFileSync('./.env'));
-        envFile.verifyChannelId = channelId;
-        fs.writeFileSync('./.env', envfile.stringify(envFile));
-        logger.info('Bot detected verify chatroom.', { ip: 'LOCALHOST', url: 'BOT', query: 'on user_join', result: channelId });
-      }
-        
-      else if(channelName.includes('미유미유') && channelName.includes('공지')) {
-        process.env.noticeChannelId = channelId;
-        
-        let envFile = envfile.parse(fs.readFileSync('./.env'));
-        envFile.noticeChannelId = channelId;
-        fs.writeFileSync('./.env', envfile.stringify(envFile));
-        logger.info('Bot detected notice chatroom.', { ip: 'LOCALHOST', url: 'BOT', query: 'on user_join', result: channelId });
-      }
-        
-      else if(channelName.includes('미유미유') && channelName.includes('단톡')) {
-        process.env.talkChannelId = channelId;
-        
-        let envFile = envfile.parse(fs.readFileSync('./.env'));
-        envFile.talkChannelId = channel
-        fs.writeFileSync('./.env', envfile.stringify(envFile));
-        logger.info('Bot detected common chatroom.', { ip: 'LOCALHOST', url: 'BOT', query: 'on user_join', result: channelId });
-      }
-    }
-    
-    else { // if others invited to chatroom
-      // ignore if multiple users invited during under 5s term.
-      if(!global.userJoinTime) global.userJoinTime = Number(new Date());
-      else if((Number(new Date()) - global.userJoinTime) < 5000) return (global.userJoinTime = Number(new Date()));
-
-      // send greeting or notices
-      if(channelId == process.env.verifyChannelId) {
-        channel.sendText('미유미유 급식 인증방입니다! 급식 인증 외 채팅은 자제해 주세요!');
-      }
-        
-      else if(channelId == process.env.noticeChannelId) {
-        
-      }
-        
-      else if(channelId == process.env.talkChannelId) {
-        channel.sendText('안녕하세요! 미유미유 단톡방입니다!!');
-      }
-    }
-  });
-  
-  async function postRequest(url, data) {
-    return new Promise(function(resolve, reject) {
-      request.post({
-        url: url,
-        form: data,
-      }, function(err, resp, body) {
-        if (err) reject(err);
-        else resolve(body);
-      });
-    });
-  }
-  
-  function greetings() {
-    /*
-    // 주말일 때
-    let weekend = ['주말에 수고하셨어요!'];
-    // 날씨가 추울 때
-    let coldweather = ['추운 날씨에 고생하셨어요!'];
-    // 그냥
-    let normal = ['수고하셨습니다!'];
-    
-    let target = cold ? coldweather : (new Date().isWeekend ? weekend : normal);
-    let greet = target[Math.floor(Math.random() * target.length)];
-    */
-    return '수고하셨습니다!\n';
-  }
-}
 
 
-async function settings(name) {
-  let res = await db.query(`SELECT name, value FROM settings WHERE name='` + name + `';`);
-  return res[0].value;
-}
 
-function log(ip, identity, type, description, query, result) {
-  try {
-    query = query.replace(/"/g, "'").replace(/`/g, "'").replace(/'/g, '');
-    result = JSON.stringify(result).replace(/"/g, "'").replace(/`/g, "'").replace(/'/g, "");
-    db.query("DELETE FROM log WHERE timestamp < UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 30 DAY))");
-    db.query("INSERT INTO log(ip, identity, type, query, description, result) VALUES('" + ip + "', '" + identity + "', '" + type + "', '" + query + "', '" + description + "', '" + result + "');");
-  }
-  catch(e) {
-    let error = JSON.stringify(e).replace(/"/g, "'").replace(/`/g, "'").replace(/'/g, "");
-    db.query("INSERT INTO log(ip, identity, type, query, description, result) VALUES('-', '-', '" + type + "', 'Logging Error', 'Logging Error', '" + error + "');"); }
-}
-  
-  
+
+*/
