@@ -4,25 +4,24 @@ $(function() {
 });
 
 function init() {
-  user = {};
+  user = null;
   let indexOfToday = (new Date(new Date().format('yyyy-mm-dd')).getTime() - new Date(getDateFromCalendarStart(0)).getTime()) / (1000 * 60 * 60 * 24);
   let calendar = $('#calendar');
-  //$('#calendar-title').text(new Date().format('mmmm yyyy'));
   
-  // Load Notice
+  // Load notice
   $.ajax({
-    url: 'api/requestNotice',
-    type: 'POST',
+    url: "api/settings/notice",
     success: function(res) {
-      $('#notice_content').html(res.notice);
-      if(user && Cookies.get('versionInfo') != res.version) {
-        Cookies.set('versionInfo', res.version, {expires : 7});
+      const notice = res.data.split('$');
+      $('#notice_content').html(notice[1]);
+      if(user && Cookies.get('versionInfo') != notice[0]) {
+        Cookies.set('versionInfo', notice[0], {expires : 7});
         MicroModal.show('notice_modal');
       }
     }
   });
   
-  // Draw Calendar
+  // Draw calendar
   for(let i = 0; i < 35; i++) {
     if(!(i % 7)) calendar.append('<div class="calendar-table__row"></div>');
     let thisDate = new Date(getDateFromCalendarStart(i));
@@ -32,9 +31,10 @@ function init() {
       $('.calendar-table__row').last().append('<div class="calendar-table__col' + (i === indexOfToday ? ' calendar-table__today calendar-table__event' : '') + '" data-date="' + thisDate.format('yyyy-mm-dd') + '"><div class="calendar-table__item"><div>' + thisDate.format(i ? (thisDate.getDate() === 1 ? 'm/d' : 'd') : 'm/d') + '</div></div></div>');
   }
   
+  // Load weather data
   weather();
   
-  // Load Table data
+  // Load table data
   load();
 }
 
@@ -93,13 +93,13 @@ function eventListener() {
       }
     }
     
-    if(user.admin) $('.namecard').not('.example').addClass('partner');
-    if(user.id) $('.namecard[data-id=' + user.id + ']').closest('div').children('span').children('span.namecard').addClass('partner');
+    if(user && user.role != '회원') $('.namecard').not('.example').addClass('partner');
+    if(user && user.ID) $('.namecard[data-id=' + user.ID + ']').closest('div').children('span').children('span.namecard').addClass('partner');
     for(let namecard of $('.namecard').not('.partner').not('.example')) $(namecard).text($(namecard).text()[0] + $(namecard).text().slice(1).replace(/./g , '○'));
     
     $('.namecard').not('.example').on('click', function() {
       $('.deleteActive').removeClass('deleteActive');
-      if(user.admin || (!$('.calendar-table__event').hasClass('calendar-table__inactive') && user.id && user.id == $(this).attr('data-id'))) $(this).addClass('deleteActive');
+      if(user && user.role != '회원' || (!$('.calendar-table__event').hasClass('calendar-table__inactive') && user.ID && user.ID == $(this).attr('data-id'))) $(this).addClass('deleteActive');
       $('.deleteActive').on('click', function() {
         // delete record
         let target = {
@@ -108,7 +108,7 @@ function eventListener() {
           id: $(this).attr('data-id'),
           name: $(this).attr('data-name')
         }
-        validator('delete', target);
+        validator('DELETE', target);
       });
     });
   });
@@ -130,7 +130,7 @@ function eventListener() {
         date: $('.calendar-table__event').attr('data-date'),
         course: $(this).closest('div').attr('data-course')
       }
-      validator('add', target);
+      validator('POST', target);
     });
   });
   $('.sidebar_overlay').click(function() { 
@@ -142,14 +142,12 @@ function eventListener() {
 
 function load() {
   $.ajax({
-    url: 'api/records',
-    type: "POST",
-    dataType: 'json',
+    url: 'api/record',
     data: { 'startDate' : getDateFromCalendarStart(0), 'endDate' : getDateFromCalendarStart(28) },
     success: function(record) {
       // Build recArr data
       let recArr = [];
-      for(let rec of record[0]) {
+      for(let rec of record.data) {
         let recDate = new Date(rec.date).format('yyyy-mm-dd');
         let target = recArr.filter(o => o.date === recDate);
         if(!target.length) {
@@ -172,15 +170,17 @@ function load() {
         $('div[data-date="' + date.date + '"]').attr('data-content', JSON.stringify(date.courses));
         $('div[data-date="' + date.date + '"] > div').css('background-image', svg);
         
-        // Highlight if reserved
-        let flag = false;
-        for(let e of date.courses) {
-          if(e.ppl.filter(o => o.ID == user.id).length) {
-            flag = true;
-            break;
+        // Highlight if reserved by myself
+        if(user) {
+          let flag = false;
+          for(let e of date.courses) {
+            if(e.ppl.filter(o => o.ID == user.ID).length) {
+              flag = true;
+              break;
+            }
           }
+          if(flag) $('div[data-date="' + date.date + '"] > div > div').addClass('my');
         }
-        if(flag) $('div[data-date="' + date.date + '"] > div > div').addClass('my');
       }
       $('.calendar-table__event').trigger('click');
     }
@@ -188,50 +188,33 @@ function load() {
 }
       
 function validator(type, target) {
-  if(!user.id) return toastr['error']('로그인을 해 주세요!<br>ERR: INVAILD_PAYLOAD');
+  if(!user) return toastr['error']('로그인을 해 주세요!');
   transmitter({
     type: type,
     date: target.date,
     course: target.course + '코스',
-    id: target.id ? target.id : Number(user.id),
+    id: target.id ? target.id : Number(user.ID),
     name: target.name ? target.name : user.name
   });
 }
 function transmitter(data) {
-  if(data.type == 'add') {
-    $.ajax({
-      url: 'api/insertIntoTable',
-      type: 'POST',
-      dataType: 'json',
-      data: {
-        date: data.date,
-        course: data.course,
-        ID: data.id,
-        name: data.name
-      },
-      success: load,
-      error: function(e) {
-        if(e.status == 406) {
-          let msg = JSON.parse(e.responseText);
-          if(msg.error.code == 'DUP_RECORD') toastr['error']('이미 신청하셨습니다!<br>ERR: ' + msg.error.code);
-        }
-      }
-    });
-  }
-  else if(data.type == 'delete') {
-    $.ajax({
-      url: 'api/deleteFromTable',
-      type: 'POST',
-      dataType: 'json',
-      data: {
-        date: data.date,
-        course: data.course,
-        ID: data.id,
-        name: data.name
-      },
-      success: load
-    });
-  }
+  $.ajax({
+    url: 'api/record',
+    type: data.type,
+    beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
+    data: {
+      date: data.date,
+      course: data.course,
+      ID: data.id,
+      name: data.name
+    },
+    success: load,
+    error: function(e) {
+      if(data.type == 'POST' && e.responseJSON.data == 'ERR_DUP_ENTRY')
+        toastr['error']('이미 신청하셨습니다!');
+      else toastr['error'](e.responseJSON.data);
+    }
+  });
 }
 
 function courseImg(course) {

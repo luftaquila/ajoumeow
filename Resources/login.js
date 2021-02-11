@@ -1,7 +1,6 @@
 $(function() {
-  MicroModal.show('notice_modal');
-  
   autoLogin();
+  
   $('#login').click(function() {
     $.ajax({
       url: "api/auth/login",
@@ -60,7 +59,6 @@ function autoLogin() {
 function autoLoginFailure() {
   $.ajax({
     url: "api/settings/currentSemister",
-    type: "GET",
     success: res => {
       if(!Cookies.get('isNew')) { startIntro(); } // if first appearence
       else if(Cookies.get('currentSemister')) { // if previously saved semister exists
@@ -94,7 +92,6 @@ function autoLoginFailure() {
 }
 
 function loginProcess(res) {
-  console.log(res);
   user = res.data.user;
   load();
 

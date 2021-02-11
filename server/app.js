@@ -10,6 +10,7 @@ import logger from './config/winston';
 const app = express();
 app.use('/api/auth', auth);
 app.use('/api/settings', settings);
+app.use('/api/record', record);
 
 app.listen(5710, async function() {
   console.log('Server is on startup. PORT :5710');
