@@ -145,6 +145,7 @@
           </header>
           <main class="modal__content" id="notice_modal-content">
             <div style="font-size: 0.8rem; text-align: center">
+              서비스 API를 전면 재설계 중입니다.<br>서비스가 <i class='fas fa-exclamation-triangle' style='color: #cc3300'></i>매우<i class='fas fa-exclamation-triangle' style='color: #cc3300'></i> 불안정할 수 있습니다.
               <span id='notice_content' style="font-size: 0.9rem; line-height: 1.1rem;"></span>
             </div>
           </main>
@@ -253,7 +254,7 @@
                     </div>
                   </li>
                   <li style='margin-bottom: 0.5rem'>
-                    <b>거기 인간, 물 좀 주시오</b>
+                    <b>물 좀 주시오</b>
                     <div style='padding-left: 0.5rem'>
                       신학 1, 3층의 식수대에서 물통에 <b>물 <i class='fas fa-faucet'></i></b> 을 채우면 준비 끝! 겨울에는 미지근한 물로 채워주세요.
                     </div>
@@ -267,7 +268,7 @@
               <div style='font-size:0.9rem; padding-left: 1rem;'>
                 <ul>
                   <li style='margin-bottom: 0.3rem'>모든 급식소에는 물그릇과 사료그릇이 하나씩 있어요. 가져가신 물과 사료로 빈 그릇을 채워주세요.</li>
-                  <li style='margin-bottom: 0.3rem'>코스를 잘 모른다면 <b>급식 지도 <i class="fas fa-street-view"></i></b> 의 도움을 받으세요.</li>
+                  <li style='margin-bottom: 0.3rem'>코스를 잘 모른다면 <b>급식 지도 <i class="fas fa-street-view"></i></b> 또는 아래쪽의 <b><i class='fas fa-chalkboard-teacher'></i> 급식 코스 가이드 영상</b> 의 도움을 받으세요.</li>
                   <li style='margin-bottom: 0.3rem'><mark>급식 인증을 위해 사진</mark> 찍는 걸 잊지 마세요!</li>
                 </ul>
               </div>
@@ -280,7 +281,7 @@
               </div>
             </article>
             <br>
-            <article>
+            <article style='margin-bottom: 1rem;'>
               <h3><i class='fas fa-star'></i> 잠깐!</h3>
               <div style='font-size:0.9rem; padding-left: 1rem;'>
                 <ul class='fa-ul' style='margin-left: 1.5rem'>
@@ -288,6 +289,37 @@
                   <li style='margin-bottom: 0.3rem'><span class='fa-li'><i class='fa fa-clock' style='color: dodgerblue'></i></span>급식 권장 시간은 오후 6시에요. 이 시간에 급식이 어렵다면 정오 ~ 자정 사이에 급식을 해 주세요. 오전에는 밥이 많이 남아 있답니다.</li>
                   <li style='margin-bottom: 0.3rem'><span class='fa-li'><i class='fa fa-comment-slash' style='color: gold'></i></span>당일에 갑자기 급식을 취소하실 때에는 반드시 단톡방에서 대타를 구해 주세요!</li>
                 </ul>
+              </div>
+            </article>
+            <article>
+              <script type="text/javascript">
+                function toggle_visibility(id) {
+                  let e = document.getElementById(id);
+                  let a = document.getElementById(id + '_prompt');
+                  if(e.style.display == 'block') {
+                    e.style.display = 'none';
+                    a.innerHTML = a.innerHTML.replace('접기', '보기');
+                  }
+                  else {
+                    e.style.display = 'block';
+                    a.innerHTML = a.innerHTML.replace('보기', '접기');
+                  }
+                }
+              </script>
+              <a href='#stepbystep_guide' id='stepbystep_guide_prompt' onclick="toggle_visibility('stepbystep_guide');" style='text-decoration: none; color: RoyalBlue;'><i class='fas fa-chalkboard-teacher'></i> 급식 절차 가이드 영상 보기</a>
+              <div id="stepbystep_guide" style='display: none;'>
+                <video controls style='width: 100%' poster="/ajoumeow/Resources/videos/stepbystep.png">
+                  <source src="/ajoumeow/Resources/videos/stepbystep_guide.mp4" type="video/mp4">
+                  Sorry, your browser doesn't support embedded videos.
+                </video>
+              </div>
+              <div style='height: 0.5rem;'> </div>
+              <a href='#course_guide' id='course_guide_prompt' onclick="toggle_visibility('course_guide');" style='text-decoration: none; color: RoyalBlue; margin-top: 1rem;'><i class='fas fa-chalkboard-teacher'></i> 급식 코스 가이드 영상 보기</a>
+              <div id="course_guide" style='display: none'>
+                <video controls style='width: 100%' poster="/ajoumeow/Resources/videos/course.png">
+                  <source src="/ajoumeow/Resources/videos/course_guide.mp4" type="video/mp4">
+                  Sorry, your browser doesn't support embedded videos.
+                </video>
               </div>
             </article>
           </main>

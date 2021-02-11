@@ -1,162 +1,131 @@
 $(function() {
+  MicroModal.show('notice_modal');
+  
+  autoLogin();
   $('#login').click(function() {
     $.ajax({
-      url:"https://luftaquila.io/ajoumeow/api/login",
-      data: { 'ID' : $('#loginID').val() },
+      url: "api/auth/login",
+      data: { 'id' : $('#loginID').val() },
       type: "POST",
-      dataType: 'json',
-      success: function(res) {
-        if(res.name) {
-          user.name = res.name;
-          user.id = res.id;
-          user.admin = (res.role != '회원');
-          
-          load();
-          
-          genUserRecord();
-          if(user.admin) {
-            $('#admin').css('display', 'block');
-            //$('#adminhelp').css('display', 'block');
-          }
-          $('#username').text(res.name);
-          $('#userrole').text(res.role);
-          $('#userInfo').css('display', 'block');
-          $('#loginForm').css('display', 'none');
+      success: res => {
+        Cookies.set('jwt', res.msg);
+        loginProcess(res);
+      },
+      error: function(err) {
+        let errorMSG;
+        switch(err.responseJSON.data) {
+          case 'ERR_INVAILD_ID':
+            errorMSG = '유효하지 않은 학번입니다.';
+            break;
+  
+          case 'ERR_NOT_REGISTERED':
+            errorMSG = '등록되지 않은 학번입니다.';
+            break;
+
+          case 'ERR_UNKNOWN':
+            errorMSG = '알 수 없는 오류입니다.';
+            break;
         }
-        else toastr["error"]("등록되지 않은 학번입니다.");
+        toastr["error"](errorMSG);
       }
     });
   });
   
   $('#logout').click(function() {
-    $.ajax({
-      url: 'https://luftaquila.io/ajoumeow/api/logout',
-      type: 'POST',
-      dataType: 'json',
-      success: function(res) {
-        if(res.result) {
-          user.name = '';
-          user.id = '';
-          user.admin = false;
-          
-          load();
-          
-          $('#admin').css('display', 'none');
-          //$('#adminhelp').css('display', 'none');
-          $('#loginForm').css('display', 'block');
-          $('#userInfo').css('display', 'none');
-          $('.my').removeClass('my');
-        }
-      }
-    });
-  });
+    Cookies.remove('jwt');
+    user = null;
+    load();
   
-  $('#apply').click(function() {
-    $.ajax({
-      url: 'https://luftaquila.io/ajoumeow/api/requestApply',
-      type: 'POST',
-      dataType: 'json',
-      success: function(res) {
-        if(res.result) {
-          $('#sidebar').css('display', 'none');
-          memberApply();
-        }
-        else alertify.error('회원 등록 기간이 아닙니다.');
-      }
-    });
+    $('#admin').css('display', 'none');
+    $('#loginForm').css('display', 'block');
+    $('#userInfo').css('display', 'none');
+    $('.my').removeClass('my');
   });
 });
 
-function logincheck(user) {
-  $.ajax({
-    url:"https://luftaquila.io/ajoumeow/api/loginCheck",
-    type: "POST",
-    dataType: 'json',
-    success: function(res) {
-      if(res.name) {
-        user.name = res.name;
-        user.id = res.id;
-        user.admin = (res.role != "회원");
-        genUserRecord();
-        if(user.admin) {
-          $('#admin').css('display', 'block');
-          //$('#adminhelp').css('display', 'block');
-        }
-        $('#username').text(user.name);
-        $('#userrole').text(res.role);
-        $('#userInfo').css('display', 'block');
-        $('#loginForm').css('display', 'none');
-        
-        Cookies.set('currentSemister', res.semister, { expires : 180 });
-      }
-      else {
-        user.name = '';
-        user.id = '';
-        user.admin = false;
-        $('#admin').css('display', 'none');
-        //$('#adminhelp').css('display', 'none');
-        $('#loginForm').css('display', 'block');
-        $('#userInfo').css('display', 'none');
-        if(!Cookies.get('isNew')) { startIntro(); }
-        else if(Cookies.get('currentSemister')) {
-          if(Cookies.get('currentSemister') != res.semister) {
-            let semisterChange = introJs();
-            semisterChange.setOptions({
-              steps: [{
-                intro: `<span style="font-size: 0.8rem">새 학기가 밝았습니다!</span>`
-              }, {
-                intro: `<span style="font-size: 0.8rem">기존 회원 분들도 회원 등록으로 새 학기 명단에 이름을 올려 주세요!</span>`
-              }],
-              exitOnOverlayClick: false,
-              showStepNumbers: false,
-              showBullets: false,
-              showProgress: true
-            });
-            semisterChange.onbeforechange(function(elem) {
-              if(this._currentStep == 1) $('#sidebar').css('display', 'block');
-            }).onexit(function() {
-              Cookies.set('currentSemister', res.semister, { expires : 180 });
-            }).start();
-          }
-          else $('#sidebar').css('display', 'block');
-        }
-        else {
-          Cookies.set('currentSemister', res.semister, { expires : 180 });
-          $('#sidebar').css('display', 'block');
-        }
-      }
-    }
-  });
-  return user;
+function autoLogin() {
+  const jwt = Cookies.get('jwt');
+  if(jwt) { // if jwt exists
+    $.ajax({
+      url: "api/auth/autologin",
+      beforeSend: xhr => xhr.setRequestHeader('x-access-token', jwt),
+      type: "POST",
+      success: res => loginProcess(res),
+      error: autoLoginFailure
+    });
+  }
+  else autoLoginFailure();
 }
 
-function genUserRecord() {
+function autoLoginFailure() {
   $.ajax({
-    url: 'https://luftaquila.io/ajoumeow/api/requestUserStat',
-    type:'POST',
-    data: { id: user.id },
-    cache: false,
-    success: function(res) {
-      let mileage_this = 0, mileage_total = 0, time_this = 0, time_total = 0, cnt = 0;
-      let html = '<table cellspacing="10px"><tr><th>순번</th><th>날짜</th><th>코스</th><th>점수</th></tr>';
-      let this_month = new Date().format('yyyy-mm');
-      for(let obj of res) {
-        if(new Date(obj.date).format('yyyy-mm') == this_month) {
-          mileage_this += Number(obj.score);
-          if(obj.course.slice(-2) == '코스') time_this++;
+    url: "api/settings/currentSemister",
+    type: "GET",
+    success: res => {
+      if(!Cookies.get('isNew')) { startIntro(); } // if first appearence
+      else if(Cookies.get('currentSemister')) { // if previously saved semister exists
+        if(Cookies.get('currentSemister') != res.data) { // if current semister and saved semister is different
+          let semisterChange = introJs();
+          semisterChange.setOptions({
+            steps: [{
+              intro: `<span style="font-size: 0.8rem">새 학기가 밝았습니다!</span>`
+            }, {
+              intro: `<span style="font-size: 0.8rem">기존 회원 분들도 회원 등록으로 새 학기 명단에 이름을 올려 주세요!</span>`
+            }],
+            exitOnOverlayClick: false,
+            showStepNumbers: false,
+            showBullets: false,
+            showProgress: true
+          });
+          semisterChange.onbeforechange(function(elem) {
+            if(this._currentStep == 1) $('#sidebar').css('display', 'block');
+          }).onexit(function() {
+            Cookies.set('currentSemister', res.data, { expires : 365 });
+          }).start();
         }
-        mileage_total += Number(obj.score);
-        if(obj.course.slice(-2) == '코스') time_total++;
-        html += '<tr><td>' + (res.length - cnt++) + '</td><td>' + new Date(obj.date).format('yyyy년 m월 d일') + '</td><td>' + obj.course + '</td><td>' + obj.score + '점</td></tr>';
+        else $('#sidebar').css('display', 'block');
       }
-      html += '</table>';
-      $('#mileage_this').text(mileage_this);
-      $('#mileage_total').text(mileage_total);
-      $('#time_this').text(time_this);
-      $('#time_total').text(time_total);
-      $('#history').html(html);
+      else {
+        Cookies.set('currentSemister', res.data, { expires : 365 });
+        $('#sidebar').css('display', 'block');
+      }  
     }
   });
+}
+
+function loginProcess(res) {
+  console.log(res);
+  user = res.data.user;
+  load();
+
+  if(user.role != '회원') $('#admin').css('display', 'block');
+
+  let mileage_this = 0, mileage_total = 0, time_this = 0, time_total = 0, cnt = 0;
+  let html = '<table cellspacing="10px"><tr><th>순번</th><th>날짜</th><th>코스</th><th>점수</th></tr>';
+  let this_month = new Date().format('yyyy-mm');
+  for(let obj of res.data.statistics) {
+    if(new Date(obj.date).format('yyyy-mm') == this_month) {
+      mileage_this += Number(obj.score);
+      if(obj.course.slice(-2) == '코스') time_this++;
+    }
+    mileage_total += Number(obj.score);
+    if(obj.course.slice(-2) == '코스') time_total++;
+    html += '<tr><td>' + (res.data.statistics.length - cnt++) + '</td><td>' + new Date(obj.date).format('yyyy년 m월 d일') + '</td><td>' + obj.course + '</td><td>' + obj.score + '점</td></tr>';
+  }
+  html += '</table>';
+
+  $('#mileage_this').text(mileage_this);
+  $('#mileage_total').text(mileage_total);
+  $('#time_this').text(time_this);
+  $('#time_total').text(time_total);
+  $('#history').html(html);
+
+  $('#username').text(user.name);
+  $('#userrole').text(user.role);
+  $('#userInfo').css('display', 'block');
+  $('#loginForm').css('display', 'none');
+
+  Cookies.set('currentSemister', res.data.semister, { expires : 365 });
 }
 
 toastr.options = {

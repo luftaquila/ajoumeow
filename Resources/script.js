@@ -11,7 +11,7 @@ function init() {
   
   // Load Notice
   $.ajax({
-    url: 'https://luftaquila.io/ajoumeow/api/requestNotice',
+    url: 'api/requestNotice',
     type: 'POST',
     success: function(res) {
       $('#notice_content').html(res.notice);
@@ -35,7 +35,7 @@ function init() {
   weather();
   
   // Load Table data
-  load(logincheck(user));
+  load();
 }
 
 function eventListener() {
@@ -142,7 +142,7 @@ function eventListener() {
 
 function load() {
   $.ajax({
-    url: 'https://luftaquila.io/ajoumeow/api/records',
+    url: 'api/records',
     type: "POST",
     dataType: 'json',
     data: { 'startDate' : getDateFromCalendarStart(0), 'endDate' : getDateFromCalendarStart(28) },
@@ -200,7 +200,7 @@ function validator(type, target) {
 function transmitter(data) {
   if(data.type == 'add') {
     $.ajax({
-      url: 'https://luftaquila.io/ajoumeow/api/insertIntoTable',
+      url: 'api/insertIntoTable',
       type: 'POST',
       dataType: 'json',
       data: {
@@ -220,7 +220,7 @@ function transmitter(data) {
   }
   else if(data.type == 'delete') {
     $.ajax({
-      url: 'https://luftaquila.io/ajoumeow/api/deleteFromTable',
+      url: 'api/deleteFromTable',
       type: 'POST',
       dataType: 'json',
       data: {
@@ -262,7 +262,7 @@ function dateDataToSvgTranslator(courses, width) {
 
 function weather() {
   $.ajax({
-    url: '/ajoumeow/Resources/weather/weather.json',
+    url: 'Resources/weather/weather.json',
     cache: false,
     success: function(res) {
       weather = res;
@@ -292,7 +292,7 @@ function setMap() {
     });
     
     $.ajax({
-      url: 'https://luftaquila.io/ajoumeow/api/mapLoad',
+      url: 'api/mapLoad',
       type: 'POST'
     });
     
