@@ -29,6 +29,7 @@ util.query = async function(query) { // make db query
     return result;
   }
   catch(e) {
+    console.log(e);
     // logger.error();
   }
 }

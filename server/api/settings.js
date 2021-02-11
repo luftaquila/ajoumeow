@@ -1,6 +1,5 @@
 import dotenv from 'dotenv'
 import express from 'express';
-import jwt from 'jsonwebtoken';
 import dateformat from 'dateformat';
 import bodyParser from 'body-parser';
 
@@ -13,7 +12,7 @@ dotenv.config();
 let router = express.Router();
 router.use(bodyParser.urlencoded({ extended: true }));
 
-router.get('*', async function(req, res) {
+router.get('*', async (req, res) => {
   try {
     let result = await util.getSettings(req.url.substring(1));
     res.status(200).json(new Response('success', '', result));
@@ -23,12 +22,6 @@ router.get('*', async function(req, res) {
     console.log(e);
     res.status(500).json(new Response('error', e.message, 'ERR'));
   }
-});
-
-
-
-router.get('/api/auth/me', util.isLogin, async function(req, res) {
-  console.log('hi');
 });
 
 export default router
