@@ -62,11 +62,4 @@ router.post('/autologin', util.isLogin, async (req, res) => {
   }
 });
 
-router.post('/logout', util.isLogin, async (req, res) => {
-  req.session.destroy();
-  res.send({ 'result' : 'success' });
-  logger.info('로그아웃을 시도합니다.', { ip: ip, url: 'logout', query: 'logout', result: 'ok'});
-});
-
-
 export default router

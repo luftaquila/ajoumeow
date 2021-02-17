@@ -34,7 +34,20 @@
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
     gtag('config', 'UA-102734518-4');
-        
+  </script>
+  
+  <!-- Naver Analytics -->
+  <script type="text/javascript" src="//wcs.naver.net/wcslog.js"></script>
+  <script type="text/javascript">
+    if(!wcs_add) var wcs_add = {};
+    wcs_add["wa"] = "4bbe7a4f4216fc";
+    if(window.wcs) {
+      wcs_do();
+    }
+  </script>
+  
+  <!-- Browser check -->
+  <script>
     if(browserVersionCheck().version > 0 && browserVersionCheck().version < 12) alert('인터넷 익스플로러는 지원하지 않는 오래된 브라우저입니다.\n크롬, 파이어폭스, 오페라, 엣지 등 다른 브라우저를 사용하십시오.');
     function browserVersionCheck() {
       var word;
@@ -131,7 +144,9 @@
           <a id='admin' style='color: #0366d6' onclick="window.location.href = '/ajoumeow/console';" style='display: none'>관리자 콘솔</a><br>
           <!--<a id='adminhelp' style='color: #0366d6' onclick="window.location.href = 'https://github.com/luftaquila/ajoumeow';" style='display: none;'>관리자 도움말!</a>-->
         </div><br>
-        <a onclick='window.location.href = "https://luftaquila.io";' style="color: #aaa; text-decoration: none; font-size: 0.7rem">©<script>document.write(new Date().getFullYear())</script> LUFT - AQUILA.</a>
+        <a onclick='window.location.href = "https://luftaquila.io";' style="color: #aaa; text-decoration: none; font-size: 0.7rem">©<script>document.write(new Date().getFullYear())</script> LUFT - AQUILA.</a><br><br>
+        <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fluftaquila.io%2Fajoumeow&count_bg=%2379C83D&title_bg=%23555555&icon=googlefit.svg&icon_color=%23E7E7E7&title=hits&edge_flat=false"/>
+
       </div>
     </div>
   </div>

@@ -1,0 +1,423 @@
+          <div class="container-fluid text-gray-700" id='settingsContent' style='display: none;'>
+            <!-- Page Heading -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+              <h1 class="h3 mb-0 text-gray-800">설정</h1>
+            </div>
+            <div>
+              <div id='currentSemister_container'>
+                <b>현재 학기</b>
+                <div style='display: inline-block; margin-left: 3rem;'>
+                  <input id='currentYear' class='setting settingSemister' type="number" min=20 max=99 maxlength=2 style='width: 30; text-align: center' required/> - 
+                  <select id='currentSemister' class='setting settingSemister' required>
+                    <option>1</option>
+                    <option>2</option>
+                  </select>
+                  학기
+                </div>
+              </div>
+              
+              <div id='isApply_container' style='margin-top: 1.5rem;'>
+                <b>회원 등록</b>
+                <div style='display: inline-block; margin-left: 3rem;'>
+                  <label class="rocker rocker-small" style='font-size: 0.5rem; margin: 0rem; vertical-align: middle'>
+                    <input id='isApply' class='setting settingApply' type="checkbox" checked>
+                    <span class="switch-left">OFF</span>
+                    <span class="switch-right">ON</span>
+                  </label>
+                </div>
+              </div>
+              
+              <div id='isApplyRestricted_container' style='padding-left: 2rem; margin-top: 0.5rem'>
+                <b>등록 허용기간 제한</b>
+                <div style='display: inline-block; margin-left: 3rem;'>
+                  <label class="rocker rocker-small" style='font-size: 0.5rem; margin: 0rem; vertical-align: middle'>
+                    <input id='isApplyRestricted' class='setting settingApplyRestricted' type="checkbox" checked>
+                    <span class="switch-left">OFF</span>
+                    <span class="switch-right">ON</span>
+                  </label>
+                </div>
+                <div id='isApplyRestrictedCalendar_container' style='margin-left: 1.5rem;'>
+                  허용 기간<br>
+                  <span style='font-size: 0.7rem'>
+                    <input class='setting settingCalendar settingApplyCalendar' id="applyStartDate" type="date" value="" />
+                    &ensp; ~ &ensp;
+                    <input class='setting settingCalendar settingApplyCalendar' id="applyEndDate" type="date" value="" />
+                  </span>
+                </div>
+              </div>
+
+              <div id='isRegister_container' style='margin-top: 1.5rem;'>
+                <b>신입 모집</b>
+                <div style='display: inline-block; margin-left: 3rem;'>
+                  <label class="rocker rocker-small" style='font-size: 0.5rem; margin: 0rem; vertical-align: middle'>
+                    <input id='isRegister' class='setting settingRegister' type="checkbox" checked>
+                    <span class="switch-left">OFF</span>
+                    <span class="switch-right">ON</span>
+                  </label>
+                </div>
+              </div>
+              
+              <div id='isRegisterRestricted_container' style='padding-left: 2rem; margin-top: 0.5rem'>
+                <b>모집 허용기간 제한</b>
+                <div style='display: inline-block; margin-left: 3rem;'>
+                  <label class="rocker rocker-small" style='font-size: 0.5rem; margin: 0rem; vertical-align: middle'>
+                    <input id='isRegisterRestricted' class='setting settingRegisterRestricted' type="checkbox" checked>
+                    <span class="switch-left">OFF</span>
+                    <span class="switch-right">ON</span>
+                  </label>
+                </div>
+                <div id='isRegisterRestrictedCalendar_container' style='margin-left: 1.5rem;'>
+                  허용 기간<br>
+                  <span style='font-size: 0.7rem'>
+                    <input class='setting settingCalendar settingRegisterCalendar' id="registerStartDate" type="date" value="" />
+                    &ensp; ~ &ensp;
+                    <input class='setting settingCalendar settingRegisterCalendar' id="registerEndDate" type="date" value="" />
+                  </span>
+                </div>
+              </div>
+              
+              <div style='margin-top: 1.5rem;'>
+                <b>공지사항</b><br>
+                <textarea class='setting notice' id='notice' style='width: 20rem; height: 4rem; font-size: 0.8rem; line-height: 1rem;'></textarea>
+              </div>
+            </div>
+            
+            <br>
+            <div style='font-size: 0.9rem'>
+              <ul class='fa-ul'>
+                <li style='font-weight: bold'>
+                  <span class='fa-li'><i class='fas fa-engine-warning' style='color: #e99f00'></i></span> 현재 학기 값은 학기가 바뀌면 항상 업데이트 해 주세요.<br>
+                  명단 작성 등 전산 전체에서 중요하게 사용되는 값입니다.
+                </li><br>
+                <li style='font-weight: bold'>
+                  <span class='fa-li'><i class='fas fa-engine-warning' style='color: #e99f00'></i></span> 현재 학기 값을 변경하면 모든 회원은 로그아웃됩니다.<br>
+                  변경된 새 학기 회원 목록에 새로 등록해야 로그인할 수 있습니다.<br>
+                  반드시 학기를 변경한 후 회원들에게 회원 등록을 다시 해야 한다고 공지하세요.
+                </li><br>
+                <li><span class='fa-li'><i class='fas fa-lightbulb-exclamation' style='color: green'></i></span>공지사항 값을 변경하면 사이트 방문 시 최초 1회 공지 팝업이 표시됩니다.</li>
+              </ul>
+            </div>
+            <!--<select id='namelist-config'></select><br>-->
+            <div id='namelistWrap'></div>
+          </div>
+          <div class="container-fluid text-gray-700" id='memberContent' style='display: none;'>
+            <!-- Page Heading -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+              <h1 class="h3 mb-0 text-gray-800">회원 관리</h1>
+            </div>
+            
+            학기 : <select id='namelist' class='namelist_select'></select>&nbsp;&nbsp;&nbsp;
+            <div style='margin: 0px; text-align: right; display: inline-block;'>
+              <a id="download_namelist" href="#" class="btn btn-success btn-icon-split">
+                <span class='text'>다운로드</span>
+              </a>
+            </div>
+            <br>
+            <li style='font-size: 0.8rem; margin-top: 0.3rem;'>다운로드를 누르면 엑셀(.xlsx) 형식으로 명단을 저장합니다.</li><br>
+            <div id='current_namelist' class="table-responsive">
+              <div style='font-size: 0.9rem'>
+                <b style='font-size: 1.2rem;'>현재 학기</b>
+                <ul>
+                  <li>목록에 등록된 회원만 로그인할 수 있습니다.</li>
+                  <li>학번 외 모든 항목은 수정할 수 있습니다.<br>학번 수정은 제명 후 재등록으로만 가능합니다.</li>
+                  <li>수정할 값을 클릭하면 입력창이 활성화됩니다.</li>
+                  <li>수정할 값을 입력한 후 엔터를 누르면 수정됩니다.</li>
+                </ul>
+                
+                <b>관리자 권한</b><br>
+                &emsp;직책이 <kbd>회원</kbd>이 아닌 모든 사람에게 부여됩니다. 관리자는
+                <ul>
+                  <li>관리자 콘솔에 접속할 수 있습니다.</li>
+                  <li>급식표에서 모든 회원을 가림 처리하지 않고 실명으로 표시합니다.</li>
+                  <li>일반 사용자는 아직 지나지 않은 날짜의 본인이 신청한 급식만 삭제할 수 있지만,<br>관리자는 지난 날짜와 타인이 신청한 모든 급식을 삭제할 수 있습니다.</li>
+                </ul>
+                <i class='fas fa-engine-warning' style='color: #e99f00'></i> 새 관리자 등록은 기존 임원진만 가능합니다.<br>임원진 교체 시 <i class='fas fa-fire' style='color: red'></i>반드시<i class='fas fa-fire' style='color: red'></i> 신규 임원진에게 관리자 권한을 부여하고 가세요.
+              </div>
+              <br>
+              <table class="table table-bordered" id="dataTable" width="100%" style='table-layout: fixed; text-align: center' cellspacing="0">
+                <colgroup>
+                  <col width="130px" />
+                  <col width="180px" />
+                  <col width="130px" />
+                  <col width="90px" />
+                  <col width="200px" />
+                  <col width="100px" />
+                  <col width="200px" />
+                  <col width="180px" />
+                  <col width="100px" />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th>단과대학</th>
+                    <th>학과</th>
+                    <th>학번</th>
+                    <th>이름</th>
+                    <th>전화번호</th>
+                    <th>생일</th>
+                    <th>1365 아이디</th>
+                    <th>가입 학기</th>
+                    <th>직책</th>
+                  </tr>
+                </thead>
+                <tfoot>
+                  <tr>
+                    <th>단과대학</th>
+                    <th>학과</th>
+                    <th>학번</th>
+                    <th>이름</th>
+                    <th>전화번호</th>
+                    <th>생일</th>
+                    <th>1365 아이디</th>
+                    <th>가입 학기</th>
+                    <th>직책</th>
+                  </tr>
+                </tfoot>
+              </table>
+              <div>
+                <br>
+                회원 삭제 : 
+                <input id='deletemember' type='number' placeholder='학번' style='width: 9rem; display: inline;' class='form-control bg-light border-5 small'>
+                &nbsp;&nbsp;
+                <a id="memberDeleteConfirm" href="#" class="btn btn-danger btn-icon-split" style='width: 30; height: 5;'>
+                  <span class='text'>제명</span>
+                </a><br><br>
+                <i class='fas fa-engine-warning' style='color: #e99f00'></i> 제명 버튼을 누르면 별도의 확인 없이 바로 회원이 제명되고, 재등록하지 않는 한 복구가 불가능합니다! 신중하게 누르세요!
+                <br>
+              </div>
+            </div>
+            <div id='past_namelist' class="table-responsive" style='display: none;'>
+              <div style='font-size: 0.9rem'>
+                <b style='font-size: 1.2rem;'>지난 학기</b>
+                <li>열람 및 다운로드만 가능합니다. 수정은 불가능합니다.</li>
+              </div>
+              <br>
+              <table class="table table-bordered" id="dataTable_2" width="100%" style='table-layout: fixed; text-align: center' cellspacing="0">
+                <colgroup>
+                  <col width="130px" />
+                  <col width="180px" />
+                  <col width="130px" />
+                  <col width="90px" />
+                  <col width="200px" />
+                  <col width="100px" />
+                  <col width="200px" />
+                  <col width="180px" />
+                  <col width="100px" />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th>단과대학</th>
+                    <th>학과</th>
+                    <th>학번</th>
+                    <th>이름</th>
+                    <th>전화번호</th>
+                    <th>생일</th>
+                    <th>1365 아이디</th>
+                    <th>가입 학기</th>
+                    <th>직책</th>
+                  </tr>
+                </thead>
+                <tfoot>
+                  <tr>
+                    <th>단과대학</th>
+                    <th>학과</th>
+                    <th>학번</th>
+                    <th>이름</th>
+                    <th>전화번호</th>
+                    <th>생일</th>
+                    <th>1365 아이디</th>
+                    <th>가입 학기</th>
+                    <th>직책</th>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+          <div class="container-fluid text-gray-700" id='1365Content' style='display: none;'>
+            <!-- Page Heading -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+              <h1 class="h3 mb-0 text-gray-800">1365 인증서</h1>
+            </div>
+            <div style='font-size:0.9rem'>
+              <li>1365 봉사활동 확인서를 자동으로 작성한 후 다운로드합니다.</li>
+              <li>인증서를 생성할 년/월 및 명단 데이터를 선택한 후 다운로드 버튼을 누르세요.</li>
+              <li>다운로드 버튼을 누르면 10초 내외로 다운로드가 시작됩니다.</li>
+              <li>팝업 차단을 해제해야 다운로드가 가능합니다. (아마도)</li>
+            </div>
+            <br>
+            <table style="border-collapse: separate; border-spacing: 10px;">
+              <tr>
+                <td>년 / 월</td>
+                <td><input type='month' id='calendar1365' class='btn btn-secondary'/></td>
+              </tr>
+              <tr>
+                <td>명단 데이터&nbsp;&nbsp;</td>
+                <td><select id='namelist_1365' class='namelist_select'></select></td>
+              </tr>
+            </table>
+            <div style='margin: 15px 0px; text-align: right;'>
+              <a id="download1365" href="#" class="btn btn-success btn-icon-split" style='width: 30; height: 5; margin: 20 0;'>
+              <span class='text'>다운로드</span>
+              </a>
+            </div>
+          </div>
+          <div class="container-fluid text-gray-700" id='recruitContent' style='display: none;'>
+            <!-- Page Heading -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+              <h1 class="h3 mb-0 text-gray-800">신입 모집</h1>
+            </div>
+            <i class='fas fa-engine-warning' style='color: #e99f00'></i> 설문지 배포 전에 반드시 <span style='font-weight: bold;'>설정</span> 탭에서 <mark>현재 학기</mark> 및 <mark>신입 모집</mark> 관련 설정을 업데이트하세요.<br>특히 <mark>현재 학기</mark>는 반드시 신입 회원을 모집하는 학기로 설정해야 합니다.<br><br>
+            신입 모집 설문지 : <a href='https://luftaquila.io/ajoumeow/register/'>luftaquila.io/ajoumeow/register/</a><br>
+            설문지 링크 QR코드 : <br><img src='/ajoumeow/Resources/Images/frame.png'><br><br>
+            <a href="https://docs.google.com/spreadsheets/d/14fRlX0UWFbMzDjhueOPi9ivZFE799kui6-1UixzgvWg/edit?usp=drivesdk">> 모집 설문지 응답 시트</a><br><br>
+            <select id='newMemberList' style='margin-bottom: 15px'></select> 연락처 파일 생성<br>
+            <label for='google'><input type='radio' id='google' name='contactfile' value='google' /> Google 연락처 파일</label><br>
+            <label for='outlook'><input type='radio' id='outlook' name='contactfile' value='outlook' /> Outlook/네이버 연락처 파일</label><br>
+            <a id="contactDownload" href="#" class="btn btn-success btn-icon-split" style='width: 30; height: 5;'>
+            <span class='text'>다운로드</span>
+            </a><br><br>
+            <div style='font-size: 0.8rem'>
+              <h4>연락처 다운로드 기능 사용 방법</h4>
+              <ol>
+                <li><a href="https://contacts.google.com">contacts.google.com</a> 접속</li>
+                <li>좌측 상단 메뉴에서 가져오기 클릭</li>
+                <li>다운로드한 연락처 파일 선택 후 가져오기 클릭</li>
+                <li>핸드폰에서 연락처 동기화하면 <mark>[년도]-[학기] 미유미유</mark> 라벨에 <mark>[학번][이름]</mark> 형식으로 가입신청자 연락처가 저장됩니다.</li>
+                <li>카톡방 초대가 끝나면 라벨을 삭제해서 간단하게 제거할 수 있습니다.</li>
+              </ol>
+            </div>
+          </div>
+          <div class="container-fluid text-gray-700" id='dashboardContent' style='display: none;'>
+            <!-- Page Heading -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+              <h1 class="h3 mb-0 text-gray-800">통계</h1>
+            </div>
+            <!-- Earnings (Monthly) Card Example -->
+            <div class="col-xl-3 col-md-6 mb-4">
+              <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-info text-uppercase mb-1">이번 달 활동자 수</div>
+                      <div class="row no-gutters align-items-center">
+                        <div class='col mr-2'>
+                          <div class="h5 mb-0 font-weight-bold text-gray-800" id='activeMember'></div>
+                        </div>
+                        <div class="col">
+                          <div class="progress progress-sm mr-2">
+                            <div class="progress-bar bg-info" role="progressbar" id='activePercentGraph' style="width: 0%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-auto">
+                      <i class="fas fa-user-friends fa-2x text-gray-300"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-md-6 mb-4">
+              <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-success text-uppercase mb-1">이번 달 활동 시간</div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800" id='activityTime'></div>
+                    </div>
+                    <div class="col-auto">
+                      <i class="fas fa-user-clock fa-2x text-gray-300"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-8 col-lg-7">
+              <div class="card shadow mb-4">
+                <!-- Card Header - Dropdown -->
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  <h6 class="m-0 font-weight-bold text-primary">활동 통계</h6>
+                </div>
+                <!-- Card Body -->
+                <div class="card-body">
+                  <label><input type='radio' name='statisticsType' value='thisMonthFeeding' checked> 이번 달 급식 마일리지 순위</label>
+                  <label><input type='radio' name='statisticsType' value='thisMonthTotal'> 이번 달 마일리지 전체 순위</label>
+                  <label><input type='radio' name='statisticsType' value='lastMonthFeeding'> 저번 달 급식 마일리지 순위</label>
+                  <label><input type='radio' name='statisticsType' value='totalStatistics'> 전체 기간 마일리지 순위</label>
+                  <label><input type='radio' name='statisticsType' value='' id='customStatistics'> 특정 기간 마일리지 순위</label><br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;<input class='statisticsDate' type='date' id='statisticsStartDate'> ~ <input class='statisticsDate' type='date' id='statisticsEndDate'><br><br>
+                  <div style='width: 100%; text-align: center;'><a class='btn btn-success' id='pick'><span style='color: #fff'>이 목록으로 제비뽑기</span></a></div>
+                  <br>
+                  <div class='table-responsive'>
+                    <table class="table table-bordered" id="statistics" width="99%" style='table-layout: fixed; text-align: center' cellspacing="0">
+                      <colgroup>
+                        <col />
+                        <col />
+                      </colgroup>
+                      <thead>
+                        <th>이름</th>
+                        <th>마일리지</th>
+                      </thead>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              뽑힐 확률은 마일리지의 총합 대비 비율입니다.<br>
+              즉, <code>본인 마일리지 ÷ 목록의 마일리지 총합 × 100(%)</code> 입니다.<br>
+              리워드 지급 정책에 따라 자유롭게 이용하시면 됩니다.
+
+            </div>
+          </div>
+          <div class="container-fluid text-gray-700" id='logContent' style='display: none;'>
+            <!-- Page Heading -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+              <h1 class="h3 mb-0 text-gray-800">서버 로그</h1>
+            </div>
+            <h6>서버 로그를 열람합니다.</h6>
+            <div style='font-size: 0.8rem; margin-bottom: 10px'>
+              <li>체크박스가 체크된 범주의 로그만 표시합니다.</li>
+              <li>오류 체크박스에 체크하면 오류 기록만 표시합니다.</li>
+            </div>
+            <label><input type='checkbox' name='iserror' value='error'> 오류</label>
+            <hr width='100%' style='margin: 0 0 10px 0'>
+            <table width='100%'>
+              <tr>
+                <td><label><input type='checkbox' name='logtype' value='pageload' checked> 페이지 로드</label></td>
+                <td><label><input type='checkbox' name='logtype' value='loginout' checked> 로그인 / 로그아웃</label></td>
+              </tr>
+              <tr>
+                <td><label><input type='checkbox' name='logtype' value='insdelTable' checked> 급식 신청 / 삭제</label></td>
+                <td><label><input type='checkbox' name='logtype' value='verify' checked> 급식 인증</label></td>
+              </tr>
+              <tr>
+                <td><label><input type='checkbox' name='logtype' value='settingchange' checked> 설정 변경</label></td>
+                <td><label><input type='checkbox' name='logtype' value='memberchange' checked> 회원 명단 변경</label></td>
+              </tr>
+              <tr>
+                <td><label><input type='checkbox' name='logtype' value='1365' checked> 1365 인증서</label></td>
+                <td><label><input type='checkbox' name='logtype' value='others' checked> 기타</label></td>
+              </tr>
+            </table>
+            <br>
+            <div class='table-responsive'>
+              <table class="table table-bordered" id="serverlog" width="100%" style='table-layout: fixed; text-align: center' cellspacing="0">
+                <colgroup>
+                  <col width='200px' />
+                  <col width='120px' />
+                  <col width='160px' />
+                  <col width='220px' />
+                  <col width='300px' />
+                  <col width='200px' />
+                  <col width='500px'/>
+                </colgroup>
+                <thead>
+                  <th>타임스탬프</th>
+                  <th>로그 수준</th>
+                  <th>IP</th>
+                  <th>설명</th>
+                  <th>쿼리</th>
+                  <th>url</th>
+                  <th>결과</th>
+                </thead>
+              </table>
+            </div>
+          </div>

@@ -1,4 +1,3 @@
-import dotenv from 'dotenv'
 import express from 'express';
 import dateformat from 'dateformat';
 import bodyParser from 'body-parser';
@@ -6,8 +5,6 @@ import bodyParser from 'body-parser';
 import logger from '../config/winston';
 import util from '../controllers/util/util.js';
 import Response from '../controllers/util/response.js';
-
-dotenv.config();
 
 let router = express.Router();
 router.use(bodyParser.urlencoded({ extended: true }));
@@ -280,70 +277,6 @@ app.post('//deleteMember', async function(req, res) {
     logger.error('회원을 제명하는 중에 오류가 발생했습니다.', { ip: ip, url: 'deleteMember', query: query ? query : 'Query String Not generated.', result: e.toString()});
   }
 });
-app.post('//requestVerifyList', async function(req, res) {
-  const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
-  let record, verify, result;
-  try {
-    record = await db.query("SELECT * FROM record WHERE date='" + req.body.date + "' ORDER BY course;");
-    verify = await db.query("SELECT * FROM verify WHERE date='" + req.body.date + "' ORDER BY course;");
-    result = { 'record' : record, 'verify' : verify };
-    res.send(result);
-    //logger.info('급식 인증 기록을 요청합니다.', { ip: ip, url: 'requestVerifyList', query: '-', result: JSON.stringify(result)});
-  }
-  catch(e) {
-    logger.error('급식 인증 기록을 요청하는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestVerifyList', query: '-', result: e.toString()});
-  }
-});
-
-app.post('//verify', async function(req, res) {
-  const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
-  let query, result
-  try {
-    let payload = JSON.parse(req.body.data);
-    for(let obj of payload) {
-      query = "INSERT INTO verify(ID, date, name, course, score) VALUES(" + obj.ID + ", '" + obj.date + "', '" + obj.name + "', '" + obj.course + "', '" + obj.score + "');";
-      result = await db.query(query);
-      logger.info('급식을 인증합니다.', { ip: ip, url: 'verify', query: query, result: JSON.stringify(result)});
-    }
-    res.send({ 'result' : true });
-  }
-  catch(e) {
-    res.status(406).send({ 'error' : e.toString() });
-    logger.error('급식을 인증하는 중에 오류가 발생했습니다.', { ip: ip, url: 'verify', query: query ? query : 'Query String Not generated.', result: e.toString()});
-  }
-});
-
-app.post('//deleteVerify', async function(req, res) {
-  const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
-  let query, result;
-  try {
-    let payload = JSON.parse(req.body.data);
-    for(let obj of payload) {
-      query = "DELETE FROM verify WHERE ID=" + obj.ID + " AND date='" + obj.date + "' AND name='" + obj.name + "' AND course='" + obj.course + "';";
-      result = await db.query(query);
-      logger.info('급식 인증을 삭제합니다.', { ip: ip, url: 'deleteVerify', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
-    }
-    res.send({ 'result' : true });
-  }
-  catch(e) {
-    res.status(406).send({ 'error' : e.toString() });
-    logger.error('급식 인증을 삭제하는 중에 오류가 발생했습니다.', { ip: ip, url: 'deleteVerify', query: query ? query : 'Query String Not generated.', result: e.toString()});
-  }
-});
-
-app.post('//requestLatestVerify', async function(req, res) {
-  const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
-  let query, result;
-  try {
-    query = "SELECT * FROM verify ORDER BY date DESC LIMIT 1;";
-    result = await db.query(query);
-    res.send(result);
-    //logger.info('마지막으로 인증한 날짜를 요청합니다.', { ip: ip, url: 'requestLatestVerify', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
-  }
-  catch(e) {
-    logger.error('마지막으로 인증한 날짜를 요청하는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestLatestVerify', query: query ? query : 'Query String Not generated.', result: e.toString()});
-  }
-});
 
 app.post('//requestNamelistTables', async function(req, res) {
   const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
@@ -421,21 +354,6 @@ app.post('//request1365', async function(req, res) {
 
 app.get('//download1365', function(req, res) {
   res.download('인증서.pdf');
-});
-
-app.post('//requestNotice', async function(req, res) {
-  const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
-  let query, result;
-  try {
-    query = "SELECT value FROM settings WHERE name='notice';";
-    result = await db.query(query);
-    let notice = result[0].value.split('$');
-    res.send({ 'result' : true, 'version' : notice[0], 'notice' : notice[1] });
-    //logger.info('공지사항을 불러옵니다.', { ip: ip, url: 'requestNotice', query: query ? query : 'Query String Not generated.', result: JSON.stringify(result)});
-  }
-  catch(e) {
-    logger.error('공지사항을 불러오는 중에 오류가 발생했습니다.', { ip: ip, url: 'requestNotice', query: query ? query : 'Query String Not generated.', result: e.toString()});
-  }
 });
 
 app.post('//requestLogs', async function(req, res) {

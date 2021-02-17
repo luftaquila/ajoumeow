@@ -7,7 +7,7 @@ $(function() {
       data: { 'id' : $('#loginID').val() },
       type: "POST",
       success: res => {
-        Cookies.set('jwt', res.msg);
+        Cookies.set('jwt', res.msg, { expires: 365 });
         loginProcess(res);
       },
       error: function(err) {
