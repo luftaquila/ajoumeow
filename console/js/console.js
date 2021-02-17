@@ -1,27 +1,5 @@
-$(function() {
-  //(function () { var script = document.createElement('script'); script.src="//cdn.jsdelivr.net/npm/eruda"; document.body.appendChild(script); script.onload = function () { eruda.init() } })();
-  $.ajax({
-    url:"api/loginCheck",
-    type: "POST",
-    dataType: 'json',
-    success: function(response) {
-      if(!response.role || response.role == '회원') window.location.href = "403.html";
-      else $('#welcomeMSG').text(response.name + '(관리자)님 안녕하세요.');
-    }
-  });
-  init();
-  clickEventListener();
-});
 
 function init() {
-  $('#sidebarToggleTop').click();
-  $('#timestamp').datepicker({
-    format: "yyyy-mm-dd",
-    todayBtn: "linked",
-    language: "ko",
-    todayHighlight: true
-  });
-  
   $.when(
     $.ajax({ // Request settings
       url: "api/requestSettings",
@@ -270,132 +248,6 @@ async function load() {
   for(var obj of verify) $('#deletelist').append("<div><label><input type='checkbox' name='deleteList' value='" + obj.ID + '/' + obj.name + '/' + obj.course + "'>&nbsp;" + obj.ID + ' ' + obj.name + ' / ' + obj.course + "</input></label></div>");
 }
 
-$("#DATA a#submit").click( function(event) {
-  var operation = $('input[name=verifyType]:checked').val();
-  
-  if(operation == 'auto') {
-    var payload = [];
-    var autolist = $('input[name=recordList]:checked');
-    for(var obj of autolist) {
-      var tmp = $(obj).val().split('/');
-      payload.push({
-        'ID' : tmp[0],
-        'date' : $('#timestamp').datepicker('getDate').format('yyyy-mm-dd'),
-        'name' : tmp[1],
-        'course' : tmp[2],
-        'score' : null
-      });
-    }
-    var customlist = $('input[name=customRecordList]:checked');
-    for(var obj of customlist) {
-      payload.push({
-        'ID' : $(obj).next().val(),
-        'date' : $('#timestamp').datepicker('getDate').format('yyyy-mm-dd'),
-        'name' : $(obj).next().next().val(),
-        'course' : $(obj).next().next().next().val() + '코스',
-        'score' : null
-      });
-    }
-    if(validator(payload)) scoreProvider(payload);
-  }
-  
-  else if(operation == 'manual') {
-    var payload = [];
-    var manuallist = $('input[name=manualrecord]:checked');
-    for(var obj of manuallist) {
-      payload.push({
-        'ID' : $(obj).next().val(),
-        'date' : $('#timestamp').datepicker('getDate').format('yyyy-mm-dd'),
-        'name' : $(obj).next().next().val(),
-        'course' : $(obj).next().next().next().next().next().val(),
-        'score' : $(obj).next().next().next().next().val()
-      });
-    }
-    if(validator(payload)) transmitter(payload);
-  }
-  
-  else if(operation == 'delete') {
-    var payload = [];
-    var deletelist = $('input[name=deleteList]:checked');
-    for(var obj of deletelist) {
-      var tmp = $(obj).val().split('/');
-      payload.push({
-        'ID' : tmp[0],
-        'date' : $('#timestamp').datepicker('getDate').format('yyyy-mm-dd'),
-        'name' : tmp[1],
-        'course' : tmp[2]
-      });
-    }
-    if(validator(payload)) {
-      $.ajax({
-        url: 'api/deleteVerify',
-        type: 'POST',
-        data: { data : JSON.stringify(payload) },
-        success: function() {
-          alertify.error('삭제되었습니다.');
-          $('#deletelist').val('');
-          load();
-        }
-      });
-    }
-  }
-  event.preventDefault();
-});
-  
-function validator(payload) {
-  if(!payload.length) {
-    alertify.error('ERR_NO_PAYLOAD');
-    return false;
-  }
-  for(var obj of payload) {
-    if(!obj.ID || !obj.date || !obj.name || !obj.course) {
-      alertify.error('ERR_INVALID_PAYLOAD');
-      return false;
-    }
-  }
-  return true;
-}
-
-function scoreProvider(payload) {
-  var boost = $('#boost:checked').length;
-  var score = {
-    weekday : {
-      solo : (boost ? 2 : 1.5),
-      dual : (boost ? 1.5 : 1)
-    },
-    weekend : {
-      solo : (boost ? 3 : 2),
-      dual : (boost ? 2 : 1.5)
-    }
-  }
-  var isWeekEnd = new Date($('#timestamp').datepicker('getDate').format('yyyy-mm-dd')).getDayNum() > 5;
-  for(var i = 1; i <= 3; i++) {
-    var counter = 0;
-    for(var obj of payload) if(obj.course == i + '코스') counter++;
-    for(var obj of payload) {
-      if(obj.course == i + '코스') {
-        if(counter >= 2) obj.score = isWeekEnd ? score.weekend.dual : score.weekday.dual;
-        else obj.score = isWeekEnd ? score.weekend.solo : score.weekday.solo;
-      }
-    }
-  }
-  transmitter(payload);
-}
-
-function transmitter(payload) {
-  $.ajax({
-    url: 'api/verify',
-    type: 'POST',
-    dataType: 'json',
-    data: { data: JSON.stringify(payload) },
-    success: function() {
-      alertify.success('인증되었습니다.');
-      $('#autolist').html('');
-      $('#manuallist').html('');
-      load();
-    }
-  });
-}
 
 function clickEventListener() {
   $('.nav-item').click(function() {
@@ -513,10 +365,7 @@ function clickEventListener() {
       error: function() { alertify.error('설정 변경에 실패하였습니다.<br>다시 시도해 주세요'); }
     });
   });
-  $('#timestamp').datepicker().on('changeDate', function(e) {
-    console.log(e);
-    load();
-  });
+  
   $('#download1365').click(function() {
     if($('#calendar1365').val()) {
       $('#calendar1365, #download1365, #namelist_1365').attr('disabled', true);
@@ -721,40 +570,3 @@ function test() {
   console.log(testcase);
 }
 */
-function dataSize(s, b, i, c) { for(b = i = 0; c = s.charCodeAt(i++); b += c >> 11 ? 3 : c >> 7 ? 2 : 1); return b; }
-var dateFormat = function () {
-  var	token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g,
-      pad = function (val, len) {
-        val = String(val);
-        len = len || 2;
-        while (val.length < len) val = "0" + val;
-        return val;
-      };
-  return function (date, mask, utc) {
-    var dF = dateFormat;
-    if (arguments.length == 1 && Object.prototype.toString.call(date) == "[object String]" && !/\d/.test(date)) {
-      mask = date;
-      date = undefined;
-    }
-    date = date ? new Date(date) : new Date;
-    var	_ = utc ? "getUTC" : "get",
-      d = date[_ + "Date"](),
-      m = date[_ + "Month"](),
-      y = date[_ + "FullYear"](),
-      flags = {
-        d:    d,
-        dd:   pad(d),
-        m:    m + 1,
-        mm:   pad(m + 1),
-        yyyy: y,
-      };
-    return mask.replace(token, function ($0) {
-      return $0 in flags ? flags[$0] : $0.slice(1, $0.length - 1);
-    });
-  };
-}();
-Date.prototype.format = function (mask, utc) { return dateFormat(this, mask, utc); };
-Date.prototype.getDayNum = function() {
-  return this.getDay() ? this.getDay() : 7;
-}
-  

@@ -11,6 +11,7 @@ function init() {
   // Load notice
   $.ajax({
     url: "api/settings/notice",
+    cached: false,
     success: function(res) {
       const notice = res.data.split('$');
       $('#notice_content').html(notice[1]);
@@ -272,11 +273,6 @@ function setMap() {
       rotateControl: false,
       fullscreenControl: true,
       fullscreenControlOptions: { position: google.maps.ControlPosition.RIGHT_BOTTOM }
-    });
-    
-    $.ajax({
-      url: 'api/mapLoad',
-      type: 'POST'
     });
     
     $.ajax({
