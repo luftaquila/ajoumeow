@@ -1,4 +1,3 @@
-
 import express from 'express';
 import dateformat from 'dateformat';
 import bodyParser from 'body-parser';
@@ -6,7 +5,6 @@ import bodyParser from 'body-parser';
 import logger from '../config/winston';
 import util from '../controllers/util/util.js';
 import Response from '../controllers/util/response.js';
-
 
 let router = express.Router();
 router.use(bodyParser.urlencoded({ extended: true }));

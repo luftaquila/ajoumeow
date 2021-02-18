@@ -12,7 +12,7 @@ app.use('/api/auth', auth);
 app.use('/api/settings', settings);
 app.use('/api/record', record);
 app.use('/api/verify', verify);
-//app.use('/api/users', users);
+app.use('/api/users', users);
 
 app.listen(5710, async function() {
   console.log('Server is on startup. PORT :5710');
