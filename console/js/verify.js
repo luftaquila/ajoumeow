@@ -1,11 +1,5 @@
 $(function() {
-  $('#sidebarToggleTop').click();
-  $('#timestamp').datepicker({
-    format: "yyyy-mm-dd",
-    todayBtn: "linked",
-    language: "ko",
-    todayHighlight: true
-  });
+  $('#content').click();
   $('#timestamp').datepicker('update', new Date().format('yyyy-mm-dd'));
   init();
 });
@@ -35,6 +29,7 @@ async function init() {
   for(let obj of verify) $('#deletelist').append("<div><label><input type='checkbox' name='deleteList' value='" + obj.ID + '/' + obj.name + '/' + obj.course + "'>&nbsp;" + obj.ID + ' ' + obj.name + ' / ' + obj.course + "</input></label></div>");
 }
 
+/* Event Listeners */
 
 $('#timestamp').datepicker().on('changeDate', init);
 
@@ -45,6 +40,51 @@ $('input[name=verifyType]').click(function() {
   else $('#submit').removeClass('btn-danger').addClass('btn-success').children('span').text('인증');
 });
 
+$('#autoadd').click(function() {
+  $('#autolist').append(`<div>
+    <input type="checkbox" name="recordList" checked>
+    <span class='autoadd-data'>
+      <div style='display: inline-block; width: 14ch'></div>
+    </span> / 
+    <select class='autoadd-course-data'><option value="1코스">1</option><option value="2코스">2</option><option value="3코스">3</option></select> 코스&emsp;
+    <input type="text" class='autoCompleteName form-control' placeholder='이름' style="display: inline; width: 3.5rem; padding: 0; height: 1.5rem;"/>
+  </div>`);
+  $('input.autoCompleteName').typeahead('destroy');
+  typeahead();
+});
+
+function typeahead() {
+  $('input.autoCompleteName').typeahead({
+    hint: true
+  }, {
+    displayKey: 'name',
+    templates: {
+      suggestion: data => {
+        return `<p>${data.ID} <strong>${data._query}</strong>${data.name.replace(data._query, '')}</p>`;
+      }
+    },
+    source: (query, syncResults, asyncResults) => {
+      return $.ajax({
+        url: '/ajoumeow/api/users/name',
+        type: 'GET',
+        beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
+        data: { query: query },
+        success: res => { console.log(res); return asyncResults(res.data) },
+      })
+    }
+  })
+  .bind('typeahead:select', (e, suggestion) => {
+    event = e;
+    $(e.target).parent().siblings('span.autoadd-data').text(`${suggestion.ID} ${suggestion.name}`)
+    $(e.target).parent().siblings('input[name=recordList]').val(`${suggestion.ID}/${suggestion.name}/${$(e.target).parent().siblings('select').val()}`)
+  });
+  $('select.autoadd-course-data').on('change', function() {
+    let target = $(this).siblings('input[name=recordList]');
+    target.val(target.val().replace(/\d코스/, $(this).val()));
+  });
+}
+
+/* Submit button click event */
 $("#submit").click(function() {
   var operation = $('input[name=verifyType]:checked').val();
   
@@ -58,16 +98,6 @@ $("#submit").click(function() {
         'date' : $('#timestamp').datepicker('getDate').format('yyyy-mm-dd'),
         'name' : tmp[1],
         'course' : tmp[2],
-        'score' : null
-      });
-    }
-    var customlist = $('input[name=customRecordList]:checked');
-    for(var obj of customlist) {
-      payload.push({
-        'ID' : $(obj).next().val(),
-        'date' : $('#timestamp').datepicker('getDate').format('yyyy-mm-dd'),
-        'name' : $(obj).next().next().val(),
-        'course' : $(obj).next().next().next().val() + '코스',
         'score' : null
       });
     }

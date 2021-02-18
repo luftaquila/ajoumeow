@@ -1,4 +1,3 @@
-
 function init() {
   $.when(
     $.ajax({ // Request settings
