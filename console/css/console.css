@@ -1,14 +1,16 @@
-body {
-  font-family: 'Nanum Gothic'
-}
+body { font-family: 'Nanum Gothic' }
 
-a[disabled="disabled"] {
-        pointer-events: none;
-}
+a[disabled="disabled"] { pointer-events: none; }
 
 .statisticsDate {
   font-size: 0.8rem;
   width: 7rem;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 /* typeahead style */
@@ -18,9 +20,7 @@ a[disabled="disabled"] {
           box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
 }
 
-.tt-hint {
-  color: #999
-}
+.tt-hint { color: #999; }
 
 .tt-menu {    /* used to be tt-dropdown-menu in older versions */
   width: 20ch;
@@ -46,9 +46,6 @@ a[disabled="disabled"] {
 .tt-suggestion.tt-cursor,.tt-suggestion:hover {
   color: #fff;
   background-color: #0097cf;
-
 }
 
-.tt-suggestion p {
-  margin: 0;
-}
+.tt-suggestion p { margin: 0; }

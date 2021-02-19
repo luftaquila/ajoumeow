@@ -194,7 +194,7 @@ function startIntro() {
       try { MicroModal.close('guide_modal'); } catch(e) { }
     }
   }).onexit(function() {
-    if(!user.name) {
+    if(!user) {
       let applyGuide = introJs();
       applyGuide.setOptions({
         steps: [{
