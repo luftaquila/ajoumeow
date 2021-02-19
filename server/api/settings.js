@@ -24,4 +24,16 @@ router.get('*', async (req, res) => {
   }
 });
 
+router.put('*', util.isAdmin, async (req, res) => {
+  try {
+    let result = await util.query(`UPDATE settings SET value='${req.body.data}' WHERE name='${req.url.substring(1)}'`);
+    res.status(200).json(new Response('success', '', result));
+  }
+  catch(e) {
+    //logger.error();
+    console.log(e);
+    res.status(500).json(new Response('error', e.message, 'ERR'));
+  }
+});
+
 export default router

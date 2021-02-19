@@ -21,6 +21,21 @@ util.isLogin = function(req, res, next) { // check if jwt is vaild
   }
 };
 
+util.isAdmin = function(req, res, next) { // check if jwt is vaild
+  const token = req.headers['x-access-token'];
+  if(!token) res.status(400).json(new Response('error', 'Token required.', 'ERR_NO_TOKEN'));
+  else {
+    jwt.verify(token, process.env.JWTSecret, function(err, decoded) {
+      if(err) res.status(401).json(new Response('error', 'Invaild token.', 'ERR_INVAILD_TOKEN'));
+      else if(decoded.role == '회원') res.status(403).json(new Response('error', 'Forbidden', 'ERR_USER_NOT_ADMIN'));
+      else {
+        req.decoded = decoded;
+        next();
+      }
+    });
+  }
+};
+
 util.query = async function(query) { // make db query
   try {
     const db = await pool.getConnection();
