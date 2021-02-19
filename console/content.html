@@ -1,105 +1,19 @@
-          <div class="container-fluid text-gray-700" id='settingsContent' style='display: none;'>
-            <!-- Page Heading -->
-            <div class="d-sm-flex align-items-center justify-content-between mb-4">
-              <h1 class="h3 mb-0 text-gray-800">설정</h1>
-            </div>
-            <div>
-              <div id='currentSemister_container'>
-                <b>현재 학기</b>
-                <div style='display: inline-block; margin-left: 3rem;'>
-                  <input id='currentYear' class='setting settingSemister' type="number" min=20 max=99 maxlength=2 style='width: 30; text-align: center' required/> - 
-                  <select id='currentSemister' class='setting settingSemister' required>
-                    <option>1</option>
-                    <option>2</option>
-                  </select>
-                  학기
-                </div>
-              </div>
-              
-              <div id='isApply_container' style='margin-top: 1.5rem;'>
-                <b>회원 등록</b>
-                <div style='display: inline-block; margin-left: 3rem;'>
-                  <label class="rocker rocker-small" style='font-size: 0.5rem; margin: 0rem; vertical-align: middle'>
-                    <input id='isApply' class='setting settingApply' type="checkbox" checked>
-                    <span class="switch-left">OFF</span>
-                    <span class="switch-right">ON</span>
-                  </label>
-                </div>
-              </div>
-              
-              <div id='isApplyRestricted_container' style='padding-left: 2rem; margin-top: 0.5rem'>
-                <b>등록 허용기간 제한</b>
-                <div style='display: inline-block; margin-left: 3rem;'>
-                  <label class="rocker rocker-small" style='font-size: 0.5rem; margin: 0rem; vertical-align: middle'>
-                    <input id='isApplyRestricted' class='setting settingApplyRestricted' type="checkbox" checked>
-                    <span class="switch-left">OFF</span>
-                    <span class="switch-right">ON</span>
-                  </label>
-                </div>
-                <div id='isApplyRestrictedCalendar_container' style='margin-left: 1.5rem;'>
-                  허용 기간<br>
-                  <span style='font-size: 0.7rem'>
-                    <input class='setting settingCalendar settingApplyCalendar' id="applyStartDate" type="date" value="" />
-                    &ensp; ~ &ensp;
-                    <input class='setting settingCalendar settingApplyCalendar' id="applyEndDate" type="date" value="" />
-                  </span>
-                </div>
-              </div>
 
-              <div id='isRegister_container' style='margin-top: 1.5rem;'>
-                <b>신입 모집</b>
-                <div style='display: inline-block; margin-left: 3rem;'>
-                  <label class="rocker rocker-small" style='font-size: 0.5rem; margin: 0rem; vertical-align: middle'>
-                    <input id='isRegister' class='setting settingRegister' type="checkbox" checked>
-                    <span class="switch-left">OFF</span>
-                    <span class="switch-right">ON</span>
-                  </label>
-                </div>
-              </div>
-              
-              <div id='isRegisterRestricted_container' style='padding-left: 2rem; margin-top: 0.5rem'>
-                <b>모집 허용기간 제한</b>
-                <div style='display: inline-block; margin-left: 3rem;'>
-                  <label class="rocker rocker-small" style='font-size: 0.5rem; margin: 0rem; vertical-align: middle'>
-                    <input id='isRegisterRestricted' class='setting settingRegisterRestricted' type="checkbox" checked>
-                    <span class="switch-left">OFF</span>
-                    <span class="switch-right">ON</span>
-                  </label>
-                </div>
-                <div id='isRegisterRestrictedCalendar_container' style='margin-left: 1.5rem;'>
-                  허용 기간<br>
-                  <span style='font-size: 0.7rem'>
-                    <input class='setting settingCalendar settingRegisterCalendar' id="registerStartDate" type="date" value="" />
-                    &ensp; ~ &ensp;
-                    <input class='setting settingCalendar settingRegisterCalendar' id="registerEndDate" type="date" value="" />
-                  </span>
-                </div>
-              </div>
-              
-              <div style='margin-top: 1.5rem;'>
-                <b>공지사항</b><br>
-                <textarea class='setting notice' id='notice' style='width: 20rem; height: 4rem; font-size: 0.8rem; line-height: 1rem;'></textarea>
-              </div>
-            </div>
-            
-            <br>
-            <div style='font-size: 0.9rem'>
-              <ul class='fa-ul'>
-                <li style='font-weight: bold'>
-                  <span class='fa-li'><i class='fas fa-engine-warning' style='color: #e99f00'></i></span> 현재 학기 값은 학기가 바뀌면 항상 업데이트 해 주세요.<br>
-                  명단 작성 등 전산 전체에서 중요하게 사용되는 값입니다.
-                </li><br>
-                <li style='font-weight: bold'>
-                  <span class='fa-li'><i class='fas fa-engine-warning' style='color: #e99f00'></i></span> 현재 학기 값을 변경하면 모든 회원은 로그아웃됩니다.<br>
-                  변경된 새 학기 회원 목록에 새로 등록해야 로그인할 수 있습니다.<br>
-                  반드시 학기를 변경한 후 회원들에게 회원 등록을 다시 해야 한다고 공지하세요.
-                </li><br>
-                <li><span class='fa-li'><i class='fas fa-lightbulb-exclamation' style='color: green'></i></span>공지사항 값을 변경하면 사이트 방문 시 최초 1회 공지 팝업이 표시됩니다.</li>
-              </ul>
-            </div>
-            <!--<select id='namelist-config'></select><br>-->
-            <div id='namelistWrap'></div>
-          </div>
+    <link rel='stylesheet' href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/ajoumeow/Resources/Libraries/micromodal/micromodal.min.css" />
+
+
+    
+    <script src="vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
+    <script src='js/datatable-editor.js'></script>
+    <script src='/ajoumeow/Resources/Libraries/micromodal/micromodal.min.js'></script>
+    <!-- For excel export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.14.3/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.min.js"></script>
+
+
+          
           <div class="container-fluid text-gray-700" id='memberContent' style='display: none;'>
             <!-- Page Heading -->
             <div class="d-sm-flex align-items-center justify-content-between mb-4">

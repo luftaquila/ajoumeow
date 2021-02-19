@@ -1,68 +1,5 @@
 function init() {
   $.when(
-    $.ajax({ // Request settings
-      url: "api/requestSettings",
-      type: "POST",
-      dataType: 'json',
-      success: function(res) {
-        settings = res;
-        
-        // load semister settings
-        $('#currentYear').val(settings['currentSemister'].split('-')[0]);
-        $('#currentSemister').val(settings['currentSemister'].split('-')[1]);
-        
-        // load apply settings
-        if(settings['isApply'] == 'TRUE') { // setting is ON
-          $('#isApply').attr('checked', false);
-          $('#isApplyRestricted_container').css('opacity', '1').find('input').attr('disabled', false);
-          
-          if(settings['isApplyRestricted'] == 'TRUE') {
-            $('#isApplyRestricted').attr('checked', false);
-            $('#isApplyRestrictedCalendar_container').css('opacity', '1').find('input').attr('disabled', false);
-          }
-          else {
-            $('#isApplyRestricted').attr('checked', true);
-            $('#isApplyRestrictedCalendar_container').css('opacity', '0.2').find('input').attr('disabled', true);
-          }
-        }
-        else { // setting is OFF
-          $('#isApply').attr('checked', true);
-          $('#isApplyRestricted_container').css('opacity', '0.2').find('input').attr('disabled', true);
-
-        }
-          
-        
-        // load register settings
-        if(settings['isRegister'] == 'TRUE') {
-          $('#isRegister').attr('checked', false);
-          $('#isRegisterRestricted_container').css('opacity', '1').find('input').attr('disabled', false);
-          
-          if(settings['isRegisterRestricted'] == 'TRUE') {
-            $('#isRegisterRestricted').attr('checked', false);
-            $('#isRegisterRestrictedCalendar_container').css('opacity', '1').find('input').attr('disabled', false);
-          }
-          else {
-            $('#isRegisterRestricted').attr('checked', true);
-            $('#isRegisterRestrictedCalendar_container').css('opacity', '0.2').find('input').attr('disabled', true);
-          }
-        }
-        else {
-          $('#isRegister').attr('checked', true);
-          $('#isRegisterRestricted_container').css('opacity', '0.2').find('input').attr('disabled', true);
-        }
-        
-        // load notice
-        $('#notice').val(settings['notice'].split('$')[1].replace('<br>', '\n'));
-        
-        // load calendars
-        document.getElementById('applyStartDate').valueAsDate = new Date(new Date(settings['applyTerm'].split('~')[0]) - (-1) * 9 * 3600 * 1000);
-        document.getElementById('applyEndDate').valueAsDate = new Date(new Date(settings['applyTerm'].split('~')[1]) - (-1) * 9 * 3600 * 1000);
-        document.getElementById('registerStartDate').valueAsDate = new Date(new Date(settings['registerTerm'].split('~')[0]) - (-1) * 9 * 3600 * 1000);
-        document.getElementById('registerEndDate').valueAsDate = new Date(new Date(settings['registerTerm'].split('~')[1]) - (-1) * 9 * 3600 * 1000);
-
-        
-      }
-    }),
     $.ajax({
       url: 'api/requestNameList',
       type: 'POST',
@@ -223,147 +160,8 @@ function init() {
     load();
   });
 }
-
-async function load() {
-  var record, verify;
-  $.ajax({
-    url: 'api/requestLatestVerify',
-    type: 'POST',
-    success: function(res) { $('#latestConfirm').text('마지막 인증 기록 : ' + new Date(res[0].date).format('yyyy-mm-dd')); }
-  });
-  
-  await $.ajax({
-    url: 'api/requestVerifyList',
-    type: 'POST',
-    dataType: 'json',
-    data: { date: $('#timestamp').datepicker('getDate').format('yyyy-mm-dd') },
-    success: function(res) { record = res.record; verify = res.verify }
-  });
-  
-  $("#autolist").html('').prepend("<div style='margin-top: 5px; margin-bottom: -10px'><label><input type='checkbox' id='boost' value='test'>&nbsp;마일리지 상향 지급하기</input></label></div><hr style='width: 100%'>");
-  for(var obj of record) $('#autolist').append("<div><label><input type='checkbox' name='recordList' checked='checked' value='" + obj.ID + '/' + obj.name + '/' + obj.course + "'>&nbsp;" + obj.ID + ' ' + obj.name + ' / ' + obj.course + "</input></label></div>");
-  
-  $('#deletelist').html('<br>');
-  for(var obj of verify) $('#deletelist').append("<div><label><input type='checkbox' name='deleteList' value='" + obj.ID + '/' + obj.name + '/' + obj.course + "'>&nbsp;" + obj.ID + ' ' + obj.name + ' / ' + obj.course + "</input></label></div>");
-}
-
-
 function clickEventListener() {
-  $('.nav-item').click(function() {
-    $('.nav-item').removeClass('active');
-    $(this).addClass('active');
-    $('.container-fluid').css('display', 'none');
-    $('.container-fluid#' + $(this).attr('id') + 'Content').css('display', 'block');
-  });
-  $('input[name=verifyType]').click(function() {
-    $('#auto, #manual, #delete').css('display', 'none');
-    $('#' + $(this).val()).css('display', 'block');
-    if($(this).val() == 'delete') $('#submit').removeClass('btn-success').addClass('btn-danger').children('span').text('삭제');
-    else $('#submit').removeClass('btn-danger').addClass('btn-success').children('span').text('인증');
-  });
-  $('#autoadd').click(function() {
-    var div = $('<div></div>');
-    $('#autolist').append(div);
-    div.append($('<input type="checkbox" class="autoadd" name="customRecordList" checked>')).append('&nbsp;');
-    div.append($('<input type="number" placeholder="학번" class="autoadd form-control border-5 small" style="display: inline; width: 110px; height: 30px"/>')).append('&nbsp;');
-    div.append($('<input type="text" class="autoadd form-control border-5 small" style="display: inline; width: 70px; height:30px" disabled/>')).append(' / ');
-    div.append($('<select><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>')).append(' 코스');
-    $('input.autoadd[type=number]').keyup(function() {
-      var target = namelist.find(o => o.ID == $(this).val());
-      if(target) $(this).next().val(target.name);
-      else $(this).next().val('');
-    });
-  });
-  $('#manualadd').click(function() {
-    if($('input[name=manualrecord]').length == 1) {
-      $('#manuallist').prepend('<span id="autoReason">> 지급 사유 통일하기</span><br><br>');
-      $('#autoReason').click(function() {
-        var reason = $($($('input:checkbox[name=manualrecord]')[0]).siblings($('input'))[4]).val();
-        $("input:checkbox[name=manualrecord]").each(function() {
-          $($(this).siblings($('input'))[4]).val(reason);
-        });
-      });
-    }
-    var div = $('<div></div>');
-    $('#manuallist').append(div);
-    div.append($('<input type="checkbox" name="manualrecord" checked>')).append('&nbsp;');
-    div.append($('<input type="number" placeholder="학번" class="manualadd form-control border-5 small" style="display: inline; width: 110px; height: 30px"/>')).append('&nbsp;');
-    div.append($('<input type="text" class="manualadd form-control border-5 small" style="display: inline; width: 70px; height:30px" disabled/>')).append('<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
-    div.append($('<input type="number" placeholder="점수" class="form-control border-5 small" style="display: inline; width: 60px; height: 30px"/>')).append('&nbsp;&nbsp;');
-    div.append($('<input type="text" placeholder="지급 사유(20자 이내)" maxlength=19 class="manualadd form-control border-5 small" style="display: inline; width: 250px; height: 30px"/>')).append('<br><br>');
-    $('input.manualadd[type=number]').keyup(function() {
-      var target = namelist.find(o => o.ID == $(this).val());
-      if(target) $(this).next().val(target.name);
-      else $(this).next().val('');
-    });
-  });
   
-  $('.setting').change(function() {
-    var obj = $(this).attr('class').split(' '), req = {};
-    console.log(obj)
-    if (obj.includes('settingSemister')) { // 학기 설정
-      req.param = 'currentSemister';
-      req.data = $('#currentYear').val() + '-' + $('#currentSemister').val();
-    }
-    else if(obj.includes('settingApply')) { // 회원 등록 허용 여부
-      req.param = 'isApply';
-      req.data = !$('#isApply').is(':checked');
-      req.data = req.data.toString().toUpperCase();
-      
-      if(!$('#isApply').is(':checked')) $('#isApplyRestricted_container').css('opacity', '1').find('input').attr('disabled', false);
-      else $('#isApplyRestricted_container').css('opacity', '0.2').find('input').attr('disabled', true);
-      if(!$('#isApplyRestricted').is(':checked')) $('#isApplyRestrictedCalendar_container').css('opacity', '1').find('input').attr('disabled', false);
-      else $('#isApplyRestrictedCalendar_container').css('opacity', '0.2').find('input').attr('disabled', true);
-    }
-    else if(obj.includes('settingApplyRestricted')) { // 회원등록 기간 제한 여부
-      req.param = 'isApplyRestricted';
-      req.data = !$('#isApplyRestricted').is(':checked');
-      req.data = req.data.toString().toUpperCase();
-      
-      if(!$('#isApplyRestricted').is(':checked')) $('#isApplyRestrictedCalendar_container').css('opacity', '1').find('input').attr('disabled', false);
-      else $('#isApplyRestrictedCalendar_container').css('opacity', '0.2').find('input').attr('disabled', true);
-    }
-    else if(obj.includes('settingApplyCalendar')) { // 회원등록 기간 설정
-      req.param = 'applyTerm';
-      req.data = $('#applyStartDate').val() + '~' + $('#applyEndDate').val();
-    }
-    else if(obj.includes('settingRegister')) { // 신입 모집 허용 여부
-      req.param = 'isRegister';
-      req.data = !$('#isRegister').is(':checked');
-      req.data = req.data.toString().toUpperCase();
-      
-      if(!$('#isRegister').is(':checked')) $('#isRegisterRestricted_container').css('opacity', '1').find('input').attr('disabled', false);
-      else $('#isRegisterRestricted_container').css('opacity', '0.2').find('input').attr('disabled', true);      
-      if(!$('#isRegisterRestricted').is(':checked')) $('#isRegisterRestrictedCalendar_container').css('opacity', '1').find('input').attr('disabled', false);
-      else $('#isRegisterRestrictedCalendar_container').css('opacity', '0.2').find('input').attr('disabled', true);
-    }
-    else if(obj.includes('settingRegisterRestricted')) { // 신입 모집 기간 제한 여부
-      req.param = 'isRegisterRestricted';
-      req.data = !$('#isRegisterRestricted').is(':checked');
-      req.data = req.data.toString().toUpperCase();
-      
-      if(!$('#isRegisterRestricted').is(':checked')) $('#isRegisterRestrictedCalendar_container').css('opacity', '1').find('input').attr('disabled', false);
-      else $('#isRegisterRestrictedCalendar_container').css('opacity', '0.2').find('input').attr('disabled', true);
-    }
-    else if(obj.includes('settingRegisterCalendar')) { // 신입 모집 기간 설정
-      req.param = 'registerTerm';
-      req.data = $('#registerStartDate').val() + '~' + $('#registerEndDate').val();
-    }
-    else if(obj.includes('notice')) {
-      req.param = 'notice';
-      req.data = $('#notice').val();
-    }
-    
-    $.ajax({
-      type: 'POST',
-      url: 'api/modifySettings',
-      data: { 'editParam' : req.param, 'editData' : req.data },
-      success: function(res) { 
-        if(res.result) alertify.success('설정이 변경되었습니다');
-        else alertify.error('설정 변경에 실패하였습니다')},
-      error: function() { alertify.error('설정 변경에 실패하였습니다.<br>다시 시도해 주세요'); }
-    });
-  });
   
   $('#download1365').click(function() {
     if($('#calendar1365').val()) {
@@ -384,11 +182,7 @@ function clickEventListener() {
     }
     else alertify.error('년/월을 선택하세요');
   });
-  $(document).keypress(function(e) { if( $('#admin').hasClass('is-open') && (e.keyCode == 13 || e.which == 13) ) $('#confirmAdmin').click(); });
-  $('#currentYear').keyup(function() {
-     if(this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);
-     if(Number(this.value) < 20) this.value = this.value.slice(0, 1);
-  });
+
   $('#contactDownload').click(function() {
       var fileType = $('input:radio[name=contactfile]:checked');
       if(!fileType.length) {

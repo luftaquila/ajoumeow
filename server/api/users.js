@@ -11,7 +11,7 @@ router.use(bodyParser.urlencoded({ extended: true }));
 
 //const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
 
-router.get('/name', util.isLogin, async (req, res) => {
+router.get('/name', util.isAdmin, async (req, res) => {
   try {
     let result = await util.query(`SELECT name, ID FROM \`namelist_${await util.getSettings('currentSemister')}\` WHERE name LIKE '%${req.query.query}%';`);
     res.status(200).json(new Response('success', null, result));
