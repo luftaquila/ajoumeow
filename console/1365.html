@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -13,14 +13,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
 
     <!-- Custom styles for this template-->
-    <link href="css/sb-admin-2.min.css" rel="stylesheet">
-    <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
-    <link rel='stylesheet' href='/res/toggleSwitch.css' />
-    <link rel='stylesheet' href='/res/bootstrap-datepicker/css/bootstrap-datepicker.min.css' />    
+    <link rel="stylesheet" href="css/sb-admin-2.min.css">
+    <link rel='stylesheet' href='css/console.css'>
+    
+    <!-- Page level styles -->
     <link rel='stylesheet' href='/ajoumeow/Resources/Libraries/alertify/alertify.core.css' />
     <link rel='stylesheet' href='/ajoumeow/Resources/Libraries/alertify/alertify.default.css' />
-    <link rel="stylesheet" href="/ajoumeow/Resources/Libraries/micromodal/micromodal.min.css" />
-    <link rel='stylesheet' href='css/console.css'>
+    <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
   </head>
   <body id="page-top">
     <!-- Page Wrapper -->
@@ -100,3 +99,48 @@
             <a style='color: #0366d6; font-size: 1.2rem; margin-left: 1rem;' onclick="window.location.href = 'https://github.com/luftaquila/ajoumeow';"><i class='far fa-question-circle'></i>&ensp;도움말</a>
           </nav>
           <!-- End of Topbar -->
+          <!-- Begin Page Content -->
+          <div class="container-fluid">
+            <!-- Page Heading -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+              <h1 class="h3 mb-0 text-gray-800">1365 인증서</h1>
+            </div>
+            <ul style='font-size:0.9rem'>
+              <li>1365 봉사활동 확인서를 자동으로 작성하고 다운로드합니다.</li>
+              <li>인증서를 생성할 기간과 명단 데이터를 선택한 후 <kbd>다운로드</kbd> 를 누르세요.<br>10초 내외로 다운로드가 시작됩니다.</li>
+              <li>팝업 차단을 해제해야 다운로드가 가능합니다. (아마도)</li>
+            </ul>
+            <br>
+            <table style="border-collapse: separate; border-spacing: 10px;">
+              <tr>
+                <td>기간</td>
+                <td><input type='month' id='calendar1365' class='btn btn-primary'/></td>
+              </tr>
+              <tr>
+                <td>명단 데이터&ensp;</td>
+                <td><select id='namelist1365' class='namelist_select btn btn-primary'></select></td>
+              </tr>
+            </table>
+            <a id="download1365" class="btn btn-success " style='color: white; float: right;'>다운로드</a>
+          </div>
+        </div>
+        <!-- End of Main Content -->
+      </div>
+      <!-- End of Content Wrapper -->
+    </div>
+    <!-- End of Page Wrapper -->
+    
+    <!-- Bootstrap core JavaScript-->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Core plugin JavaScript-->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src='/ajoumeow/Resources/Libraries/js.cookie.min.js'></script>
+    <script src='/ajoumeow/Resources/Libraries/alertify/alertify.min.js'></script>
+    <script src="js/sb-admin-2.js"></script>
+    <script src='js/authManager.js'></script>
+    
+    <!-- Page level plugins -->
+    <script src='js/1365.js'></script>  </body>
+</html>

@@ -68,26 +68,6 @@ function init() {
 }
 function clickEventListener() {
   
-  
-  $('#download1365').click(function() {
-    if($('#calendar1365').val()) {
-      $('#calendar1365, #download1365, #namelist_1365').attr('disabled', true);
-      $.ajax({
-        url: "api/request1365",
-        type: 'POST',
-        data: { month: $('#calendar1365').val(), namelist: $('#namelist_1365').val() },
-        success: function(res) {
-          if(res.result) {
-            alertify.success('문서 생성이 완료되었습니다.');
-            window.open('api/download1365');
-          }
-        },
-        error: function(req) { alertify.error(req.responseJSON.error.code); },
-        complete: function() { $('#calendar1365, #download1365, #namelist_1365').attr('disabled', false); }
-      });
-    }
-    else alertify.error('년/월을 선택하세요');
-  });
 
   $('#contactDownload').click(function() {
       var fileType = $('input:radio[name=contactfile]:checked');
@@ -206,43 +186,5 @@ function clickEventListener() {
     }
     
   });
-  $('select#namelist').change(function() {
-    let val = $(this).val().replace('namelist_', '');
-    if(val == settings['currentSemister']) {
-      $('#current_namelist').css('display', 'block');
-      $('#past_namelist').css('display', 'none');
-    }
-    else {
-      $('#current_namelist').css('display', 'none');
-      $('#past_namelist').css('display', 'block');
-      past_namelist_table.ajax.reload();
-    }
-  });
-  $('#download_namelist').click(function() {
-    let val = $('#namelist').val().replace('namelist_', '');
-    $.ajax({
-      url: "api/requestNameList",
-      type: 'POST',
-      data: 'semister=' + val,
-      success: function(res) {
-        function s2ab(s) {
- 	        var buf = new ArrayBuffer(s.length); //convert s to arrayBuffer
-          var view = new Uint8Array(buf);  //create uint8array as viewer
-          for (var i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xFF; //convert to octet
-          return buf;
-        }
-        var excelHandler = {
-          getExcelFileName : function() { return val + '학기 명단.xlsx'; },
-          getSheetName : function() { return val + '학기'; },
-          getExcelData : function() { return res; },
-          getWorksheet : function() { return XLSX.utils.json_to_sheet(this.getExcelData()); }
-        }
-        var wb = XLSX.utils.book_new();
-        var newWorksheet = excelHandler.getWorksheet();
-        XLSX.utils.book_append_sheet(wb, newWorksheet, excelHandler.getSheetName());
-        var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
-        saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), excelHandler.getExcelFileName());
-      }
-    });
-  });
+  
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -99,15 +99,15 @@
             <a style='color: #0366d6; font-size: 1.2rem; margin-left: 1rem;' onclick="window.location.href = 'https://github.com/luftaquila/ajoumeow';"><i class='far fa-question-circle'></i>&ensp;도움말</a>
           </nav>
           <!-- End of Topbar -->
-            <!-- Begin Page Content -->
+          <!-- Begin Page Content -->
           <div class="container-fluid">
             <!-- Page Heading -->
             <div class="d-sm-flex align-items-center justify-content-between mb-4">
               <h1 class="h3 mb-0 text-gray-800">회원 관리</h1>
             </div>
             
-            <select id='namelist' class='namelist_select'></select>&emsp;
-            <a id="download_namelist" class="btn btn-success" style='color: #fff; padding: .1rem .4rem;'>명단 다운로드(.xlsx)</a>
+            <select id='namelist' class='namelist_select btn btn-primary'></select>&emsp;
+            <a id="namelistDownload" class="btn btn-success" style='color: #fff; padding: .1rem .4rem;'>명단 다운로드(.xlsx)</a>
             <div id='current_namelist' class="table-responsive" style='margin-top: 1rem'>
               <div style='font-size: 0.9rem'>
                 <b style='font-size: 1.2rem;'>현재 학기 명단</b>
@@ -248,5 +248,9 @@
     <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
     <script src='/res/datatable-editor.js'></script>
     <script src='js/members.js'></script>
+    
+    <!-- For excel export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.14.3/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.min.js"></script>
   </body>
 </html>

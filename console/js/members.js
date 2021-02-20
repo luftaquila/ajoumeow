@@ -114,3 +114,30 @@ $('#deleteMember').click(function() {
     error: err => alertify.error(`회원 제명 중에 오류가 발생했습니다.<br>${err.responseJSON.data}`)
   });
 });
+
+$('#namelistDownload').click(function() {
+  let semister = $('#namelist').val();
+  $.ajax({
+    url: "/ajoumeow/api/users/list",
+    beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
+    data: { semister : semister },
+    success: res => {
+      function s2ab(s) {
+        let buf = new ArrayBuffer(s.length); //convert s to arrayBuffer
+        let view = new Uint8Array(buf);  //create uint8array as viewer
+        for (let i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xFF; //convert to octet
+        return buf;
+      }
+      let excelHandler = {
+        getExcelFileName : () => { return semister + '학기 명단.xlsx'; },
+        getSheetName : () => { return semister + '학기'; },
+        getWorksheet : () => { return XLSX.utils.json_to_sheet(res.data); }
+      }
+      let wb = XLSX.utils.book_new();
+      let newWorksheet = excelHandler.getWorksheet();
+      XLSX.utils.book_append_sheet(wb, newWorksheet, excelHandler.getSheetName());
+      let wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+      saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), excelHandler.getExcelFileName());
+    }
+  });
+});
