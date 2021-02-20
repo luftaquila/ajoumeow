@@ -8,7 +8,9 @@ a[disabled="disabled"] { pointer-events: none; }
 }
 
 input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button {
+input[type="number"]::-webkit-inner-spin-button,
+input[type="month"]::-webkit-outer-spin-button,
+input[type="month"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }

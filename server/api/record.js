@@ -145,65 +145,7 @@ app.post('//requestRegister', async function(req, res) {
   }
 });
 
-app.post('//request1365', async function(req, res) {
-  const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
-  try {
-  let verify = await db.query("SELECT * FROM verify WHERE REPLACE(SUBSTRING_INDEX(date, '-', 2), '-', '')='" + req.body.month.replace('-', '') + "';");
-  let namelist = await db.query("SELECT * FROM `" + req.body.namelist + "`;");
-  let data = [];
 
-  for(let obj of verify) {
-    let person = data.find(o => o.ID == obj.ID);
-    if(person) {
-      let day = person.date.find(o => +o.day == +obj.date);
-      if(day) day.hour++;
-      else {
-        person.date.push({
-          day: obj.date,
-          hour: 1
-        });
-      }
-    }
-    else {
-      let member = namelist.find(o => o.ID == obj.ID);
-      if(member) {
-        data.push({
-          ID: member.ID,
-          name: member.name,
-          '1365ID' : member['1365ID'],
-          birthday: member.birthday,
-          date: [ { day: obj.date, hour: 1 } ]
-        });
-      }
-    }
-  }
-  request.post({
-    url: 'https://script.google.com/macros/s/AKfycbw3VnMUXHLQJY5Te8aFX1uJLR0wQt2y5XMvvNaLQnPbLJ59UiQ/exec',
-    body: JSON.stringify(data),
-    followAllRedirect: true
-  },
-  function(error, response, body) {
-    if (error) console.log(error);
-    else {
-      request(response.headers['location'], function(error, response, data) {
-        let buf = Buffer.from(data, 'base64');
-        fs.writeFile('인증서.pdf', buf, error => {
-          if (error) throw error;
-        });
-        res.send({ result : true });
-      });
-    }
-  });
-  logger.info('1365 인증서를 요청합니다.', { ip: ip, url: 'request1365', query: '-', result: 'ok'});
-  }
-  catch(e) {
-    logger.error('1365 인증서를 요청하는 중에 오류가 발생했습니다.', { ip: ip, url: 'request1365', query: '-', result: e.toString()});
-  }
-});
-
-app.get('//download1365', function(req, res) {
-  res.download('인증서.pdf');
-});
 
 app.post('//requestLogs', async function(req, res) {
   const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
