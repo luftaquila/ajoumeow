@@ -4,7 +4,6 @@ $(function() {
   // current semister settings
   $.ajax({
     url: "/ajoumeow/api/settings/currentSemister",
-    beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
     success: res => {
       $('#currentYear').val(res.data.split('-')[0]);
       $('#currentSemister').val(res.data.split('-')[1]);
@@ -14,18 +13,9 @@ $(function() {
   
   // apply settings
   $.when(
-    $.ajax({
-      url: "/ajoumeow/api/settings/isApply",
-      beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt'))
-    }),
-    $.ajax({
-      url: "/ajoumeow/api/settings/isApplyRestricted",
-      beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt'))
-    }),
-    $.ajax({
-      url: "/ajoumeow/api/settings/applyTerm",
-      beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt'))
-    })
+    $.ajax("/ajoumeow/api/settings/isApply"),
+    $.ajax("/ajoumeow/api/settings/isApplyRestricted"),
+    $.ajax("/ajoumeow/api/settings/applyTerm")
   ).done((isApply, isApplyRestricted, applyTerm) => {
     if(isApply[0].data == 'TRUE') {
       $('#isApply').attr('checked', false);

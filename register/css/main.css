@@ -1,46 +1,3 @@
-
-
-
-
-/*//////////////////////////////////////////////////////////////////
-[ FONT ]*/
-
-@font-face {
-  font-family: Poppins-Regular;
-  src: url('../fonts/poppins/Poppins-Regular.ttf'); 
-}
-
-@font-face {
-  font-family: Poppins-Medium;
-  src: url('../fonts/poppins/Poppins-Medium.ttf'); 
-}
-
-@font-face {
-  font-family: Poppins-Bold;
-  src: url('../fonts/poppins/Poppins-Bold.ttf'); 
-}
-
-@font-face {
-  font-family: Poppins-SemiBold;
-  src: url('../fonts/poppins/Poppins-SemiBold.ttf'); 
-}
-
-@font-face {
-  font-family: Montserrat-Bold;
-  src: url('../fonts/montserrat/Montserrat-Bold.ttf'); 
-}
-
-@font-face {
-  font-family: Montserrat-SemiBold;
-  src: url('../fonts/montserrat/Montserrat-SemiBold.ttf'); 
-}
-
-@font-face {
-  font-family: Montserrat-Regular;
-  src: url('../fonts/montserrat/Montserrat-Regular.ttf'); 
-}
-
-
 /*//////////////////////////////////////////////////////////////////
 [ RESTYLE TAG ]*/
 
@@ -52,12 +9,11 @@
 
 body, html {
 	height: 100%;
-	font-family: Poppins-Regular, sans-serif;
+	font-family: "Nanum Gothic", sans-serif !important;
 }
 
 /*---------------------------------------------*/
 a {
-	font-family: Poppins-Regular;
 	font-size: 14px;
 	line-height: 1.7;
 	color: #666666;
@@ -82,7 +38,6 @@ h1,h2,h3,h4,h5,h6 {
 }
 
 p {
-	font-family: Poppins-Regular;
 	font-size: 14px;
 	line-height: 1.7;
 	color: #666666;
@@ -157,21 +112,18 @@ iframe {
 /*==================================================================
 [ Text ]*/
 .txt1 {
-  font-family: Poppins-Regular;
   font-size: 18px;
   line-height: 1.2;
   color: #fff;
 }
 
 .txt2 {
-  font-family: Poppins-Regular;
   font-size: 15px;
   line-height: 1.6;
   color: #999999;
 }
 
 .txt3 {
-  font-family: Poppins-Regular;
   font-size: 15px;
   line-height: 1.6;
   color: #00ad5f;
@@ -267,7 +219,6 @@ iframe {
 .contact100-form-title {
   width: 100%;
   display: block;
-  font-family: Poppins-Regular;
   font-size: 25px;
   color: #333333;
   line-height: 1.2;
@@ -289,7 +240,6 @@ iframe {
 }
 
 .label-input100 {
-  font-family: Montserrat-SemiBold;
   font-size: 11px;
   color: #666666;
   line-height: 1.2;
@@ -301,7 +251,6 @@ iframe {
   display: block;
   width: 100%;
   background: transparent;
-  font-family: Montserrat-Regular;
   font-size: 18px;
   color: #404b46;
   line-height: 1.2;
@@ -396,7 +345,6 @@ textarea.input100 {
   border-radius: 10px;
   background: #6675df;
 
-  font-family: Montserrat-Bold;
   font-size: 12px;
   color: #fff;
   line-height: 1.2;
@@ -420,8 +368,7 @@ textarea.input100 {
 
 @media (max-width: 992px) {
   .contact100-form {
-    width: 50%;
-    padding: 110px 30px 55px 30px;
+    width: 100%;
   }
 
   .contact100-more {
@@ -470,7 +417,6 @@ textarea.input100 {
   right: 2px;
   pointer-events: none;
 
-  font-family: Poppins-Regular;
   color: #c80000;
   font-size: 13px;
   line-height: 1.4;
@@ -561,7 +507,6 @@ textarea.input100 {
 /*------------------------------------------------------------------
 [ in select ]*/
 .select2-container .select2-selection--single .select2-selection__rendered {
-  font-family: Montserrat-Regular;
   font-size: 18px;
   color: #404b46;
   line-height: 1.2;
@@ -633,7 +578,6 @@ textarea.input100 {
 }
 
 .select2-results__options {
-  font-family: Montserrat-Regular;
   font-size: 18px;
   color: #404b46;
   line-height: 1.2;
@@ -642,7 +586,6 @@ textarea.input100 {
 .select2-search--dropdown .select2-search__field {
   border: 1px solid #aaa;
   outline: none;
-  font-family: Montserrat-Regular;
   font-size: 18px;
   color: #404b46;
   line-height: 1.2;

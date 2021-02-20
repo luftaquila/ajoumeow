@@ -47,7 +47,71 @@ router.get('/id', util.isAdmin, async (req, res) => {
 
 // Add new user
 router.post('/id', async (req, res) => {
-  
+  try {
+    // check if registered before
+    let namelists = await util.query(`SHOW TABLES LIKE '%namelist_%';`);
+    namelists = namelists.map(x => x['Tables_in_ajoumeow (%namelist_%)']).reverse();
+
+    let currentNamelist = null;
+    if(namelists.indexOf(`namelist_${await util.getSettings('currentSemister')}`) != -1)
+      currentNamelist = namelists.splice(namelists.indexOf(`namelist_${await util.getSettings('currentSemister')}`), 1);
+
+    for(let namelist of namelists) {
+      const test = await util.query(`SELECT ID FROM \`${namelist}\` WHERE ID=${req.body['학번']};`);
+      if(req.body.new == 'true' && test.length) return res.status(400).json(new Response('error', '지난 학기에 가입한 적이 있습니다.<br>기존 회원으로 등록해 주세요.', 'ERR_REGISTERED_BEFORE'));
+      else if(req.body.new == 'false' && !test.length) return res.status(400).json(new Response('error', '기존 회원이 아닙니다.<br>신입 회원으로 등록해 주세요.', 'ERR_NEVER_REGISTERED'));
+    }
+
+    // check if registered again
+    if(currentNamelist) {
+      const test = await util.query(`SELECT ID FROM \`${currentNamelist}\` WHERE ID=${req.body['학번']};`);
+      if(test.length) return res.status(400).json(new Response('error', '이미 이번 학기 회원으로 등록되셨습니다.', 'ERR_ALREADY_REGISTERED'));
+    }
+    
+    // check if user just lookuped
+    if(!req.body['이름']) {
+      let tmp = await util.getSettings('currentSemister'), semister;
+      tmp = tmp.split('-');
+      if(tmp[1] == '2') semister = tmp[0] + '-1';
+      else semister = (Number(tmp[0]) - 1) + '-2';
+      semister = `namelist_${semister}`;
+      
+      let result = await util.query(`SELECT * FROM \`${semister}\` WHERE ID=${req.body['학번']};`);
+      return res.status(200).json(new Response('success', null, result));
+    }
+
+    /* proceeding apply */
+    // create table if current semister's namelist not exists
+    if(!currentNamelist) {
+      await util.query("CREATE TABLE `namelist_" + await util.getSettings('currentSemister') + "` (" +
+            "`college` varchar(10) not null," +
+            "`department` varchar(15) not null," +
+            "`ID` int(11) not null," +
+            "`name` varchar(10) not null," +
+            "`phone` varchar(15) not null," +
+            "`birthday` varchar(10)," +
+            "`1365ID` varchar(30)," +
+            "`register` varchar(20)," +
+            "`role` varchar(10) default '회원'," +
+            "PRIMARY KEY (`ID`)" +
+            ") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+    }
+    let result = await util.query(`INSERT INTO \`namelist_${await util.getSettings('currentSemister')}\`(college, department, ID, name, phone, birthday, 1365ID, register, role) VALUES('${req.body['단과대학']}', '${req.body['학과']}', ${req.body['학번']}, '${req.body['이름']}', '${req.body['전화번호']}', '${req.body['생년월일']}', '${req.body['1365 아이디']}', '${req.body['가입 학기']}', '${req.body['직책']}');`);
+    res.status(200).json(new Response('success', null, result));
+  }
+  catch(e) {
+    console.log(e);
+    res.status(500).json(new Response('error', 'Unknown error', 'ERR_UNKNOWN'));
+  }
+});
+
+router.get('/isRegisteredBefore', async (req, res) => {
+  try {
+    
+  }
+  catch(e) {
+    res.status(500).json(new Response('error', 'Unknown error', 'ERR_UNKNOWN'));
+  }
 });
 
 // Modify user info by id
