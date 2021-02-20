@@ -13,14 +13,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
 
     <!-- Custom styles for this template-->
-    <link href="css/sb-admin-2.min.css" rel="stylesheet">
-    <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
-    <link rel='stylesheet' href='/res/toggleSwitch.css' />
-    <link rel='stylesheet' href='/res/bootstrap-datepicker/css/bootstrap-datepicker.min.css' />    
+    <link rel="stylesheet" href="css/sb-admin-2.min.css">
+    <link rel='stylesheet' href='css/console.css'>
+    
+    <!-- Page level styles -->
     <link rel='stylesheet' href='/ajoumeow/Resources/Libraries/alertify/alertify.core.css' />
     <link rel='stylesheet' href='/ajoumeow/Resources/Libraries/alertify/alertify.default.css' />
-    <link rel="stylesheet" href="/ajoumeow/Resources/Libraries/micromodal/micromodal.min.css" />
-    <link rel='stylesheet' href='css/console.css'>
   </head>
   <body id="page-top">
     <!-- Page Wrapper -->
@@ -100,3 +98,52 @@
             <a style='color: #0366d6; font-size: 1.2rem; margin-left: 1rem;' onclick="window.location.href = 'https://github.com/luftaquila/ajoumeow';"><i class='far fa-question-circle'></i>&ensp;도움말</a>
           </nav>
           <!-- End of Topbar -->
+          <!-- Begin Page Content -->
+          <div class="container-fluid">
+            <!-- Page Heading -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+              <h1 class="h3 mb-0 text-gray-800">신입 모집</h1>
+            </div>
+            <i class='fas fa-engine-warning' style='color: #e99f00'></i> 설문지 배포 전에 반드시 <span style='font-weight: bold;'>설정</span> 탭에서 <mark>현재 학기</mark> 및 <mark>신입 모집</mark> 관련 설정을 업데이트하세요.<br>특히 <mark>현재 학기</mark>는 반드시 신입 회원을 모집하는 학기로 설정해야 합니다.<br><br>
+            신입 모집 설문지 : <a target="_blank" href='https://luftaquila.io/ajoumeow/register/'>luftaquila.io/ajoumeow/register/</a><br>
+            설문지 링크 QR코드 : <br><img src='/ajoumeow/Resources/Images/frame.png'><br><br>
+            <a href="https://docs.google.com/spreadsheets/d/14fRlX0UWFbMzDjhueOPi9ivZFE799kui6-1UixzgvWg/edit?usp=drivesdk">> 모집 설문지 응답 시트</a><br><br>
+            <select id='newMemberList' style='margin-bottom: 15px'></select> 연락처 파일 생성<br>
+            <label for='google'><input type='radio' id='google' name='contactfile' value='google' /> Google 연락처 파일</label><br>
+            <label for='outlook'><input type='radio' id='outlook' name='contactfile' value='outlook' /> Outlook/네이버 연락처 파일</label><br>
+            <a id="contactDownload" href="#" class="btn btn-success btn-icon-split" style='width: 30; height: 5;'>
+            <span class='text'>다운로드</span>
+            </a><br><br>
+            <div style='font-size: 0.8rem'>
+              <h4>연락처 다운로드 기능 사용 방법</h4>
+              <ol>
+                <li><a target="_blank" href="https://contacts.google.com">contacts.google.com</a> 접속</li>
+                <li>좌측 상단 메뉴에서 가져오기 클릭</li>
+                <li>다운로드한 연락처 파일 선택 후 가져오기 클릭</li>
+                <li>핸드폰에서 연락처 동기화하면 <mark>[년도]-[학기] 미유미유</mark> 라벨에 <mark>[학번][이름]</mark> 형식으로 가입신청자 연락처가 저장됩니다.</li>
+                <li>카톡방 초대가 끝나면 라벨을 삭제해서 간단하게 제거할 수 있습니다.</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+        <!-- End of Main Content -->
+      </div>
+      <!-- End of Content Wrapper -->
+    </div>
+    <!-- End of Page Wrapper -->
+    
+    <!-- Bootstrap core JavaScript-->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Core plugin JavaScript-->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src='/ajoumeow/Resources/Libraries/js.cookie.min.js'></script>
+    <script src='/ajoumeow/Resources/Libraries/alertify/alertify.min.js'></script>
+    <script src="js/sb-admin-2.js"></script>
+    <script src='js/authManager.js'></script>
+    
+    <!-- Page level plugins -->
+    <script src='js/recruit.js'></script>
+  </body>
+</html>
