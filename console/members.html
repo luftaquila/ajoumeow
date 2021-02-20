@@ -13,14 +13,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
 
     <!-- Custom styles for this template-->
-    <link href="css/sb-admin-2.min.css" rel="stylesheet">
-    <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
-    <link rel='stylesheet' href='/res/toggleSwitch.css' />
-    <link rel='stylesheet' href='/res/bootstrap-datepicker/css/bootstrap-datepicker.min.css' />    
+    <link rel="stylesheet" href="css/sb-admin-2.min.css">
+    <link rel='stylesheet' href='css/console.css'>
+    
+    <!-- Page level styles -->
     <link rel='stylesheet' href='/ajoumeow/Resources/Libraries/alertify/alertify.core.css' />
     <link rel='stylesheet' href='/ajoumeow/Resources/Libraries/alertify/alertify.default.css' />
-    <link rel="stylesheet" href="/ajoumeow/Resources/Libraries/micromodal/micromodal.min.css" />
-    <link rel='stylesheet' href='css/console.css'>
+    <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
   </head>
   <body id="page-top">
     <!-- Page Wrapper -->
@@ -100,3 +99,154 @@
             <a style='color: #0366d6; font-size: 1.2rem; margin-left: 1rem;' onclick="window.location.href = 'https://github.com/luftaquila/ajoumeow';"><i class='far fa-question-circle'></i>&ensp;도움말</a>
           </nav>
           <!-- End of Topbar -->
+            <!-- Begin Page Content -->
+          <div class="container-fluid">
+            <!-- Page Heading -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+              <h1 class="h3 mb-0 text-gray-800">회원 관리</h1>
+            </div>
+            
+            <select id='namelist' class='namelist_select'></select>&emsp;
+            <a id="download_namelist" class="btn btn-success" style='color: #fff; padding: .1rem .4rem;'>명단 다운로드(.xlsx)</a>
+            <div id='current_namelist' class="table-responsive" style='margin-top: 1rem'>
+              <div style='font-size: 0.9rem'>
+                <b style='font-size: 1.2rem;'>현재 학기 명단</b>
+                <ul>
+                  <li>목록에 등록된 회원만 로그인할 수 있습니다.</li>
+                  <li>학번 외 모든 항목은 수정할 수 있습니다.<br>학번 수정은 제명 후 재등록으로만 가능합니다.</li>
+                  <li>수정할 값을 클릭하면 입력창이 활성화됩니다.<br>수정할 값을 입력한 후 엔터를 누르면 수정됩니다.</li>
+                  <li>학번을 클릭하면 해당 회원의 급식 기록이 표시됩니다.</li>
+                </ul>
+                
+                <b>관리자 권한</b><br>
+                &emsp;직책이 <kbd>회원</kbd>이 아닌 모든 사람에게 부여됩니다. 관리자는
+                <ul>
+                  <li>관리자 콘솔에 접속할 수 있습니다.</li>
+                  <li>급식표에서 모든 회원을 가림 처리하지 않고 실명으로 표시합니다.</li>
+                  <li>일반 사용자는 아직 지나지 않은 날짜의 본인이 신청한 급식만 삭제할 수 있지만,<br>관리자는 지난 날짜와 타인이 신청한 모든 급식을 삭제할 수 있습니다.</li>
+                </ul>
+                <i class='fas fa-engine-warning' style='color: #e99f00'></i> 새 관리자 등록은 기존 임원진만 가능합니다.<br>임원진 교체 시 <i class='fas fa-fire' style='color: red'></i><b>반드시</b><i class='fas fa-fire' style='color: red'></i> 신규 임원진에게 관리자 권한을 부여하세요.
+              </div>
+              <br>
+              <table id="currentMembersList" class="table table-bordered" style='table-layout: fixed; text-align: center; font-size: .9rem;' cellspacing="0">
+                <colgroup>
+                  <col width="120px" />
+                  <col width="150px" />
+                  <col width="110px" />
+                  <col width="80px" />
+                  <col width="140px" />
+                  <col width="100px" />
+                  <col width="140px" />
+                  <col width="120px" />
+                  <col width="80px" />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th>단과대학</th>
+                    <th>학과</th>
+                    <th>학번</th>
+                    <th>이름</th>
+                    <th>전화번호</th>
+                    <th>생년월일</th>
+                    <th>1365 아이디</th>
+                    <th>가입 학기</th>
+                    <th>직책</th>
+                  </tr>
+                </thead>
+                <tfoot>
+                  <tr>
+                    <th>단과대학</th>
+                    <th>학과</th>
+                    <th>학번</th>
+                    <th>이름</th>
+                    <th>전화번호</th>
+                    <th>생일</th>
+                    <th>1365 아이디</th>
+                    <th>가입 학기</th>
+                    <th>직책</th>
+                  </tr>
+                </tfoot>
+              </table>
+              <div style='margin-top: 2rem;'>
+                <div style='margin-bottom: 0.5rem'>
+                  회원 제명&emsp;
+                  <input id='deleteMemberID' type='number' placeholder='학번' style='width: 10ch; display: inline; padding: 0; text-align: center; height: auto' class='form-control bg-light border-5 small'>
+                  &ensp;
+                  <a id="deleteMember" class="btn btn-danger" style='color: white; line-height: normal;'>제명</a>
+                </div>
+                <i class='fas fa-engine-warning' style='color: #e99f00'></i> <kbd>제명</kbd> 을 누르면 별도 확인 없이 바로 회원이 명단에서 제거됩니다.<br>제명된 회원은 명단에서 제거될 뿐, 활동 기록은 보존됩니다.
+                <br>
+              </div>
+            </div>
+            <div id='past_namelist' class="table-responsive" style='display: none;'>
+              <div style='font-size: 0.9rem'>
+                <b style='font-size: 1.2rem;'>지난 학기</b>
+                <li>열람 및 다운로드만 가능합니다. 수정은 불가능합니다.</li>
+              </div>
+              <br>
+              <table id="pastMembersList" class="table table-bordered" style='table-layout: fixed; text-align: center; font-size: .9rem;' cellspacing="0">
+                <colgroup>
+                  <col width="120px" />
+                  <col width="150px" />
+                  <col width="110px" />
+                  <col width="80px" />
+                  <col width="140px" />
+                  <col width="100px" />
+                  <col width="140px" />
+                  <col width="120px" />
+                  <col width="80px" />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th>단과대학</th>
+                    <th>학과</th>
+                    <th>학번</th>
+                    <th>이름</th>
+                    <th>전화번호</th>
+                    <th>생일</th>
+                    <th>1365 아이디</th>
+                    <th>가입 학기</th>
+                    <th>직책</th>
+                  </tr>
+                </thead>
+                <tfoot>
+                  <tr>
+                    <th>단과대학</th>
+                    <th>학과</th>
+                    <th>학번</th>
+                    <th>이름</th>
+                    <th>전화번호</th>
+                    <th>생일</th>
+                    <th>1365 아이디</th>
+                    <th>가입 학기</th>
+                    <th>직책</th>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+        <!-- End of Main Content -->
+      </div>
+      <!-- End of Content Wrapper -->
+    </div>
+    <!-- End of Page Wrapper -->
+    
+    <!-- Bootstrap core JavaScript-->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Core plugin JavaScript-->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src='/ajoumeow/Resources/Libraries/js.cookie.min.js'></script>
+    <script src='/ajoumeow/Resources/Libraries/alertify/alertify.min.js'></script>
+    <script src="js/sb-admin-2.js"></script>
+    <script src='js/authManager.js'></script>
+    
+    <!-- Page level plugins -->
+    <script src="vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
+    <script src='/res/datatable-editor.js'></script>
+    <script src='js/members.js'></script>
+  </body>
+</html>

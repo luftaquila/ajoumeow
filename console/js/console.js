@@ -1,60 +1,5 @@
 function init() {
-  $.when(
-    $.ajax({
-      url: 'api/requestNameList',
-      type: 'POST',
-      dataType: 'json',
-      data: { 'semister' : 'this' },
-      success: function(res) { namelist = res; }
-    })
-  ).done(function() {
-    membertable = $('#dataTable').DataTable({
-      pagingType: "numbers",
-      ajax: {
-        url: "api/requestNameList",
-        type: 'POST',
-        data: { 'semister' : settings['currentSemister'] },
-        dataSrc: ''
-      },
-      columns: [
-        { data: "college" },
-        { data: "department" },
-        { data: "ID" },
-        { data: "name" },
-        { data: "phone" },
-        { data: "birthday" },
-        { data: "1365ID" },
-        { data: "register" },
-        { data: "role" }
-      ]
-    });
-    datatableEdit({
-      dataTable : membertable,
-      columnDefs : [
-        { targets : 0 },
-        { targets : 1 },
-        { targets : 3 },
-        { targets : 4 },
-        { targets : 5 },
-        { targets : 6 },
-        { targets : 7 },
-        { targets : 8 }
-       ],
-       onEdited : function(prev, changed, index, cell) {
-         $.ajax({
-           url: 'api/modifyMember',
-           type: 'POST',
-           dataType: 'json',
-           data: cell.row(index.row).data(),
-           success: function(res) {
-             if(res.result) alertify.success('수정되었습니다.');
-             else alertify.error('수정에 실패했습니다.');
-             membertable.ajax.reload();
-           },
-           error: function() { alertify.error('수정에 실패했습니다.'); }
-         });
-       }
-    });
+
     
     $.ajax({ // Request New Member Recruit Sheet Lists
       url: "https://script.google.com/macros/s/AKfycbwOT83RGEPIgdu1oTM9VvBqyRN6jcEXRkGlpdqG1EUCr1HdaBxX/exec",
@@ -118,46 +63,7 @@ function init() {
         { data: "score" }
       ]
     });
-    
-    past_namelist_table = $('#dataTable_2').DataTable({
-      pagingType: "numbers",
-      ajax: {
-        url: "api/requestNameList",
-        type: 'POST',
-        data: function(d) {
-          let val = $('#namelist').val();
-          d.semister = val ? val.replace('namelist_', '') : settings['currentSemister'];
-        },
-        dataSrc: ''
-      },
-      columns: [
-        { data: "college" },
-        { data: "department" },
-        { data: "ID" },
-        { data: "name" },
-        { data: "phone" },
-        { data: "birthday" },
-        { data: "1365ID" },
-        { data: "register" },
-        { data: "role" }
-      ]
-    });
-    
-    $.ajax({ // Request Namelist DBs
-      url: 'api/requestNamelistTables',
-      type: "POST",
-      dataType: 'json',
-      success: function(res) {
-        var data = [], str = '';
-        for(var obj of res) data.push(obj['Tables_in_ajoumeow']);
-        for(var obj of data.reverse()) str += '<option value="' + obj + '">' + obj.replace('namelist_', '') + '학기</option>';
-        $('.namelist_select').html(str);
-        $('#calendar1365').val(new Date().format('yyyy-mm'));
-      }
-    });
-    
-    $('#timestamp').datepicker('update', new Date().format('yyyy-mm-dd'));
-    load();
+  
   });
 }
 function clickEventListener() {
@@ -254,20 +160,7 @@ function clickEventListener() {
     }
     else $('#customStatistics').val('');
   });
-  $('#memberDeleteConfirm').click(function() {
-    $.ajax({
-      url: 'api/deleteMember',
-      type: 'POST',
-      data: { delete: $('#deletemember').val() },
-      success: function(res) {
-        if(res.result) {
-          alertify.error('회원이 제명되었습니다.');
-          membertable.ajax.reload();
-        }
-        else alertify.error('등록되지 않은 학번입니다.');
-      }
-    });
-  });
+  
   $('#pick').click(function() {
     let list = statistics.ajax.json(), sum = 0; // 표 값 저장
     list.sort((a, b) => a.score - b.score); // 마일리지 오름차순 정렬
@@ -353,13 +246,3 @@ function clickEventListener() {
     });
   });
 }
-/*
-testcase = [], exec = 100000;
-function test() {
-  for(let i = 0; i < exec; i++) $('#pick').trigger('click');
-  for(let i in testcase) testcase[i].ep = Math.round(testcase[i].case / exec * 1000) / 10 + '%';
-  testcase.sort((a, b) => parseFloat(b.case) - parseFloat(a.case));
-  console.log('runtime: ' + exec);
-  console.log(testcase);
-}
-*/

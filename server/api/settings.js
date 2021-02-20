@@ -28,6 +28,12 @@ router.put('*', util.isAdmin, async (req, res) => {
   try {
     let result = await util.query(`UPDATE settings SET value='${req.body.data}' WHERE name='${req.url.substring(1)}'`);
     res.status(200).json(new Response('success', '', result));
+    /*
+    if(req.url.substring(1) == 'currentSemister') {
+      const target = client.channelManager.map.get(process.env.noticeChannelId);
+      await target.sendText('시스템 현재 학기가 변경되었습니다!\n\n 기존 회원 분들은 사이트의 회원 등록 - 기존 회원 메뉴를 통해 새 학기 명단에 다시 등록해 주세요. 새 학기에도 화이팅!');
+    }
+    */
   }
   catch(e) {
     //logger.error();
