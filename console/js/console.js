@@ -1,19 +1,4 @@
 function init() {
-
-    
-    $.ajax({ // Request New Member Recruit Sheet Lists
-      url: "https://script.google.com/macros/s/AKfycbwOT83RGEPIgdu1oTM9VvBqyRN6jcEXRkGlpdqG1EUCr1HdaBxX/exec",
-      data: encodeURI('type=requestSheetLists'),
-      type: "POST",
-      dataType: 'text',
-      success: function(response) {
-        var sheetList = response.split('|'), str = '';
-        sheetList.pop();
-        for(var i in sheetList) if(!sheetList[i].includes('template')) str += '<option>' + sheetList[i] + '</option>';
-        $('#newMemberList').html(str);
-      }
-    });
-    
     $.ajax({
       url: 'api/requestStat',
       type: 'POST',
@@ -69,40 +54,6 @@ function init() {
 function clickEventListener() {
   
 
-  $('#contactDownload').click(function() {
-      var fileType = $('input:radio[name=contactfile]:checked');
-      if(!fileType.length) {
-          alertify.error('다운로드 형식을 지정해 주십시오.');
-          return;
-      }
-      $.ajax({
-        url: "https://script.google.com/macros/s/AKfycbwOT83RGEPIgdu1oTM9VvBqyRN6jcEXRkGlpdqG1EUCr1HdaBxX/exec",
-        data: encodeURI('type=requestSheetContent&semister=' + $('#newMemberList').val()),
-        type: "POST",
-        dataType: 'text',
-        cache: false,
-        success: function(response) {
-            newMember = response.split('\n').map((line) => line.split(','));
-            newMember.pop();
-            var csv = '';
-            if(fileType.val() == 'google') {
-                csv += 'Name,Given Name,Additional Name,Family Name,Yomi Name,Given Name Yomi,Additional Name Yomi,Family Name Yomi,Name Prefix,Name Suffix,Initials,Nickname,Short Name,Maiden Name,Birthday,Gender,Location,Billing Information,Directory Server,Mileage,Occupation,Hobby,Sensitivity,Priority,Subject,Notes,Language,Photo,Group Membership,Phone 1 - Type,Phone 1 - Value\n';
-                for(var i in newMember) csv += newMember[i][1] + newMember[i][0] + ',' + newMember[i][1] + newMember[i][0] + ',,,,,,,,,,,,,,,,,,,,,,,,,,,' + $('#newMemberList').val() + ' 미유미유 ::: * myContacts, ::: * myContacts,' + newMember[i][2] + '\n';
-            }
-            else if(fileType.val() == 'outlook') {
-                csv += "First Name,Middle Name,Last Name,Title,Suffix,Initials,Web Page,Gender,Birthday,Anniversary,Location,Language,Internet Free Busy,Notes,E-mail Address,E-mail 2 Address,E-mail 3 Address,Primary Phone,Home Phone,Home Phone 2,Mobile Phone,Pager,Home Fax,Home Address,Home Street,Home Street 2,Home Street 3,Home Address PO Box,Home City,Home State,Home Postal Code,Home Country,Spouse,Children,Manager's Name,Assistant's Name,Referred By,Company Main Phone,Business Phone,Business Phone 2,Business Fax,Assistant's Phone,Company,Job Title,Department,Office Location,Organizational ID Number,Profession,Account,Business Address,Business Street,Business Street 2,Business Street 3,Business Address PO Box,Business City,Business State,Business Postal Code,Business Country,Other Phone,Other Fax,Other Address,Other Street,Other Street 2,Other Street 3,Other Address PO Box,Other City,Other State,Other Postal Code,Other Country,Callback,Car Phone,ISDN,Radio Phone,TTY/TDD Phone,Telex,User 1,User 2,User 3,User 4,Keywords,Mileage,Hobby,Billing Information,Directory Server,Sensitivity,Priority,Private,Categories\n";
-                for(var i in newMember) csv += newMember[i][1] + newMember[i][0] + ',,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,' + newMember[i][2] + ',,,,,,,,,,,,,,,,,,,,,,,,,,,,,' + $('#newMemberList').val() + ' 미유미유;myContacts,\n';
-            }
-            var blob = new Blob(["\ufeff", csv], { type: 'text/plain' });
-            var anchor = document.createElement('a');
-
-            anchor.download = "신입회원 연락처_" + fileType.val() + '.csv';
-            anchor.href = (window.webkitURL || window.URL).createObjectURL(blob);
-            anchor.dataset.downloadurl = ['text/plain', anchor.download, anchor.href].join(':');
-            anchor.click();
-        }
-      });
-  });
   $('input[name=iserror], input[name=logtype]').click(function() {
     var isError = $('input[name=iserror]:checked').length;
     var logdata = [], logtype = [];

@@ -129,6 +129,24 @@ router.delete('/id', util.isAdmin, async (req, res) => {
   }
 });
 
+// Get register table by semister
+router.get('/register', util.isAdmin, async (req, res) => {
+  try {
+    if(req.query.semister == 'all') {
+      let result = await util.query(`SHOW TABLES LIKE '%register_%';`);
+      let map = result.map(x => x['Tables_in_ajoumeow (%register_%)']);
+      res.status(200).json(new Response('success', null, map));
+    }
+    else {
+      let result = await util.query(`SELECT * FROM \`register_${req.query.semister}\`;`);
+      res.status(200).json(new Response('success', null, result));
+    }
+  }
+  catch(e) {
+    res.status(500).json(new Response('error', 'Unknown error', 'ERR_UNKNOWN'));
+  }
+});
+
 // register user
 router.post('/register', async (req, res) => {
   try {

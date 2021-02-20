@@ -15,7 +15,9 @@ input[type="month"]::-webkit-inner-spin-button {
   margin: 0;
 }
 
-table#currentMembersList td, table#pastMembersList td { padding: .5rem }
+table#currentMembersList td,
+table#pastMembersList td,
+table#newMemberList td { padding: .5rem }
 
 /* typeahead style */
 .tt-query {

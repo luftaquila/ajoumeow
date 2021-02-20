@@ -32,12 +32,18 @@ var dateFormat = function () {
       d = date[_ + "Date"](),
       m = date[_ + "Month"](),
       y = date[_ + "FullYear"](),
+      H = date[_ + "Hours"](),
+      M = date[_ + "Minutes"](),
+      s = date[_ + "Seconds"](),
       flags = {
         d:    d,
         dd:   pad(d),
         m:    m + 1,
         mm:   pad(m + 1),
         yyyy: y,
+        HH:   pad(H),
+        MM:   pad(M),
+        ss:   pad(s),
       };
     return mask.replace(token, function ($0) {
       return $0 in flags ? flags[$0] : $0.slice(1, $0.length - 1);

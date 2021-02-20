@@ -19,6 +19,7 @@
     <!-- Page level styles -->
     <link rel='stylesheet' href='/ajoumeow/Resources/Libraries/alertify/alertify.core.css' />
     <link rel='stylesheet' href='/ajoumeow/Resources/Libraries/alertify/alertify.default.css' />
+    <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
   </head>
   <body id="page-top">
     <!-- Page Wrapper -->
@@ -102,27 +103,81 @@
           <div class="container-fluid">
             <!-- Page Heading -->
             <div class="d-sm-flex align-items-center justify-content-between mb-4">
-              <h1 class="h3 mb-0 text-gray-800">신입 모집</h1>
+              <h1 class="h3 mb-0 text-gray-800">신입 회원 모집</h1>
             </div>
-            <i class='fas fa-engine-warning' style='color: #e99f00'></i> 설문지 배포 전에 반드시 <span style='font-weight: bold;'>설정</span> 탭에서 <mark>현재 학기</mark> 및 <mark>신입 모집</mark> 관련 설정을 업데이트하세요.<br>특히 <mark>현재 학기</mark>는 반드시 신입 회원을 모집하는 학기로 설정해야 합니다.<br><br>
-            신입 모집 설문지 : <a target="_blank" href='https://luftaquila.io/ajoumeow/register/'>luftaquila.io/ajoumeow/register/</a><br>
-            설문지 링크 QR코드 : <br><img src='/ajoumeow/Resources/Images/frame.png'><br><br>
-            <a href="https://docs.google.com/spreadsheets/d/14fRlX0UWFbMzDjhueOPi9ivZFE799kui6-1UixzgvWg/edit?usp=drivesdk">> 모집 설문지 응답 시트</a><br><br>
-            <select id='newMemberList' style='margin-bottom: 15px'></select> 연락처 파일 생성<br>
-            <label for='google'><input type='radio' id='google' name='contactfile' value='google' /> Google 연락처 파일</label><br>
-            <label for='outlook'><input type='radio' id='outlook' name='contactfile' value='outlook' /> Outlook/네이버 연락처 파일</label><br>
-            <a id="contactDownload" href="#" class="btn btn-success btn-icon-split" style='width: 30; height: 5;'>
-            <span class='text'>다운로드</span>
-            </a><br><br>
-            <div style='font-size: 0.8rem'>
-              <h4>연락처 다운로드 기능 사용 방법</h4>
-              <ol>
-                <li><a target="_blank" href="https://contacts.google.com">contacts.google.com</a> 접속</li>
-                <li>좌측 상단 메뉴에서 가져오기 클릭</li>
-                <li>다운로드한 연락처 파일 선택 후 가져오기 클릭</li>
-                <li>핸드폰에서 연락처 동기화하면 <mark>[년도]-[학기] 미유미유</mark> 라벨에 <mark>[학번][이름]</mark> 형식으로 가입신청자 연락처가 저장됩니다.</li>
-                <li>카톡방 초대가 끝나면 라벨을 삭제해서 간단하게 제거할 수 있습니다.</li>
-              </ol>
+            <i class='fas fa-engine-warning' style='color: #e99f00'></i> 설문지 배포 전에 반드시 <span style='font-weight: bold;'>설정</span> 탭에서 <mark>현재 학기</mark> 및 <mark>신입 모집</mark> 관련 설정을 업데이트하세요.<br>
+            <i class='fas fa-engine-warning' style='color: #e99f00'></i> 특히 <mark>현재 학기</mark>는 반드시 신입 회원을 모집하는 학기로 설정해야 합니다.<br><br>
+            모집 설문지 URL : <a target="_blank" href='https://luftaquila.io/ajoumeow/register/'>luftaquila.io/ajoumeow/register/</a><br>
+            설문지 QR코드 : <br><img src='/ajoumeow/Resources/Images/frame.png'><br><br>
+            
+            <div style='font-size: 0.9rem; margin-top: 1.5rem;'>
+              <h4 class='text-gray-800'>신입 회원 모집 응답</h4>
+              <div style='margin-bottom: 1rem; line-height: 3rem;'>
+                <select id='tableName' class='newMemberList btn btn-primary'></select>&ensp;
+                <a id="newMemberListDownload" class="btn btn-success" style='color: white'>명단 다운로드(.xlsx)</a><br>
+                <span id='toggleNewMemberList' onclick='$("#tableWrapper").toggle();' class='btn btn-warning' style='font-size: .9rem; padding: .1rem .5rem;'>> 명단 보이기/숨기기</span>
+              </div>
+              <div id='tableWrapper' class="table-responsive" style='display: none'>
+                <table id="newMemberList" class="table table-bordered" style='table-layout: fixed; text-align: center; font-size: .9rem;' cellspacing="0">
+                  <colgroup>
+                    <col width="180px" />
+                    <col width="110px" />
+                    <col width="80px" />
+                    <col width="120px" />
+                    <col width="150px" />
+                    <col width="140px" />
+                  </colgroup>
+                  <thead>
+                    <tr>
+                      <th>타임스탬프</th>
+                      <th>학번</th>
+                      <th>이름</th>
+                      <th>단과대학</th>
+                      <th>학과</th>
+                      <th>전화번호</th>
+                    </tr>
+                  </thead>
+                  <tfoot>
+                    <tr>
+                      <th>타임스탬프</th>
+                      <th>학번</th>
+                      <th>이름</th>
+                      <th>단과대학</th>
+                      <th>학과</th>
+                      <th>전화번호</th>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+            
+            <div style='font-size: 0.9rem; margin-top: 3rem;'>
+              <h4 class='text-gray-800'>연락처 파일 다운로드</h4>
+              <div style='margin-bottom: 1rem; line-height: 3rem;'>
+                <select id='contactTable' class='newMemberList btn btn-primary'></select>
+                <select id='contactType' class='btn btn-primary'><option value='google'>Google 연락처</option><option value='naver'>Naver 연락처</option></select>&ensp;
+                <a id="contactDownload" class="btn btn-success" style='color: white'>파일 다운로드(.csv)</a>
+              </div>
+              <ul>
+                <li>
+                  Google 연락처 파일
+                  <ol>
+                    <li><a target="_blank" href="https://contacts.google.com">contacts.google.com</a> 접속</li>
+                    <li>좌측 상단 <kbd><i class='fas fa-bars'></i> 메뉴</kbd> 에서 <kbd><i class='fas fa-upload'></i> 가져오기</kbd> 선택</li>
+                    <li>다운로드한 연락처 파일 선택 후 가져오기 선택</li>
+                  </ol>
+                </li>
+                <li>
+                  Naver 연락처 파일
+                  <ol>
+                    <li><a target="_blank" href="https://contact.naver.com">contact.naver.com</a> 접속</li>
+                    <li>좌측 메뉴에서 <kbd><i class='fas fa-folder'></i> 연락처 불러오기</kbd> 선택</li>
+                    <li>다운로드한 연락처 파일 선택 후 <kbd>가져오기 > 저장하기</kbd> 선택</li>
+                  </ol>
+                </li>
+                <li>핸드폰에서 연락처를 동기화하면 <mark>[년도]-[학기] 미유미유</mark> 그룹에 <mark>[학번] [이름]</mark> 형식으로 가입신청자 연락처가 저장됩니다.</li>
+                <li>카톡방 초대가 끝나면 그룹을 삭제해서 간단하게 제거할 수 있습니다.</li>
+              </ul>
             </div>
           </div>
         </div>
@@ -144,6 +199,12 @@
     <script src='js/authManager.js'></script>
     
     <!-- Page level plugins -->
+    <script src="vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
     <script src='js/recruit.js'></script>
+    
+    <!-- For excel export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.14.3/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.min.js"></script>
   </body>
 </html>
