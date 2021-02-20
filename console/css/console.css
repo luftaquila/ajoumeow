@@ -13,6 +13,8 @@ input[type="number"]::-webkit-inner-spin-button {
   margin: 0;
 }
 
+table#currentMembersList td, table#pastMembersList td { padding: .5rem }
+
 /* typeahead style */
 .tt-query {
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);

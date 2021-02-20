@@ -4,7 +4,6 @@ $(function() {
   // current semister settings
   $.ajax({
     url: "/ajoumeow/api/settings/currentSemister",
-    type: "GET",
     beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
     success: res => {
       $('#currentYear').val(res.data.split('-')[0]);
@@ -95,11 +94,6 @@ $(function() {
   });
 });
 
-function settingLoadError() {
-  $('input, select, textarea').attr('disabled', true);
-  alertify.error('설정값을 불러오는 중 오류가 발생했습니다!!!');
-}
-
 $('.setting').change(function() {
   var obj = $(this).attr('class').split(' '), req = {};
   if (obj.includes('settingSemister')) { // 학기 설정
@@ -165,6 +159,11 @@ $('.setting').change(function() {
     error: () => alertify.error('설정 변경에 실패했습니다.')
   });
 });
+
+function settingLoadError() {
+  $('input, select, textarea').attr('disabled', true);
+  alertify.error('설정값을 불러오는 중 오류가 발생했습니다!!!');
+}
 
 // current year formatting
 $('#currentYear').keyup(function() {
