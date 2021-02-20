@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -40,7 +40,7 @@
         <li class="nav-item">
           <a class="nav-link" href="./dashboard.html">
           <i class="fas fa-fw fa-tachometer-alt"></i>
-          <span>Dashboard</span></a>
+          <span>통계</span></a>
         </li>
         <!-- Divider -->
         <hr class="sidebar-divider">
@@ -101,3 +101,85 @@
           </nav>
           <!-- End of Topbar -->
           <!-- Begin Page Content -->
+          <div class="container-fluid">
+            <!-- Page Heading -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+              <h1 class="h3 mb-0 text-gray-800">서버 로그</h1>
+            </div>
+            <h6>서버 로그를 열람합니다.</h6>
+            <div style='font-size: 0.8rem; margin-bottom: 10px'>
+              <li>체크박스가 체크된 범주의 로그만 표시합니다.</li>
+              <li>오류 체크박스에 체크하면 오류 기록만 표시합니다.</li>
+            </div>
+            <label><input type='checkbox' name='iserror' value='error'> 오류</label>
+            <hr width='100%' style='margin: 0 0 10px 0'>
+            <table width='100%'>
+              <tr>
+                <td><label><input type='checkbox' name='logtype' value='pageload' checked> 페이지 로드</label></td>
+                <td><label><input type='checkbox' name='logtype' value='loginout' checked> 로그인 / 로그아웃</label></td>
+              </tr>
+              <tr>
+                <td><label><input type='checkbox' name='logtype' value='insdelTable' checked> 급식 신청 / 삭제</label></td>
+                <td><label><input type='checkbox' name='logtype' value='verify' checked> 급식 인증</label></td>
+              </tr>
+              <tr>
+                <td><label><input type='checkbox' name='logtype' value='settingchange' checked> 설정 변경</label></td>
+                <td><label><input type='checkbox' name='logtype' value='memberchange' checked> 회원 명단 변경</label></td>
+              </tr>
+              <tr>
+                <td><label><input type='checkbox' name='logtype' value='1365' checked> 1365 인증서</label></td>
+                <td><label><input type='checkbox' name='logtype' value='others' checked> 기타</label></td>
+              </tr>
+            </table>
+            <br>
+            <div class='table-responsive'>
+              <table class="table table-bordered" id="serverlog" width="100%" style='table-layout: fixed; text-align: center' cellspacing="0">
+                <colgroup>
+                  <col width='200px' />
+                  <col width='120px' />
+                  <col width='160px' />
+                  <col width='220px' />
+                  <col width='300px' />
+                  <col width='200px' />
+                  <col width='500px'/>
+                </colgroup>
+                <thead>
+                  <th>타임스탬프</th>
+                  <th>로그 수준</th>
+                  <th>IP</th>
+                  <th>설명</th>
+                  <th>쿼리</th>
+                  <th>url</th>
+                  <th>결과</th>
+                </thead>
+              </table>
+            </div>
+          </div>
+        </div>
+        <!-- End of Main Content -->
+      </div>
+      <!-- End of Content Wrapper -->
+    </div>
+    <!-- End of Page Wrapper -->
+    
+    <!-- Bootstrap core JavaScript-->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Core plugin JavaScript-->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src='/ajoumeow/Resources/Libraries/js.cookie.min.js'></script>
+    <script src='/ajoumeow/Resources/Libraries/alertify/alertify.min.js'></script>
+    <script src="js/sb-admin-2.js"></script>
+    <script src='js/authManager.js'></script>
+    
+    <!-- Page level plugins -->
+    <script src="vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
+    <script src='js/server.js'></script>
+    
+    <!-- For excel export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.14.3/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.min.js"></script>
+  </body>
+</html>

@@ -33,7 +33,7 @@ $(function () {
         }).trigger('change');
       });
     }
-    else $('.loading').html('<br><br><br><h4>모집 기간이 아닙니다!<br>다음 모집 때 지원해 주세요 ㅠㅠ</h4><br><br><img src="images/failed.jpg" style="width:90%">'); 
+    else $('.loading').html('<br><br><br><h2>모집 기간이 아닙니다!<br>다음 모집 때 지원해 주세요 ㅠㅠ</h2><br><br><img src="images/failed.jpg" style="width:90%">'); 
   });
 });
 
