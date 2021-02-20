@@ -48,7 +48,7 @@ router.get('/id', util.isAdmin, async (req, res) => {
 // Add new user
 router.post('/id', async (req, res) => {
   try {
-    // check if registered before
+    // check if applied before
     let namelists = await util.query(`SHOW TABLES LIKE '%namelist_%';`);
     namelists = namelists.map(x => x['Tables_in_ajoumeow (%namelist_%)']).reverse();
 
@@ -62,7 +62,7 @@ router.post('/id', async (req, res) => {
       else if(req.body.new == 'false' && !test.length) return res.status(400).json(new Response('error', '기존 회원이 아닙니다.<br>신입 회원으로 등록해 주세요.', 'ERR_NEVER_REGISTERED'));
     }
 
-    // check if registered again
+    // check if applied again
     if(currentNamelist) {
       const test = await util.query(`SELECT ID FROM \`${currentNamelist}\` WHERE ID=${req.body['학번']};`);
       if(test.length) return res.status(400).json(new Response('error', '이미 이번 학기 회원으로 등록되셨습니다.', 'ERR_ALREADY_REGISTERED'));
@@ -105,15 +105,6 @@ router.post('/id', async (req, res) => {
   }
 });
 
-router.get('/isRegisteredBefore', async (req, res) => {
-  try {
-    
-  }
-  catch(e) {
-    res.status(500).json(new Response('error', 'Unknown error', 'ERR_UNKNOWN'));
-  }
-});
-
 // Modify user info by id
 router.put('/id', util.isAdmin, async (req, res) => {
   try {
@@ -132,6 +123,43 @@ router.delete('/id', util.isAdmin, async (req, res) => {
     let result = await util.query(`DELETE FROM \`namelist_${await util.getSettings('currentSemister')}\` WHERE ID=${req.body.ID}`);
     if(result.affectedRows) res.status(200).json(new Response('success', null, result));
     else res.status(400).json(new Response('error', 'No matching ID', 'ERR_NO_MATCHING_ID'));
+  }
+  catch(e) {
+    res.status(500).json(new Response('error', 'Unknown error', 'ERR_UNKNOWN'));
+  }
+});
+
+// register user
+router.post('/register', async (req, res) => {
+  try {
+    // check if registered again
+    let registers = await util.query(`SHOW TABLES LIKE '%register_%';`);
+    registers = registers.map(x => x['Tables_in_ajoumeow (%register_%)']).reverse();
+
+    let currentRegister = null;
+    if(registers.indexOf(`register_${await util.getSettings('currentSemister')}`) != -1)
+      currentRegister = registers.splice(registers.indexOf(`register_${await util.getSettings('currentSemister')}`), 1);
+
+    if(currentRegister) {
+      const test = await util.query(`SELECT ID FROM \`${currentRegister}\` WHERE ID=${req.body['학번']};`);
+      if(test.length) return res.status(400).json(new Response('error', '이미 가입 신청하셨습니다!<br>조금만 기다리시면 임원진이 연락을 드릴 거에요.', 'ERR_ALREADY_REGISTERED'));
+    }
+    
+    /* proceeding register */
+    // create table if current semister's register table not exists
+    if(!currentRegister) {
+      await util.query("CREATE TABLE `register_" + await util.getSettings('currentSemister') + "` (" +
+            "`timestamp` timestamp," +
+            "`ID` int(11) not null," +
+            "`name` varchar(10) not null," +
+            "`college` varchar(10) not null," +
+            "`department` varchar(15) not null," +
+            "`phone` varchar(15) not null," +
+            "PRIMARY KEY (`ID`)" +
+            ") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+    }
+    let result = await util.query(`INSERT INTO \`register_${await util.getSettings('currentSemister')}\`(ID, name, college, department, phone) VALUES(${req.body['학번']}, '${req.body['이름']}', '${req.body['단과대학']}', '${req.body['학과']}', '${req.body['연락처']}');`);
+    res.status(200).json(new Response('success', null, result));
   }
   catch(e) {
     res.status(500).json(new Response('error', 'Unknown error', 'ERR_UNKNOWN'));
