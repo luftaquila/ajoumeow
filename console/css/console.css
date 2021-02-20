@@ -1,23 +1,27 @@
 body { font-family: 'Nanum Gothic' }
 
 a[disabled="disabled"] { pointer-events: none; }
-
-.statisticsDate {
-  font-size: 0.8rem;
-  width: 7rem;
-}
+#dot {  }
 
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button,
 input[type="month"]::-webkit-outer-spin-button,
-input[type="month"]::-webkit-inner-spin-button {
+input[type="month"]::-webkit-inner-spin-button,
+input[type="date"]::-webkit-outer-spin-button,
+input[type="date"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
 table#currentMembersList td,
 table#pastMembersList td,
-table#newMemberList td { padding: .5rem }
+table#newMemberList td,
+table#statistics td { padding: .5rem }
+
+.statisticsDate {
+  font-size: .8rem;
+  padding: .2rem .4rem;
+}
 
 /* typeahead style */
 .tt-query {
