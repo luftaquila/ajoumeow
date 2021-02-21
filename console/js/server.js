@@ -21,7 +21,8 @@ $(function() {
         d.start = $('#logStart').val() + ' 00:00:00';
         d.end = $('#logEnd').val() + ' 23:59:59';
       },
-      dataSrc: 'data'
+      dataSrc: 'data',
+      error: err => alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
     },
     columns: [
       { data: "timestamp" },

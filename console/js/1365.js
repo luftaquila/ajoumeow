@@ -8,7 +8,8 @@ $(function() {
       let html = '';
       for(let obj of res.data.reverse()) html += `<option value="${obj.replace('namelist_', '')}">${obj.replace('namelist_', '')}학기</option>`;
       $('.namelist_select').html(html);
-    }
+    },
+    error: err => alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
   });
 });
 

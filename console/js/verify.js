@@ -11,7 +11,7 @@ async function init() {
     type: 'GET',
     beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
     success: res => $('#latestConfirm').text(new Date(res.data.date).format('yyyy년 m월 d일')),
-    error: err => $('#latestConfirm').text(err.responseJSON)
+    error: err => alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
   });
   
   await $.ajax({
@@ -20,7 +20,7 @@ async function init() {
     beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
     data: { date: $('#timestamp').datepicker('getDate').format('yyyy-mm-dd') },
     success: res => { record = res.msg; verify = res.data },
-    error: err => console.log(err)
+    error: err => alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
   });
   
   $("#autolist").html('').prepend(`<div style='margin-top: 5px; margin-bottom: -10px'><label><input type='checkbox' id='boost' value='test'>&nbsp;마일리지 상향 지급하기</input></label></div><hr style='width: 100%'>`);
@@ -160,7 +160,8 @@ $("#submit").click(function() {
           alertify.error('삭제되었습니다.');
           $('#deletelist').val('');
           init();
-        }
+        },
+        error: err => alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
       });
     }
   }
@@ -217,6 +218,7 @@ function transmitter(payload) {
       $('#autolist').html('');
       $('#manuallist').html('');
       init();
-    }
+    },
+    error: err => alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
   });
 }

@@ -10,23 +10,7 @@ $(function() {
         Cookies.set('jwt', res.msg, { expires: 365 });
         loginProcess(res);
       },
-      error: function(err) {
-        let errorMSG;
-        switch(err.responseJSON.data) {
-          case 'ERR_INVAILD_ID':
-            errorMSG = '유효하지 않은 학번입니다.';
-            break;
-  
-          case 'ERR_NOT_REGISTERED':
-            errorMSG = '등록되지 않은 학번입니다.';
-            break;
-
-          case 'ERR_UNKNOWN':
-            errorMSG = '알 수 없는 오류입니다.';
-            break;
-        }
-        toastr["error"](errorMSG);
-      }
+      error: e => toastr["error"](`${e.responseJSON.msg}<br>${e.responseJSON.data}`)
     });
   });
   
@@ -87,7 +71,8 @@ function autoLoginFailure() {
         Cookies.set('currentSemister', res.data, { expires : 365 });
         $('#sidebar').css('display', 'block');
       }  
-    }
+    },
+    error: e => toastr["error"](`${e.responseJSON.msg}<br>${e.responseJSON.data}`)
   });
 }
 

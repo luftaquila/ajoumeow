@@ -16,7 +16,8 @@ $(function() {
           url: '/ajoumeow/api/users/register',
           beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
           data: d => { d.semister = $('#tableName').val() },
-          dataSrc: 'data'
+          dataSrc: 'data',
+          error: err => alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
         },
         order: [[ 0, 'desc' ]],
         columns: [
@@ -32,7 +33,8 @@ $(function() {
           render: (data, type, row, meta) => { return new Date(data).format('yyyy-mm-dd HH:MM:ss') } 
         }]
       });
-    }
+    },
+    error: err => alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
   });
 });
 
@@ -62,7 +64,8 @@ $('#newMemberListDownload').click(function() {
       XLSX.utils.book_append_sheet(wb, newWorksheet, excelHandler.getSheetName());
       let wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
       saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), excelHandler.getExcelFileName());
-    }
+    },
+    error: err => alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
   });
 });
 
@@ -89,6 +92,7 @@ $('#contactDownload').click(function() {
       a.href = (window.webkitURL || window.URL).createObjectURL(blob);
       a.dataset.downloadurl = ['text/plain', a.download, a.href].join(':');
       a.click();
-    }
+    },
+    error: err => alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
   });
 });
