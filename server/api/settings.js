@@ -3,9 +3,8 @@ import express from 'express';
 import dateformat from 'dateformat';
 import bodyParser from 'body-parser';
 
-import logger from '../config/winston';
 import util from '../controllers/util/util.js';
-import Response from '../controllers/util/response.js';
+import { Response, Log } from '../controllers/util/interface.js';
 
 dotenv.config();
 
@@ -15,19 +14,20 @@ router.use(bodyParser.urlencoded({ extended: true }));
 router.get('*', async (req, res) => {
   try {
     let result = await util.getSettings(req.url.substring(1));
-    res.status(200).json(new Response('success', '', result));
+    util.logger(new Log('info', req.remoteIP, req.originalPath, '설정값 요청', req.method, 200, req.query, result));
+    res.status(200).json(new Response('success', null, result));
   }
   catch(e) {
-    //logger.error();
-    console.log(e);
-    res.status(500).json(new Response('error', e.message, 'ERR'));
+    util.logger(new Log('error', req.remoteIP, req.originalPath, '설정값 요청 오류', req.method, 500, req.query, e.stack));
+    res.status(500).json(new Response('error', '알 수 없는 오류입니다.', 'ERR_UNKNOWN'));
   }
 });
 
 router.put('*', util.isAdmin, async (req, res) => {
   try {
     let result = await util.query(`UPDATE settings SET value='${req.body.data}' WHERE name='${req.url.substring(1)}'`);
-    res.status(200).json(new Response('success', '', result));
+    util.logger(new Log('info', req.remoteIP, req.originalPath, '설정값 수정', req.method, 200, req.body, result));
+    res.status(200).json(new Response('success', null, result));
     /*
     if(req.url.substring(1) == 'currentSemister') {
       const target = client.channelManager.map.get(process.env.noticeChannelId);
@@ -36,9 +36,8 @@ router.put('*', util.isAdmin, async (req, res) => {
     */
   }
   catch(e) {
-    //logger.error();
-    console.log(e);
-    res.status(500).json(new Response('error', e.message, 'ERR'));
+    util.logger(new Log('error', req.remoteIP, req.originalPath, '설정값 수정 오류', req.method, 500, req.body, e.stack));
+    res.status(500).json(new Response('error', '알 수 없는 오류입니다.', 'ERR_UNKNOWN'));
   }
 });
 

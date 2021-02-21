@@ -2,9 +2,8 @@ import express from 'express';
 import dateformat from 'dateformat';
 import bodyParser from 'body-parser';
 
-import logger from '../config/winston';
 import util from '../controllers/util/util.js';
-import Response from '../controllers/util/response.js';
+import { Response, Log } from '../controllers/util/interface.js';
 
 let router = express.Router();
 router.use(bodyParser.urlencoded({ extended: true }));
@@ -15,10 +14,12 @@ router.get('/', async (req, res) => {
   try {
     const result = await util.query(`SELECT * FROM record WHERE date BETWEEN '${req.query.startDate}' AND '${req.query.endDate} ' ORDER BY date, course, timestamp;`);
     const update = await util.query(`SELECT UPDATE_TIME FROM information_schema.tables WHERE TABLE_SCHEMA='ajoumeow' AND TABLE_name='record';`);
+    util.logger(new Log('info', req.remoteIP, req.originalPath, '급식 신청 기록 요청', req.method, 200, req.query, result));
     res.status(200).json(new Response('success', update, result));
   }
   catch(e) {
-    res.status(500).json(new Response('error', 'Unknown error', 'ERR_UNKNOWN'));
+    util.logger(new Log('error', req.remoteIP, req.originalPath, '급식 신청 기록 요청 오류', req.method, 500, req.query, e.stack));
+    res.status(500).json(new Response('error', '알 수 없는 오류입니다.', 'ERR_UNKNOWN'));
   }
 });
 
@@ -27,26 +28,28 @@ router.post('/', util.isLogin, async (req, res) => {
     const payload = req.body;
     const test = await util.query(`SELECT * FROM record WHERE ID=${payload.ID} AND name='${payload.name}' AND date='${payload.date}' AND course='${payload.course}'`);
     if(test.length) {
-      //logger.info();
-      res.status(400).json(new Response('error', 'Duplicated entry', 'ERR_DUP_ENTRY'));
+      util.logger(new Log('info', req.remoteIP, req.originalPath, '급식 신청', req.method, 400, req.body, 'ERR_DUP_ENTRY'));
+      res.status(400).json(new Response('error', '이미 신청되었습니다.', 'ERR_DUP_ENTRY'));
     }
     const result = await util.query(`INSERT INTO record(ID, name, date, course) VALUES(${payload.ID}, '${payload.name}', '${payload.date}', '${payload.course}');`);
-    res.status(201).json(new Response('success', 'Successfully applied', result));
+    util.logger(new Log('info', req.remoteIP, req.originalPath, '급식 신청', req.method, 201, req.body, result));
+    res.status(201).json(new Response('success', null, result));
   }
   catch(e) {
-    //logger.error();
-    res.status(500).json(new Response('error', 'Unknown error', 'ERR_UNKNOWN'));
+    util.logger(new Log('error', req.remoteIP, req.originalPath, '급식 신청 오류', req.method, 500, req.body, e.stack));
+    res.status(500).json(new Response('error', '알 수 없는 오류입니다.', 'ERR_UNKNOWN'));
   }
 });
 
 router.delete('/', util.isLogin, async (req, res) => {
   try {
     const result = await util.query(`DELETE FROM record WHERE ID=${req.body.ID} AND name='${req.body.name}' AND date='${req.body.date}' AND course='${req.body.course}';`);
-    res.status(201).json(new Response('success', 'Successfully deleted', result));
+    util.logger(new Log('info', req.remoteIP, req.originalPath, '급식 신청 삭제', req.method, 204, req.body, result));
+    res.status(204).json(new Response('success', null, result));
   }
   catch(e) {
-    //logger.error();
-    res.status(500).json(new Response('error', 'Unknown error', 'ERR_UNKNOWN'));
+    util.logger(new Log('error', req.remoteIP, req.originalPath, '급식 신청 삭제 오류', req.method, 500, req.body, e.stack));
+    res.status(500).json(new Response('error', '알 수 없는 오류입니다.', 'ERR_UNKNOWN'));
   }
 });
 
@@ -70,6 +73,7 @@ router.get('/statistics', async (req, res) => {
           total: namelist.length
         };
         
+        util.logger(new Log('info', req.remoteIP, req.originalPath, '급식 통계 요청', req.method, 200, req.query, payload));
         return res.status(200).json(new Response('success', null, payload));
         
       case 'this_feeding':
@@ -81,9 +85,7 @@ router.get('/statistics', async (req, res) => {
         break;
         
       case 'prev_feeding':
-        let date = new Date();
-        date.setMonth(date.getMonth() - 1);
-        verify = await util.query(`SELECT * FROM verify WHERE REPLACE(SUBSTRING_INDEX(date, '-', 2), '-', '')='${dateformat(date, 'yyyymm')}';`);
+        verify = await util.query(`SELECT * FROM verify WHERE REPLACE(SUBSTRING_INDEX(date, '-', 2), '-', '')='${dateformat(new Date(new Date().setDate(0)), 'yyyymm')}';`);
         break;
         
       case 'total_total':
@@ -96,7 +98,8 @@ router.get('/statistics', async (req, res) => {
         break;
         
       default:
-        return res.status(400).json(new Response('error', 'ERR_INVAILD_TYPE', 'ERR_INVAILD_TYPE'));
+        util.logger(new Log('info', req.remoteIP, req.originalPath, '급식 통계 요청', req.method, 400, req.query, 'ERR_INVALID_TYPE'));
+        return res.status(400).json(new Response('error', '유효하지 않은 통계 유형입니다.', 'ERR_INVALID_TYPE'));
     }
     
     for(let obj of verify) {
@@ -115,16 +118,30 @@ router.get('/statistics', async (req, res) => {
         }
       }
     }
+    util.logger(new Log('info', req.remoteIP, req.originalPath, '급식 통계 요청', req.method, 200, req.query, data));
     res.status(200).json(new Response('success', null, data));
   }
   catch(e) {
-    res.status(500).json(new Response('error', 'Unknown error', 'ERR_UNKNOWN'));
+    util.logger(new Log('error', req.remoteIP, req.originalPath, '급식 통계 요청', req.method, 500, req.query, e.stack));
+    res.status(500).json(new Response('error', '알 수 없는 오류입니다.', 'ERR_UNKNOWN'));
   }
 });
 
-router.get('//mapLoad', async function(req, res) {
-  const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
-  logger.info('Google Maps Javascript API map rendering call', { ip: ip, url: 'mapLoad', query: '-', result: 'ID: ' + (req.session.ID ? req.session.ID : 'ANONYMOUS') });
+router.get('/log', util.isAdmin, async(req, res) => {
+  try {
+    let check = [];
+    if(req.query.level) check.push(`level REGEXP '${req.query.level.join('|')}'`);
+    if(req.query.type) check.push(`IP REGEXP '${req.query.type.join('|')}'`);
+    check = check ? (check.join(' AND ') + ' AND') : '';
+    const query = `SELECT * FROM log WHERE ${check} timestamp BETWEEN '${req.query.start}' AND '${req.query.end}';`;
+    const result = await util.query(query);
+    res.status(200).json(new Response('success', null, result));
+  }
+  catch(e) {
+    console.log(e);
+    util.logger(new Log('error', req.remoteIP, req.originalPath, '로그 로드 오류', req.method, 500, req.query, e.stack));
+    res.status(500).json(new Response('error', '알 수 없는 오류입니다.', 'ERR_UNKNOWN'));
+  }
 });
 
 export default router

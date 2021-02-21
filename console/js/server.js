@@ -1,73 +1,54 @@
 $(function() {
   $('#content').click();
-  $.ajax({
-    url: "/ajoumeow/api/settings/logs",
-    beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
-    data: { semister : 'all' },
-    success: res => {
-      let html = '';
-      for(let obj of res.data.reverse()) html += `<option value="${obj.replace('namelist_', '')}">${obj.replace('namelist_', '')}학기</option>`;
-      $('.namelist_select').html(html);
-    }
+  $('#logStart').val(new Date(new Date().setDate(0)).format('yyyy-mm-dd'));
+  $('#logEnd').val(new Date().format('yyyy-mm-dd'));
+  $('input[name=level]:checked').map(x => x.value);
+  $('#serverlog').DataTable({
+    pagingType: "numbers",
+    pageLength: 50,
+    dom: "ilfptp",
+    order: [[ 0, 'desc' ]],
+    ajax: {
+      url: "/ajoumeow/api/record/log",
+      beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
+      data: d => {
+        const level = Array.from($('input[name=level]:checked'), x => x.value);
+        const type = Array.from($('input[name=type]:checked'), x => x.value)
+        console.log(level);
+        console.log(level ? level : [])
+        d.level = level ? level : null,
+        d.type = type ? type : [];
+        d.start = $('#logStart').val() + ' 00:00:00';
+        d.end = $('#logEnd').val() + ' 23:59:59';
+      },
+      dataSrc: 'data'
+    },
+    columns: [
+      { data: "timestamp" },
+      { data: "level" },
+      { data: "IP" },
+      { data: "endpoint" },
+      { data: "description" },
+      { data: "method" },
+      { data: "status" },
+      { data: "query" },
+      { data: "result" }
+    ],
+    columnDefs: [{
+      targets: 0,
+      render: (data, type, row, meta) => { return new Date(data).format('yyyy-mm-dd HH:MM:ss') } 
+    }, {
+      targets: [ 7, 8 ],
+      render: (data, type, row, meta) => {
+        if(data.length > 30) return data.substr(0, 30) + '...';
+        else return data } 
+    }]
   });
+  
 });
 
-    
-    $.ajax({
-      url: "api/requestLogs",
-      type: 'POST',
-      success: function(res) { logData = res; }
-    }).done(function() {
-      serverlog = $('#serverlog').DataTable({
-        pagingType: "numbers",
-        data: logData,
-        order: [[ 0, 'desc' ]],
-        columns: [
-          { data: "timestamp" },
-          { data: "level" },
-          { data: "ip" },
-          { data: "message" },
-          { data: "query" },
-          { data: "url" },
-          { data: "result" }
-        ]
-      });
-    });
-    
-  });
-}
-function clickEventListener() {
-  
-
-  $('input[name=iserror], input[name=logtype]').click(function() {
-    var isError = $('input[name=iserror]:checked').length;
-    var logdata = [], logtype = [];
-    $('input[name=logtype]:checked').each(function() { logtype.push($(this).val()) });
-    var types = {
-      pageload: ['loginCheck', 'requestSettings', 'records', 'requestNamelist', 'isAllowedAdminConsole', 'requestNamelistTables', 'requestLatestVerify', 'requestVerifyList', 'requestNotice', 'requestStatistics', 'requestStat'],
-      loginout: ['login', 'logout'],
-      insdelTable: ['insertIntoTable', 'deleteFromTable'],
-      verify: ['verify', 'deleteVerify'],
-      settingchange: ['modifySettings'],
-      memberchange: ['apply', 'modifyMember', 'deleteMember'],
-      '1365' : ['request1365'],
-      others : ['requestApply', 'requestRegister', 'SERVER', 'BOT']
-    };
-    for(var obj of logData) {
-      for(var type of logtype) {
-        if(types[type].indexOf(obj.url) > -1) {
-          if(isError) {
-            if(obj.level != 'info') logdata.push(obj);
-          }
-          else logdata.push(obj);
-        }
-      }
-    }
-    if(!logdata.length) logdata = [{ timestamp: null, ip: null, query: null, result: null, url: null, message: null, level: null }];
-    $('#serverlog').dataTable().fnClearTable(); 
-    $('#serverlog').dataTable().fnAddData(logdata);
-  });
-  
-  
-}
-*/
+$('input').change(function() { $('#serverlog').DataTable().ajax.reload(); });
+$('#serverlog').on('click', 'td', function () {
+  MicroModal.show('detail');
+  $('#detail-content').text($('#serverlog').DataTable().cell(this).data());
+});
