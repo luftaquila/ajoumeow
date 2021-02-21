@@ -66,7 +66,7 @@ util.query = async function(query) { // make db query
   }
   catch(e) {
     console.log(e);
-    util.logger(new Log('info', 'DB', 'util.query', 'DB 쿼리 오류', 'internal', -1, query, e.stack));
+    util.logger(new Log('error', 'DB', 'util.query', 'DB 쿼리 오류', 'internal', -1, query, e.stack));
   }
 }
 

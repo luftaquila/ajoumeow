@@ -132,7 +132,7 @@ router.get('/log', util.isAdmin, async(req, res) => {
     let check = [];
     if(req.query.level) check.push(`level REGEXP '${req.query.level.join('|')}'`);
     if(req.query.type) check.push(`IP REGEXP '${req.query.type.join('|')}'`);
-    check = check ? (check.join(' AND ') + ' AND') : '';
+    check = check.length ? (check.join(' AND ') + ' AND') : '';
     const query = `SELECT * FROM log WHERE ${check} timestamp BETWEEN '${req.query.start}' AND '${req.query.end}';`;
     const result = await util.query(query);
     res.status(200).json(new Response('success', null, result));
