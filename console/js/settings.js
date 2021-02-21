@@ -8,7 +8,7 @@ $(function() {
       $('#currentYear').val(res.data.split('-')[0]);
       $('#currentSemister').val(res.data.split('-')[1]);
     },
-    error: settingLoadError
+    error: err => settingLoadError(err)
   });
   
   // apply settings
@@ -35,7 +35,7 @@ $(function() {
     }
     document.getElementById('applyStartDate').valueAsDate = new Date(new Date(applyTerm[0].data.split('~')[0]) - (-1) * 9 * 3600 * 1000);
     document.getElementById('applyEndDate').valueAsDate = new Date(new Date(applyTerm[0].data.split('~')[1]) - (-1) * 9 * 3600 * 1000);
-  }).fail(settingLoadError);
+  }).fail(err => settingLoadError(err));
   
   // register settings
   $.when(
@@ -70,7 +70,7 @@ $(function() {
     }
     document.getElementById('registerStartDate').valueAsDate = new Date(new Date(registerTerm[0].data.split('~')[0]) - (-1) * 9 * 3600 * 1000);
     document.getElementById('registerEndDate').valueAsDate = new Date(new Date(registerTerm[0].data.split('~')[1]) - (-1) * 9 * 3600 * 1000);
-  }).fail(settingLoadError);
+  }).fail(err => settingLoadError(err));
   
   // notice settings
   $.ajax({
@@ -80,7 +80,7 @@ $(function() {
       $('#noticeVersion').text(res.data.split('$')[0]);
       $('#notice').val(res.data.split('$')[1].replace('<br>', '\n'))
     },
-    error: settingLoadError
+    error: err => settingLoadError(err)
   });
 });
 
@@ -146,13 +146,13 @@ $('.setting').change(function() {
     beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
     data: { data : req.data },
     success: res => alertify.success('설정을 변경했습니다.'),
-    error: () => alertify.error('설정 변경에 실패했습니다.')
+    error: err => alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
   });
 });
 
-function settingLoadError() {
-  $('input, select, textarea').attr('disabled', true);
-  alertify.error('설정값을 불러오는 중 오류가 발생했습니다!!!');
+function settingLoadError(err) {
+  $('input, select, textarea').attr('disabled', true);,
+  alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
 }
 
 // current year formatting

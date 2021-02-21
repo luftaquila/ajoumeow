@@ -19,7 +19,8 @@ function init() {
         Cookies.set('versionInfo', notice[0], {expires : 7});
         MicroModal.show('notice_modal');
       }
-    }
+    },
+    error: e => toastr["error"](`${e.responseJSON.msg}<br>${e.responseJSON.data}`)
   });
   
   // Draw calendar
@@ -184,7 +185,8 @@ function load() {
         }
       }
       $('.calendar-table__event').trigger('click');
-    }
+    },
+    error: e => toastr["error"](`${e.responseJSON.msg}<br>${e.responseJSON.data}`)
   });
 }
       
@@ -210,11 +212,7 @@ function transmitter(data) {
       name: data.name
     },
     success: load,
-    error: function(e) {
-      if(data.type == 'POST' && e.responseJSON.data == 'ERR_DUP_ENTRY')
-        toastr['error']('이미 신청하셨습니다!');
-      else toastr['error'](e.responseJSON.data);
-    }
+    error: e => toastr["error"](`${e.responseJSON.msg}<br>${e.responseJSON.data}`)
   });
 }
 

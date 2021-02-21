@@ -12,7 +12,8 @@ $(function() {
         d.type = $('input[name=statisticsType]:checked').val();
         d.value = $('input[name=statisticsType]:checked').attr('data-value');
       },
-      dataSrc: 'data'
+      dataSrc: 'data',
+      error: err => alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
     },
     columns: [
       { data: "name" },
@@ -28,7 +29,8 @@ $(function() {
       $('#activityTime').text(res.data.time + '시간');
       $('#activeMember').text(res.data.people + '명 / ' + percent);
       $('#activePercentGraph').css('width', percent);
-    }
+    },
+    error: err => alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
   });
 });
 

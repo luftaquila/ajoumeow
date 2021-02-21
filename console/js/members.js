@@ -8,7 +8,8 @@ $(function() {
       let html = '';
       for(let obj of res.data.reverse()) html += `<option value="${obj.replace('namelist_', '')}">${obj.replace('namelist_', '')}학기</option>`;
       $('.namelist_select').html(html);
-    }
+    },
+    error: err => alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
   });
   
   $.ajax({
@@ -22,7 +23,8 @@ $(function() {
           url: '/ajoumeow/api/users/list',
           beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
           data: { semister : res.data },
-          dataSrc: 'data'
+          dataSrc: 'data',
+          error: err => alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
         },
         columns: [
           { data: "college" },
@@ -58,7 +60,7 @@ $(function() {
                alertify.success('수정되었습니다.');
                $('#dataTable').DataTable().ajax.reload();
              },
-             error: () => alertify.error('수정에 실패했습니다.')
+             error: err => alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
            });
          }
       });
@@ -70,7 +72,8 @@ $(function() {
           url: '/ajoumeow/api/users/list',
           beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
           data: d => { d.semister = $('#namelist').val() },
-          dataSrc: 'data'
+          dataSrc: 'data',
+          error: err => alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
         },
         columns: [
           { data: "college" },
@@ -111,7 +114,7 @@ $('#deleteMember').click(function() {
       alertify.error('회원이 제명되었습니다.');
       $('#currentMembersList').DataTable().ajax.reload();
     },
-    error: err => alertify.error(`회원 제명 중에 오류가 발생했습니다.<br>${err.responseJSON.data}`)
+    error: err => alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
   });
 });
 
@@ -138,6 +141,7 @@ $('#namelistDownload').click(function() {
       XLSX.utils.book_append_sheet(wb, newWorksheet, excelHandler.getSheetName());
       let wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
       saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), excelHandler.getExcelFileName());
-    }
+    },
+    error: err => alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
   });
 });
