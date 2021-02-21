@@ -1,6 +1,9 @@
 import dotenv from 'dotenv'
 import jwt from 'jsonwebtoken';
-import Response from './response.js';
+import prettify from 'pretty-format';
+//import inspect from 'object-inspect';
+
+import { Response, Log } from './interface.js';
 import pool from '../../config/mariadb';
 
 dotenv.config();
@@ -9,12 +12,19 @@ let util = {};
 
 util.isLogin = function(req, res, next) { // check if jwt is vaild
   const token = req.headers['x-access-token'];
-  if(!token) res.status(400).json(new Response('error', 'Token required.', 'ERR_NO_TOKEN'));
+  if(!token) {
+    util.logger(new Log('info', 'util', 'util.isLogin', '로그인 확인', 'internal', 400, token, 'ERR_NO_TOKEN'));
+    res.status(400).json(new Response('error', '로그인 상태가 아닙니다.', 'ERR_NO_TOKEN'));
+  }
   else {
     jwt.verify(token, process.env.JWTSecret, function(err, decoded) {
-      if(err) res.status(401).json(new Response('error', 'Invaild token.', 'ERR_INVAILD_TOKEN'));
+      if(err) {
+        util.logger(new Log('info', 'util', 'util.isLogin', '로그인 확인', 'internal', 401, token, 'ERR_INVALID_TOKEN'));
+        res.status(401).json(new Response('error', '로그인이 만료되었습니다.<br>다시 로그인해 주세요.', 'ERR_INVALID_TOKEN'));
+      }
       else {
         req.decoded = decoded;
+        util.logger(new Log('info', 'util', 'util.isLogin', '로그인 확인', 'internal', 0, token, req.decoded));
         next();
       }
     });
@@ -23,13 +33,23 @@ util.isLogin = function(req, res, next) { // check if jwt is vaild
 
 util.isAdmin = function(req, res, next) { // check if jwt is vaild
   const token = req.headers['x-access-token'];
-  if(!token) res.status(400).json(new Response('error', 'Token required.', 'ERR_NO_TOKEN'));
+  if(!token) {
+    util.logger(new Log('info', 'util', 'util.isAdmin', '관리자 확인', 'internal', 400, token, 'ERR_NO_TOKEN'));
+    res.status(400).json(new Response('error', '로그인 상태가 아닙니다.', 'ERR_NO_TOKEN'));
+  }
   else {
     jwt.verify(token, process.env.JWTSecret, function(err, decoded) {
-      if(err) res.status(401).json(new Response('error', 'Invaild token.', 'ERR_INVAILD_TOKEN'));
-      else if(decoded.role == '회원') res.status(403).json(new Response('error', 'Forbidden', 'ERR_USER_NOT_ADMIN'));
+      if(err) {
+        util.logger(new Log('info', 'util', 'util.isAdmin', '관리자 확인', 'internal', 401, token, 'ERR_INVALID_TOKEN'));
+        res.status(401).json(new Response('error', '로그인이 만료되었습니다.<br>다시 로그인해 주세요.', 'ERR_INVALID_TOKEN'));
+      }
+      else if(decoded.role == '회원') {
+        util.logger(new Log('info', 'util', 'util.isAdmin', '관리자 확인', 'internal', 403, token, 'ERR_USER_NOT_ADMIN'));
+        res.status(403).json(new Response('error', '관리자가 아닙니다.', 'ERR_USER_NOT_ADMIN'));
+      }
       else {
         req.decoded = decoded;
+        util.logger(new Log('info', 'util', 'util.isAdmin', '관리자 확인', 'internal', 0, token, req.decoded));
         next();
       }
     });
@@ -41,30 +61,40 @@ util.query = async function(query) { // make db query
     const db = await pool.getConnection();
     const result = await db.query(query);
     await db.end();
+    util.logger(new Log('info', 'DB', 'util.query', 'DB 쿼리', 'internal', 0, query, result));
     return result;
   }
   catch(e) {
     console.log(e);
-    // logger.error();
+    util.logger(new Log('info', 'DB', 'util.query', 'DB 쿼리 오류', 'internal', -1, query, e.stack));
   }
 }
 
 util.getSettings = async function(name) { // request server settings by name
   const result = await util.query(`SELECT value FROM settings WHERE name='${name}';`);
   if(result.length) return result[0].value;
-  else throw ReferenceError('No such settings name.');
+  else return null;
 }
 
-function log(ip, identity, type, description, query, result) {
+util.logger = async function(log) {
   try {
-    query = query.replace(/"/g, "'").replace(/`/g, "'").replace(/'/g, '');
-    result = JSON.stringify(result).replace(/"/g, "'").replace(/`/g, "'").replace(/'/g, "");
-    db.query("DELETE FROM log WHERE timestamp < UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 30 DAY))");
-    db.query("INSERT INTO log(ip, identity, type, query, description, result) VALUES('" + ip + "', '" + identity + "', '" + type + "', '" + query + "', '" + description + "', '" + result + "');");
+    log = logValidator(log);
+    const db = await pool.getConnection();
+    const query = `INSERT INTO \`log\` (\`level\`, \`IP\`, \`endpoint\`, \`description\`, \`method\`, \`status\`, \`query\`, \`result\`) VALUES(${db.escape(log.level)}, ${db.escape(log.IP)}, ${db.escape(log.endpoint)}, ${db.escape(log.description)}, ${db.escape(log.method)}, ${db.escape(log.status)}, ${db.escape(log.query)}, ${db.escape(log.result)});`;
+    const result = await db.query(query);
+    await db.end();
   }
-  catch(e) {
-    let error = JSON.stringify(e).replace(/"/g, "'").replace(/`/g, "'").replace(/'/g, "");
-    db.query("INSERT INTO log(ip, identity, type, query, description, result) VALUES('-', '-', '" + type + "', 'Logging Error', 'Logging Error', '" + error + "');"); }
+  catch(e) { console.log(e); }
 }
 
-export default util;
+function logValidator(log) {
+  for(let prop of Object.getOwnPropertyNames(log)) {
+    if(typeof(log[prop]) == 'object') {
+      log[prop] = prettify(log[prop], { min: true });
+      if(log[prop].length > 100) log[prop] = log[prop].substr(0, 100) + '...';
+    }
+  }
+  return log;
+}
+
+export default util

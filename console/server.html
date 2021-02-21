@@ -106,51 +106,50 @@
             <div class="d-sm-flex align-items-center justify-content-between mb-4">
               <h1 class="h3 mb-0 text-gray-800">서버 로그</h1>
             </div>
-            <h6>서버 로그를 열람합니다.</h6>
             <div style='font-size: 0.8rem; margin-bottom: 10px'>
-              <li>체크박스가 체크된 범주의 로그만 표시합니다.</li>
-              <li>오류 체크박스에 체크하면 오류 기록만 표시합니다.</li>
+              <li>항목을 클릭하면 전체 내용을 표시합니다.</li>
+              <li>모든 체크박스를 해제하면 해당 범주를 필터링하지 않습니다.</li>
             </div>
-            <label><input type='checkbox' name='iserror' value='error'> 오류</label>
-            <hr width='100%' style='margin: 0 0 10px 0'>
-            <table width='100%'>
-              <tr>
-                <td><label><input type='checkbox' name='logtype' value='pageload' checked> 페이지 로드</label></td>
-                <td><label><input type='checkbox' name='logtype' value='loginout' checked> 로그인 / 로그아웃</label></td>
-              </tr>
-              <tr>
-                <td><label><input type='checkbox' name='logtype' value='insdelTable' checked> 급식 신청 / 삭제</label></td>
-                <td><label><input type='checkbox' name='logtype' value='verify' checked> 급식 인증</label></td>
-              </tr>
-              <tr>
-                <td><label><input type='checkbox' name='logtype' value='settingchange' checked> 설정 변경</label></td>
-                <td><label><input type='checkbox' name='logtype' value='memberchange' checked> 회원 명단 변경</label></td>
-              </tr>
-              <tr>
-                <td><label><input type='checkbox' name='logtype' value='1365' checked> 1365 인증서</label></td>
-                <td><label><input type='checkbox' name='logtype' value='others' checked> 기타</label></td>
-              </tr>
-            </table>
-            <br>
+            <div>
+              <b>Level</b><br>
+                <label><input type='checkbox' name='level' value='info' checked> info</label>&ensp;
+                <label><input type='checkbox' name='level' value='error' checked> error</label>&ensp;
+              <br>
+              <b>Type</b><br>
+                <label><input type='checkbox' name='type' value='[0-9]' checked> API</label>&ensp;
+                <label><input type='checkbox' name='type' value='kakaoClient' checked> kakaoClient</label>&ensp;
+                <label><input type='checkbox' name='type' value='LOCALHOST'> LOCALHOST</label>&ensp;
+                <label><input type='checkbox' name='type' value='util'> util</label>&ensp;
+                <label><input type='checkbox' name='type' value='DB'> DB</label>
+              <br>
+              <b>Time</b><br>
+                <input type='date' id='logStart' class='logDate btn btn-primary' required>
+                &ensp;~&ensp;
+                <input type='date' id='logEnd' class='logDate btn btn-primary' required>
+            </div>
             <div class='table-responsive'>
-              <table class="table table-bordered" id="serverlog" width="100%" style='table-layout: fixed; text-align: center' cellspacing="0">
+              <table class="table table-bordered" id="serverlog" width="100%" style='table-layout: fixed; text-align: center; font-size: .9rem;' cellspacing="0">
                 <colgroup>
-                  <col width='200px' />
-                  <col width='120px' />
-                  <col width='160px' />
-                  <col width='220px' />
-                  <col width='300px' />
-                  <col width='200px' />
-                  <col width='500px'/>
+                  <col width="180px" />
+                  <col width="70px" />
+                  <col width="140px" />
+                  <col width="180px" />
+                  <col width="180px" />
+                  <col width="80px" />
+                  <col width="60px" />
+                  <col width="280px" />
+                  <col width="280px" />
                 </colgroup>
                 <thead>
-                  <th>타임스탬프</th>
-                  <th>로그 수준</th>
+                  <th>시간</th>
+                  <th>level</th>
                   <th>IP</th>
+                  <th>endpoint</th>
                   <th>설명</th>
-                  <th>쿼리</th>
-                  <th>url</th>
-                  <th>결과</th>
+                  <th>method</th>
+                  <th>HTTP</th>
+                  <th>query</th>
+                  <th>result</th>
                 </thead>
               </table>
             </div>
@@ -161,6 +160,18 @@
       <!-- End of Content Wrapper -->
     </div>
     <!-- End of Page Wrapper -->
+    <!-- Page Modals -->
+    <div class="modal micromodal-slide" id="detail" aria-hidden="true">
+      <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+        <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="detail-title">
+          <header class="modal__header">
+            <h2 class="modal__title" id="detail-title">상세 로그</h2>
+            <button id='popclose' class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+          </header>
+          <main class="modal__content" id="detail-content" style='margin-bottom: 0; font-size: .8rem; word-break: break-word;'></main>
+        </div>
+      </div>
+    </div>
     
     <!-- Bootstrap core JavaScript-->
     <script src="vendor/jquery/jquery.min.js"></script>
@@ -176,6 +187,7 @@
     <!-- Page level plugins -->
     <script src="vendor/datatables/jquery.dataTables.min.js"></script>
     <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
+    <script src='/ajoumeow/Resources/Libraries/micromodal/micromodal.min.js'></script>
     <script src='js/server.js'></script>
     
     <!-- For excel export -->

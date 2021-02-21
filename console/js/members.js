@@ -17,7 +17,7 @@ $(function() {
     success: res => {
       $('#currentMembersList').DataTable({
         pagingType: "numbers",
-        pageLength: '100',
+        pageLength: 100,
         ajax: {
           url: '/ajoumeow/api/users/list',
           beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
@@ -65,7 +65,7 @@ $(function() {
       
       $('#pastMembersList').DataTable({
         pagingType: "numbers",
-        pageLength: '100',
+        pageLength: 100,
         ajax: {
           url: '/ajoumeow/api/users/list',
           beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),

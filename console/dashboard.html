@@ -106,12 +106,12 @@
             <div class="d-sm-flex align-items-center justify-content-between mb-4">
               <h1 class="h3 mb-0 text-gray-800">통계</h1>
             </div>
-            <div class="col-xl-3 col-md-8 mb-4">
+            <div class="col-xl-3 col-md-8 mb-4" style='padding: 0;'>
               <div class="card border-left-info shadow h-100 py-2">
                 <div class="card-body">
                   <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
-                      <div class="text-xs font-weight-bold text-info text-uppercase mb-1">이번 달 활동자 수</div>
+                      <div class="text-xs font-weight-bold text-info text-uppercase mb-1">이번 달 활동자</div>
                       <div class="row no-gutters align-items-center">
                         <div class='col mr-2'>
                           <div class="h5 mb-0 font-weight-bold text-gray-800" id='activeMember'></div>
@@ -130,7 +130,7 @@
                 </div>
               </div>
             </div>
-            <div class="col-xl-3 col-md-8 mb-4">
+            <div class="col-xl-3 col-md-8 mb-4" style='padding: 0;'>
               <div class="card border-left-success shadow h-100 py-2">
                 <div class="card-body">
                   <div class="row no-gutters align-items-center">
@@ -145,7 +145,7 @@
                 </div>
               </div>
             </div>
-            <div class="col-xl-3 col-md-8">
+            <div class="col-xl-3 col-md-8" style='padding: 0;'>
               <div class="card shadow mb-4">
                 <!-- Card Header - Dropdown -->
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
@@ -159,7 +159,7 @@
                   <label><input type='radio' name='statisticsType' value='total_total'> 전체 기간 마일리지 순위</label><br>
                   <label><input type='radio' name='statisticsType' value='custom_total' id='custom_total' data-value=''> 특정 기간 마일리지 순위</label><br>&emsp;
                   <input type='date' id='statisticsStartDate' class='btn btn-primary statisticsDate'>
-                  &ensp;~&ensp;
+                  &nbsp;~&nbsp;
                   <input type='date' id='statisticsEndDate' class='btn btn-primary statisticsDate'>
                   <div style='width: 100%; text-align: center; margin: 1.5rem 0 1rem;'>
                     <a class='btn btn-success' id='pick' style='color: white'>이 목록으로 제비뽑기</a>
@@ -189,16 +189,16 @@
     <!-- End of Page Wrapper -->
     <!-- Page Modals -->
     <div class="modal micromodal-slide" id="pop" aria-hidden="true">
-      <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+      <div class="modal__overlay" tabindex="-1">
         <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="randCatModal-title">
           <header class="modal__header">
             <h2 class="modal__title" id="randCatModal-title">랜덤랜덤 고양이</h2>
-            <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+            <button id='popclose' class="modal__close" aria-label="Close modal" data-micromodal-close></button>
           </header>
           <main class="modal__content" id="randCatModal-content">
             <div style="position: relative; text-align: center">
               <img id='popgif' src="/ajoumeow/Resources/Images/loading.gif" style="width:100%; height:auto; margin-bottom: 0.8rem;">
-              <div id='poptext' style='width: 100%'>기지개 켜는 중...</div>
+              <p id='poptext' style='width: 100%; text-align: center;'>기지개 켜는 중...</p>
             </div>
           </main>
         </div>

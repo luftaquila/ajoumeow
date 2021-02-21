@@ -61,42 +61,30 @@ $('#pick').click(async function() {
   
   if(key.name) {
     MicroModal.show('pop');
-    dotdotdot(true);
+    $('#popclose').hide();
     
     $('#popgif').attr('src', '/ajoumeow/Resources/Images/random.png');
-    $('#poptext').html('당첨자는 이렇게 뽑습니다.<br><br>고양이를 부르는 중입니다<span id="dot"></span>');
+    $('#poptext').html('당첨자는 이렇게 뽑습니다.<br><br>고양이를 부르는 중입니다<span class="dotdotdot"></span>');
     await sleep(3000);
     
     $('#popgif').attr('src', '/ajoumeow/Resources/Images/loading.gif');
-    $('#poptext').html('기지개 켜는 중<span id="dot"></span>');
-    await sleep(1000);
+    $('#poptext').html('기지개 켜는 중<span class="dotdotdot"></span>');
+    await sleep(1500);
     
-    $('#poptext').html('캔 따는 중<span id="dot"></span>');
+    $('#poptext').html('캔 따는 중<span class="dotdotdot"></span>');
     await sleep(2000);
     
-    $('#poptext').html('레이저포인터 쫓는 중<span id="dot"></span>');
+    $('#poptext').html('레이저포인터 쫓는 중<span class="dotdotdot"></span>');
     await sleep(1500);
     
     $('#popgif').attr('src', '/ajoumeow/Resources/Images/thinking.gif');
-    $('#poptext').html('생각하는 척 하는 중<span id="dot"></span><br><span style="color: transparent">당첨 확률 : 0%</span>');
+    $('#poptext').html('생각하는 척 하는 중<span class="dotdotdot"></span><br><span style="color: transparent">당첨 확률 : 0%</span>');
     
     await sleep(5000);
+    $('#popclose').show();
     $('#poptext').html('당첨자는 ' + key.name + '님이니라.<br>당첨 확률 : ' + Math.round(key.score / sum * 1000) / 10 + '%');
   }
 });
-
-async function dotdotdot(flag) {
-  while(flag) {
-    $('#dot').text('.');
-    await sleep(250);
-    $('#dot').text('..');
-    await sleep(250);
-    $('#dot').text('...');
-    await sleep(250);
-    $('#dot').text('....');
-    await sleep(250);
-  }
-}
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
