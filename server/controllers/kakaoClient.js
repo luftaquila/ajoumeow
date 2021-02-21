@@ -4,15 +4,19 @@ import request from 'axios'
 import envfile from 'envfile'
 import schedule from 'node-schedule'
 
-import client from './config/node-kakao'
+import client from '../config/node-kakao'
+import util from './util/util.js'
+import { Log } from './util/interface.js';
 
 dotenv.config();
 
-client.login(
-  process.env.TalkClientLoginID,
-  process.env.TalkClientLoginPW,
-  true
-).then(kakaoClient);
+function startKakaoClient() {
+  client.login(
+    process.env.TalkClientLoginID,
+    process.env.TalkClientLoginPW,
+    true
+  ).then(kakaoClient);
+}
 
 async function kakaoClient() {
   const msg = 'Kakao login successful. Client program is in startup.';
@@ -230,3 +234,5 @@ async function kakaoClient() {
     return '수고하셨습니다!\n';
   }
 }
+
+export default startKakaoClient
