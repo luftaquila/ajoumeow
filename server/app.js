@@ -9,6 +9,8 @@ import users from './api/users.js';
 import util from './controllers/util/util.js';
 import { Log } from './controllers/util/interface.js';
 
+import startKakaoClient from './controllers/kakaoClient.js';
+
 const app = express();
 app.use((req, res, next) => { 
   req.originalPath = req.baseUrl + req.path;
@@ -26,3 +28,5 @@ app.listen(5710, function() {
   console.log(msg);
   util.logger(new Log('info', 'LOCALHOST', '/api', '서버 프로그램 시작', 'internal', 0, null, msg));
 });
+
+startKakaoClient();

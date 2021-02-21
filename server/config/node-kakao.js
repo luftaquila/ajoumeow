@@ -1,7 +1,7 @@
 import dotenv from 'dotenv'
-import nodeKakao from 'node-kakao'
+import * as nodeKakao from 'node-kakao'
 
-dotenv.config()l
+dotenv.config();
 
 const kakaoClient = new nodeKakao.TalkClient(
   process.env.TalkClientName,
