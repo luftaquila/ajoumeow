@@ -9,6 +9,7 @@ import util from './util/util.js'
 import { Log } from './util/interface.js';
 
 dotenv.config();
+Date.prototype.getDayNum = function() { return this.getDay() ? this.getDay() : 7; }
 
 function startKakaoClient() {
   client.login(
@@ -26,7 +27,7 @@ async function kakaoClient() {
   const alert_schedule = schedule.scheduleJob('0 0 15 * * *', async () => { // 3pm at every day
     try {
       const target = client.channelManager.map.get(process.env.talkChannelId);
-      const result = await db.query("SELECT * FROM record WHERE date BETWEEN '" + dateformat(new Date(), 'yyyy-mm-dd') + "' AND '" + dateformat(new Date(), 'yyyy-mm-dd') + "' ORDER BY date, course, timestamp;");
+      const result = await util.query("SELECT * FROM record WHERE date BETWEEN '" + dateformat(new Date(), 'yyyy-mm-dd') + "' AND '" + dateformat(new Date(), 'yyyy-mm-dd') + "' ORDER BY date, course, timestamp;");
       let resultString = '안녕하세요! 오늘 급식 신청해주신 분들은\n';
       let noUserCourse = [];
       for(let i = 1; i < 4; i++) {
