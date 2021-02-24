@@ -29,9 +29,7 @@
     "node-kakao": "^3.1.8",
     "node-schedule": "^2.0.0",
     "pretty-format": "^26.6.2",
-    "webpack": "^5.21.2",
-    "winston": "^3.3.3",
-    "winston-daily-rotate-file": "^4.5.0"
+    "webpack": "^5.21.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.13",
