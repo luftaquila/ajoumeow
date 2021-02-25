@@ -114,16 +114,16 @@ async function kakaoClient() {
                   });
                 }
               }
-            
-              // send verify data to ajoumeow server
-              let res = await postRequest('https://luftaquila.io/ajoumeow/api/verify', { data: JSON.stringify(payload) });
-              if(JSON.parse(res).result == true) {
-                let resultString = greetings();
-                resultString += '시스템에 급식 활동을 등록했습니다.';
-                for(let obj of payload) resultString += '\n' + dateformat(payload[0].date, 'yyyy년 m월 d일 ') + obj.name + '님 ' + obj.course + '(' + obj.score + '점)';
-                chat.channel.sendTemplate(new nodeKakao.AttachmentTemplate(nodeKakao.ReplyAttachment.fromChat(chat), resultString));
-                util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증', 'internal', 0, null, resultString));
+              
+              // add verify data to DB
+              let resultString = greetings();
+              resultString += '시스템에 급식 활동을 등록했습니다.';
+              for(let obj of payload) {
+                let att = await util.query(`INSERT INTO verify(ID, date, name, course, score) VALUES(${obj.ID}, '${obj.date}', '${obj.name}', '${obj.course}', '${obj.score}');`);
+                resultString += '\n' + dateformat(payload[0].date, 'yyyy년 m월 d일 ') + obj.name + '님 ' + obj.course + '(' + obj.score + '점)';
               }
+              chat.channel.sendTemplate(new nodeKakao.AttachmentTemplate(nodeKakao.ReplyAttachment.fromChat(chat), resultString));
+              util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증', 'internal', 0, null, resultString));
             }
           }
         }
