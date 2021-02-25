@@ -151,8 +151,8 @@ $('.setting').change(function() {
 });
 
 function settingLoadError(err) {
-  $('input, select, textarea').attr('disabled', true);,
-  alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
+  $('input, select, textarea').attr('disabled', true);
+  alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`);
 }
 
 // current year formatting
