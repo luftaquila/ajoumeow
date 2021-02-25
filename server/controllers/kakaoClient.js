@@ -48,7 +48,7 @@ async function kakaoClient() {
         resultString = resultString.slice(0, -2) + '코스에 신청자가 없습니다! 도와주세요ㅠㅠ\n\n';
       }
     
-      const wth = JSON.parse(fs.readFileSync('../Resources/weather/weather.json').toString()).current_weather
+      const wth = JSON.parse(fs.readFileSync('../res/weather/weather.json').toString()).current_weather
       resultString += `오늘 아주대는 ${wth.stat}, ${wth.temp}℃에요!\n미세먼지는 ${wth.dust.pm10}㎍/㎥, 초미세먼지는 ${wth.dust.pm25}㎍/㎥입니다.`;
     
       await target.sendText(resultString);

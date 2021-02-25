@@ -14,8 +14,6 @@ $(function() {
       data: d => {
         const level = Array.from($('input[name=level]:checked'), x => x.value);
         const type = Array.from($('input[name=type]:checked'), x => x.value)
-        console.log(level);
-        console.log(level ? level : [])
         d.level = level ? level : null,
         d.type = type ? type : [];
         d.start = $('#logStart').val() + ' 00:00:00';
@@ -41,7 +39,7 @@ $(function() {
     }, {
       targets: [ 7, 8 ],
       render: (data, type, row, meta) => {
-        if(data.length > 30) return data.substr(0, 30) + '...';
+        if(data && data.length > 30) return data.substr(0, 30) + '...';
         else return data } 
     }]
   });

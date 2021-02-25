@@ -22,7 +22,7 @@ $(function () {
       $('.loading').css('display', 'none');
       $('.container-contact100').css('display', 'block');
       
-      $.ajax('/ajoumeow/Resources/collegeList.json').done(collegeDict => {
+      $.ajax('/ajoumeow/res/collegeList.json').done(collegeDict => {
         let collegeList = '', departmentList = '';
         for (let college in collegeDict) collegeList += `<option value="${college}">${college}</option>`;
         
