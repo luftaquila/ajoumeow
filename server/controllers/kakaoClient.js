@@ -81,7 +81,6 @@ async function kakaoClient() {
             let targetMembers = chat.text.match(/(?<![가-힣])[가-힣]{3}(?![가-힣])/g);
             targetMembers = targetMembers.filter(o => !(new RegExp('사진').test(o)) );
             if(targetCourses && targetMembers) { // if courses and members are detected
-
               // Score table
               let score = { weekday: { solo: 1.5, dual: 1}, weekend: { solo: 2, dual: 1.5} }
             
@@ -89,17 +88,18 @@ async function kakaoClient() {
               let isWeekEnd = targetDate.getDayNum() > 5 ? 'weekend' : 'weekday';
               let isSolo = targetMembers.length == 1 ? 'solo' : 'dual';
 
-              for(let i in targetMembers) { // get member student id with name
-                let res = await postRequest('https://luftaquila.io/ajoumeow/api/getMemberIdByName', { name: targetMembers[i] });
-                let id = JSON.parse(res)[0].ID;
-                if(id > 0) targetMembers[i] = { name: targetMembers[i], id: JSON.parse(res)[0].ID };
-                else if(!id) {
+              // targetMember validation
+              for(let targetMember of targetMembers) { // get member student id with name
+                let result = await util.query(`SELECT name, ID FROM \`namelist_${await util.getSettings('currentSemister')}\` WHERE name LIKE '%${targetMember}%';`);
+                console.log(result);
+                if(result.length == 1) targetMember = { name: targetMember, id: result[0].ID };
+                else if(!result.length) {
                   util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증 실패', 'internal', 0, null, 'ERR_NO_ENTRY_DETECTED'));
-                  return chat.channel.sendTemplate(new nodeKakao.AttachmentTemplate(nodeKakao.ReplyAttachment.fromChat(chat), targetMembers[i] + ' 회원님이 회원 명단에 없어 자동 인증에 실패했습니다.\nERR_NO_ENTRY_DETECTED'));
+                  return chat.channel.sendTemplate(new nodeKakao.AttachmentTemplate(nodeKakao.ReplyAttachment.fromChat(chat), targetMember + ' 회원님이 회원 명단에 없어 자동 인증에 실패했습니다.\nERR_NO_ENTRY_DETECTED'));
                 }
-                else if(id < 0) {
+                else {
                   util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증 실패', 'internal', 0, null, 'ERR_SAME_NAME_EXISTS'));
-                  return chat.channel.sendTemplate(new nodeKakao.AttachmentTemplate(nodeKakao.ReplyAttachment.fromChat(chat), targetMembers[i] + ' 회원님 동명이인이 존재하여 자동 인증이 불가능합니다. 관리자가 직접 인증해 주세요.'));
+                  return chat.channel.sendTemplate(new nodeKakao.AttachmentTemplate(nodeKakao.ReplyAttachment.fromChat(chat), targetMember + ' 회원님 동명이인이 존재하여 자동 인증이 불가능합니다. 관리자가 직접 인증해 주세요.'));
                 }
               }
 
