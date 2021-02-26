@@ -28,7 +28,7 @@ router.post('/login', async (req, res) => {
       }
       else { // if no corresponding user exists
         util.logger(new Log('info', req.remoteIP, req.originalPath, '로그인 요청', req.method, 400, req.body, 'ERR_NOT_REGISTERED'));
-        res.status(404).json(new Response('error', '등록되지 않은 학번입니다.', 'ERR_NOT_REGISTERED'));
+        res.status(400).json(new Response('error', '등록되지 않은 학번입니다.', 'ERR_NOT_REGISTERED'));
       }
     }
     else { // if id field does not exists
