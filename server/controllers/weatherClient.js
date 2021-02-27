@@ -7,10 +7,10 @@ import util from './util/util.js'
 import { Log } from './util/interface.js';
 
 function weatherClient() {
-  const msg = 'Weather crawler is in startup. Waiting for targetted schedule.';
+  const msg = 'Weather crawler is in startup.';
   console.log(msg);
   util.logger(new Log('info', 'weatherClient', 'weatherClient()', '날씨 크롤링 프로그램 시작', 'internal', 0, null, msg));
-  //const weather_schedule = schedule.scheduleJob('*/30 * * * *', async () => { // every 30 minutes
+  const weather_schedule = schedule.scheduleJob('*/30 * * * *', async () => { // every 30 minutes
     const currentWeather = axios.get('https://weather.kweather.co.kr/weather/kweather/get_current_weather/119');
     const currentDust = axios.get('https://weather.kweather.co.kr/finedust/detail/get_current_table_data/4111755000');
     const threeDayWeather = axios.get('https://weather.kweather.co.kr/weather/kweather/get_forecast_halfd/41117550');
@@ -67,7 +67,7 @@ function weatherClient() {
         util.logger(new Log('error', 'weatherClient', 'weather_schedule', '날씨 크롤링 오류', 'internal', -1, null, e.stack));
       }
     });
-  //});
+  });
 }
 
 export default weatherClient
