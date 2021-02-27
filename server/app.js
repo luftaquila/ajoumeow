@@ -10,6 +10,7 @@ import util from './controllers/util/util.js';
 import { Log } from './controllers/util/interface.js';
 
 import startKakaoClient from './controllers/kakaoClient.js';
+import weatherClient from './controllers/weatherClient.js';
 
 const app = express();
 app.use((req, res, next) => { 
@@ -30,3 +31,4 @@ app.listen(5710, function() {
 });
 
 startKakaoClient();
+weatherClient();

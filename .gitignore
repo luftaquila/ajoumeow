@@ -1,9 +1,5 @@
 /res/videos
-/res/weather/icon/
-/res/weather/*.log
-/res/weather/*.json
 
 /server/node_modules/
-/server/logs/
 
 **/.env
