@@ -9,8 +9,10 @@ import users from './api/users.js';
 import util from './controllers/util/util.js';
 import { Log } from './controllers/util/interface.js';
 
-import startKakaoClient from './controllers/kakaoClient.js';
+import client from './config/node-kakao'
+import kakaoClient from './controllers/kakaoClient.js';
 import weatherClient from './controllers/weatherClient.js';
+//import dbClient from './controllers/dbClient.js';
 
 const app = express();
 app.use((req, res, next) => { 
@@ -30,5 +32,10 @@ app.listen(5710, function() {
   util.logger(new Log('info', 'LOCALHOST', '/api', '서버 프로그램 시작', 'internal', 0, null, msg));
 });
 
-startKakaoClient();
+client.login(
+  process.env.TalkClientLoginID,
+  process.env.TalkClientLoginPW,
+  true
+).then(kakaoClient);
 weatherClient();
+//dbClient();
