@@ -12,7 +12,7 @@ import { Log } from './controllers/util/interface.js';
 import client from './config/node-kakao'
 import kakaoClient from './controllers/kakaoClient.js';
 import weatherClient from './controllers/weatherClient.js';
-//import dbClient from './controllers/dbClient.js';
+import dbClient from './controllers/dbClient.js';
 
 const app = express();
 app.use((req, res, next) => { 
@@ -38,4 +38,4 @@ client.login(
   true
 ).then(kakaoClient);
 weatherClient();
-//dbClient();
+dbClient();
