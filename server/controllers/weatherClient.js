@@ -1,11 +1,15 @@
-import fs from 'fs/promises'
 import axios from 'axios'
 import schedule from 'node-schedule'
 import dateformat from 'dateformat'
+import { promises as fs } from 'fs'
+
 import util from './util/util.js'
+import { Log } from './util/interface.js';
 
 function weatherClient() {
-  util.logger(new Log('info', 'weatherClient', 'weatherClient()', '날씨 크롤링 프로그램 시작', 'internal', 0, null, null));
+  const msg = 'Weather crawler is in startup. Waiting for targetted schedule';
+  console.log(msg);
+  util.logger(new Log('info', 'weatherClient', 'weatherClient()', '날씨 크롤링 프로그램 시작', 'internal', 0, null, msg));
   const weather_schedule = schedule.scheduleJob('*/30 * * * *', async () => { // every 30 minutes
     try {
       const currentWeather = axios.get('https://weather.kweather.co.kr/weather/kweather/get_current_weather/119');
