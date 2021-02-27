@@ -11,14 +11,6 @@ import { Log } from './util/interface.js';
 dotenv.config();
 Date.prototype.getDayNum = function() { return this.getDay() ? this.getDay() : 7; }
 
-function startKakaoClient() {
-  client.login(
-    process.env.TalkClientLoginID,
-    process.env.TalkClientLoginPW,
-    true
-  ).then(kakaoClient);
-}
-
 async function kakaoClient() {
   const msg = 'Kakao login successful. Client program is in startup.';
   console.log(msg);
@@ -47,8 +39,8 @@ async function kakaoClient() {
         resultString = resultString.slice(0, -2) + '코스에 신청자가 없습니다! 도와주세요ㅠㅠ\n\n';
       }
     
-      const wth = JSON.parse(fs.readFileSync('../res/weather/weather.json').toString()).current_weather
-      resultString += `오늘 아주대는 ${wth.stat}, ${wth.temp}℃에요!\n미세먼지는 ${wth.dust.pm10}㎍/㎥, 초미세먼지는 ${wth.dust.pm25}㎍/㎥입니다.`;
+      const wth = JSON.parse(fs.readFileSync('../res/weather.json').toString()).current;
+      resultString += `오늘 아주대는 ${wth.weather}, ${wth.temp}℃에요. 체감온도는 ${wth.tempSense}℃입니다!\n미세먼지는 ${wth.dust.pm10}㎍/㎥, 초미세먼지는 ${wth.dust.pm25}㎍/㎥입니다.`;
     
       await target.sendText(resultString);
       util.logger(new Log('info', 'kakaoClient', 'alert_schedule', '카톡 급식 알림 전송', 'internal', 0, null, resultString));
@@ -223,4 +215,4 @@ async function kakaoClient() {
   }
 }
 
-export default startKakaoClient
+export default kakaoClient

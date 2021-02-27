@@ -58,27 +58,18 @@ function eventListener() {
     let datestring = new Date($(this).attr('data-date')).format('m월 d일 ddd요일');
     if(weather) {
       if($(this).hasClass('calendar-table__today')) {
-        let pm10 = weather.current_weather.dust.pm10, pm25 = weather.current_weather.dust.pm25;
+        let pm10 = weather.current.dust.pm10, pm25 = weather.current.dust.pm25;
         let pm10color = pm10 > 30 ? pm10 > 80 ? pm10 > 150 ? '#ff5959' : '#fd9b5a' : '#00c73c' : '#32a1ff';
         let pm25color = pm25 > 15 ? pm25 > 35 ? pm25 > 75 ? '#ff5959' : '#fd9b5a' : '#00c73c' : '#32a1ff';
-        datestring += '&nbsp;&nbsp;&nbsp;<span id="weatherstat" style="font-weight: normal">' + weather.current_weather.temp + '℃ ' + weather.current_weather.stat +
-          '</span>&nbsp;<img src="/ajoumeow/res/weather/icon/now.png" style="width: 1rem; height: 1rem;">&nbsp;&nbsp;&nbsp;' +
-          '<div style="line-height: 0.9rem; vertical-align: middle; display: inline-block; font-weight: normal; font-size: 0.7rem">pm10 : <span style="color: ' + pm10color + '">' + pm10 + '</span>㎍/㎥<br>pm2.5: <span style="color: ' + pm25color + '">' + pm25 + '</span>㎍/㎥</div>';
+        datestring += `&ensp;<span id="weatherstat" style="font-weight: normal">${weather.current.temp}℃ ${weather.current.weather}</span>&nbsp;<img src="/ajoumeow/res/image/weather/icon${weather.current.icon}.png" style="width: 1rem; height: 1rem;">&ensp;<div style="line-height: 0.9rem; vertical-align: middle; display: inline-block; font-weight: normal; font-size: 0.7rem">pm10 : <span style="color: ${pm10color}">${pm10}</span>㎍/㎥<br>pm2.5: <span style="color: ${pm25color}">${pm25}</span>㎍/㎥</div>`;
       }
       else {
-        let tgt = weather.weather_forecast.filter(o => o.day == new Date($(this).attr('data-date')).format('mm-dd'));
-        if(tgt[0]) datestring += '&nbsp;&nbsp;&nbsp;<span id="weatherstat" style="font-weight: normal">' + tgt[0].temp + ' ' + tgt[0].stat + '</span>&nbsp;<img src="/ajoumeow/res/weather/icon/' + tgt[0].day + '.png" style="width: 1rem; height: 1rem;">';
+        let tgt = weather.forecast.find(o => o.date == new Date($(this).attr('data-date')).format('yyyy-mm-dd'));
+        if(tgt) datestring += `&ensp;<span id="weatherstat" style="font-weight: normal">${tgt.temp}℃ ${tgt.weather}</span>&nbsp;<img src="/ajoumeow/res/image/weather/icon${tgt.icon}.png" style="width: 1rem; height: 1rem;">`;
       }
     }    
     $('#dateInfo h4').html(datestring);
-    $('#weatherstat').click(function() {
-      $.ajax({
-        url: '/ajoumeow/res/weather/log.log',
-        cache: false,
-        success: function(res) { alert(res) }
-      });
-    });
-
+    
     let content = $(this).attr('data-content') ? JSON.parse($(this).attr('data-content')) : [], contentHTML = "";
     $('#contents').html('');
     if($(this).children('div').css('background-image') === 'none') {
@@ -244,12 +235,8 @@ function dateDataToSvgTranslator(courses, width) {
 
 function weather() {
   $.ajax({
-    url: 'res/weather/weather.json',
-    cache: false,
-    success: function(res) {
-      weather = res;
-      //console.log('Weather Update : ' + new Date(weather.update * 1000).format('yyyy-mm-dd HH:MM:ss'));
-    }
+    url: '/ajoumeow/res/weather.json',
+    success: res => { weather = res; }
   });
 }
 
