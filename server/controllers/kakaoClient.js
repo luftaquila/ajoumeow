@@ -1,6 +1,5 @@
 import fs from 'fs'
 import dotenv from 'dotenv'
-import request from 'axios'
 import envfile from 'envfile'
 import schedule from 'node-schedule'
 import dateformat from 'dateformat'
@@ -25,7 +24,7 @@ async function kakaoClient() {
   console.log(msg);
   util.logger(new Log('info', 'kakaoClient', 'kakaoClient()', '카톡 클라이언트 프로그램 시작', 'internal', 0, null, msg));
 
-  const alert_schedule = schedule.scheduleJob('0 0 15 * * *', async () => { // 3pm at every day
+  const alert_schedule = schedule.scheduleJob('0 15 * * *', async () => { // 3pm at every day
     try {
       const target = client.channelManager.map.get(process.env.talkChannelId);
       const result = await util.query("SELECT * FROM record WHERE date BETWEEN '" + dateformat(new Date(), 'yyyy-mm-dd') + "' AND '" + dateformat(new Date(), 'yyyy-mm-dd') + "' ORDER BY date, course, timestamp;");
@@ -91,7 +90,6 @@ async function kakaoClient() {
               // targetMember validation
               for(let targetMember of targetMembers) { // get member student id with name
                 let result = await util.query(`SELECT name, ID FROM \`namelist_${await util.getSettings('currentSemister')}\` WHERE name LIKE '%${targetMember}%';`);
-                console.log(result);
                 if(result.length == 1) targetMember = { name: targetMember, id: result[0].ID };
                 else if(!result.length) {
                   util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증 실패', 'internal', 0, null, 'ERR_NO_ENTRY_DETECTED'));
@@ -208,18 +206,6 @@ async function kakaoClient() {
       }
     }
   });
-  
-  async function postRequest(url, data) {
-    return new Promise(function(resolve, reject) {
-      request.post({
-        url: url,
-        form: data,
-      }, function(err, resp, body) {
-        if (err) reject(err);
-        else resolve(body);
-      });
-    });
-  }
   
   function greetings() {
     /*

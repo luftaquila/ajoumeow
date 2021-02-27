@@ -1,5 +1,6 @@
 import os
 import re
+import sys
 import time
 import json
 import glob
@@ -18,7 +19,8 @@ chrome_options.add_argument('--no-sandbox')
 chrome_options.add_argument('--disable-dev-shm-usage')
 
 def wth():
-  #try:
+  driver = None
+  try:
     print('Executing scheduled task...')
     print('STARTUP: WEATHER_STATUS_CRAWLER\n  ->', str(datetime.now()))
     
@@ -27,7 +29,7 @@ def wth():
     try:
       with open("/home/luftaquila/HDD/ajoumeow/res/weather/weather.json") as f:
         data = json.load(f)
-    except: pass
+    except: sys.exit(0)
     
     print('OK\nLoading driver...', end='')
     driver = webdriver.Chrome(executable_path='/usr/bin/chromedriver', options=chrome_options)
@@ -98,8 +100,6 @@ def wth():
     driver.quit()
     print('OK\n\nTERMINATED: WEATHER_STATUS_CRAWLER\n  ->', datetime.now())
     
-    #threading.Timer(3600, wth).start()
-    
-  #except: pass
+  except: driver.quit()
   
 wth()
