@@ -3,6 +3,7 @@ import dotenv from 'dotenv'
 import envfile from 'envfile'
 import schedule from 'node-schedule'
 import dateformat from 'dateformat'
+import { AttachmentTemplate, ReplyAttachment } from 'node-kakao'
 
 import client from '../config/node-kakao'
 import util from './util/util.js'
@@ -85,11 +86,11 @@ async function kakaoClient() {
                 if(result.length == 1) targetMember = { name: targetMember, id: result[0].ID };
                 else if(!result.length) {
                   util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증 실패', 'internal', 0, null, 'ERR_NO_ENTRY_DETECTED'));
-                  return chat.channel.sendTemplate(new nodeKakao.AttachmentTemplate(nodeKakao.ReplyAttachment.fromChat(chat), targetMember + ' 회원님이 회원 명단에 없어 자동 인증에 실패했습니다.\nERR_NO_ENTRY_DETECTED'));
+                  return chat.channel.sendTemplate(new AttachmentTemplate(ReplyAttachment.fromChat(chat), targetMember + ' 회원님이 회원 명단에 없어 자동 인증에 실패했습니다.\nERR_NO_ENTRY_DETECTED'));
                 }
                 else {
                   util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증 실패', 'internal', 0, null, 'ERR_SAME_NAME_EXISTS'));
-                  return chat.channel.sendTemplate(new nodeKakao.AttachmentTemplate(nodeKakao.ReplyAttachment.fromChat(chat), targetMember + ' 회원님 동명이인이 존재하여 자동 인증이 불가능합니다. 관리자가 직접 인증해 주세요.'));
+                  return chat.channel.sendTemplate(new AttachmentTemplate(ReplyAttachment.fromChat(chat), targetMember + ' 회원님 동명이인이 존재하여 자동 인증이 불가능합니다. 관리자가 직접 인증해 주세요.'));
                 }
               }
 
@@ -112,7 +113,7 @@ async function kakaoClient() {
                 let att = await util.query(`INSERT INTO verify(ID, date, name, course, score) VALUES(${obj.ID}, '${obj.date}', '${obj.name}', '${obj.course}', '${obj.score}');`);
                 resultString += '\n' + dateformat(payload[0].date, 'yyyy년 m월 d일 ') + obj.name + '님 ' + obj.course + '(' + obj.score + '점)';
               }
-              chat.channel.sendTemplate(new nodeKakao.AttachmentTemplate(nodeKakao.ReplyAttachment.fromChat(chat), resultString));
+              chat.channel.sendTemplate(new AttachmentTemplate(ReplyAttachment.fromChat(chat), resultString));
               util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증', 'internal', 0, null, resultString));
             }
           }
