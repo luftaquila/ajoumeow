@@ -60,16 +60,22 @@ router.post('/id', async (req, res) => {
     if(namelists.indexOf(`namelist_${await util.getSettings('currentSemister')}`) != -1)
       currentNamelist = namelists.splice(namelists.indexOf(`namelist_${await util.getSettings('currentSemister')}`), 1);
 
+    let flag = false;
     for(let namelist of namelists) {
       const test = await util.query(`SELECT ID FROM \`${namelist}\` WHERE ID=${req.body['학번']};`);
-      if(req.body.new == 'true' && test.length) {
-        util.logger(new Log('info', req.remoteIP, req.originalPath, '회원 등록', req.method, 400, req.body, 'ERR_REGISTERED_BEFORE'));
-        return res.status(400).json(new Response('error', '지난 학기에 가입한 적이 있습니다.<br>기존 회원으로 등록해 주세요.', 'ERR_REGISTERED_BEFORE'));
+      if(test.length) {
+        flag = true;
+        break;
       }
-      else if(req.body.new == 'false' && !test.length) {
-        util.logger(new Log('info', req.remoteIP, req.originalPath, '회원 등록', req.method, 400, req.body, 'ERR_NEVER_REGISTERED'));
-        return res.status(400).json(new Response('error', '기존 회원이 아닙니다.<br>신입 회원으로 등록해 주세요.', 'ERR_NEVER_REGISTERED'));
-      }
+    }
+    
+    if(req.body.new == 'true' && flag) {
+      util.logger(new Log('info', req.remoteIP, req.originalPath, '회원 등록', req.method, 400, req.body, 'ERR_REGISTERED_BEFORE'));
+      return res.status(400).json(new Response('error', '지난 학기에 가입한 적이 있습니다.<br>기존 회원으로 등록해 주세요.', 'ERR_REGISTERED_BEFORE'));
+    }
+    else if(req.body.new == 'false' && !flag) {
+      util.logger(new Log('info', req.remoteIP, req.originalPath, '회원 등록', req.method, 400, req.body, 'ERR_NEVER_REGISTERED'));
+      return res.status(400).json(new Response('error', '기존 회원이 아닙니다.<br>신입 회원으로 등록해 주세요.', 'ERR_NEVER_REGISTERED'));
     }
 
     // check if applied again
