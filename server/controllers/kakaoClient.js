@@ -71,7 +71,7 @@ async function kakaoClient() {
             // detect target courses and members
             let targetCourses = chat.text.match(/\b(?=\d*[코스])\w+\b/g);
             let targetMembers = chat.text.match(/(?<![가-힣])[가-힣]{3}(?![가-힣])/g);
-            targetMembers = targetMembers.filter(o => !(new RegExp('사진').test(o)) );
+            targetMembers = targetMembers.filter(o => !(new RegExp('사진').test(o)) && !(new RegExp('요일').test(o)) );
             if(targetCourses && targetMembers) { // if courses and members are detected
               // Score table
               let score = { weekday: { solo: 1.5, dual: 1}, weekend: { solo: 2, dual: 1.5} }
@@ -86,11 +86,11 @@ async function kakaoClient() {
                 if(result.length == 1) targetMember = { name: targetMember, id: result[0].ID };
                 else if(!result.length) {
                   util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증 실패', 'internal', 0, null, 'ERR_NO_ENTRY_DETECTED'));
-                  return chat.channel.sendTemplate(new AttachmentTemplate(ReplyAttachment.fromChat(chat), targetMember + ' 회원님이 회원 명단에 없어 자동 인증에 실패했습니다.\nERR_NO_ENTRY_DETECTED'));
+                  return chat.channel.sendTemplate(new AttachmentTemplate(ReplyAttachment.fromChat(chat), targetMember + ' 회원님이 회원 명단에 없어 자동 인증에 실패했습니다.'));
                 }
                 else {
                   util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증 실패', 'internal', 0, null, 'ERR_SAME_NAME_EXISTS'));
-                  return chat.channel.sendTemplate(new AttachmentTemplate(ReplyAttachment.fromChat(chat), targetMember + ' 회원님 동명이인이 존재하여 자동 인증이 불가능합니다. 관리자가 직접 인증해 주세요.'));
+                  return chat.channel.sendTemplate(new AttachmentTemplate(ReplyAttachment.fromChat(chat), targetMember + ' 회원님 동명이인이 존재해 자동 인증이 불가능합니다. 관리자가 직접 인증해 주세요.'));
                 }
               }
 
