@@ -56,28 +56,23 @@ router.delete('/', util.isLogin, async (req, res) => {
 router.get('/statistics', async (req, res) => {
   try {
     let data = [], verify = null;
-    let namelist = await util.query(`SELECT * FROM \`namelist_${await util.getSettings('currentSemister')}\`;`);
     switch(req.query.type) {
       case 'summary':
         verify = await util.query(`SELECT * FROM verify WHERE REPLACE(SUBSTRING_INDEX(date, '-', 2), '-', '')='${dateformat(new Date(), 'yyyymm')}';`);
         for(let obj of verify) {
           let person = data.find(o => o.ID == obj.ID);
-          if(!person) {
-            let member = namelist.find(o => o.ID == obj.ID);
-            if(member) data.push({ ID: member.ID });
-          }
+          if(!person) data.push({ ID: obj.ID });
         }
         const payload = {
           time: verify.length,
-          people: data.length,
-          total: namelist.length
+          people: data.length
         };
         
         util.logger(new Log('info', req.remoteIP, req.originalPath, '급식 통계 요청', req.method, 200, req.query, payload));
         return res.status(200).json(new Response('success', null, payload));
         
       case 'this_feeding':
-        verify = await util.query(`SELECT * FROM verify WHERE REPLACE(SUBSTRING_INDEX(date, '-', 2), '-', '')='${dateformat(new Date(), 'yyyymm')}';`);
+        verify = await util.query(`SELECT * FROM verify WHERE REPLACE(SUBSTRING_INDEX(date, '-', 2), '-', '')='${dateformat(new Date(), 'yyyymm')}' AND course REGEXP '[0-9]코스';`);
         break;
         
       case 'this_total':
@@ -85,7 +80,7 @@ router.get('/statistics', async (req, res) => {
         break;
         
       case 'prev_feeding':
-        verify = await util.query(`SELECT * FROM verify WHERE REPLACE(SUBSTRING_INDEX(date, '-', 2), '-', '')='${dateformat(new Date(new Date().setDate(0)), 'yyyymm')}';`);
+        verify = await util.query(`SELECT * FROM verify WHERE REPLACE(SUBSTRING_INDEX(date, '-', 2), '-', '')='${dateformat(new Date(new Date().setDate(0)), 'yyyymm')}' AND course REGEXP '[0-9]코스';`);
         break;
         
       case 'total_total':
@@ -103,19 +98,14 @@ router.get('/statistics', async (req, res) => {
     }
     
     for(let obj of verify) {
-      if(obj.course.includes('코스')) {
-        let person = data.find(o => o.ID == obj.ID);
-        if(person) person.score = person.score + Number(obj.score);
-        else {
-          let member = namelist.find(o => o.ID == obj.ID);
-          if(member) {
-            data.push({
-              ID: member.ID,
-              name: member.name,
-              score: Number(obj.score)
-            });
-          }
-        }
+      let person = data.find(o => o.ID == obj.ID);
+      if(person) person.score += Number(obj.score);
+      else {
+        data.push({
+          ID: obj.ID,
+          name: obj.name,
+          score: Number(obj.score)
+        });
       }
     }
     util.logger(new Log('info', req.remoteIP, req.originalPath, '급식 통계 요청', req.method, 200, req.query, data));

@@ -25,10 +25,8 @@ $(function() {
     url: '/ajoumeow/api/record/statistics',
     data: { type: 'summary' },
     success: res => {
-      let percent = (res.data.people / res.data.total * 100).toFixed(1) + '%';
       $('#activityTime').text(res.data.time + '시간');
-      $('#activeMember').text(res.data.people + '명 / ' + percent);
-      $('#activePercentGraph').css('width', percent);
+      $('#activeMember').text(res.data.people + '명');
     },
     error: err => alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
   });
