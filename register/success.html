@@ -1,11 +1,16 @@
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=0.5">
-<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet" />
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.5">
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet" />
 
 <style>
-  body { text-align: center; padding: 80 150; }
-  h1 { font-size: 50px; }
-  body { font: 20px "Nanum Gothic", sans-serif; color: #333; }
+  body {
+    text-align: center;
+    padding: 1rem;
+    font: 20px "Nanum Gothic", sans-serif;
+    color: #333;
+  }
     
 .checkmark {
   margin: auto;
@@ -56,14 +61,14 @@
   }
 }
 </style>
-<div>
-    <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/><path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>
-    <h1>가입 신청되었습니다!</h1>
-    <span>모집이 마감되면 임원진이 연락을 드립니다.<br>그때까지 조금만 기다려 주세요!</span>
-    <image id='randCatGif' src='good.png' style='width:90%; margin-top: 1rem;' />
-</div>
-
-<script>
-  var randNum = Math.floor(Math.random() * 404) + 1;
-  //document.getElementById('randCatGif').src = 'https://rand.cat/gifs/cat-' + randNum + '.gif';
-</script>
+  </head>
+  <body>
+    <div style='width: 100%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);'>
+      <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/><path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>
+      <h1>가입 신청되었습니다!</h1>
+      <span>모집이 마감되면 임원진이 연락을 드립니다.<br>
+        그때까지 조금만 기다려 주세요!</span><br><br><br>
+      <image id='randCatGif' src='good.png' style='width:65%; margin-top: 1rem;' />
+    </div>
+  </body>
+</html>
