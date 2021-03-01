@@ -374,26 +374,6 @@ textarea.input100 {
 /*------------------------------------------------------------------
 [ Responsive ]*/
 
-@media (max-width: 992px) {
-  .contact100-form {
-    width: 100%;
-  }
-
-  .contact100-more {
-    width: 50%;
-  }
-}
-
-@media (max-width: 768px) {
-  .contact100-form {
-    width: 100%;
-  }
-
-  .contact100-more {
-    display: none;
-  }
-}
-
 @media (max-width: 576px) {
   .contact100-form {
     padding: 110px 15px 55px 15px;

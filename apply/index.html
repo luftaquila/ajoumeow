@@ -38,7 +38,7 @@
       <img src='images/loading.gif' style='width: 90%;'>
     </div>
     <div id='asktype' style='display: none;'>
-      <div style='margin-top: 50%; height: 20%; text-align: center;'>
+      <div style='width: 100%; text-align: center; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);'>
         <span style='color: #000; font-size: 1.2rem'>빨간 회원 줄까... 파란 회원 줄까?</span><br><br>
         <div style='display: flex; color: #fff; align-items: center; justify-content: center;'>
           <a id='_new' class='ask btn red'>신입 회원</a>
@@ -48,7 +48,7 @@
     </div>
     <div id='new' class="container-contact100" style='display: none;'>
       <div class="wrap-contact100">
-        <form class="contact100-form validate-form type_new">
+        <form class="contact100-form validate-form type_new" style='width: 100%; max-width: 560px; margin: 0 auto;'>
           <span class="contact100-form-title">
           <span class="semister"></span>학기 미유미유 신입집사 등록
           </span>
@@ -97,6 +97,7 @@
           </div>
           <div class="wrap-input100 validate-input" data-validate = "동의하지 않으면 회원 등록이 불가합니다ㅠ">
             <label class="label-input100" for="rule">동아리 회칙</label>
+            <!-- 회칙 시작 -->
             <div class='input not' style="height: 200px; font-size: 0.7rem; overflow-y: scroll; text-align: left; padding: 0 2rem; -webkit-scrollbar ">
               <br>
               <h3>제 1 장 총 칙</h3>
@@ -188,6 +189,7 @@
               + 병원 연락처 : 이지훈 동물 병원<br>
               + 사료 지원 연락처 : 이미선 교수님 010-2078-7644<br>
             </div>
+            <!-- 회칙 끝 -->
             <br>
             <span class="focus-input100"></span>
             <input id="rule" class="input100" type="checkbox" name="rule" style='margin: 0 auto; width: 2rem; height: 2rem;'>
@@ -211,12 +213,11 @@
             </button>
           </div>
         </form>
-        </div>
       </div>
     </div>
     <div id='old' class="container-contact100" style='display: none;'>
       <div class="wrap-contact100">
-        <form class="contact100-form validate-form type_old">
+        <form class="contact100-form validate-form type_old" style='width: 100%; max-width: 560px; margin: 0 auto;'>
           <span class="contact100-form-title">
           <span class="semister"></span>학기 미유미유 고인물집사 등록
           </span>
