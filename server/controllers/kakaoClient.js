@@ -1,6 +1,6 @@
 import fs from 'fs'
 import dotenv from 'dotenv'
-import envfile from 'envfile'
+import { parse, stringify } from 'envfile'
 import schedule from 'node-schedule'
 import dateformat from 'dateformat'
 import { AttachmentTemplate, ReplyAttachment } from 'node-kakao'
@@ -140,27 +140,27 @@ async function kakaoClient() {
         if(channelName.includes('미유미유') && channelName.includes('인증')) {
           process.env.verifyChannelId = channelId;
         
-          let envFile = envfile.parse(fs.readFileSync('./.env'));
+          let envFile = parse(fs.readFileSync('../.env'));
           envFile.verifyChannelId = channelId;
-          fs.writeFileSync('./.env', envfile.stringify(envFile));
+          fs.writeFileSync('./.env', stringify(envFile));
           util.logger(new Log('info', 'kakaoClient', 'self user_join: verify', '카톡 인증방 초대 추적', 'internal', 0, null, channelId));
         }
         
         else if(channelName.includes('미유미유') && channelName.includes('공지')) {
           process.env.noticeChannelId = channelId;
         
-          let envFile = envfile.parse(fs.readFileSync('./.env'));
+          let envFile = parse(fs.readFileSync('../.env'));
           envFile.noticeChannelId = channelId;
-          fs.writeFileSync('./.env', envfile.stringify(envFile));
+          fs.writeFileSync('./.env', stringify(envFile));
           util.logger(new Log('info', 'kakaoClient', 'self user_join: notice', '카톡 공지방 초대 추적', 'internal', 0, null, channelId));
         }
         
         else if(channelName.includes('미유미유') && channelName.includes('단톡')) {
           process.env.talkChannelId = channelId;
         
-          let envFile = envfile.parse(fs.readFileSync('./.env'));
-          envFile.talkChannelId = channel
-          fs.writeFileSync('./.env', envfile.stringify(envFile));
+          let envFile = parse(fs.readFileSync('../.env'));
+          envFile.talkChannelId = channelId;
+          fs.writeFileSync('./.env', stringify(envFile));
           util.logger(new Log('info', 'kakaoClient', 'self user_join: common', '카톡 단톡방 초대 추적', 'internal', 0, null, channelId));
         }
       }
