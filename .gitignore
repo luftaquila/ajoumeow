@@ -1,5 +1,5 @@
 /res/videos
-
+/res/weather.json
 /server/node_modules/
 
-**/.env
+**/*.env
