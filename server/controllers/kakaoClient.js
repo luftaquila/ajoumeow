@@ -54,7 +54,7 @@ async function kakaoClient() {
   client.on('message', async chat => {
     try {
       chat.markChatRead(); // Read incoming chat
-      if(chat.channel.id == process.env.verifyChannelId) {
+      if(chat.channel.id == process.env.testChannel) {//process.env.verifyChannelId) {
         // Only handle message with keywords
         if(chat.text.includes('인증') && chat.text.includes('코스') && ((chat.text.includes('월') && chat.text.includes('일')) || chat.text.includes('/'))) {
           // Recognizable datestring: m월d일, m월 d일, m/d
@@ -67,6 +67,12 @@ async function kakaoClient() {
             const dateList = [new Date(currentYear, Number(targetMonth) - 1, Number(targetDay)), new Date(Number(currentYear) - 1, Number(targetMonth) - 1, Number(targetDay)), new Date(Number(currentYear) + 1, Number(targetMonth) - 1, Number(targetDay))]
             dateList.sort((a, b) => { return Math.abs(current - a) - Math.abs(current - b); });
             targetDate = dateList[0]; // get nearest target date
+            
+            // targetDate validation
+            if(targetDate.getTime() > new Date().setHours(0, 0, 0, 0)) {
+              util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증 실패', 'internal', 0, null, 'ERR_FUTURE_TARGET_DATE'));
+              return chat.channel.sendTemplate(new AttachmentTemplate(ReplyAttachment.fromChat(chat), `${dateformat(targetDate, 'yyyy년 m월 d일')}은 아직 오지 않은 미래입니다. 혹시 시간여행자?!`));
+            }
 
             // detect target courses and members
             let targetCourses = chat.text.match(/\b(?=\d*[코스])\w+\b/g);
@@ -81,19 +87,19 @@ async function kakaoClient() {
               let isSolo = targetMembers.length == 1 ? 'solo' : 'dual';
 
               // targetMember validation
-              for(let targetMember of targetMembers) { // get member student id with name
-                let result = await util.query(`SELECT name, ID FROM \`namelist_${await util.getSettings('currentSemister')}\` WHERE name LIKE '%${targetMember}%';`);
-                if(result.length == 1) targetMember = { name: targetMember, id: result[0].ID };
+              for(let i in targetMembers) { // get member student id with name
+                let result = await util.query(`SELECT name, ID FROM \`namelist_${await util.getSettings('currentSemister')}\` WHERE name LIKE '%${targetMembers[i]}%';`);
+                if(result.length == 1) targetMembers[i] = { name: targetMembers[i], id: result[0].ID };
                 else if(!result.length) {
                   util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증 실패', 'internal', 0, null, 'ERR_NO_ENTRY_DETECTED'));
-                  return chat.channel.sendTemplate(new AttachmentTemplate(ReplyAttachment.fromChat(chat), targetMember + ' 회원님이 회원 명단에 없어 자동 인증에 실패했습니다.'));
+                  return chat.channel.sendTemplate(new AttachmentTemplate(ReplyAttachment.fromChat(chat), targetMembers[i] + ' 회원님이 회원 명단에 없어 자동 인증에 실패했습니다.'));
                 }
                 else {
                   util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증 실패', 'internal', 0, null, 'ERR_SAME_NAME_EXISTS'));
-                  return chat.channel.sendTemplate(new AttachmentTemplate(ReplyAttachment.fromChat(chat), targetMember + ' 회원님 동명이인이 존재해 자동 인증이 불가능합니다. 관리자가 직접 인증해 주세요.'));
+                  return chat.channel.sendTemplate(new AttachmentTemplate(ReplyAttachment.fromChat(chat), targetMembers[i] + ' 회원님 동명이인이 존재해 자동 인증이 불가능합니다. 관리자가 직접 인증해 주세요.'));
                 }
               }
-
+              
               // writing payload
               let payload = [];
               for(let course of targetCourses) { 
@@ -138,27 +144,30 @@ async function kakaoClient() {
         channelId = channelId.toString();
       
         if(channelName.includes('미유미유') && channelName.includes('인증')) {
+          await client.channelManager.map.get(process.env.verifyChannelId).leave();
           process.env.verifyChannelId = channelId;
         
-          let envFile = parse(fs.readFileSync('../.env'));
+          let envFile = parse(fs.readFileSync('./.env'));
           envFile.verifyChannelId = channelId;
           fs.writeFileSync('./.env', stringify(envFile));
           util.logger(new Log('info', 'kakaoClient', 'self user_join: verify', '카톡 인증방 초대 추적', 'internal', 0, null, channelId));
         }
         
         else if(channelName.includes('미유미유') && channelName.includes('공지')) {
+          await client.channelManager.map.get(process.env.noticeChannelId).leave();
           process.env.noticeChannelId = channelId;
         
-          let envFile = parse(fs.readFileSync('../.env'));
+          let envFile = parse(fs.readFileSync('./.env'));
           envFile.noticeChannelId = channelId;
           fs.writeFileSync('./.env', stringify(envFile));
           util.logger(new Log('info', 'kakaoClient', 'self user_join: notice', '카톡 공지방 초대 추적', 'internal', 0, null, channelId));
         }
         
         else if(channelName.includes('미유미유') && channelName.includes('단톡')) {
+          await client.channelManager.map.get(process.env.talkChannelId).leave();
           process.env.talkChannelId = channelId;
         
-          let envFile = parse(fs.readFileSync('../.env'));
+          let envFile = parse(fs.readFileSync('./.env'));
           envFile.talkChannelId = channelId;
           fs.writeFileSync('./.env', stringify(envFile));
           util.logger(new Log('info', 'kakaoClient', 'self user_join: common', '카톡 단톡방 초대 추적', 'internal', 0, null, channelId));
@@ -166,36 +175,6 @@ async function kakaoClient() {
       }
       catch(e) {
         util.logger(new Log('error', 'kakaoClient', 'self user_join', '카톡 채팅방 초대 추적 오류', 'internal', -1, null, e.stack));
-      }
-    }
-    
-    else { // if others invited to chatroom
-      try {
-        // ignore if multiple users invited during under 5s term.
-        if(!global.userJoinTime) global.userJoinTime = Number(new Date());
-        else if((Number(new Date()) - global.userJoinTime) < 5000) {
-          util.logger(new Log('info', 'kakaoClient', 'user_join', '카톡 채팅방 초대 검출 시간 제한', 'internal', 0, null, null));
-          return (global.userJoinTime = Number(new Date()));
-        }
-
-        // send greeting or notices
-        if(channelId == process.env.verifyChannelId) {
-          channel.sendText('미유미유 급식 인증방입니다! 급식 인증 외 채팅은 자제해 주세요!');
-          util.logger(new Log('info', 'kakaoClient', 'user_join', '카톡 인증방 초대 검출', 'internal', 0, null, null));
-        }
-        
-        else if(channelId == process.env.noticeChannelId) {
-          util.logger(new Log('info', 'kakaoClient', 'user_join', '카톡 공지방 초대 검출', 'internal', 0, null, null));
-          
-        }
-        
-        else if(channelId == process.env.talkChannelId) {
-          channel.sendText('안녕하세요! 미유미유 단톡방입니다!!');
-          util.logger(new Log('info', 'kakaoClient', 'user_join', '카톡 단톡방 초대 검출', 'internal', 0, null, null));
-        }
-      }
-      catch(e) {
-        util.logger(new Log('error', 'kakaoClient', 'user_join', '카톡 채팅방 초대 검출 오류', 'internal', -1, null, e.stack));
       }
     }
   });
