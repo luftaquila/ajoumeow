@@ -54,7 +54,7 @@ async function kakaoClient() {
   client.on('message', async chat => {
     try {
       chat.markChatRead(); // Read incoming chat
-      if(chat.channel.id == process.env.testChannel) {//process.env.verifyChannelId) {
+      if(chat.channel.id == process.env.verifyChannelId) {
         // Only handle message with keywords
         if(chat.text.includes('인증') && chat.text.includes('코스') && ((chat.text.includes('월') && chat.text.includes('일')) || chat.text.includes('/'))) {
           // Recognizable datestring: m월d일, m월 d일, m/d
@@ -114,7 +114,7 @@ async function kakaoClient() {
               
               // add verify data to DB
               let resultString = greetings();
-              resultString += '시스템에 급식 활동을 등록했습니다.';
+              resultString += '급식 활동을 등록했습니다.';
               for(let obj of payload) {
                 let att = await util.query(`INSERT INTO verify(ID, date, name, course, score) VALUES(${obj.ID}, '${obj.date}', '${obj.name}', '${obj.course}', '${obj.score}');`);
                 resultString += '\n' + dateformat(payload[0].date, 'yyyy년 m월 d일 ') + obj.name + '님 ' + obj.course + '(' + obj.score + '점)';
