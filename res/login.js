@@ -108,6 +108,21 @@ function loginProcess(res) {
   $('#loginForm').css('display', 'none');
 
   Cookies.set('currentSemister', res.data.semister, { expires : 365 });
+  
+  // Load notice
+  $.ajax({
+    url: "api/settings/notice",
+    cached: false,
+    success: function(res) {
+      const notice = res.data.split('$');
+      $('#notice_content').html(notice[1].replace(/\n/g, '<br>'));
+      if(user && Cookies.get('versionInfo') != notice[0]) {
+        Cookies.set('versionInfo', notice[0], {expires : 7});
+        MicroModal.show('notice_modal');
+      }
+    },
+    error: e => toastr["error"](`${e.responseJSON.msg}<br>${e.responseJSON.data}`)
+  });
 }
 
 toastr.options = {
