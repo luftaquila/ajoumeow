@@ -3,7 +3,9 @@ import dotenv from 'dotenv'
 import { parse, stringify } from 'envfile'
 import schedule from 'node-schedule'
 import dateformat from 'dateformat'
-import { AttachmentTemplate, ReplyAttachment } from 'node-kakao'
+import { AttachmentTemplate, ReplyAttachment, ChatType, Long } from 'node-kakao'
+import imghash from 'imghash'
+import axios from 'axios'
 
 import client from '../config/node-kakao'
 import util from './util/util.js'
@@ -54,7 +56,22 @@ async function kakaoClient() {
   client.on('message', async chat => {
     try {
       chat.markChatRead(); // Read incoming chat
-      if(chat.channel.id == process.env.verifyChannelId) {
+      if(chat.channel.id == process.env.verifyChannelId || chat.channel.id == process.env.testChannelID) {
+        // add image to DB
+        for(let att of chat.attachmentList) {
+          if(att.MediaType == 'image/jpg' || att.MediaType == 'image/png') {
+            let buffer = await axios.get(att.ImageURL, { responseType: 'arraybuffer'});
+            buffer = Buffer.from(buffer.data);
+            const phash = await imghash.hash(buffer);
+            const test = await util.query(`SELECT *, BIT_COUNT(imgHash ^ ${`0x${phash}`}) as hd FROM verifyImage HAVING hd < 8 ORDER BY hd ASC;`);
+            if(test.length) {
+              util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '유사 이미지 검출', 'internal', 0, null, 'ERR_SIMILAR_IMAGE_DETECTED'));
+              await chat.channel.sendTemplate(new AttachmentTemplate(new ReplyAttachment(ChatType[test[0].chatType], Long.fromString(test[0].chatLogId), Long.fromString(test[0].chatSenderId), false, '원본 이미지', [], Long.ZERO), `유사한 이미지를 검출했습니다.\n유사도: ${(1 - (test[0].hd / 32)) * 100}%\nlogId: ${test[0].chatLogId}`));
+            }
+            else await util.query(`INSERT INTO verifyImage(chatType, chatLogId, chatSenderId, imgWidth, imgHeight, imgSize, imgHash, imgHashHex) VALUES('${ChatType[chat.Type]}', '${chat.logId}', '${chat.sender.id}', ${att.Width}, ${att.Height}, '${att.Size}', ${`0x${phash}`}, '${phash}');`);
+          }
+        }
+        
         // Only handle message with keywords
         if(chat.text.includes('인증') && chat.text.includes('코스') && ((chat.text.includes('월') && chat.text.includes('일')) || chat.text.includes('/'))) {
           // Recognizable datestring: m월d일, m월 d일, m/d
@@ -116,11 +133,11 @@ async function kakaoClient() {
               let resultString = greetings();
               resultString += '급식 활동을 등록했습니다.';
               for(let obj of payload) {
-                let att = await util.query(`INSERT INTO verify(ID, date, name, course, score) VALUES(${obj.ID}, '${obj.date}', '${obj.name}', '${obj.course}', '${obj.score}');`);
+                if(chat.channel.id == process.env.verifyChannelId) await util.query(`INSERT INTO verify(ID, date, name, course, score) VALUES(${obj.ID}, '${obj.date}', '${obj.name}', '${obj.course}', '${obj.score}');`);
                 resultString += '\n' + dateformat(payload[0].date, 'yyyy년 m월 d일 ') + obj.name + '님 ' + obj.course + '(' + obj.score + '점)';
               }
               chat.channel.sendTemplate(new AttachmentTemplate(ReplyAttachment.fromChat(chat), resultString));
-              util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증', 'internal', 0, null, resultString));
+              if(chat.channel.id == process.env.verifyChannelId) util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증', 'internal', 0, null, resultString));
             }
           }
         }
