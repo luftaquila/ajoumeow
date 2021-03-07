@@ -91,7 +91,7 @@ function logValidator(log) {
   for(let prop of Object.getOwnPropertyNames(log)) {
     if(typeof(log[prop]) == 'object') {
       log[prop] = prettify(log[prop], { min: true });
-      if(log[prop].length > 100) log[prop] = log[prop].substr(0, 100) + '...';
+      if(log[prop].length > 300) log[prop] = log[prop].substr(0, 300) + '...';
     }
   }
   return log;
