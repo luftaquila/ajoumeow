@@ -8,21 +8,6 @@ function init() {
   let indexOfToday = (new Date(new Date().format('yyyy-mm-dd')).getTime() - new Date(getDateFromCalendarStart(0)).getTime()) / (1000 * 60 * 60 * 24);
   let calendar = $('#calendar');
   
-  // Load notice
-  $.ajax({
-    url: "api/settings/notice",
-    cached: false,
-    success: function(res) {
-      const notice = res.data.split('$');
-      $('#notice_content').html(notice[1]);
-      if(user && Cookies.get('versionInfo') != notice[0]) {
-        Cookies.set('versionInfo', notice[0], {expires : 7});
-        MicroModal.show('notice_modal');
-      }
-    },
-    error: e => toastr["error"](`${e.responseJSON.msg}<br>${e.responseJSON.data}`)
-  });
-  
   // Draw calendar
   for(let i = 0; i < 35; i++) {
     if(!(i % 7)) calendar.append('<div class="calendar-table__row"></div>');
