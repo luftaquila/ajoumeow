@@ -8,6 +8,7 @@ $(function() {
     pageLength: 50,
     dom: "ilfptp",
     order: [[ 0, 'desc' ]],
+    search: { regex: true },
     ajax: {
       url: "/ajoumeow/api/record/log",
       beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),

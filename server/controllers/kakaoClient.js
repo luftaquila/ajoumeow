@@ -65,8 +65,10 @@ async function kakaoClient() {
             const phash = await imghash.hash(buffer);
             const test = await util.query(`SELECT *, BIT_COUNT(imgHash ^ ${`0x${phash}`}) as hd FROM verifyImage HAVING hd < 8 ORDER BY hd ASC;`);
             if(test.length) {
-              util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '유사 이미지 검출', 'internal', 0, null, 'ERR_SIMILAR_IMAGE_DETECTED'));
-              await chat.channel.sendTemplate(new AttachmentTemplate(new ReplyAttachment(ChatType[test[0].chatType], Long.fromString(test[0].chatLogId), Long.fromString(test[0].chatSenderId), false, '원본 이미지', [], Long.ZERO), `유사한 이미지를 검출했습니다.\n유사도: ${(1 - (test[0].hd / 32)) * 100}%\nlogId: ${test[0].chatLogId}`));
+              if(test[0].chatLogId != String(chat.logId)) {
+                util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '유사 이미지 검출', 'internal', 0, null, 'ERR_SIMILAR_IMAGE_DETECTED'));
+                await chat.channel.sendTemplate(new AttachmentTemplate(new ReplyAttachment(ChatType[test[0].chatType], Long.fromString(test[0].chatLogId), Long.fromString(test[0].chatSenderId), false, '원본 이미지', [], Long.ZERO), `유사한 이미지를 검출했습니다.\n유사도: ${(1 - (test[0].hd / 32)) * 100}%\nlogId: ${test[0].chatLogId}`));
+              }
             }
             else await util.query(`INSERT INTO verifyImage(chatType, chatLogId, chatSenderId, imgWidth, imgHeight, imgSize, imgHash, imgHashHex) VALUES('${ChatType[chat.Type]}', '${chat.logId}', '${chat.sender.id}', ${att.Width}, ${att.Height}, '${att.Size}', ${`0x${phash}`}, '${phash}');`);
           }
