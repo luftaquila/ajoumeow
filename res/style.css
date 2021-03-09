@@ -145,6 +145,7 @@ h2, h3, div.modal__container {
   opacity: 10;
   height: 100%;
   width: 45%;
+  max-width: 250px;
   position: fixed!important;
   right: 0;
   top: 0;
@@ -170,6 +171,25 @@ h2, h3, div.modal__container {
 @keyframes animateleft {
   from { right: 0; opacity: 1; }
   to { right: -300px; opacity: 0; }
+}
+
+/* Animation */
+.rainbow { animation-duration: 3s; animation-name: rainbow; animation-iteration-count: infinite; }
+
+@keyframes rainbow {
+  from  { color: rgba(255,   0,   0, 0.5); }
+   8.3% { color: rgba(255,   0, 127, 0.5); }
+  16.6% { color: rgba(255,   0, 255, 0.5); }
+    25% { color: rgba(127,   0, 255, 0.5); }
+  33.3% { color: rgba(  0,   0, 255, 0.5); }
+  41.6% { color: rgba(  0, 127, 255, 0.5); }
+    50% { color: rgba(  0, 255, 255, 0.5); }
+  58.3% { color: rgba(  0, 255, 127, 0.5); }
+  66.6% { color: rgba(  0, 255,   0, 0.5); }
+    75% { color: rgba(127, 255,   0, 0.5); }
+  83.3% { color: rgba(255, 255,   0, 0.5); }
+  91.6% { color: rgba(255, 127,   0, 0.5); }
+  to    { color: rgba(255,   0,   0, 0.5); }
 }
 
 
