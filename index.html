@@ -26,26 +26,6 @@
 
   <script src="https://kit.fontawesome.com/291664cdf8.js" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="/res/fontawesome5/css/all.min.css">
-  
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-102734518-4"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'UA-102734518-4');
-  </script>
-  
-  <!-- Naver Analytics -->
-  <script type="text/javascript" src="//wcs.naver.net/wcslog.js"></script>
-  <script type="text/javascript">
-    if(!wcs_add) var wcs_add = {};
-    wcs_add["wa"] = "4bbe7a4f4216fc";
-    if(window.wcs) {
-      wcs_do();
-    }
-  </script>
-  
   <!-- Browser check -->
   <script>
     if(browserVersionCheck().version > 0 && browserVersionCheck().version < 12) alert('인터넷 익스플로러는 지원하지 않는 오래된 브라우저입니다.\n크롬, 파이어폭스, 오페라, 엣지 등 다른 브라우저를 사용하십시오.');
@@ -63,6 +43,25 @@
         info.name = (word == "edge/") ? "Edge" : "IE";
       }
       return info;
+    }
+  </script>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-102734518-4"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-102734518-4');
+  </script>
+  
+  <!-- Naver Analytics -->
+  <script type="text/javascript" src="//wcs.naver.net/wcslog.js"></script>
+  <script type="text/javascript">
+    if(!wcs_add) var wcs_add = {};
+    wcs_add["wa"] = "4bbe7a4f4216fc";
+    if(window.wcs) {
+      wcs_do();
     }
   </script>
 </head>
@@ -114,6 +113,14 @@
       </div>
     </main>
   </div>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  <ins class="adsbygoogle"
+       style="display:block"
+       data-ad-client="ca-pub-7125803081319468"
+       data-ad-slot="2242265519"
+       data-ad-format="horizontal"
+       data-full-width-responsive="true"></ins>
   <div id='sidebar' style='z-index: 20; display: none; position: fixed; top: 0; left: 0; height: 100%; width: 100%;'>
     <div class='sidebar_overlay'>
       <div class='sidebar_container animate-right' style='font-size: 0.8rem; padding: 10; text-align: center;'>
@@ -149,7 +156,6 @@
         </div><br>
         <a onclick='window.location.href = "https://luftaquila.io";' style="color: #222; text-decoration: none; font-size: 0.7rem">©<script>document.write(new Date().getFullYear())</script> LUFT - AQUILA</a><br><br>
         <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fluftaquila.io%2Fajoumeow&count_bg=%2379C83D&title_bg=%23555555&icon=googlefit.svg&icon_color=%23E7E7E7&title=hits&edge_flat=false"/>
-
       </div>
     </div>
   </div>
@@ -217,7 +223,7 @@
     </div>
     <div class="modal micromodal-slide" id="map_modal" aria-hidden="true">
       <div class="modal__overlay" tabindex="-1" data-micromodal-close>
-        <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="map_modal-title" style='max-height: 90%!important; max-width: 96%!important; width: 96%; padding: 15px!important'>
+        <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="map_modal-title" style='max-height: 90%!important; max-width: 500px!important; width: 96%; padding: 15px!important;'>
           <header class="modal__header" style='height: 1.5rem'>
             <h2 class="modal__title" id="map_modal-title">지도</h2>
             <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
@@ -230,7 +236,7 @@
               <i class='fas fa-map-marker' style='color: #FFEB00;'> 2코스</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
               <i class='fas fa-map-marker' style='color: limegreen;'> 3코스</i>
             </div>
-            <div id='map' style='margin-top: 1rem; height: 480px; width: 100%'></div>
+            <div id='map' style='margin-top: 1rem; height: 400px; width: 100%;'></div>
           </main>
         </div>
       </div>

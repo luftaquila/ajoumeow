@@ -31,9 +31,11 @@ router.post('/', util.isLogin, async (req, res) => {
       util.logger(new Log('info', req.remoteIP, req.originalPath, '급식 신청', req.method, 400, req.body, 'ERR_DUP_ENTRY'));
       res.status(400).json(new Response('error', '이미 신청되었습니다.', 'ERR_DUP_ENTRY'));
     }
-    const result = await util.query(`INSERT INTO record(ID, name, date, course) VALUES(${payload.ID}, '${payload.name}', '${payload.date}', '${payload.course}');`);
-    util.logger(new Log('info', req.remoteIP, req.originalPath, '급식 신청', req.method, 201, req.body, result));
-    res.status(201).json(new Response('success', null, result));
+    else {
+      const result = await util.query(`INSERT INTO record(ID, name, date, course) VALUES(${payload.ID}, '${payload.name}', '${payload.date}', '${payload.course}');`);
+      util.logger(new Log('info', req.remoteIP, req.originalPath, '급식 신청', req.method, 201, req.body, result));
+      res.status(201).json(new Response('success', null, result));
+    }
   }
   catch(e) {
     util.logger(new Log('error', req.remoteIP, req.originalPath, '급식 신청 오류', req.method, 500, req.body, e.stack));

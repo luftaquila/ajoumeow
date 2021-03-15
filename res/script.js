@@ -18,11 +18,8 @@ function init() {
       $('.calendar-table__row').last().append('<div class="calendar-table__col' + (i === indexOfToday ? ' calendar-table__today calendar-table__event' : '') + '" data-date="' + thisDate.format('yyyy-mm-dd') + '"><div class="calendar-table__item"><div>' + thisDate.format(i ? (thisDate.getDate() === 1 ? 'm/d' : 'd') : 'm/d') + '</div></div></div>');
   }
   
-  // Load weather data
-  weather();
-  
-  // Load table data
-  load();
+  loadWeather(); // Load weather data
+  autoLogin(); // Proceed login process
 }
 
 function eventListener() {
@@ -167,9 +164,11 @@ function load() {
     error: e => toastr["error"](`${e.responseJSON.msg}<br>${e.responseJSON.data}`)
   });
 }
-      
+
+transmitFlag = false;
 function validator(type, target) {
   if(!user) return toastr['error']('로그인을 해 주세요!');
+  else if(transmitFlag) return toastr['error']('요청이 진행 중입니다.');
   transmitter({
     type: type,
     date: target.date,
@@ -179,6 +178,7 @@ function validator(type, target) {
   });
 }
 function transmitter(data) {
+  transmitFlag = true;
   $.ajax({
     url: 'api/record',
     type: data.type,
@@ -190,7 +190,8 @@ function transmitter(data) {
       name: data.name
     },
     success: load,
-    error: e => toastr["error"](`${e.responseJSON.msg}<br>${e.responseJSON.data}`)
+    error: e => toastr["error"](`${e.responseJSON.msg}<br>${e.responseJSON.data}`),
+    complete: function() { transmitFlag = false; }
   });
 }
 
@@ -220,7 +221,7 @@ function dateDataToSvgTranslator(courses, width) {
   return svgString;
 }
 
-function weather() {
+function loadWeather() {
   $.ajax({
     url: '/ajoumeow/res/weather.json',
     success: res => { weather = res; }

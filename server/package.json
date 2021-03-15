@@ -33,8 +33,8 @@
     "webpack": "^5.21.2"
   },
   "devDependencies": {
-    "@babel/cli": "^7.12.13",
-    "@babel/core": "^7.12.13",
+    "@babel/cli": "^7.13.10",
+    "@babel/core": "^7.13.10",
     "@babel/node": "^7.12.13",
     "@babel/plugin-transform-classes": "^7.12.13",
     "@babel/polyfill": "^7.12.1",

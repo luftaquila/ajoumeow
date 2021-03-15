@@ -1,7 +1,6 @@
 import dotenv from 'dotenv'
 import express from 'express';
 import jwt from 'jsonwebtoken';
-import dateformat from 'dateformat';
 import bodyParser from 'body-parser';
 
 import util from '../controllers/util/util.js';

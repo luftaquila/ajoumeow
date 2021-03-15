@@ -15,7 +15,6 @@
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
     <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
-    <link rel='stylesheet' href='/res/toggleSwitch.css' />
     <link rel='stylesheet' href='/res/bootstrap-datepicker/css/bootstrap-datepicker.min.css' />    
     <link rel='stylesheet' href='/ajoumeow/res/lib/alertify/alertify.core.css' />
     <link rel='stylesheet' href='/ajoumeow/res/lib/alertify/alertify.default.css' />
@@ -107,13 +106,14 @@
               <h1 class="h3 mb-0 text-gray-800">서버 로그</h1>
             </div>
             <div style='font-size: 0.8rem; margin-bottom: 10px'>
-              <li>항목을 클릭하면 전체 내용을 표시합니다.</li>
-              <li>모든 체크박스를 해제하면 해당 범주를 필터링하지 않습니다.</li>
+              <li>로그를 클릭하면 전체 내용을 표시합니다.</li>
+              <li>검색은 정규표현식 문법을 지원합니다.</li>
             </div>
             <div>
               <b>Level</b><br>
                 <label><input type='checkbox' name='level' value='info' checked> info</label>&ensp;
                 <label><input type='checkbox' name='level' value='error' checked> error</label>&ensp;
+                <span id='filter' class='btn btn-success' style='margin-left: 3rem; padding: .2rem 1rem'>필터 적용</span>
               <br>
               <b>Type</b><br>
                 <label><input type='checkbox' name='type' value='[0-9]' checked> API</label>&ensp;
@@ -127,6 +127,7 @@
                 &ensp;~&ensp;
                 <input type='date' id='logEnd' class='logDate btn btn-primary' required>
             </div>
+            <style>input[type=search] { width: 300px !important; }</style>
             <div class='table-responsive'>
               <table class="table table-bordered" id="serverlog" width="100%" style='table-layout: fixed; text-align: center; font-size: .9rem;' cellspacing="0">
                 <colgroup>

@@ -1,7 +1,6 @@
 import axios from 'axios';
 import stream from 'stream';
 import express from 'express';
-import dateformat from 'dateformat';
 import bodyParser from 'body-parser';
 
 import util from '../controllers/util/util.js';
