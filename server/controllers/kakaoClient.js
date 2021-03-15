@@ -67,7 +67,7 @@ async function kakaoClient() {
             if(test.length) {
               if(test[0].chatLogId != String(chat.logId)) {
                 util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '유사 이미지 검출', 'internal', 0, null, 'ERR_SIMILAR_IMAGE_DETECTED'));
-                await chat.channel.sendTemplate(new AttachmentTemplate(new ReplyAttachment(ChatType[test[0].chatType], Long.fromString(test[0].chatLogId), Long.fromString(test[0].chatSenderId), false, '원본 이미지', [], Long.ZERO), `유사한 이미지를 검출했습니다.\n유사도: ${(1 - (test[0].hd / 32)) * 100}%\nlogId: ${test[0].chatLogId}`));
+                await chat.channel.sendTemplate(new AttachmentTemplate(new ReplyAttachment(ChatType[test[0].chatType], Long.fromString(test[0].chatLogId), Long.fromString(test[0].chatSenderId), false, '원본 이미지', [], Long.ZERO), `기존 이미지와 유사한 이미지를 검출했습니다.\n등록일: ${dateformat(test[0].timestamp, 'yyyy-mm-dd @HH:mm:ss')}\n유사도: ${(1 - (test[0].hd / 32)) * 100}%\nlog_id: ${test[0].chatLogId}`));
               }
             }
             else await util.query(`INSERT INTO verifyImage(chatType, chatLogId, chatSenderId, imgWidth, imgHeight, imgSize, imgHash, imgHashHex) VALUES('${ChatType[chat.Type]}', '${chat.logId}', '${chat.sender.id}', ${att.Width}, ${att.Height}, '${att.Size}', ${`0x${phash}`}, '${phash}');`);

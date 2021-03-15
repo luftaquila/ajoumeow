@@ -44,10 +44,12 @@ $(function() {
         else return data } 
     }]
   });
-  
 });
 
-$('input').change(function() { $('#serverlog').DataTable().ajax.reload(); });
+$('#filter').click(function() {
+  $('#serverlog').dataTable().fnClearTable();
+  $('#serverlog').DataTable().ajax.reload();
+});
 $('#serverlog').on('click', 'td', function () {
   MicroModal.show('detail');
   $('#detail-content').text($('#serverlog').DataTable().cell(this).data());

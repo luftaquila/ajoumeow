@@ -1,6 +1,5 @@
 import dotenv from 'dotenv'
 import express from 'express';
-import dateformat from 'dateformat';
 import bodyParser from 'body-parser';
 
 import client from '../config/node-kakao'

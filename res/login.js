@@ -1,6 +1,4 @@
 $(function() {
-  autoLogin();
-  
   $('#login').click(function() {
     $.ajax({
       url: "api/auth/login",
@@ -41,6 +39,7 @@ function autoLogin() {
 }
 
 function autoLoginFailure() {
+  load();
   $.ajax({
     url: "api/settings/currentSemister",
     success: res => {
