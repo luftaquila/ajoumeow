@@ -55,23 +55,31 @@ async function kakaoClient() {
   
   client.on('message', async chat => {
     try {
-      chat.markChatRead(); // Read incoming chat
+      await chat.markChatRead(); // Read incoming chat
       if(chat.channel.id == process.env.verifyChannelId || chat.channel.id == process.env.testChannelID) {
         // add image to DB
-        for(let att of chat.attachmentList) {
-          if(att.MediaType == 'image/jpg' || att.MediaType == 'image/png') {
-            let buffer = await axios.get(att.ImageURL, { responseType: 'arraybuffer'});
-            buffer = Buffer.from(buffer.data);
-            const phash = await imghash.hash(buffer);
-            const test = await util.query(`SELECT *, BIT_COUNT(imgHash ^ ${`0x${phash}`}) as hd FROM verifyImage HAVING hd < 8 ORDER BY hd ASC;`);
-            if(test.length) {
-              if(test[0].chatLogId != String(chat.logId)) {
-                util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '유사 이미지 검출', 'internal', 0, null, 'ERR_SIMILAR_IMAGE_DETECTED'));
-                await chat.channel.sendTemplate(new AttachmentTemplate(new ReplyAttachment(ChatType[test[0].chatType], Long.fromString(test[0].chatLogId), Long.fromString(test[0].chatSenderId), false, '원본 이미지', [], Long.ZERO), `기존 이미지와 유사한 이미지를 검출했습니다.\n등록일: ${dateformat(test[0].timestamp, 'yyyy-mm-dd @HH:mm:ss')}\n유사도: ${(1 - (test[0].hd / 32)) * 100}%\nlog_id: ${test[0].chatLogId}`));
+        try {
+          for(let att of chat.attachmentList) {
+            if(att.MediaType.includes('image')) {
+              let buffer = await axios.get(att.ImageURL, { responseType: 'arraybuffer'});
+              buffer = Buffer.from(buffer.data);
+              const phash = await imghash.hash(buffer);
+              const test = await util.query(`SELECT *, BIT_COUNT(imgHash ^ ${`0x${phash}`}) as hd FROM verifyImage HAVING hd < 8 ORDER BY hd ASC;`);
+              if(test.length) {
+                if(test[0].chatLogId != String(chat.logId)) {
+                  util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '유사 이미지 검출', 'internal', 0, null, 'ERR_SIMILAR_IMAGE_DETECTED'));
+                  await chat.channel.sendTemplate(new AttachmentTemplate(new ReplyAttachment(ChatType[test[0].chatType], Long.fromString(test[0].chatLogId), Long.fromString(test[0].chatSenderId), false, '원본 이미지', [], Long.ZERO), `기존 이미지와 유사한 이미지를 검출했습니다.\n등록일: ${dateformat(test[0].timestamp, 'yyyy-mm-dd @HH:mm:ss')}\n유사도: ${(1 - (test[0].hd / 32)) * 100}%\nlog_id: ${test[0].chatLogId}`));
+                }
+              }
+              else {
+                util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '인증 이미지 등록', 'internal', 0, String(chat.logId), phash));
+                await util.query(`INSERT INTO verifyImage(chatType, chatLogId, chatSenderId, imgWidth, imgHeight, imgSize, imgHash, imgHashHex) VALUES('${ChatType[chat.Type]}', '${chat.logId}', '${chat.sender.id}', ${att.Width}, ${att.Height}, '${att.Size}', ${`0x${phash}`}, '${phash}');`);
               }
             }
-            else await util.query(`INSERT INTO verifyImage(chatType, chatLogId, chatSenderId, imgWidth, imgHeight, imgSize, imgHash, imgHashHex) VALUES('${ChatType[chat.Type]}', '${chat.logId}', '${chat.sender.id}', ${att.Width}, ${att.Height}, '${att.Size}', ${`0x${phash}`}, '${phash}');`);
           }
+        }
+        catch(e) {
+          util.logger(new Log('error', 'kakaoClient', 'client.on(message)', '인증 이미지 등록 오류', 'internal', -1, null, e.stack));
         }
         
         // Only handle message with keywords
