@@ -82,6 +82,16 @@ $(function() {
     },
     error: err => settingLoadError(err)
   });
+  
+  // maxFeedingUserCount settings
+  $.ajax({
+    url: '/ajoumeow/api/settings/maxFeedingUserCount',
+    cached: false,
+    success: res => {
+      $('#maxFeedingUserCount').val(res.data);
+    },
+    error: err => settingLoadError(err)
+  });
 });
 
 $('.setting').change(function() {
@@ -138,6 +148,10 @@ $('.setting').change(function() {
     $('#noticeVersion').text(Number($('#noticeVersion').text()) + 1);
     req.param = 'notice';
     req.data = `${$('#noticeVersion').text()}$${$('#notice').val()}`;
+  }
+  else if(obj.includes('maxFeedingUserCount')) {
+    req.param = 'maxFeedingUserCount';
+    req.data = $('#maxFeedingUserCount').val();
   }
 
   $.ajax({

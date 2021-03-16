@@ -90,16 +90,16 @@ function eventListener() {
       });
     });
   });
-  $('#addRecord').click(function() {
+  $('#addRecord').click(async function() {
     if($('.calendar-table__event').hasClass('calendar-table__inactive')) return; 
     if($('.calendar-table__event').children('div').css('background-image') === 'none') {
       $('#contents').html('');
       for(let i = 1; i <= 3; i++) $('#contents').append('<div style="margin-bottom: 0.1rem; margin-top: 0.5rem"><h4>' + i + '코스</h4><div class="courseContent" data-course="' + i + '"></div></div>');
     }
-    
+    let max = await $.ajax('/ajoumeow/api/settings/maxFeedingUserCount');
     $('.courseContent').each(function(index, item) {
       if($(item).children('span.addToCourse').length) return;
-      else if($(item).children('span').children('span.namecard').length > 1) return;
+      else if($(item).children('span').children('span.namecard').length >= Number(max.data)) return;
       $(item).append("<span class='addToCourse' style='margin: 0 0.3rem;'><span class='ripple' style='display: inline-block; width: 4rem; height: 2rem; line-height: 1.5rem; text-align: center; border-radius: 3px; border: dashed 1px gray; color: gray; padding: 0.2rem;'>+</span></span>");
     });
     $('.addToCourse').on('click', function() {
