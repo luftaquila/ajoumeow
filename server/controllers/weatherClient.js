@@ -20,7 +20,7 @@ function weatherClient() {
       const weekWeather = axios.get('https://weather.kweather.co.kr/weather/kweather/get_forecast_week/41117550', { httpsAgent: agent });
 
       Promise.all([currentWeather, currentDust, threeDayWeather, weekWeather]).then(responses => {
-        let data = { current: {}, forecast: [] };
+        let data = { current: {}, forecast: [], update: dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss') };
         const year = new Date().getFullYear(), current = new Date();
         
         // processing currentWeather

@@ -51,6 +51,7 @@ function eventListener() {
       }
     }    
     $('#dateInfo h4').html(datestring);
+    $('#weatherstat').click(function() { alert('weather updated on\n' + weather.update); });
     
     let content = $(this).attr('data-content') ? JSON.parse($(this).attr('data-content')) : [], contentHTML = "";
     $('#contents').html('');
@@ -113,8 +114,7 @@ function eventListener() {
   $('.sidebar_overlay').click(function() { 
     $('#sidebar').css('display', 'none');
   }).children().click(function() { return false; });
-  $('#magic').click(function() { (function () { var script = document.createElement('script'); script.src="//cdn.jsdelivr.net/npm/eruda"; document.body.appendChild(script); script.onload = function () { eruda.init() } })();
- });
+  $('#magic').click(function() { (function () { var script = document.createElement('script'); script.src="//cdn.jsdelivr.net/npm/eruda"; document.body.appendChild(script); script.onload = function () { eruda.init() } })(); });
 }
 
 function load() {
