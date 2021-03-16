@@ -15,5 +15,5 @@ $(function() {
 
 $('#download1365').click(function() {
   if(!$('#calendar1365').val() || !$('#namelist1365').val()) return alertify.error('기간과 명단 데이터를 모두 선택하세요');
-  window.location.assign(`https://luftaquila.io/ajoumeow/api/verify/1365?month=${$('#calendar1365').val()}&namelist=${$('#namelist1365').val()}`);
+  window.location.assign(`https://luftaquila.io/ajoumeow/api/verify/1365?month=${$('#calendar1365').val()}&namelist=${$('#namelist1365').val()}&private=${$('#private:checked').length}`);
 });

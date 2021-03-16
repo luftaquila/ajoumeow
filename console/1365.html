@@ -108,6 +108,7 @@
             <ul style='font-size:0.9rem'>
               <li>1365 봉사활동 확인서를 자동으로 작성하고 다운로드합니다.</li>
               <li>인증서를 생성할 기간과 명단 데이터를 선택한 후 <kbd>다운로드</kbd> 를 누르세요.<br>10초 내외로 다운로드가 시작됩니다.</li>
+              <li>개인정보 숨김 처리에 체크하면 1365 아이디 및 생년월일을 숨긴 문서를 생성합니다.<br>동아리 단톡에 공지 시 사용하세요.</li>
             </ul>
             <br>
             <table style="border-collapse: separate; border-spacing: 10px;">
@@ -119,6 +120,9 @@
                 <td>명단 데이터&ensp;</td>
                 <td><select id='namelist1365' class='namelist_select btn btn-primary'></select></td>
               </tr>
+              <tr>
+                <td>개인정보 숨김 처리&ensp;</td>
+                <td><input type='checkbox' id='private'></td>
             </table>
             <a id="download1365" class="btn btn-success " style='color: white; float: right;'>다운로드</a>
           </div>

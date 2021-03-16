@@ -1,3 +1,4 @@
+import https from 'https'
 import axios from 'axios'
 import schedule from 'node-schedule'
 import dateformat from 'dateformat'
@@ -11,13 +12,14 @@ function weatherClient() {
   console.log(msg);
   util.logger(new Log('info', 'weatherClient', 'weatherClient()', '날씨 크롤링 프로그램 시작', 'internal', 0, null, msg));
   const weather_schedule = schedule.scheduleJob('*/30 * * * *', async () => { // every 30 minutes
-    const currentWeather = axios.get('https://weather.kweather.co.kr/weather/kweather/get_current_weather/119');
-    const currentDust = axios.get('https://weather.kweather.co.kr/finedust/detail/get_current_table_data/4111755000');
-    const threeDayWeather = axios.get('https://weather.kweather.co.kr/weather/kweather/get_forecast_halfd/41117550');
-    const weekWeather = axios.get('https://weather.kweather.co.kr/weather/kweather/get_forecast_week/41117550');
+    try {
+      const agent = new https.Agent({ rejectUnauthorized: false });
+      const currentWeather = axios.get('https://weather.kweather.co.kr/weather/kweather/get_current_weather/119', { httpsAgent: agent });
+      const currentDust = axios.get('https://weather.kweather.co.kr/finedust/detail/get_current_table_data/4111755000', { httpsAgent: agent });
+      const threeDayWeather = axios.get('https://weather.kweather.co.kr/weather/kweather/get_forecast_halfd/41117550', { httpsAgent: agent });
+      const weekWeather = axios.get('https://weather.kweather.co.kr/weather/kweather/get_forecast_week/41117550', { httpsAgent: agent });
 
-    Promise.all([currentWeather, currentDust, threeDayWeather, weekWeather]).then(responses => {
-      try {
+      Promise.all([currentWeather, currentDust, threeDayWeather, weekWeather]).then(responses => {
         let data = { current: {}, forecast: [] };
         const year = new Date().getFullYear(), current = new Date();
         
@@ -62,11 +64,11 @@ function weatherClient() {
         }
         fs.writeFileSync('../res/weather.json', JSON.stringify(data));
         util.logger(new Log('info', 'weatherClient', 'weather_schedule', '날씨 크롤링 완료', 'internal', 0, null, data));
-      }
-      catch(e) {
-        util.logger(new Log('error', 'weatherClient', 'weather_schedule', '날씨 크롤링 오류', 'internal', -1, null, e.stack));
-      }
-    });
+      });
+    }
+    catch(e) {
+      util.logger(new Log('error', 'weatherClient', 'weather_schedule', '날씨 크롤링 오류', 'internal', -1, null, e.stack));
+    }
   });
 }
 
