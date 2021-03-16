@@ -24,21 +24,21 @@
     "dotenv": "^8.2.0",
     "envfile": "^6.14.0",
     "express": "^4.17.1",
-    "imghash": "^0.0.3",
+    "imghash": "^0.0.8",
     "jsonwebtoken": "^8.5.1",
-    "mariadb": "^2.5.2",
+    "mariadb": "^2.5.3",
     "node-kakao": "^3.1.8",
     "node-schedule": "^2.0.0",
     "pretty-format": "^26.6.2",
-    "webpack": "^5.21.2"
+    "webpack": "^5.26.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.13.10",
     "@babel/core": "^7.13.10",
-    "@babel/node": "^7.12.13",
-    "@babel/plugin-transform-classes": "^7.12.13",
+    "@babel/node": "^7.13.10",
+    "@babel/plugin-transform-classes": "^7.13.0",
     "@babel/polyfill": "^7.12.1",
-    "@babel/preset-env": "^7.12.13",
+    "@babel/preset-env": "^7.13.10",
     "babel-loader": "^8.2.2"
   }
 }
