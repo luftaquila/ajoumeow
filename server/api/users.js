@@ -41,60 +41,45 @@ router.get('/name', util.isAdmin, async (req, res) => {
   }
 });
 
-/*
-// Get user info by id
-router.get('/id', util.isAdmin, async (req, res) => {
-  
-});
-*/
-
 // Add new user
 router.post('/id', async (req, res) => {
   try {
-    // check if applied before
     let namelists = await util.query(`SHOW TABLES LIKE '%namelist_%';`);
     namelists = namelists.map(x => x['Tables_in_ajoumeow (%namelist_%)']).reverse();
-
-    let currentNamelist = null;
-    if(namelists.indexOf(`namelist_${await util.getSettings('currentSemister')}`) != -1)
-      currentNamelist = namelists.splice(namelists.indexOf(`namelist_${await util.getSettings('currentSemister')}`), 1);
-
-    let flag = false;
-    for(let namelist of namelists) {
-      const test = await util.query(`SELECT ID FROM \`${namelist}\` WHERE ID=${req.body['학번']};`);
+    let currentNamelist = namelists[namelists.indexOf(`namelist_${await util.getSettings('currentSemister')}`)];
+    
+    // check if duplicates
+    if(currentNamelist) {
+      const test = await util.query(`SELECT ID FROM \`${currentNamelist}\` WHERE ID=${req.body['학번']};`);
       if(test.length) {
-        flag = true;
+        util.logger(new Log('info', req.remoteIP, req.originalPath, '회원 등록', req.method, 400, req.body, 'ERR_ALREADY_REGISTERED'));
+        return res.status(400).json(new Response('error', '이미 이번 학기 회원으로 등록되셨습니다.', 'ERR_ALREADY_REGISTERED'));
+      }
+    }
+    
+    // test if user is previously registered
+    let previous = false;
+    for(let namelist of namelists) {
+      const test = await util.query(`SELECT * FROM \`${namelist}\` WHERE ID=${req.body['학번']};`);
+      if(test.length) {
+        previous = test[0];
         break;
       }
     }
     
-    if(req.body.new == 'true' && flag) {
+    // check if user lookuped for previously registered
+    if(req.body.lookup) {
+      util.logger(new Log('info', req.remoteIP, req.originalPath, '기존 회원 등록여부 조회', req.method, 200, req.body, previous));
+      return res.status(200).json(new Response('success', null, previous));
+    }
+    
+    if(req.body.new == 'true' && previous) {
       util.logger(new Log('info', req.remoteIP, req.originalPath, '회원 등록', req.method, 400, req.body, 'ERR_REGISTERED_BEFORE'));
       return res.status(400).json(new Response('error', '지난 학기에 가입한 적이 있습니다.<br>기존 회원으로 등록해 주세요.', 'ERR_REGISTERED_BEFORE'));
     }
-    else if(req.body.new == 'false' && !flag) {
+    else if(req.body.new == 'false' && !previous) {
       util.logger(new Log('info', req.remoteIP, req.originalPath, '회원 등록', req.method, 400, req.body, 'ERR_NEVER_REGISTERED'));
       return res.status(400).json(new Response('error', '기존 회원이 아닙니다.<br>신입 회원으로 등록해 주세요.', 'ERR_NEVER_REGISTERED'));
-    }
-
-    // check if applied again
-    if(currentNamelist) {
-      const test = await util.query(`SELECT ID FROM \`${currentNamelist}\` WHERE ID=${req.body['학번']};`);
-      util.logger(new Log('info', req.remoteIP, req.originalPath, '회원 등록', req.method, 400, req.body, 'ERR_ALREADY_REGISTERED'));
-      if(test.length) return res.status(400).json(new Response('error', '이미 이번 학기 회원으로 등록되셨습니다.', 'ERR_ALREADY_REGISTERED'));
-    }
-    
-    // check if user just lookuped
-    if(!req.body['이름']) {
-      let tmp = await util.getSettings('currentSemister'), semister;
-      tmp = tmp.split('-');
-      if(tmp[1] == '2') semister = tmp[0] + '-1';
-      else semister = (Number(tmp[0]) - 1) + '-2';
-      semister = `namelist_${semister}`;
-      
-      let result = await util.query(`SELECT * FROM \`${semister}\` WHERE ID=${req.body['학번']};`);
-      util.logger(new Log('info', req.remoteIP, req.originalPath, '기존 회원 등록여부 조회', req.method, 200, req.body, result));
-      return res.status(200).json(new Response('success', null, result));
     }
 
     /* proceeding apply */

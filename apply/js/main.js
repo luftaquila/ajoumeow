@@ -152,14 +152,11 @@ $('#find').click(function() {
   $.ajax({
     url: "/ajoumeow/api/users/id",
     type: "POST",
-    data: { 학번: $('#findID').val(), new: false },
+    data: { 학번: $('#findID').val(), lookup: true },
     success: res => {
-      res = res.data[0];
       $('#finddiv').css('display', 'none');
       $('#confirmdiv').css('display', 'block');
-
-      for(let [key, value] of Object.entries(res)) {
-        //if(key == 'college' || key == 'department') continue;
+      for(let [key, value] of Object.entries(res.data)) {
         $('#o_' + key).val(value).attr('disabled', 'true').trigger('change');
       }
     },
