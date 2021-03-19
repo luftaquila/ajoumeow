@@ -56,10 +56,10 @@ async function kakaoClient() {
   client.on('message', async chat => {
     try {
       await chat.markChatRead(); // Read incoming chat
-      
+
       // add image to DB
-      if(chat.channel.id == process.env.verifyChannelId || chat.channel.id == process.env.talkChannelId || chat.channel.id == process.env.testChannelID) {
-        try {    
+      if(ChatType[chat.Type].includes('Photo') && (chat.channel.id == process.env.verifyChannelId || chat.channel.id == process.env.talkChannelId || chat.channel.id == process.env.testChannelID)) {
+        try {
           for(let att of chat.attachmentList) {
             if(att.MediaType.includes('image')) {
               let buffer = await axios.get(att.ImageURL, { responseType: 'arraybuffer'});
@@ -69,7 +69,7 @@ async function kakaoClient() {
               if(test.length) {
                 if(test[0].chatLogId != String(chat.logId)) { // if similar image is not on same chat
                   util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '유사 이미지 검출', 'internal', 0, null, 'ERR_SIMILAR_IMAGE_DETECTED'));
-                  await chat.channel.sendTemplate(new AttachmentTemplate(new ReplyAttachment(ChatType[test[0].chatType], Long.fromString(test[0].chatLogId), Long.fromString(test[0].chatSenderId), false, '원본 이미지', [], Long.ZERO), `기존 이미지와 유사한 이미지를 검출했습니다.\n등록일: ${dateformat(test[0].timestamp, 'yyyy-mm-dd @HH:mm:ss')}\n채팅방: ${test[0].chatChannelName}/n전송자: ${test[0].chatSenderName}/n유사도: ${(1 - (test[0].hd / 32)) * 100}%\nlog_id: ${test[0].chatLogId}`));
+                  await chat.channel.sendTemplate(new AttachmentTemplate(new ReplyAttachment(ChatType[test[0].chatType], Long.fromString(test[0].chatLogId), Long.fromString(test[0].chatSenderId), false, '원본 이미지', [], Long.ZERO), `기존 이미지와 유사한 이미지를 검출했습니다.\n등록일: ${dateformat(test[0].timestamp, 'yyyy-mm-dd @HH:MM:ss')}\n채팅방: ${test[0].chatChannelName}\n전송자: ${test[0].chatSenderName}\n유사도: ${(1 - (test[0].hd / 32)) * 100}%\nlog_id: ${test[0].chatLogId}`));
                 }
                 else { // if similar image is on same chat
                   util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '인증 이미지 등록', 'internal', 0, String(chat.logId), phash));
