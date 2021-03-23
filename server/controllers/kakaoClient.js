@@ -146,11 +146,14 @@ async function kakaoClient() {
               }
               
               // add verify data to DB
-              let resultString = greetings();
-              resultString += '급식 활동을 등록했습니다.';
-              for(let obj of payload) {
-                if(chat.channel.id == process.env.verifyChannelId) await util.query(`INSERT INTO verify(ID, date, name, course, score) VALUES(${obj.ID}, '${obj.date}', '${obj.name}', '${obj.course}', '${obj.score}');`);
-                resultString += '\n' + dateformat(payload[0].date, 'yyyy년 m월 d일 ') + obj.name + '님 ' + obj.course + '(' + obj.score + '점)';
+              let resultString = greetings(), prevCourse = null;
+              resultString += `${dateformat(payload[0].date, 'yyyy년 m월 d일')} 급식 활동을 등록했습니다.`;
+              for(let i in payload) {
+                if(chat.channel.id == process.env.verifyChannelId) await util.query(`INSERT INTO verify(ID, date, name, course, score) VALUES(${payload[i].ID}, '${payload[i].date}', '${payload[i].name}', '${payload[i].course}', '${payload[i].score}');`);
+                if(prevCourse != payload[i].course) resultString += `\n${payload[i].course} `;
+                resultString += `${payload[i].name}, `;
+                if(!payload[Number(i) + 1] || (payload[Number(i) + 1] && payload[i].course != payload[Number(i) + 1].course)) resultString = `${resultString.slice(0, -2)} 회원님 (각 ${payload[i].score}점)`;
+                prevCourse = payload[i].course;
               }
               chat.channel.sendTemplate(new AttachmentTemplate(ReplyAttachment.fromChat(chat), resultString));
               if(chat.channel.id == process.env.verifyChannelId) util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증', 'internal', 0, null, resultString));
