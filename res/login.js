@@ -146,21 +146,21 @@ function startIntro() {
   let intro = introJs();
   intro.setOptions({
     steps: [{
-      intro: `<span style="font-size: 0.8rem">신입 집사 여러분 안녕하세요!<br><br>아주대학교 고양이 동아리<br><b>미유미유</b>에 오신 것을 환영합니다.<br><br>사이트를 간단히 설명해 드릴게요!</span>`,
+      intro: `<span style="font-size: 0.9rem">신입 집사 여러분 안녕하세요!<br><br>아주대학교 고양이 동아리<br>🐱<b>미유미유</b>🐈‍⬛에 오신 것을 환영합니다.<br><br>저희 미유미유는 이 사이트를 통해 급식 활동 일정을 관리합니다.<br>사이트를 간단히 설명해 드릴게요!<div style='width: 100%; text-align: right;'><span style='font-size: 0.7rem;'><br>튜토리얼 소요 시간: 1분 미만<br></span></div></span>`,
     }, {
       element: document.querySelector('#noticeTrig'),
       intro: `<span style="font-size: 0.9rem"><b>공지사항</b> 버튼이에요.</span>`,
     }, {
       element: document.querySelector('#helpTrig'),
-      intro: `<span style="font-size: 0.9rem"><b>도움말</b> 버튼이에요.<br><br><b>급식표를 보는 방법</b>, 급식을 <b>신청</b>하고 <b>삭제</b>하는 방법을 알려줍니다.</span>`
+      intro: `<span style="font-size: 0.9rem">사이트 <b>도움말</b> 버튼이에요.<br><br>사이트에서 <b>급식표를 보는 방법</b>, 급식을 <b>신청</b>하고 <b>삭제</b>하는 방법을 알려줍니다.</span>`
     }, {
       element: document.querySelector('#mapTrig'),
-      intro: `<span style="font-size: 0.9rem"><b>급식소 지도</b> 버튼이에요.<br><br>급식 코스가 헷갈릴 때 사용하세요!</span>`
+      intro: `<span style="font-size: 0.9rem"><b>급식소 지도</b> 버튼이에요.<br><br>급식 코스와 급식소 위치가 헷갈릴 때 사용하세요!</span>`
     }, {
       element: document.querySelector('#guideTrig'),
-      intro: `<span style="font-size: 0.9rem"><b>급식 가이드</b> 버튼이에요.<br><br>급식이 처음이라면 유용할 거에요!</span>`
+      intro: `<span style="font-size: 0.9rem"><b>급식 가이드</b> 버튼이에요.<br><br><i class='fas fa-fw fa-lightbulb-exclamation' style='color: green'></i> <b>급식이 처음이라면 급식 전에 꼭 한 번 찬찬히 읽어 주세요!</b></span>`
     }, {
-      intro: `<span style="font-size: 0.9rem">이 가이드를 다시 보려면 <i class="far fa-question-circle"></i> 메뉴에서 <b><i class='fas fa-book'></i> 튜토리얼</b>을 누르세요!</span>`
+      intro: `<span style="font-size: 0.9rem">이 가이드를 다시 보려면<br><i class="far fa-question-circle"></i> 메뉴에서 <b><i class='fas fa-book'></i> 튜토리얼</b>을 누르세요!</span>`
     }],
     exitOnOverlayClick: false,
     showStepNumbers: false,
@@ -192,14 +192,13 @@ function startIntro() {
     else if(this._currentStep == 5) {
       try { MicroModal.close('guide_modal'); } catch(e) { }
     }
-  }).onexit(function() {
+  });
+  intro.onexit(function() {
     if(!user) {
       let applyGuide = introJs();
       applyGuide.setOptions({
         steps: [{
-          intro: `<span style="font-size: 0.8rem">신입 집사 분들은 먼저 회원 등록을 하셔야 합니다!</span>`
-        }, {
-          intro: `<span style="font-size: 0.8rem"><a style='font-size: 0.6rem' class='btn green'>회원 등록</a> 버튼을 눌러<br>회원 등록을 진행해 주세요!</span>`
+          intro: `<span style="font-size: 0.9rem">사이트를 이용하려면 먼저 회원 등록을 해야 합니다.<div style='width: 100%; text-align: center'><a style='font-size: 0.75rem' class='btn green'>회원 등록</a></div>버튼을 눌러 회원으로 등록해 주세요!</span>`
         }],
         exitOnOverlayClick: false,
         showStepNumbers: false,
@@ -207,7 +206,7 @@ function startIntro() {
         showProgress: true
       });
       applyGuide.onbeforechange(function(elem) {
-        if(this._currentStep == 1) $('#sidebar').css('display', 'block');
+        if(!this._currentStep) $('#sidebar').css('display', 'block');
       }).onexit(function() {
         Cookies.set('isNew', false, { expires : 3650 });
       }).start();

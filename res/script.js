@@ -74,6 +74,9 @@ function eventListener() {
       if(user && user.ID) $('.namecard[data-id=' + user.ID + ']').closest('div').children('span').children('span.namecard').addClass('partner');
       for(let namecard of $('.namecard').not('.partner').not('.example')) $(namecard).text($(namecard).text()[0] + $(namecard).text().slice(1).replace(/./g , '○'));
     }
+    else if(!user) {
+      for(let namecard of $('.namecard').not('.partner').not('.example')) $(namecard).text($(namecard).text()[0] + $(namecard).text().slice(1).replace(/./g , '○'));
+    }
     
     $('.namecard').not('.example').on('click', function() {
       $('.deleteActive').removeClass('deleteActive');
