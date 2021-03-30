@@ -8,6 +8,11 @@
     outline: none;
 }
 
+.introjs-floating {
+  width: 250px;
+  margin-left: -135px!important;
+}
+
 html, body {
   height: 100%;
 }
