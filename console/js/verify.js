@@ -27,7 +27,7 @@ async function init() {
   $("#manuallist").html('').prepend(`<a id="autocomplete_reason" class="btn btn-warning" style="padding: .1rem .4rem; color: #fff;">지급 사유 통일하기</a><hr style='width: 100%'>`);
   for(let obj of record) $('#autolist').append("<div><label><input type='checkbox' name='recordList' checked='checked' value='" + obj.ID + '/' + obj.name + '/' + obj.course + "'>&nbsp;" + obj.ID + ' ' + obj.name + ' / ' + obj.course + "</input></label></div>");
   $('#deletelist').html('<br>');
-  for(let obj of verify) $('#deletelist').append("<div><label><input type='checkbox' name='deleteList' value='" + obj.ID + '/' + obj.name + '/' + obj.course + "'>&nbsp;" + obj.ID + ' ' + obj.name + ' / ' + obj.course + "</input></label></div>");
+  for(let obj of verify) $('#deletelist').append("<div><label><input type='checkbox' name='deleteList' value='" + obj.ID + '/' + obj.name + '/' + obj.course + "'>&nbsp;" + obj.ID + ' ' + obj.name + ' / ' + obj.course + ' ' + obj.score + "점</input></label></div>");
 }
 
 /* Event Listeners */
