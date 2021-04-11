@@ -67,29 +67,35 @@ async function kakaoClient() {
               buffer = Buffer.from(buffer.data);
               const phash = await imghash.hash(buffer);
 
-              const test = await util.query(`SELECT *, BIT_COUNT(imgHash ^ ${`0x${phash}`}) as hd FROM verifyImage HAVING hd < 8 ORDER BY hd ASC;`);
+              const test = await util.query(`SELECT *, BIT_COUNT(imgHash ^ ${`0x${phash}`}) as hd FROM verifyImage HAVING hd < 5 ORDER BY hd, timestamp ASC;`);
               // if image is not on the same chat, on the verify channel
-              if(test.length && test[0].chatLogId != String(chat.logId) && chat.channel.id == process.env.verifyChannelId) {
-                util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '유사 이미지 검출', 'internal', 0, null, 'ERR_SIMILAR_IMAGE_DETECTED'));
-                await chat.channel.sendTemplate(new AttachmentTemplate(new ReplyAttachment(ChatType[test[0].chatType], Long.fromString(test[0].chatLogId), Long.fromString(test[0].chatSenderId), false, '원본 이미지', [], Long.ZERO), `기존 이미지와 유사한 이미지를 검출했습니다.\n등록일: ${dateformat(test[0].timestamp, 'yyyy-mm-dd @HH:MM:ss')}\n채팅방: ${test[0].chatChannelName}\n전송자: ${test[0].chatSenderName}\n유사도: ${(1 - (test[0].hd / 32)) * 100}%\nlog_id: ${test[0].chatLogId}`));
+              if(test.length && test[0].chatLogId != String(chat.logId)) {
+                if(chat.channel.id == process.env.verifyChannelId) util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '유사 이미지 검출', 'internal', 0, null, 'ERR_SIMILAR_IMAGE_DETECTED'));
+                if(chat.channel.id == process.env.verifyChannelId || chat.channel.id == process.env.testChannelID) await chat.channel.sendTemplate(new AttachmentTemplate(new ReplyAttachment(ChatType[test[0].chatType], Long.fromString(test[0].chatLogId), Long.fromString(test[0].chatSenderId), false, '원본 이미지', [], Long.ZERO), `기존 이미지와 유사한 이미지를 검출했습니다.\n등록일: ${dateformat(test[0].timestamp, 'yyyy-mm-dd @HH:MM:ss')}\n채팅방: ${test[0].chatChannelName}\n유사도: ${(1 - (test[0].hd / 32)) * 100}%\nlog_id: ${test[0].chatLogId}`));
               }
               
               // add image to DB
-              util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '인증 이미지 등록', 'internal', 0, String(chat.logId), phash));
-              await util.query(`INSERT INTO verifyImage(chatType, chatLogId, chatSenderId, chatChannelName, imgWidth, imgHeight, imgSize, imgHash, imgHashHex) VALUES('${ChatType[chat.Type]}', '${chat.logId}', '${chat.sender.id}', '${chat.channel.getUserInfo(chat.sender).memberStruct.nickname}', ${att.Width}, ${att.Height}, '${att.Size}', ${`0x${phash}`}, '${phash}');`);
+              if(chat.channel.id != process.env.testChannelId) {
+                util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '이미지 등록', 'internal', 0, String(chat.logId), phash));
+                await util.query(`INSERT INTO verifyImage(chatType, chatLogId, chatSenderId, chatChannelName, imgWidth, imgHeight, imgSize, imgHash, imgHashHex) VALUES('${ChatType[chat.Type]}', '${chat.logId}', '${chat.sender.id}', '${chat.channel.getDisplayName()}', ${att.Width}, ${att.Height}, '${att.Size}', ${`0x${phash}`}, '${phash}');`);
+              }
             }
           }
         }
         catch(e) {
           await chat.channel.sendText(e.stack);
-          util.logger(new Log('error', 'kakaoClient', 'client.on(message)', '인증 이미지 등록 오류', 'internal', -1, null, e.stack));
+          util.logger(new Log('error', 'kakaoClient', 'client.on(message)', '이미지 등록 오류', 'internal', -1, null, e.stack));
         }
       }
         
       // 자동 급식 인증
       if(chat.channel.id == process.env.verifyChannelId || chat.channel.id == process.env.testChannelID) {
         // Only handle message with keywords
-        if(chat.text.includes('인증') && chat.text.includes('코스') && ((chat.text.includes('월') && chat.text.includes('일')) || chat.text.includes('/'))) {
+        if(chat.text.includes('코스') && ((chat.text.includes('월') && chat.text.includes('일')) || chat.text.includes('/'))) {
+          if(!chat.text.includes('인증') && !chat.text.includes('삭제')) return;
+          
+          const mode = chat.text.includes('인증') ? 'verify' : 'delete';
+          
           // Recognizable datestring: m월d일, m월 d일, m/d
           let targetDate = chat.text.match(/\b(\d+)\/(\d+)\b/) || chat.text.match(/(\d+)월 (\d+)일/) || chat.text.match(/(\d+)월(\d+)일/);
           if(targetDate) { // if date detected
@@ -110,53 +116,93 @@ async function kakaoClient() {
             // detect target courses and members
             let targetCourses = chat.text.match(/\b(?=\d*[코스])\w+\b/g);
             let targetMembers = chat.text.match(/(?<![가-힣])[가-힣]{2,3}(?![가-힣])/g);
-            targetMembers = targetMembers ? targetMembers.filter(o => !(new RegExp('사진').test(o)) && !(new RegExp('요일').test(o)) && !(new RegExp('코스').test(o)) && !(new RegExp('인증').test(o)) ) : targetMembers;
+            targetMembers = targetMembers ? targetMembers.filter(o => !(new RegExp('사진').test(o)) && !(new RegExp('요일').test(o)) && !(new RegExp('코스').test(o)) && !(new RegExp('인증').test(o)) && !(new RegExp('삭제').test(o)) ) : targetMembers;
             if(targetCourses && targetMembers) { // if courses and members are detected
-              // Score table
-              let score = { weekday: { solo: 1.5, dual: 1}, weekend: { solo: 2, dual: 1.5} }
+              if(mode == 'verify') {
+                // Score table
+                let score = { weekday: { solo: 1.5, dual: 1}, weekend: { solo: 2, dual: 1.5} }
             
-              // Detect target date is weekand and number of people
-              let isWeekEnd = targetDate.getDayNum() > 5 ? 'weekend' : 'weekday';
-              let isSolo = targetMembers.length == 1 ? 'solo' : 'dual';
+                // Detect target date is weekand and number of people
+                let isWeekEnd = targetDate.getDayNum() > 5 ? 'weekend' : 'weekday';
+                let isSolo = targetMembers.length == 1 ? 'solo' : 'dual';
 
-              // targetMember validation
-              for(let i in targetMembers) { // get member student id with name
-                let result = await util.query(`SELECT name, ID FROM \`namelist_${await util.getSettings('currentSemister')}\` WHERE name LIKE '%${targetMembers[i]}%';`);
-                if(result.length == 1) targetMembers[i] = { name: targetMembers[i], id: result[0].ID };
-                else if(!result.length) {
-                  util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증 실패', 'internal', 0, null, 'ERR_NO_ENTRY_DETECTED'));
-                  return chat.channel.sendTemplate(new AttachmentTemplate(ReplyAttachment.fromChat(chat), targetMembers[i] + '님이 회원 명단에 없어 자동으로 인증하지 못했습니다.'));
+                // targetMember validation
+                for(let i in targetMembers) { // get member student id with name
+                  let result = await util.query(`SELECT name, ID FROM \`namelist_${await util.getSettings('currentSemister')}\` WHERE name LIKE '%${targetMembers[i]}%';`);
+                  if(result.length == 1) targetMembers[i] = { name: targetMembers[i], id: result[0].ID };
+                  else if(!result.length) {
+                    util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증 실패', 'internal', 0, null, 'ERR_NO_ENTRY_DETECTED'));
+                    return chat.channel.sendTemplate(new AttachmentTemplate(ReplyAttachment.fromChat(chat), targetMembers[i] + '님이 회원 명단에 없어 자동으로 인증하지 못했습니다.'));
+                  }
+                  else {
+                    util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증 실패', 'internal', 0, null, 'ERR_SAME_NAME_EXISTS'));
+                    return chat.channel.sendTemplate(new AttachmentTemplate(ReplyAttachment.fromChat(chat), targetMembers[i] + ' 회원님 동명이인이 존재해 자동 인증이 불가능합니다. 관리자가 직접 인증해 주세요.'));
+                  }
                 }
-                else {
-                  util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증 실패', 'internal', 0, null, 'ERR_SAME_NAME_EXISTS'));
-                  return chat.channel.sendTemplate(new AttachmentTemplate(ReplyAttachment.fromChat(chat), targetMembers[i] + ' 회원님 동명이인이 존재해 자동 인증이 불가능합니다. 관리자가 직접 인증해 주세요.'));
-                }
-              }
               
-              // writing payload
-              let payload = [];
-              for(let course of targetCourses) { 
-                for(let member of targetMembers) {
-                  payload.push({
-                    ID: member.id, name: member.name,
-                    date: dateformat(targetDate, 'yyyy-mm-dd'), course: course + '코스',
-                    score: score[isWeekEnd][isSolo]
-                  });
+                // writing payload
+                let payload = [];
+                for(let course of targetCourses) { 
+                  for(let member of targetMembers) {
+                    payload.push({
+                      ID: member.id, name: member.name,
+                      date: dateformat(targetDate, 'yyyy-mm-dd'),
+                      course: course + '코스',
+                      score: score[isWeekEnd][isSolo]
+                    });
+                  }
                 }
-              }
               
-              // add verify data to DB
-              let resultString = greetings(), prevCourse = null;
-              resultString += `${dateformat(payload[0].date, 'yyyy년 m월 d일')} 급식 활동을 등록했습니다.`;
-              for(let i in payload) {
-                if(chat.channel.id == process.env.verifyChannelId) await util.query(`INSERT INTO verify(ID, date, name, course, score) VALUES(${payload[i].ID}, '${payload[i].date}', '${payload[i].name}', '${payload[i].course}', '${payload[i].score}');`);
-                if(prevCourse != payload[i].course) resultString += `\n${payload[i].course} `;
-                resultString += `${payload[i].name}, `;
-                if(!payload[Number(i) + 1] || (payload[Number(i) + 1] && payload[i].course != payload[Number(i) + 1].course)) resultString = `${resultString.slice(0, -2)} 회원님 (${prevCourse == payload[i].course ? '각 ' : ''}${payload[i].score}점)`;
-                prevCourse = payload[i].course;
+                // add verify data to DB
+                let resultString = greetings(), prevCourse = null;
+                resultString += `${dateformat(payload[0].date, 'yyyy년 m월 d일')} 급식 활동을 등록했습니다.`;
+                for(let i in payload) {
+                  if(chat.channel.id == process.env.verifyChannelId) await util.query(`INSERT INTO verify(ID, date, name, course, score) VALUES(${payload[i].ID}, '${payload[i].date}', '${payload[i].name}', '${payload[i].course}', '${payload[i].score}');`);
+                  if(prevCourse != payload[i].course) resultString += `\n${payload[i].course} `;
+                  resultString += `${payload[i].name}, `;
+                  if(!payload[Number(i) + 1] || (payload[Number(i) + 1] && payload[i].course != payload[Number(i) + 1].course)) resultString = `${resultString.slice(0, -2)} 회원님 (${prevCourse == payload[i].course ? '각 ' : ''}${payload[i].score}점)`;
+                  prevCourse = payload[i].course;
+                }
+                chat.channel.sendTemplate(new AttachmentTemplate(ReplyAttachment.fromChat(chat), resultString));
+                if(chat.channel.id == process.env.verifyChannelId) util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증', 'internal', 0, null, resultString));
               }
-              chat.channel.sendTemplate(new AttachmentTemplate(ReplyAttachment.fromChat(chat), resultString));
-              if(chat.channel.id == process.env.verifyChannelId) util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증', 'internal', 0, null, resultString));
+              else if(mode == 'delete') {
+                // targetMember validation
+                for(let i in targetMembers) { // get member student id with name
+                  let result = await util.query(`SELECT name, ID FROM \`namelist_${await util.getSettings('currentSemister')}\` WHERE name LIKE '%${targetMembers[i]}%';`);
+                  if(result.length == 1) targetMembers[i] = { name: targetMembers[i], id: result[0].ID };
+                  else if(!result.length) {
+                    util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증 삭제 실패', 'internal', 0, null, 'ERR_NO_ENTRY_DETECTED'));
+                    return chat.channel.sendTemplate(new AttachmentTemplate(ReplyAttachment.fromChat(chat), targetMembers[i] + '님이 회원 명단에 없어 인증 기록을 삭제하지 못했습니다.'));
+                  }
+                  else {
+                    util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증 실패', 'internal', 0, null, 'ERR_SAME_NAME_EXISTS'));
+                    return chat.channel.sendTemplate(new AttachmentTemplate(ReplyAttachment.fromChat(chat), targetMembers[i] + ' 회원님 동명이인이 존재해 대화형 삭제가 불가능합니다. 관리자 콘솔에서 삭제해 주세요.'));
+                  }
+                }
+                
+                // writing payload
+                let payload = [];
+                for(let course of targetCourses) { 
+                  for(let member of targetMembers) {
+                    payload.push({
+                      ID: member.id, name: member.name,
+                      date: dateformat(targetDate, 'yyyy-mm-dd'),
+                      course: course + '코스'
+                    });
+                  }
+                }
+                
+                // delete verify data from DB
+                let resultString = '';
+                resultString += `다음 급식 기록을 삭제했습니다.`;
+                for(let i in payload) {
+                  if(chat.channel.id == process.env.verifyChannelId) await util.query(`DELETE FROM verify WHERE ID=${payload[i].ID} AND date='${payload[i].date}' AND name='${payload[i].name}' AND course='${payload[i].course}';`);
+                  resultString += `\n${payload[i].date} ${payload[i].name} ${payload[i].course}`;
+                }
+                chat.channel.sendTemplate(new AttachmentTemplate(ReplyAttachment.fromChat(chat), resultString));
+                if(chat.channel.id == process.env.verifyChannelId) util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증 삭제', 'internal', 0, null, resultString));
+              }
             }
           }
         }
