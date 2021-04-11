@@ -118,41 +118,54 @@ async function kakaoClient() {
             let targetMembers = chat.text.match(/(?<![가-힣])[가-힣]{2,3}(?![가-힣])/g);
             targetMembers = targetMembers ? targetMembers.filter(o => !(new RegExp('사진').test(o)) && !(new RegExp('요일').test(o)) && !(new RegExp('코스').test(o)) && !(new RegExp('인증').test(o)) && !(new RegExp('삭제').test(o)) ) : targetMembers;
             if(targetCourses && targetMembers) { // if courses and members are detected
-              if(mode == 'verify') {
-                // Score table
-                let score = { weekday: { solo: 1.5, dual: 1}, weekend: { solo: 2, dual: 1.5} }
-            
-                // Detect target date is weekand and number of people
-                let isWeekEnd = targetDate.getDayNum() > 5 ? 'weekend' : 'weekday';
-                let isSolo = targetMembers.length == 1 ? 'solo' : 'dual';
 
-                // targetMember validation
-                for(let i in targetMembers) { // get member student id with name
-                  let result = await util.query(`SELECT name, ID FROM \`namelist_${await util.getSettings('currentSemister')}\` WHERE name LIKE '%${targetMembers[i]}%';`);
-                  if(result.length == 1) targetMembers[i] = { name: targetMembers[i], id: result[0].ID };
-                  else if(!result.length) {
+              // targetMember validation
+              for(let i in targetMembers) { // get member student id with name
+                let result = await util.query(`SELECT name, ID FROM \`namelist_${await util.getSettings('currentSemister')}\` WHERE name LIKE '%${targetMembers[i]}%';`);
+                if(result.length == 1) targetMembers[i] = { name: targetMembers[i], id: result[0].ID };
+                else if(!result.length) {
+                  if(mode == 'verify') {
                     util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증 실패', 'internal', 0, null, 'ERR_NO_ENTRY_DETECTED'));
                     return chat.channel.sendTemplate(new AttachmentTemplate(ReplyAttachment.fromChat(chat), targetMembers[i] + '님이 회원 명단에 없어 자동으로 인증하지 못했습니다.'));
                   }
-                  else {
+                  else if(mode == 'delete') {
+                    util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증 삭제 실패', 'internal', 0, null, 'ERR_NO_ENTRY_DETECTED'));
+                    return chat.channel.sendTemplate(new AttachmentTemplate(ReplyAttachment.fromChat(chat), targetMembers[i] + '님이 회원 명단에 없어 인증 기록을 삭제하지 못했습니다.'));
+                  }
+                }
+                else {
+                  if(mode == 'verify') {
                     util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증 실패', 'internal', 0, null, 'ERR_SAME_NAME_EXISTS'));
                     return chat.channel.sendTemplate(new AttachmentTemplate(ReplyAttachment.fromChat(chat), targetMembers[i] + ' 회원님 동명이인이 존재해 자동 인증이 불가능합니다. 관리자가 직접 인증해 주세요.'));
                   }
-                }
-              
-                // writing payload
-                let payload = [];
-                for(let course of targetCourses) { 
-                  for(let member of targetMembers) {
-                    payload.push({
-                      ID: member.id, name: member.name,
-                      date: dateformat(targetDate, 'yyyy-mm-dd'),
-                      course: course + '코스',
-                      score: score[isWeekEnd][isSolo]
-                    });
+                  else if(mode == 'delete') {
+                    util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증 실패', 'internal', 0, null, 'ERR_SAME_NAME_EXISTS'));
+                    return chat.channel.sendTemplate(new AttachmentTemplate(ReplyAttachment.fromChat(chat), targetMembers[i] + ' 회원님 동명이인이 존재해 대화형 삭제가 불가능합니다. 관리자 콘솔에서 삭제해 주세요.'));
                   }
                 }
+              }
               
+              // Score table
+              let score = { weekday: { solo: 1.5, dual: 1}, weekend: { solo: 2, dual: 1.5} }
+
+              // Detect target date is weekand and number of people
+              let isWeekEnd = targetDate.getDayNum() > 5 ? 'weekend' : 'weekday';
+              let isSolo = targetMembers.length == 1 ? 'solo' : 'dual';
+
+              // writing payload
+              let payload = [];
+              for(let course of targetCourses) { 
+                for(let member of targetMembers) {
+                  payload.push({
+                    ID: member.id, name: member.name,
+                    date: dateformat(targetDate, 'yyyy-mm-dd'),
+                    course: course + '코스',
+                    score: score[isWeekEnd][isSolo]
+                  });
+                }
+              }
+              
+              if(mode == 'verify') {
                 // add verify data to DB
                 let resultString = greetings(), prevCourse = null;
                 resultString += `${dateformat(payload[0].date, 'yyyy년 m월 d일')} 급식 활동을 등록했습니다.`;
@@ -167,32 +180,6 @@ async function kakaoClient() {
                 if(chat.channel.id == process.env.verifyChannelId) util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증', 'internal', 0, null, resultString));
               }
               else if(mode == 'delete') {
-                // targetMember validation
-                for(let i in targetMembers) { // get member student id with name
-                  let result = await util.query(`SELECT name, ID FROM \`namelist_${await util.getSettings('currentSemister')}\` WHERE name LIKE '%${targetMembers[i]}%';`);
-                  if(result.length == 1) targetMembers[i] = { name: targetMembers[i], id: result[0].ID };
-                  else if(!result.length) {
-                    util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증 삭제 실패', 'internal', 0, null, 'ERR_NO_ENTRY_DETECTED'));
-                    return chat.channel.sendTemplate(new AttachmentTemplate(ReplyAttachment.fromChat(chat), targetMembers[i] + '님이 회원 명단에 없어 인증 기록을 삭제하지 못했습니다.'));
-                  }
-                  else {
-                    util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증 실패', 'internal', 0, null, 'ERR_SAME_NAME_EXISTS'));
-                    return chat.channel.sendTemplate(new AttachmentTemplate(ReplyAttachment.fromChat(chat), targetMembers[i] + ' 회원님 동명이인이 존재해 대화형 삭제가 불가능합니다. 관리자 콘솔에서 삭제해 주세요.'));
-                  }
-                }
-                
-                // writing payload
-                let payload = [];
-                for(let course of targetCourses) { 
-                  for(let member of targetMembers) {
-                    payload.push({
-                      ID: member.id, name: member.name,
-                      date: dateformat(targetDate, 'yyyy-mm-dd'),
-                      course: course + '코스'
-                    });
-                  }
-                }
-                
                 // delete verify data from DB
                 let resultString = '';
                 resultString += `다음 급식 기록을 삭제했습니다.`;
