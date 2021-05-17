@@ -1,0 +1,42 @@
+## Site Meta ##
+# The title of the website.
+title: "Lens - Elastic Designs"
+# The description of the website
+description: "A Jekyll theme for photographers and photo bloggers."
+# Keywords/tags for you site.
+keywords: "lens, jeykll-lens, jekyll, theme, jekyll-theme, photography, blog, photography-blog, photo-blog"
+# Your copyright message.
+copyright: "Copyright &copy; 2017 - Elastic Designs."
+
+## Site Configurations ##
+# 1st heading of the site.
+header: "Lens"
+# 2nd heading/sub heading of the website.
+subheader: "Elastic Designs"
+# A description/bio of the website.
+bio: "A Jekyll theme for photographers and photo bloggers."
+social:
+  # Your Twitter username.
+  twitter_username: ""
+  # Your Facebook username.
+  facebook_username: ""
+  # Your Instagram username.
+  instagram_username: ""
+  # GitHub username.
+  github_username: "ElasticDesigns"
+  # Your email address.
+  email: ""
+
+## Gallery Configuration ##
+# If you modify this, also modify the `default.scope.path` key below.
+gallery_dir: "gallery"
+# Any valid value of "background-position" CSS attribute.
+image_position: "left center"
+
+## Jekyll Configuration ##
+defaults:
+ - scope:
+    # Should be same as the `gallery_dir` key above.
+    path: "gallery"
+   values:
+    image: true

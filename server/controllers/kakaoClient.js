@@ -71,7 +71,7 @@ async function kakaoClient() {
               // if image is not on the same chat, on the verify channel
               if(test.length && test[0].chatLogId != String(chat.logId)) {
                 if(chat.channel.id == process.env.verifyChannelId) util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '유사 이미지 검출', 'internal', 0, null, 'ERR_SIMILAR_IMAGE_DETECTED'));
-                if(chat.channel.id == process.env.verifyChannelId || chat.channel.id == process.env.testChannelID) await chat.channel.sendTemplate(new AttachmentTemplate(new ReplyAttachment(ChatType[test[0].chatType], Long.fromString(test[0].chatLogId), Long.fromString(test[0].chatSenderId), false, '원본 이미지', [], Long.ZERO), `기존 이미지와 유사한 이미지를 검출했습니다.\n등록일: ${dateformat(test[0].timestamp, 'yyyy-mm-dd @HH:MM:ss')}\n채팅방: ${test[0].chatChannelName}\n유사도: ${(1 - (test[0].hd / 32)) * 100}%\nlog_id: ${test[0].chatLogId}`));
+                if(chat.channel.id == process.env.verifyChannelId || chat.channel.id == process.env.testChannelID) await chat.channel.sendTemplate(new AttachmentTemplate(new ReplyAttachment(ChatType[test[0].chatType], Long.fromString(test[0].chatLogId), Long.fromString(test[0].chatSenderId), false, '원본 이미지', [], Long.ZERO), `기존 이미지와 유사한 이미지를 검출했습니다.\n등록일: ${dateformat(test[0].timestamp, 'yyyy-mm-dd THH:MM:ss')}\n채팅방: ${test[0].chatChannelName}\n유사도: ${(1 - (test[0].hd / 32)) * 100}%\nlog_id: ${test[0].chatLogId}`));
               }
               
               // add image to DB
@@ -139,7 +139,7 @@ async function kakaoClient() {
                     return chat.channel.sendTemplate(new AttachmentTemplate(ReplyAttachment.fromChat(chat), targetMembers[i] + ' 회원님 동명이인이 존재해 자동 인증이 불가능합니다. 관리자가 직접 인증해 주세요.'));
                   }
                   else if(mode == 'delete') {
-                    util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증 실패', 'internal', 0, null, 'ERR_SAME_NAME_EXISTS'));
+                    util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증 삭제 실패', 'internal', 0, null, 'ERR_SAME_NAME_EXISTS'));
                     return chat.channel.sendTemplate(new AttachmentTemplate(ReplyAttachment.fromChat(chat), targetMembers[i] + ' 회원님 동명이인이 존재해 대화형 삭제가 불가능합니다. 관리자 콘솔에서 삭제해 주세요.'));
                   }
                 }
