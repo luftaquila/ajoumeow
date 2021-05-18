@@ -1,3 +1,11 @@
+@media screen and (max-width: 768px) {
+  .sortPhoto {
+    text-align: right;
+    margin-top: 2.5rem;
+  }
+}
+
+
 html {
   overflow-x: hidden; }
 
