@@ -5,6 +5,7 @@ import settings from './api/settings.js';
 import record from './api/record.js';
 import verify from './api/verify.js';
 import users from './api/users.js';
+import gallery from './api/gallery.js';
 
 import util from './controllers/util/util.js';
 import { Log } from './controllers/util/interface.js';
@@ -25,6 +26,7 @@ app.use('/api/settings', settings);
 app.use('/api/record', record);
 app.use('/api/verify', verify);
 app.use('/api/users', users);
+app.use('/api/gallery', gallery);
 
 app.listen(5710, function() {
   const msg = 'API server is in startup. Listening on :5710';
