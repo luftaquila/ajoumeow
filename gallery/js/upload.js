@@ -2,10 +2,13 @@ $(function() {
   const jwt = Cookies.get('jwt');
   if(jwt) { // if jwt exists
     $.ajax({
-      url: "api/auth/autologin",
+      url: "/ajoumeow/api/auth/autologin",
       beforeSend: xhr => xhr.setRequestHeader('x-access-token', jwt),
       type: "POST",
-      success: res => uppyInit(res),
+      success: res => {
+        if(res.stat = 'success') uppyInit();
+        else autoLoginFailure();
+      },
       error: autoLoginFailure
     });
   }
@@ -41,7 +44,7 @@ function uppyInit() {
         dropPaste: '📷 사진을 %{browse}하거나 여기로 드래그하세요.',
         addingMoreFiles: '파일 추가',
         xFilesSelected: '총 %{smart_count}개 사진',
-        uploadingXFiles: '%{smart_count}개 사진 업로드 중...'
+        uploadingXFiles: '%{smart_count}개 사진 업로드 대기 중...'
       }
     }
   })
