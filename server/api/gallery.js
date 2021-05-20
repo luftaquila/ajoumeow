@@ -28,6 +28,17 @@ router.get('/tags', async (req, res) => {
   }
 });
 
+router.get('/photo', async (req, res) => {
+  const row = { latest: 'timestamp', popular: 'likes' };
+  try {
+    const result = await util.query(`SELECT * FROM gallery_photo ORDER BY ${row[req.query.sort]} DESC LIMIT 10 OFFSET ${req.query.offset};`);
+    res.send(result);
+  }
+  catch(e) {
+  
+  }
+});
+
 router.post('/photo', util.isLogin, upload.any(), async (req, res) => {
   const conn = await pool.getConnection();
   try {
@@ -41,11 +52,16 @@ router.post('/photo', util.isLogin, upload.any(), async (req, res) => {
     // tag 분석
     for(const tag of JSON.parse(req.body.tags)) {
       // gallery_tag 업데이트
+      if(!Number(tag)) tag.value = -1;
       const tagExists = await conn.query(`SELECT photo_count, newest_photo_id FROM gallery_tag WHERE tag_id=${tag.value};`);
       if(tagExists.length) await conn.query(`UPDATE gallery_tag SET photo_count=${Number(tagExists[0].photo_count) + 1}, newest_photo_id='${req.files[0].filename}' WHERE tag_id=${tag.value};`);
-      else await conn.query(`INSERT INTO gallery_tag(tag_id, tag_name, photo_count, newest_photo_id) VALUES(${tag.value}, '${tag.text}', 1, '${req.files[0].filename}');`);
+      else await conn.query(`INSERT INTO gallery_tag(tag_name, photo_count, newest_photo_id) VALUES('${tag.text}', 1, '${req.files[0].filename}');`);
       
       // gallery_photo_tag 업데이트
+      if(tag.value == -1) {
+        const tagId = await conn.query(`SELECT tag_id FROM gallery_tag WHERE tag_name='${tag.text}';`);
+        tag.value = tagId[0].tag_id;
+      }
       await conn.query(`INSERT INTO gallery_photo_tag(photo_id, tag_id) VALUES('${req.files[0].filename}', ${tag.value});`);
     }
     
@@ -55,18 +71,13 @@ router.post('/photo', util.isLogin, upload.any(), async (req, res) => {
     else await conn.query(`INSERT INTO gallery_uploader(uploader_id, uploader_name, photo_count, newest_photo_id) VALUES(${req.decoded.id}, '${uploader_name}', 1, '${req.files[0].filename}');`);
     
     await conn.commit();
-    return res.json();
+    res.json();
   }
   catch(e) {
     console.error(e);
     await conn.rollback();
   }
   finally { conn.release(); }
-  
-    console.log(req.decoded);
-    console.log(JSON.parse(req.body.tags));
-    console.log(req.files[0]);
-    res.send("hello world")
 });
 
 export default router
