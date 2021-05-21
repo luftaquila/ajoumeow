@@ -62,13 +62,22 @@ function uppyInit() {
 
 $('#upload').click(function() {
   $("html, body").animate({ scrollTop: 0 }, "slow");
-
-  let flag = null;
-  for(const [i, v] of uppy.getFiles().entries()) {
-    if(!v.meta.tags) return uppy.info(`${Number(i) + 1}번째 사진에 태그를 입력해 주세요.`, 'error', 2000);
-  }
   
-  uppy.upload();
+  let tagFlag = true;
+  uppy.getFiles().forEach((v, i) => {
+    if(v.meta.tags) {
+      if(!JSON.parse(v.meta.tags).length) {
+        tagFlag = false;
+        uppy.info(`${Number(i) + 1}번째 사진에 태그를 입력해 주세요.`, 'error', 2000);
+      }
+    }
+    else {
+      tagFlag = false;
+      uppy.info(`${Number(i) + 1}번째 사진에 태그를 입력해 주세요.`, 'error', 2000);
+    }
+  });
+  
+  if(tagFlag) uppy.upload();
 });
 
 async function generateFileManager() {
@@ -77,7 +86,7 @@ async function generateFileManager() {
   $('#filecount').text(uppy.getFiles().length);
   
   let tags = await $.ajax('/ajoumeow/api/gallery/tags');
-  tags = tags.map(x => { return { text: x.tag_name, value: x.tag_id }; });
+  tags = tags.map(x => { return { text: x.tag_name } });
   
   uppy.getFiles().forEach((v, i) => {
     $('#fileManager').append(`<div style='margin: 0 0 1rem; padding: 0.75rem; border: 1.5px solid gray; border-radius: 0.75rem; position: relative;'><span style='width: 1.5rem; height: 1.5rem; line-height: 1.5rem; background-color: #1fad9f; color: white; position: absolute; top: 0.25rem; left: 0.25rem; text-align: center; border-radius: 50%;'>${Number(i) + 1}</span><img id='img-${i}' src='${URL.createObjectURL(v.data)}' style='width: 100%; margin-bottom: 0.5rem'><select id='select-${i}' multiple></select></div>`);
@@ -87,9 +96,9 @@ async function generateFileManager() {
       searchPlaceholder: '검색',
       searchFocus: false,
       data: tags,
-      addable: value => { return { text: $.trim(value), value: $.trim(value) }; },
+      addable: value => { return { text: $.trim(value) }; },
       closeOnSelect: false,
-      onChange: info => uppy.setFileMeta(v.id, { tags: JSON.stringify(info.map(x => { return { text: x.text, value: x.value }; })) } )
+      onChange: info => uppy.setFileMeta(v.id, { tags: JSON.stringify(info.map(x => { return { text: x.text }})) } )
     });
   });
 }

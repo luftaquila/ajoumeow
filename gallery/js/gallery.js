@@ -1,8 +1,7 @@
 $(function() {
   requestPhotoList(0);
   $('input[name=sortPhoto]').change(() => requestPhotoList(0));
-  $('a.fj-gallery-item, img.fj-gallery-item-image, div.fj-gallery-item-info').on('contextmenu', function(e) { return false; }).mousedown(e => e.preventDefault());
-  
+    
   loadCount = 0;
   io = new IntersectionObserver((entries, observer) => {
     entries.forEach(entry => {
@@ -35,7 +34,7 @@ function renderPhoto(photoList, offset) {
     // rendering photos
     photoList.forEach(v => {
       $('.fj-gallery').append(`
-        <a href="#" class="fj-gallery-item" oncontextmenu="return true;">
+        <a href="" class="fj-gallery-item" oncontextmenu="return false;">
           <img
             class="fj-gallery-item-image"
             src="/ajoumeow/res/image/gallery/${v.photo_id}"
@@ -45,10 +44,14 @@ function renderPhoto(photoList, offset) {
           <div class='fj-gallery-item-info'>
             <div style='width: fit-content; position: relative; left: 0; bottom: 0; padding: .75rem; line-height: 1rem;'>
               <span>${v.uploader_name}</span><br>
-              <span style='font-size: .8rem'>#${v.tags}</span>
+              <span style='font-size: .8rem'>${v.tags.map(x => '#' + x).join(' ' )}</span>
             </div>
-            <div style='width: fit-content; position: absolute; right: 0; bottom: 0; padding: 1rem;'>
-              <i class='far fa-heart' onclick="$.ajax({ url: '/ajoumeow/api/gallery/like', type: 'POST', success: res => { $(this).removeClass('far').addClass('fas'); $(this).text(Number($(this).text()) + 1); }}); " style='float: right; font-size: 1.5rem;'> ${v.likes}</i>
+            <div class='likes'
+              style='width: fit-content; position: absolute; right: .5rem; bottom: 0; padding: 1rem; font-size: 1.5rem; line-height: 1.5rem;'
+              onclick="$.ajax({ url: '/ajoumeow/api/gallery/like', type: 'POST', data: { photo_id: '${v.photo_id}' }, success: res => { $(this).children('i').removeClass('far').addClass('fas'); $(this).children('span').text(Number($(this).children('span').text()) + 1); $(this).attr('onclick', null); }}); return false;"
+            >
+              <i class='far fa-heart'></i>
+              <span style='display: inline-block; width: 1rem; text-align: center'>${v.likes}</span>
             </div>
           </div>
        </a>`);
@@ -73,21 +76,24 @@ function renderPhoto(photoList, offset) {
     // rendering photos
     photoList.forEach(v => {
       $('.fj-gallery').append(`
-        <a href="/ajoumeow/res/image/gallery/${v.photo_id}" class="fj-gallery-item" oncontextmenu="return true;">
+        <a href="" class="fj-gallery-item" oncontextmenu="return false;">
           <img
             class="fj-gallery-item-image"
             src="/ajoumeow/res/image/gallery/${v.photo_id}"
-            width="800"
-            height="600"
+            width="800" height="600"
             style="max-height: none; max-width: none; margin: 0;"
           />
           <div class='fj-gallery-item-info'>
             <div style='width: fit-content; position: relative; left: 0; bottom: 0; padding: .75rem; line-height: 1rem;'>
               <span>${v.uploader_name}</span><br>
-              <span style='font-size: .8rem'>#${v.tags}</span>
+              <span style='font-size: .8rem'>${v.tags.map(x => '#' + x).join(' ' )}</span>
             </div>
-            <div style='width: fit-content; position: absolute; right: 0; bottom: 0; padding: 1rem;'>
-              <i class='far fa-heart' style='float: right; font-size: 1.5rem;'> ${v.likes}</i>
+            <div class='likes'
+              style='width: fit-content; position: absolute; right: .5rem; bottom: 0; padding: 1rem; font-size: 1.5rem; line-height: 1.5rem;'
+              onclick="$.ajax({ url: '/ajoumeow/api/gallery/like', type: 'POST', data: { photo_id: '${v.photo_id}' }, success: res => { $(this).children('i').removeClass('far').addClass('fas'); $(this).children('span').text(Number($(this).children('span').text()) + 1); $(this).attr('onclick', null); }}); return false;"
+            >
+              <i class='far fa-heart'></i>
+              <span style='display: inline-block; width: 1rem; text-align: center'>${v.likes}</span>
             </div>
           </div>
        </a>`);
