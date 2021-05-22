@@ -35,7 +35,7 @@ function renderPhoto(photoList, offset) {
     // rendering photos
     photoList.forEach(v => {
       $('.fj-gallery').append(`
-        <a href="" class="fj-gallery-item" oncontextmenu="return false;">
+        <a href="/ajoumeow/gallery/cat?cid=${v.tag_name}" class="fj-gallery-item" oncontextmenu="return false;">
           <img
             class="fj-gallery-item-image"
             src="/ajoumeow/res/image/gallery/${v.newest_photo_id}"
@@ -44,7 +44,7 @@ function renderPhoto(photoList, offset) {
           />
           <div class='fj-gallery-item-category'>
             <div style='width: fit-content; position: relative; left: 0; bottom: 0; padding: 1rem; font-size: 1.2rem; line-height: 1rem;'>
-              <span>#${v.tag_name}</span>
+              <span>#${v.tag_name}</span> <span style='font-weight: bold'>${v.photo_count}</span>
             </div>
             <div style='width: fit-content; position: absolute; right: .5rem; bottom: 0; padding: 1rem; font-size: 1.2rem; line-height: 1.2rem;'>
               <i class='far fa-heart'></i>
@@ -73,7 +73,7 @@ function renderPhoto(photoList, offset) {
     // rendering photos
     photoList.forEach(v => {
       $('.fj-gallery').append(`
-        <a href="" class="fj-gallery-item" oncontextmenu="return false;">
+        <a href="/ajoumeow/gallery/cat?cid=${v.tag_name}" class="fj-gallery-item" oncontextmenu="return false;">
           <img
             class="fj-gallery-item-image"
             src="/ajoumeow/res/image/gallery/${v.newest_photo_id}"
@@ -82,7 +82,7 @@ function renderPhoto(photoList, offset) {
           />
           <div class='fj-gallery-item-category'>
             <div style='width: fit-content; position: relative; left: 0; bottom: 0; padding: 1rem; font-size: 1.2rem; line-height: 1rem;'>
-              <span>#${v.tag_name}</span>
+              <span>#${v.tag_name}</span> <span style='font-weight: bold'>${v.photo_count}</span>
             </div>
             <div style='width: fit-content; position: absolute; right: .5rem; bottom: 0; padding: 1rem; font-size: 1.2rem; line-height: 1.2rem;'>
               <i class='far fa-heart'></i>

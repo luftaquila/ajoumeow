@@ -55,6 +55,24 @@ router.get('/photographer', async (req, res) => {
   }
 });
 
+router.get('/cat', async (req, res) => {
+  const row = { latest: 'photo_id', popular: 'likes' };
+  try {
+    let result = [];
+    const tagResult = await util.query(`SELECT * FROM gallery_photo_tag WHERE tag_name='${req.query.cid}' ORDER BY ${row[req.query.sort]} DESC LIMIT 10 OFFSET ${req.query.offset};`);
+    for(const photo of tagResult) {
+      const detail = await util.query(`SELECT * FROM gallery_photo WHERE photo_id='${photo.photo_id}'`);
+      const tags = await util.query(`SELECT tag_name FROM gallery_photo_tag WHERE photo_id='${photo.photo_id}';`);
+      detail[0].tags = tags.map(x => x.tag_name);
+      result.push(detail[0]);
+    }
+    res.send(result);
+  }
+  catch(e) {
+    
+  }
+});
+
 router.get('/photo', async (req, res) => {
   const row = { latest: 'photo_id', popular: 'likes' };
   
