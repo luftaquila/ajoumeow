@@ -21,10 +21,12 @@ let upload = multer({
 router.get('/tags', async (req, res) => {
   try {
     const result = await util.query(`SELECT * FROM gallery_tag;`);
-    res.send(result);
+    util.logger(new Log('info', req.remoteIP, req.originalPath, '갤러리 태그 목록 요청', req.method, 200, req.query, result));
+    res.status(200).send(result);
   }
   catch(e) {
-    
+    util.logger(new Log('error', req.remoteIP, req.originalPath, '갤러리 태그 목록 요청 오류', req.method, 500, req.query, e.stack));
+    res.status(500).send();
   }
 });
 
@@ -33,10 +35,13 @@ router.get('/image', async (req, res) => {
     const result = await util.query(`SELECT * FROM gallery_photo WHERE photo_id='${req.query.photo_id}';`);
     const tags = await util.query(`SELECT tag_name FROM gallery_photo_tag WHERE photo_id='${req.query.photo_id}';`);
     result[0].tags = tags.map(x => x.tag_name);
-    res.send(result[0]);
+    
+    util.logger(new Log('info', req.remoteIP, req.originalPath, '사진 세부정보 요청', req.method, 200, req.query, result[0]));
+    res.status(200).send(result[0]);
   }
   catch(e) {
-    
+    util.logger(new Log('error', req.remoteIP, req.originalPath, '사진 세부정보 요청 오류', req.method, 500, req.query, e.stack));
+    res.status(500).send();
   }
 });
 
@@ -48,10 +53,12 @@ router.get('/photographer', async (req, res) => {
       const tags = await util.query(`SELECT tag_name FROM gallery_photo_tag WHERE photo_id='${result[i].photo_id}';`);
       result[i].tags = tags.map(x => x.tag_name);
     }
-    res.send(result);
+    util.logger(new Log('info', req.remoteIP, req.originalPath, '갤러리 사진작가 사진 목록 요청', req.method, 200, req.query, result));
+    res.status(200).send(result);
   }
   catch(e) {
-    
+    util.logger(new Log('error', req.remoteIP, req.originalPath, '갤러리 사진작가 사진 목록 요청 오류', req.method, 500, req.query, e.stack));
+    res.status(500).send();
   }
 });
 
@@ -66,10 +73,12 @@ router.get('/cat', async (req, res) => {
       detail[0].tags = tags.map(x => x.tag_name);
       result.push(detail[0]);
     }
-    res.send(result);
+    util.logger(new Log('info', req.remoteIP, req.originalPath, '갤러리 태그 사진 목록 요청', req.method, 200, req.query, result));
+    res.status(200).send(result);
   }
   catch(e) {
-    
+    util.logger(new Log('error', req.remoteIP, req.originalPath, '갤러리 태그 사진 목록 요청 오류', req.method, 500, req.query, e.stack));
+    res.status(500).send();
   }
 });
 
@@ -83,20 +92,27 @@ router.get('/photo', async (req, res) => {
         const tags = await util.query(`SELECT tag_name FROM gallery_photo_tag WHERE photo_id='${result[i].photo_id}';`);
         result[i].tags = tags.map(x => x.tag_name);
       }
-      res.send(result);
+
+      util.logger(new Log('info', req.remoteIP, req.originalPath, '갤러리 사진 목록 요청', req.method, 200, req.query, result));
+      res.status(200).send(result);
     }
     else if(req.query.type == 'uploader') {
       const result = await util.query(`SELECT * FROM gallery_uploader WHERE photo_count > 0 ORDER BY ${row[req.query.sort] ? `${row[req.query.sort]} DESC,` : '' } uploader_name ASC LIMIT 10 OFFSET ${req.query.offset};`);
-      res.send(result);
+
+      util.logger(new Log('info', req.remoteIP, req.originalPath, '갤러리 사진작가 목록 요청', req.method, 200, req.query, result));
+      res.status(200).send(result);
     }
     else if(req.query.type == 'cat') {
       const result = await util.query(`SELECT * FROM gallery_tag WHERE photo_count > 0 ORDER BY ${row[req.query.sort] ? `${row[req.query.sort]} DESC,` : '' } tag_name ASC LIMIT 10 OFFSET ${req.query.offset};`);
-      res.send(result);
+
+      util.logger(new Log('info', req.remoteIP, req.originalPath, '갤러리 태그 목록 요청', req.method, 200, req.query, result));
+      res.status(200).send(result);
     }
     else res.status(404).send('fail');
   }
   catch(e) {
-    
+    util.logger(new Log('error', req.remoteIP, req.originalPath, '갤러리 목록 요청 오류', req.method, 500, req.query, e.stack));
+    res.status(500).send();
   }
 });
 
@@ -121,11 +137,13 @@ router.post('/photo', util.isLogin, upload.any(), async (req, res) => {
     await conn.query(`INSERT INTO gallery_uploader(uploader_id, uploader_name, photo_count, newest_photo_id) VALUES(${req.decoded.id}, '${uploader_name}', 1, '${req.files[0].filename}') ON DUPLICATE KEY UPDATE photo_count=photo_count+1, newest_photo_id='${req.files[0].filename}';`);
     
     await conn.commit();
-    res.send('ok');
+    util.logger(new Log('info', req.remoteIP, req.originalPath, '갤러리 사진 업로드', req.method, 200, req.body, null));
+    res.status(200).send();
   }
   catch(e) {
-    console.error(e);
     await conn.rollback();
+    util.logger(new Log('error', req.remoteIP, req.originalPath, '갤러리 사진 업로드 오류', req.method, 500, req.body, e.stack));
+    res.status(500).send();
   }
   finally { conn.release(); }
 });
@@ -142,12 +160,13 @@ router.post('/like', async (req, res) => {
     await conn.query(`UPDATE gallery_uploader SET likes=likes+1 WHERE uploader_id=${uploader[0].uploader_id};`);
     
     await conn.commit();
-    
-    res.send('ok');
+    util.logger(new Log('info', req.remoteIP, req.originalPath, '갤러리 좋아요 요청', req.method, 200, req.body, null));
+    res.status(200).send();
   }
   catch(e) {
-    console.error(e);
     await conn.rollback();
+    util.logger(new Log('error', req.remoteIP, req.originalPath, '갤러리 좋아요 요청 오류', req.method, 500, req.body, e.stack));
+    res.status(500).send();
   }
   finally { conn.release(); }
 });
