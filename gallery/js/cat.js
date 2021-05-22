@@ -20,7 +20,7 @@ function requestPhotoList(offset) {
     data: {
       sort: $('input[name=sortPhoto]:checked').val(),
       offset: offset,
-      type: 'gallery'
+      type: 'cat'
     },
     success: res => renderPhoto(res, offset)
   });
@@ -38,19 +38,15 @@ function renderPhoto(photoList, offset) {
         <a href="" class="fj-gallery-item" oncontextmenu="return false;">
           <img
             class="fj-gallery-item-image"
-            src="/ajoumeow/res/image/gallery/${v.photo_id}"
+            src="/ajoumeow/res/image/gallery/${v.newest_photo_id}"
             width="800" height="600"
             style="max-height: none; max-width: none; margin: 0;"
           />
-          <div class='fj-gallery-item-info'>
-            <div style='width: fit-content; position: relative; left: 0; bottom: 0; padding: .75rem; line-height: 1rem;'>
-              <span>${v.uploader_name}</span><br>
-              <span style='font-size: .8rem'>${v.tags.map(x => '#' + x).join(' ')}</span>
+          <div class='fj-gallery-item-category'>
+            <div style='width: fit-content; position: relative; left: 0; bottom: 0; padding: 1rem; font-size: 1.2rem; line-height: 1rem;'>
+              <span>#${v.tag_name}</span>
             </div>
-            <div class='likes'
-              style='width: fit-content; position: absolute; right: .5rem; bottom: 0; padding: 1rem; font-size: 1.5rem; line-height: 1.5rem;'
-              onclick="$.ajax({ url: '/ajoumeow/api/gallery/like', type: 'POST', data: { photo_id: '${v.photo_id}' }, success: res => { $(this).children('i').removeClass('far').addClass('fas'); $(this).children('span').text(Number($(this).children('span').text()) + 1); $(this).attr('onclick', null); }}); return false;"
-            >
+            <div class='likes' style='width: fit-content; position: absolute; right: .5rem; bottom: 0; padding: 1rem; font-size: 1.2rem; line-height: 1.2rem;'>
               <i class='far fa-heart'></i>
               <span style='display: inline-block; width: 1rem; text-align: center'>${v.likes}</span>
             </div>
@@ -80,19 +76,15 @@ function renderPhoto(photoList, offset) {
         <a href="" class="fj-gallery-item" oncontextmenu="return false;">
           <img
             class="fj-gallery-item-image"
-            src="/ajoumeow/res/image/gallery/${v.photo_id}"
+            src="/ajoumeow/res/image/gallery/${v.newest_photo_id}"
             width="800" height="600"
             style="max-height: none; max-width: none; margin: 0;"
           />
-          <div class='fj-gallery-item-info'>
-            <div style='width: fit-content; position: relative; left: 0; bottom: 0; padding: .75rem; line-height: 1rem;'>
-              <span>${v.uploader_name}</span><br>
-              <span style='font-size: .8rem'>${v.tags.map(x => '#' + x).join(' ' )}</span>
+          <div class='fj-gallery-item-category'>
+            <div style='width: fit-content; position: relative; left: 0; bottom: 0; padding: 1rem; font-size: 1.2rem; line-height: 1rem;'>
+              <span>#${v.tag_name}</span>
             </div>
-            <div class='likes'
-              style='width: fit-content; position: absolute; right: .5rem; bottom: 0; padding: 1rem; font-size: 1.5rem; line-height: 1.5rem;'
-              onclick="$.ajax({ url: '/ajoumeow/api/gallery/like', type: 'POST', data: { photo_id: '${v.photo_id}' }, success: res => { $(this).children('i').removeClass('far').addClass('fas'); $(this).children('span').text(Number($(this).children('span').text()) + 1); $(this).attr('onclick', null); }}); return false;"
-            >
+            <div class='likes' style='width: fit-content; position: absolute; right: .5rem; bottom: 0; padding: 1rem; font-size: 1.2rem; line-height: 1.2rem;'>
               <i class='far fa-heart'></i>
               <span style='display: inline-block; width: 1rem; text-align: center'>${v.likes}</span>
             </div>
