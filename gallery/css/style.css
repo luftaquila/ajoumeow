@@ -5,6 +5,39 @@
   }
 }
 
+#mainImage {
+  height: auto;
+  width: auto;
+  max-width: 100%;
+  max-height: 90vh;
+}
+#imageInfo {
+  margin: auto;
+  padding-top: 1rem;
+  text-align: left;
+  color: rgb(50, 50, 50);
+  font-family: "IBM Plex Mono", monospace;
+  line-height: 3rem;
+}
+#imageInfo table tr td{
+  padding-right: 1rem;
+}
+img.exif {
+  width: 40px;
+  height: 40px;
+}
+
+.likes {
+  color: white;
+  width: fit-content;
+  position: absolute;
+  right: .5rem;
+  bottom: 0;
+  padding: 1rem;
+  font-size: 1.5rem;
+  line-height: 1.5rem;
+}
+
 .fj-gallery-item-info, .fj-gallery-item-category {
   display: none;
   position: absolute;
@@ -51,6 +84,14 @@ h1, h2, h3, h4, h5,
 
 .text-primary {
   color: #1FAD9F !important; }
+
+.probootstrap-aside::-webkit-scrollbar {
+  display: none;
+}
+.probootstrap-aside {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
 
 .probootstrap-aside {
   height: 100vh;

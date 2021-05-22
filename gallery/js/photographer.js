@@ -46,7 +46,7 @@ function renderPhoto(photoList, offset) {
             <div style='width: fit-content; position: relative; left: 0; bottom: 0; padding: 1rem; font-size: 1.2rem; line-height: 1rem;'>
               <span>${v.uploader_name}</span>
             </div>
-            <div class='likes' style='width: fit-content; position: absolute; right: .5rem; bottom: 0; padding: 1rem; font-size: 1.2rem; line-height: 1.2rem;'>
+            <div style='width: fit-content; position: absolute; right: .5rem; bottom: 0; padding: 1rem; font-size: 1.2rem; line-height: 1.2rem;'>
               <i class='far fa-heart'></i>
               <span style='display: inline-block; width: 1rem; text-align: center'>${v.likes}</span>
             </div>
@@ -84,7 +84,7 @@ function renderPhoto(photoList, offset) {
             <div style='width: fit-content; position: relative; left: 0; bottom: 0; padding: 1rem; font-size: 1.2rem; line-height: 1rem;'>
               <span>${v.uploader_name}</span>
             </div>
-            <div class='likes' style='width: fit-content; position: absolute; right: .5rem; bottom: 0; padding: 1rem; font-size: 1.2rem; line-height: 1.2rem;'>
+            <div style='width: fit-content; position: absolute; right: .5rem; bottom: 0; padding: 1rem; font-size: 1.2rem; line-height: 1.2rem;'>
               <i class='far fa-heart'></i>
               <span style='display: inline-block; width: 1rem; text-align: center'>${v.likes}</span>
             </div>

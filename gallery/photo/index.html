@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <title>미유미유 온라인 사진전</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="미유미유 온라인 사진전" />
+    <link href="https://fonts.googleapis.com/css?family=Work+Sans" rel="stylesheet">
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/open-iconic-bootstrap.min.css">
+    <link rel="stylesheet" href="../css/owl.carousel.min.css">
+    <link rel="stylesheet" href="../css/owl.theme.default.min.css">
+    <link rel="stylesheet" href="../css/icomoon.css">
+    <link rel="stylesheet" href="../css/animate.css">
+    <link rel="stylesheet" href="../css/magic-check.css" />
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/fjGallery.css">
+    <link rel="stylesheet" href="/res/fontawesome5/css/all.min.css">
+    
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <aside class="probootstrap-aside js-probootstrap-aside">
+      <a href="#" class="probootstrap-close-menu js-probootstrap-close-menu d-md-none"><span class="oi oi-arrow-left"></span> Close</a>
+      <div class="probootstrap-site-logo probootstrap-animate" data-animate-effect="fadeInLeft">
+        <a href="/ajoumeow/gallery" class="mb-2 d-block probootstrap-logo">미유미유<br>온라인 사진전</a>
+        <p class="mb-0">This page is under construction.</p>
+      </div>
+      <div class="probootstrap-overflow">
+        <nav class="probootstrap-nav">
+          <ul>
+            <li class="probootstrap-animate active" data-animate-effect="fadeInLeft"><a href="/ajoumeow/gallery">갤러리</a></li>
+            <li class="probootstrap-animate" data-animate-effect="fadeInLeft"><a href="../photographers.html">사진작가들</a></li>
+            <li class="probootstrap-animate" data-animate-effect="fadeInLeft"><a href="../cats.html">고양이들</a></li>
+            <li class="probootstrap-animate" data-animate-effect="fadeInLeft"><a href="../upload.html">업로드</a></li>
+          </ul>
+        </nav>
+        <footer class="probootstrap-aside-footer probootstrap-animate" data-animate-effect="fadeInLeft">
+          <ul class="list-unstyled d-flex probootstrap-aside-social">
+            <li><a href="/ajoumeow" class="p-2"><span class="icon-globe"></span></a></li>
+            <li><a href="https://instagram.com/ajou.meyoumeow" class="p-2"><span class="icon-instagram"></span></a></li>
+            <li><a href="https://facebook.com/meyoumeow" class="p-2"><span class="icon-facebook"></span></a></li>
+          </ul>
+          <p>&copy;<script>document.write(new Date().getFullYear())</script> LUFT-AQUILA.<br>Template from <a href="https://uicookies.com/" target="_blank">uiCookies:Aside</a>.</p>
+        </footer>
+      </div>
+    </aside>
+
+    <main role="main" class="probootstrap-main js-probootstrap-main">
+      <div class="probootstrap-bar">
+        <a href="#" class="probootstrap-toggle js-probootstrap-toggle"><span class="oi oi-menu"></span></a>
+        <div class="probootstrap-main-site-logo" style='width: fit-content'><a href="/ajoumeow/gallery">미유미유 온라인 사진전</a></div>
+      </div>
+      
+      <div style='text-align: center'>
+        <div style='position: relative'>
+          <img id='mainImage'>
+          <div class='likes' style='cursor: pointer'>
+            <i class='far fa-heart'></i>
+            <span style='display: inline-block; width: 1rem; text-align: center'>0</span>
+          </div>
+        </div>
+        
+        <div id='imageInfo'>
+          <h3>사진 정보</h3>
+          <img src='/ajoumeow/res/image/icons/photographer.png' class='exif'> <span id='photographer'>N/A</span><br>
+          <img src='/ajoumeow/res/image/icons/cat.png' class='exif'> <span id='tags'>N/A</span><br>
+          
+          <img src='/ajoumeow/res/image/icons/calendar.png' class='exif'> <span id='time'>N/A</span><br>
+          <img src='/ajoumeow/res/image/icons/location.png' class='exif'> <span id='location'>N/A</span><br>
+          <img src='/ajoumeow/res/image/icons/image.png' class='exif'> <span id='size'>N/A</span><br>
+          
+          <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/' style='display: block; text-align: right; margin: -1rem 0 2rem;'>
+            <img src='/ajoumeow/res/image/icons/ccl/cc.png' class='exif'>
+            <img src='/ajoumeow/res/image/icons/ccl/by.png' class='exif'>
+            <img src='/ajoumeow/res/image/icons/ccl/nc.png' class='exif'>
+            <img src='/ajoumeow/res/image/icons/ccl/nd.png' class='exif'>
+          </a>
+          
+          <h3>EXIF</h3>
+          <img src='/ajoumeow/res/image/icons/camera.png' class='exif'> <span id='camera'>N/A</span><br>
+          <img src='/ajoumeow/res/image/icons/lens.png' class='exif'> <span id='lens'>N/A</span><br>
+
+          <table>
+            <tr>
+              <td><img src='/ajoumeow/res/image/icons/aperture.png' class='exif'> <span id='aperture'>N/A</span></td>
+              <td><img src='/ajoumeow/res/image/icons/shutter-speed.png' class='exif'> <span id='shutterspeed'>N/A</span></td>
+            </tr>
+            <tr>
+              <td><img src='/ajoumeow/res/image/icons/iso.png' class='exif'> <span id='iso'>N/A</span></td>
+              <td><img src='/ajoumeow/res/image/icons/focal-length.png' class='exif'> <span id='focal-length'>N/A</span></td>
+            </tr>
+            <tr>
+              <td><img src='/ajoumeow/res/image/icons/exposure.png' class='exif'> <span id='exposure'>N/A</span></td>
+              <td><img src='/ajoumeow/res/image/icons/flash-on.png' class='exif'> <span id='flash'>N/A</span></td>
+            </tr>
+          </table>
+          <div style='text-align: right; font-size: 0.6rem'>icons by <a target="_blank" href="https://icons8.com">Icons8</a></div>
+        </div>
+      </div>
+
+      <div class="container-fluid d-md-none">
+        <div class="row">
+          <div class="col-md-12">
+            <ul class="list-unstyled d-flex probootstrap-aside-social" style='height: 3rem; margin-bottom: 0px;'>
+              <li><a href="/ajoumeow" class="p-2"><span class="icon-globe"></span></a></li>
+              <li><a href="https://instagram.com/ajou.meyoumeow" class="p-2"><span class="icon-instagram"></span></a></li>
+              <li><a href="https://facebook.com/meyoumeow" class="p-2"><span class="icon-facebook"></span></a></li>
+            </ul>
+            <p>&copy;<script>document.write(new Date().getFullYear())</script> LUFT-AQUILA.<br>Template from <a href="https://uicookies.com/" target="_blank">uiCookies:Aside</a>.</p>
+          </div>
+        </div>
+      </div>
+
+    </main>
+    <script src="/res/jquery-3.5.1.min.js"></script>
+    <script src="/res/dateFormat.js"></script>
+    <script src="../js/popper.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/owl.carousel.min.js"></script>
+    <script src="../js/jquery.waypoints.min.js"></script>
+    <script src="../js/imagesloaded.pkgd.min.js"></script>
+    <script src="../js/fjGallery.js"></script>
+    <script src="../js/exif.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/photo.js"></script>
+  </body>
+</html>
