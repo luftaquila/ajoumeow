@@ -40,11 +40,23 @@ router.get('/image', async (req, res) => {
   }
 });
 
+router.get('/photographer', async (req, res) => {
+  const row = { latest: 'photo_id', popular: 'likes' };
+  try {
+    const result = await util.query(`SELECT * FROM gallery_photo WHERE uploader_id=${req.query.uid} ORDER BY ${row[req.query.sort]} DESC LIMIT 10 OFFSET ${req.query.offset};`);
+    for(const i in result) {
+      const tags = await util.query(`SELECT tag_name FROM gallery_photo_tag WHERE photo_id='${result[i].photo_id}';`);
+      result[i].tags = tags.map(x => x.tag_name);
+    }
+    res.send(result);
+  }
+  catch(e) {
+    
+  }
+});
+
 router.get('/photo', async (req, res) => {
-  const row = {
-    latest: 'photo_id',
-    popular: 'likes'
-  };
+  const row = { latest: 'photo_id', popular: 'likes' };
   
   try {
     if(req.query.type == 'gallery') {
