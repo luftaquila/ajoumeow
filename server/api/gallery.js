@@ -28,6 +28,18 @@ router.get('/tags', async (req, res) => {
   }
 });
 
+router.get('/image', async (req, res) => {
+  try {
+    const result = await util.query(`SELECT * FROM gallery_photo WHERE photo_id='${req.query.photo_id}';`);
+    const tags = await util.query(`SELECT tag_name FROM gallery_photo_tag WHERE photo_id='${req.query.photo_id}';`);
+    result[0].tags = tags.map(x => x.tag_name);
+    res.send(result[0]);
+  }
+  catch(e) {
+    
+  }
+});
+
 router.get('/photo', async (req, res) => {
   const row = {
     latest: 'photo_id',
