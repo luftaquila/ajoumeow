@@ -35,7 +35,7 @@ function renderPhoto(photoList, offset) {
     // rendering photos
     photoList.forEach(v => {
       $('.fj-gallery').append(`
-        <a href="photo?pid=${v.photo_id}" class="fj-gallery-item" oncontextmenu="return false;">
+        <a href="/ajoumeow/gallery/photo?pid=${v.photo_id}" class="fj-gallery-item" oncontextmenu="return false;">
           <img
             class="fj-gallery-item-image"
             src="/ajoumeow/res/image/gallery/${v.photo_id}"
@@ -76,7 +76,7 @@ function renderPhoto(photoList, offset) {
     // rendering photos
     photoList.forEach(v => {
       $('.fj-gallery').append(`
-        <a href="photo?pid=${v.photo_id}" class="fj-gallery-item" oncontextmenu="return false;">
+        <a href="/ajoumeow/gallery/photo?pid=${v.photo_id}" class="fj-gallery-item" oncontextmenu="return false;">
           <img
             class="fj-gallery-item-image"
             src="/ajoumeow/res/image/gallery/${v.photo_id}"
