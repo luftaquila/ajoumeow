@@ -1,4 +1,26 @@
 $(function() {
+  const jwt = Cookies.get('jwt');
+  if(jwt) { // if jwt exists
+    $.ajax({
+      url: "/ajoumeow/api/auth/autologin",
+      beforeSend: xhr => xhr.setRequestHeader('x-access-token', jwt),
+      type: "POST",
+      success: res => {
+        if(res.stat = 'success') init(res.data.user);
+        else autoLoginFailure();
+      },
+      error: autoLoginFailure
+    });
+  }
+  else autoLoginFailure();
+});
+
+function autoLoginFailure() {
+  $('#contents').html(`<br><span style='color: black; font-size: 1.5rem;'>📣 앗, 잠깐만요! 🚧</span><br><img src='/ajoumeow/res/image/loading.gif' style='width: 100%; max-width: 500px; margin: 10px 0px'><br>사진 업로드는 미유미유 회원만 가능합니다.<br><a href='/ajoumeow'>미유미유 포탈</a>에서 먼저 로그인을 해 주세요.<br><p style='margin: 1rem 0'>401 Unauthorized.</p><br>`).css('text-align', 'center');
+}
+
+function init(user) {
+  userID = user.ID;
   requestPhotoList(0);
   $('input[name=sortPhoto]').change(() => requestPhotoList(0));
     
@@ -12,15 +34,15 @@ $(function() {
       observer.unobserve(entry.target);
     });
   }, {});
-});
+}
 
 function requestPhotoList(offset) {
   $.ajax({
-    url: '/ajoumeow/api/gallery/cat',
+    url: '/ajoumeow/api/gallery/photographer',
     data: {
       sort: $('input[name=sortPhoto]:checked').val(),
       offset: offset,
-      cid: new URLSearchParams(window.location.search).get('cid')
+      uid: userID
     },
     success: res => renderPhoto(res, offset)
   });
@@ -39,20 +61,20 @@ function renderPhoto(photoList, offset) {
           <img
             class="fj-gallery-item-image"
             src="/ajoumeow/res/image/gallery/thumb_${v.photo_id}"
-            width="800" height="600"
+            width="200" height="200"
             style="max-height: none; max-width: none; margin: 0;"
           />
-          <div class='fj-gallery-item-info'>
-            <div style='width: fit-content; position: relative; left: 0; bottom: 0; padding: .75rem; line-height: 1rem;'>
+          <div class='fj-gallery-item-info' style='height: 100%'>
+            <div style='width: fit-content; position: absolute; left: 0; bottom: 0; padding: .75rem; line-height: 1rem;'>
               <span>${v.uploader_name}</span><br>
               <span style='font-size: .8rem'>${v.tags.map(x => '#' + x).join(' ')}</span>
             </div>
-            <div class='likes'
-              onclick="$.ajax({ url: '/ajoumeow/api/gallery/like', type: 'POST', data: { photo_id: '${v.photo_id}' }, success: res => { $(this).children('i').removeClass('far').addClass('fas'); $(this).children('span').text(Number($(this).children('span').text()) + 1); $(this).attr('onclick', null); }}); return false;"
-            >
+            <div class='likes'>
               <i class='far fa-heart'></i>
               <span style='display: inline-block; width: 1rem; text-align: center'>${v.likes}</span>
             </div>
+            <div class='likes edit' style='top: 0; left: 0'><i class='far fa-edit'></i></div>
+            <div class='likes trash' style='top: 0; right: 0;'><i class='far fa-trash-alt'></i></div>
           </div>
        </a>`);
     });
@@ -62,6 +84,7 @@ function renderPhoto(photoList, offset) {
     loadCount = 0;
     $('.fj-gallery').fjGallery({
       itemSelector: '.fj-gallery-item',
+      rowHeight: 200,
       onJustify: () => {
         initCount ++;
         if(initCount > 1) {
@@ -80,20 +103,20 @@ function renderPhoto(photoList, offset) {
           <img
             class="fj-gallery-item-image"
             src="/ajoumeow/res/image/gallery/thumb_${v.photo_id}"
-            width="800" height="600"
+            width="200" height="200"
             style="max-height: none; max-width: none; margin: 0;"
           />
-          <div class='fj-gallery-item-info'>
-            <div style='width: fit-content; position: relative; left: 0; bottom: 0; padding: .75rem; line-height: 1rem;'>
+          <div class='fj-gallery-item-info' style='height: 100%'>
+            <div style='width: fit-content; position: absolute; left: 0; bottom: 0; padding: .75rem; line-height: 1rem;'>
               <span>${v.uploader_name}</span><br>
-              <span style='font-size: .8rem'>${v.tags.map(x => '#' + x).join(' ' )}</span>
+              <span style='font-size: .8rem'>${v.tags.map(x => '#' + x).join(' ')}</span>
             </div>
-            <div class='likes'
-              onclick="$.ajax({ url: '/ajoumeow/api/gallery/like', type: 'POST', data: { photo_id: '${v.photo_id}' }, success: res => { $(this).children('i').removeClass('far').addClass('fas'); $(this).children('span').text(Number($(this).children('span').text()) + 1); $(this).attr('onclick', null); }}); return false;"
-            >
+            <div class='likes'>
               <i class='far fa-heart'></i>
               <span style='display: inline-block; width: 1rem; text-align: center'>${v.likes}</span>
             </div>
+            <div class='likes edit' style='top: 0; left: 0'><i class='far fa-edit'></i></div>
+            <div class='likes trash' style='top: 0; right: 0;'><i class='far fa-trash-alt'></i></div>
           </div>
        </a>`);
     });
