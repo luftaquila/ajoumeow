@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="ko">
   <head>
-    <title>미유미유 온라인 사진전 업로드</title>
+    <title>미유미유 온라인 사진전 마이페이지</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="미유미유 온라인 사진전 업로드" />
+    <meta name="description" content="미유미유 온라인 사진전 마이페이지" />
     <link href="https://fonts.googleapis.com/css?family=Work+Sans" rel="stylesheet">
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/open-iconic-bootstrap.min.css">
@@ -14,8 +14,8 @@
     <link rel="stylesheet" href="css/animate.css">
     <link rel="stylesheet" href="css/magic-check.css" />
     <link rel="stylesheet" href="css/style.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/slim-select/1.27.0/slimselect.min.css" rel="stylesheet">
-    <link href="https://releases.transloadit.com/uppy/v1.28.1/uppy.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/fjGallery.css">
+    <link rel="stylesheet" href="/res/fontawesome5/css/all.min.css">
   </head>
   <body>
     <aside class="probootstrap-aside js-probootstrap-aside">
@@ -30,7 +30,7 @@
             <li class="probootstrap-animate" data-animate-effect="fadeInLeft"><a href="/ajoumeow/gallery">갤러리</a></li>
             <li class="probootstrap-animate" data-animate-effect="fadeInLeft"><a href="photographers.html">사진작가들</a></li>
             <li class="probootstrap-animate" data-animate-effect="fadeInLeft"><a href="cats.html">고양이들</a></li>
-            <li class="probootstrap-animate active" data-animate-effect="fadeInLeft"><a href="upload.html">업로드</a></li>
+            <li class="probootstrap-animate" data-animate-effect="fadeInLeft"><a href="upload.html">업로드</a></li>
           </ul>
         </nav>
         <footer class="probootstrap-aside-footer probootstrap-animate" data-animate-effect="fadeInLeft">
@@ -47,26 +47,21 @@
     <main role="main" class="probootstrap-main js-probootstrap-main">
       <div class="probootstrap-bar">
         <a href="#" class="probootstrap-toggle js-probootstrap-toggle"><span class="oi oi-menu"></span></a>
-        <div class="probootstrap-main-site-logo" style='width: fit-content'><a href="/ajoumeow/gallery">사진 업로드</a></div>
+        <div class="probootstrap-main-site-logo" style='width: fit-content'><a href="/ajoumeow/gallery">마이페이지</a></div>
       </div>
-      
-      <!--Contents-->
-      <div id='contents' style='margin: 3rem 0 1rem;'>
-        <div id='uploadInfo' style='font-size: 0.8rem'>
-          다른 사람에게 자랑할 잘 나온 아주냥이 사진을 선별해서 올려주세요!<br>
-          <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>Creative Commons BY-NC-ND 4.0 라이센스</a>가 사진에 적용됩니다.<br>
-          태그 수정 및 사진 삭제는 아직 지원하지 않습니다.
+      <div class='sortPhoto'>
+        <div style='display: inline-block; transform: scale(0.75); margin-right: -15px;'>
+          <input class="magic-radio" type="radio" name="sortPhoto" id='latest' value='latest' checked>
+          <label for='latest'>Latest</label>
         </div>
-        <div id="drag-drop-area"></div>
-        <div id='fileManagerContainer' style='display: none; margin-top: 1rem;'>
-          <div style='font-size: .9rem; color: rgb(50, 50, 50)'><span class='icon-check' style='color: #1fad9f'></span> 각 사진에 등장한 모든 고양이를 사진 아래의 입력창에 태그해 주세요. 모르는 고양이는 단톡방에 물어보면 다른 회원님들이 알려주실 거에요!</div>
-          <div id='fileManager' style='margin: .2rem 0 1rem;'></div>
-          <span id='upload' class='btn btn-primary' style='width: 100%'>사진 <span id='filecount'>0</span>장 업로드</span>
-        </div>
-        <div style='margin-top: 1rem'>
-          <a href='mypage.html'>마이페이지</a>
+        <div style='display: inline-block; transform: scale(0.75); margin-right: -5px;'>
+          <input class="magic-radio" type="radio" name="sortPhoto" id='popular' value='popular'>
+          <label for='popular'>Popular</label>
         </div>
       </div>
+      <h3>내 사진</h3>
+      <div class="fj-gallery"></div>
+        
 
       <div class="container-fluid d-md-none">
         <div class="row">
@@ -89,10 +84,8 @@
     <script src="js/jquery.waypoints.min.js"></script>
     <script src="js/imagesloaded.pkgd.min.js"></script>
     <script src='/res/js.cookie.min.js'></script>
+    <script src="js/fjGallery.js"></script>
     <script src="js/main.js"></script>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/slim-select/1.27.0/slimselect.min.js"></script>
-    <script src="https://releases.transloadit.com/uppy/v1.28.1/uppy.min.js"></script>
-    <script src="js/upload.js"></script>
+    <script src="js/mypage.js"></script>
   </body>
 </html>

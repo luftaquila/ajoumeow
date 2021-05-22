@@ -38,7 +38,7 @@ function renderPhoto(photoList, offset) {
         <a href="/ajoumeow/gallery/cat?cid=${v.tag_name}" class="fj-gallery-item" oncontextmenu="return false;">
           <img
             class="fj-gallery-item-image"
-            src="/ajoumeow/res/image/gallery/${v.newest_photo_id}"
+            src="/ajoumeow/res/image/gallery/thumb_${v.newest_photo_id}"
             width="800" height="600"
             style="max-height: none; max-width: none; margin: 0;"
           />
@@ -76,7 +76,7 @@ function renderPhoto(photoList, offset) {
         <a href="/ajoumeow/gallery/cat?cid=${v.tag_name}" class="fj-gallery-item" oncontextmenu="return false;">
           <img
             class="fj-gallery-item-image"
-            src="/ajoumeow/res/image/gallery/${v.newest_photo_id}"
+            src="/ajoumeow/res/image/gallery/thumb_${v.newest_photo_id}"
             width="800" height="600"
             style="max-height: none; max-width: none; margin: 0;"
           />

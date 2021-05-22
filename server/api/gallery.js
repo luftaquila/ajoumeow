@@ -1,6 +1,7 @@
 import path from 'path';
 import multer from 'multer';
 import express from 'express';
+import { resize } from 'easyimage';
 import dateformat from 'dateformat';
 import bodyParser from 'body-parser';
 
@@ -119,6 +120,14 @@ router.get('/photo', async (req, res) => {
 router.post('/photo', util.isLogin, upload.any(), async (req, res) => {
   const conn = await pool.getConnection();
   try {
+    const thumb = await resize({
+      src: req.files[0].path,
+      dst: req.files[0].destination + '/thumb_' + req.files[0].filename,
+      onlyDownscale: true,
+      width: 1000,
+      height: 1000
+    });
+      
     await conn.beginTransaction();
     
     // 업로더 이름 확인 및 gallery_photo 업데이트
@@ -141,6 +150,7 @@ router.post('/photo', util.isLogin, upload.any(), async (req, res) => {
     res.status(200).send();
   }
   catch(e) {
+    console.log(e);
     await conn.rollback();
     util.logger(new Log('error', req.remoteIP, req.originalPath, '갤러리 사진 업로드 오류', req.method, 500, req.body, e.stack));
     res.status(500).send();
