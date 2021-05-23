@@ -1,7 +1,7 @@
 import path from 'path';
+import sharp from 'sharp';
 import multer from 'multer';
 import express from 'express';
-import { resize } from 'easyimage';
 import dateformat from 'dateformat';
 import bodyParser from 'body-parser';
 
@@ -120,14 +120,8 @@ router.get('/photo', async (req, res) => {
 router.post('/photo', util.isLogin, upload.any(), async (req, res) => {
   const conn = await pool.getConnection();
   try {
-    const thumb = await resize({
-      src: req.files[0].path,
-      dst: req.files[0].destination + '/thumb_' + req.files[0].filename,
-      onlyDownscale: true,
-      width: 1000,
-      height: 1000
-    });
-      
+    await sharp(req.files[0].path).resize(1000).toFile(req.files[0].destination + '/thumb_' + req.files[0].filename);
+    
     await conn.beginTransaction();
     
     // 업로더 이름 확인 및 gallery_photo 업데이트
