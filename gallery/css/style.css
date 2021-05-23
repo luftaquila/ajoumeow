@@ -55,6 +55,9 @@ img.exif {
   background: linear-gradient(transparent, 50%, rgba(0, 0, 0, .6));
 }
 
+#uploadInfo li {
+  margin-bottom: 0.5rem;
+}
 
 
 html {
