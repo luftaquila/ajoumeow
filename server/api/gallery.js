@@ -1,3 +1,4 @@
+import fs from 'fs';
 import path from 'path';
 import sharp from 'sharp';
 import multer from 'multer';
@@ -144,10 +145,43 @@ router.post('/photo', util.isLogin, upload.any(), async (req, res) => {
     res.status(200).send();
   }
   catch(e) {
-    console.log(e);
     await conn.rollback();
     util.logger(new Log('error', req.remoteIP, req.originalPath, '갤러리 사진 업로드 오류', req.method, 500, req.body, e.stack));
     res.status(500).send();
+  }
+  finally { conn.release(); }
+});
+
+router.delete('/photo', util.isLogin, async (req, res) => {
+  const conn = await pool.getConnection();
+  try {
+    await conn.beginTransaction();
+    
+    const photo = await conn.query(`SELECT * FROM gallery_photo WHERE photo_id='${req.body.pid}';`);
+    if(photo[0].uploader_id == req.decoded.id) {
+      const tags = await conn.query(`SELECT tag_name FROM gallery_photo_tag WHERE photo_id='${req.body.pid}';`);
+      
+      await conn.query(`DELETE FROM gallery_photo WHERE photo_id='${req.body.pid}';`);
+      await conn.query(`DELETE FROM gallery_photo_tag WHERE photo_id='${req.body.pid}';`);
+      for(const tag of tags) await conn.query(`UPDATE gallery_tag SET photo_count=photo_count-1, likes=likes-${photo[0].likes} WHERE tag_name='${tag.tag_name}';`);
+      await conn.query(`UPDATE gallery_uploader SET photo_count=photo_count-1, likes=likes-${photo[0].likes} WHERE uploader_id='${req.decoded.id}';`);
+      
+      await fs.promises.unlink(__dirname + '/../../res/image/gallery/' + req.body.pid);
+      await fs.promises.unlink(__dirname + '/../../res/image/gallery/thumb_' + req.body.pid);
+      
+      await conn.commit();
+      util.logger(new Log('info', req.remoteIP, req.originalPath, '갤러리 사진 삭제', req.method, 204, req.body, null));
+      res.status(204).send();
+    }
+    else {
+      util.logger(new Log('error', req.remoteIP, req.originalPath, '갤러리 사진 삭제 오류', req.method, 403, req.body, 'ERR_PHOTO_NOT_MINE'));
+      res.status(403).json(new Response('error', '내 사진이 아닙니다.', 'ERR_PHOTO_NOT_MINE'));
+    }
+  }
+  catch(e) {
+    await conn.rollback();
+    util.logger(new Log('error', req.remoteIP, req.originalPath, '갤러리 사진 삭제 오류', req.method, 500, req.body, e.stack));
+    res.status(500).json(new Response('error', '알 수 없는 오류입니다.', 'ERR_UNKNOWN'));
   }
   finally { conn.release(); }
 });

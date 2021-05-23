@@ -41,6 +41,7 @@ function renderPhoto(photoList, offset) {
             src="/ajoumeow/res/image/gallery/thumb_${v.newest_photo_id}"
             width="800" height="600"
             style="max-height: none; max-width: none; margin: 0;"
+            onerror="this.src = '/ajoumeow/res/image/loading.gif'; $('.fj-gallery').fjGallery('resize');"
           />
           <div class='fj-gallery-item-category'>
             <div style='width: fit-content; position: relative; left: 0; bottom: 0; padding: 1rem; font-size: 1.2rem; line-height: 1rem;'>
@@ -79,6 +80,7 @@ function renderPhoto(photoList, offset) {
             src="/ajoumeow/res/image/gallery/thumb_${v.newest_photo_id}"
             width="800" height="600"
             style="max-height: none; max-width: none; margin: 0;"
+            onerror="this.src = '/ajoumeow/res/image/loading.gif'; $('.fj-gallery').fjGallery('resize');"
           />
           <div class='fj-gallery-item-category'>
             <div style='width: fit-content; position: relative; left: 0; bottom: 0; padding: 1rem; font-size: 1.2rem; line-height: 1rem;'>

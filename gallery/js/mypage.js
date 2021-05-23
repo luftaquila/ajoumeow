@@ -74,7 +74,7 @@ function renderPhoto(photoList, offset) {
               <span style='display: inline-block; width: 1rem; text-align: center'>${v.likes}</span>
             </div>
             <div class='likes edit' style='top: 0; left: 0'><i class='far fa-edit'></i></div>
-            <div class='likes trash' style='top: 0; right: 0;'><i class='far fa-trash-alt'></i></div>
+            <div class='likes trash' onclick='deletePhoto("${v.photo_id}"); return false;' style='top: 0; right: 0;'><i class='far fa-trash-alt'></i></div>
           </div>
        </a>`);
     });
@@ -125,4 +125,16 @@ function renderPhoto(photoList, offset) {
   }
   $('a.fj-gallery-item:nth-last-child(3)').addClass('threshold');
   loadCount += photoList.length;
+}
+
+function deletePhoto(pid) {
+  const jwt = Cookies.get('jwt');
+  $.ajax({
+    url: '/ajoumeow/api/gallery/photo',
+    beforeSend: xhr => xhr.setRequestHeader('x-access-token', jwt),
+    type: 'DELETE',
+    data: { pid: pid },
+    success: res => requestPhotoList(0),
+    error: res => alert(res.msg)
+  });
 }
