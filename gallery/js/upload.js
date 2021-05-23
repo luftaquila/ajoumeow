@@ -20,8 +20,14 @@ function uppyInit() {
     debug: false,
     restrictions: {
       maxFileSize: 20971520, // 20MiB
+      //maxNumberOfFiles: 3,
       allowedFileTypes: ['image/*']
     }
+  })
+  .use(Uppy.ThumbnailGenerator, {
+    thumbnailWidth: 1000,
+    thumbnailType: 'image/jpeg',
+    waitForThumbnailsBeforeUpload: false
   })
   .use(Uppy.Dashboard, {
     inline: true,

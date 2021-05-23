@@ -71,7 +71,7 @@
       <!--<h1 style="margin: 0 auto; font-size: 1.3rem">미유미유</h1>-->
       <span id='noticeTrig' class="header__btn header__btn--left" style="font-size: 1.7rem; left: 0rem;" id='notice' onclick='MicroModal.show("notice_modal");'><i class="fas fa-exclamation-circle"></i></span>
       <span id='helpTrig' class="header__btn header__btn--left" style="font-size: 1.7rem; left: 2.5rem;" id='help' onclick='MicroModal.show("help_modal");'><i class="far fa-question-circle"></i></span>
-      <!--<span id='galleryTrig' class="header__btn header__btn--left" style="font-size: 1.7rem; left: 5.1rem;"><a href='/ajoumeow/gallery' style='text-decoration: none; color: black;'><i class="far fa-camera-retro"></i></a></span>-->
+      <span id='galleryTrig' class="header__btn header__btn--left" style="font-size: 1.7rem; left: 5.1rem;"><a href='/ajoumeow/gallery' class='rainbow' style='text-decoration: none; color: black;'><i class="far fa-camera-retro"></i></a></span>
       <span id='mapTrig' class="header__btn header__btn--right" style="font-size: 1.7rem; right: 5.1rem;" id='direction' onclick='posID = setMap(); MicroModal.show("map_modal", { onClose: function() { navigator.geolocation.clearWatch(posID); }});'><i class='fas fa-street-view'></i></span>
       <span id='guideTrig' class="header__btn header__btn--right" style="font-size: 1.7rem; right: 2.6rem;" id='guide' onclick='MicroModal.show("guide_modal");'><i class='fas fa-book-spells rainbow×'></i></span>
       <span id='sidebarTrig' class="header__btn header__btn--right" style="font-size: 1.7rem; right: 0rem;" id='sidebar_open' onclick="$('#sidebar').css('display', 'block');"><i class='fas fa-bars'></i></span>
