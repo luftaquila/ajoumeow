@@ -3,7 +3,7 @@ $(function() {
   
   $('#mainImage').attr('src', '/ajoumeow/res/image/gallery/' + pid).one('load', () => {
     $('#imageInfo').css('width', $('#mainImage').width());
-    $('#viewCounter').attr('src', `https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=${window.location.href}&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=views&edge_flat=false`);
+    //$('#viewCounter').attr('src', `https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=${window.location.href}&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=views&edge_flat=false`);
     
     EXIF.getData(document.getElementById('mainImage'), async function() {
       const image = await $.ajax({ url: '/ajoumeow/api/gallery/image', data: { photo_id: pid }});
