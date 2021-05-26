@@ -3,6 +3,7 @@ import path from 'path';
 import sharp from 'sharp';
 import multer from 'multer';
 import express from 'express';
+import jwt from 'jsonwebtoken';
 import dateformat from 'dateformat';
 import bodyParser from 'body-parser';
 
@@ -191,6 +192,20 @@ router.post('/like', async (req, res) => {
   try {
     await conn.beginTransaction();
     
+    const token = req.headers['x-access-token'];
+    let userID = null;
+    
+    if(token) {
+      jwt.verify(token, process.env.JWTSecret, function (err, decoded) {
+        if(!err) userID = decoded.id;
+      });
+    }
+    
+    // check if already liked target photo
+    const previous = await conn.query(`SELECT * FROM gallery_like WHERE photo_id='${req.body.photo_id}' AND ip='${req.remoteIP}' AND timestamp > now() - interval 1 DAY;`);
+    if(previous.length) throw new Error('ALREADY_BEEN_LIKED');
+    else await conn.query(`INSERT INTO gallery_like(ip, photo_id, user_id) VALUES('${req.remoteIP}', '${req.body.photo_id}', ${userID});`);
+    
     const uploader = await conn.query(`SELECT uploader_id FROM gallery_photo WHERE photo_id='${req.body.photo_id}';`);
     const tags = await conn.query(`SELECT tag_name FROM gallery_photo_tag WHERE photo_id='${req.body.photo_id}';`);
     await conn.query(`UPDATE gallery_photo SET likes=likes+1 WHERE photo_id='${req.body.photo_id}';`);
@@ -203,8 +218,11 @@ router.post('/like', async (req, res) => {
   }
   catch(e) {
     await conn.rollback();
-    util.logger(new Log('error', req.remoteIP, req.originalPath, '갤러리 좋아요 요청 오류', req.method, 500, req.body, e.stack));
-    res.status(500).send();
+    if(e.message == 'ALREADY_BEEN_LIKED') res.status(400).json(new Response('error', '이미 좋아요한 사진입니다.', 'ERR_ALREADY_BEEN_LIKED'));
+    else {
+      util.logger(new Log('error', req.remoteIP, req.originalPath, '갤러리 좋아요 요청 오류', req.method, 500, req.body, e.stack));
+      res.status(500).send();
+    }
   }
   finally { conn.release(); }
 });

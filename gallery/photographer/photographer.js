@@ -1,6 +1,21 @@
 $(function() {
   requestPhotoList(0);
   $('input[name=sortPhoto]').change(() => requestPhotoList(0));
+  $('.fj-gallery').on('click', '.likes', (e) => {
+    const target = e.currentTarget;
+    $.ajax({
+      url: '/ajoumeow/api/gallery/like',
+      type: 'POST',
+      beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
+      data: { photo_id: $(target).data('photo_id') },
+      success: res => {
+        $(target).children('i').removeClass('far').addClass('fas');
+        $(target).children('span').text(Number($(target).children('span').text()) + 1);
+      },
+      error: res => alert(res.responseJSON.msg)
+    });
+    e.preventDefault();
+  });
     
   loadCount = 0;
   io = new IntersectionObserver((entries, observer) => {
@@ -47,9 +62,7 @@ function renderPhoto(photoList, offset) {
               <span>${v.uploader_name}</span><br>
               <span style='font-size: .8rem'>${v.tags.map(x => '#' + x).join(' ')}</span>
             </div>
-            <div class='likes'
-              onclick="$.ajax({ url: '/ajoumeow/api/gallery/like', type: 'POST', data: { photo_id: '${v.photo_id}' }, success: res => { $(this).children('i').removeClass('far').addClass('fas'); $(this).children('span').text(Number($(this).children('span').text()) + 1); $(this).attr('onclick', null); }}); return false;"
-            >
+            <div class='likes' data-photo_id='${v.photo_id}'>
               <i class='far fa-heart'></i>
               <span style='display: inline-block; width: 1rem; text-align: center'>${v.likes}</span>
             </div>
@@ -88,9 +101,7 @@ function renderPhoto(photoList, offset) {
               <span>${v.uploader_name}</span><br>
               <span style='font-size: .8rem'>${v.tags.map(x => '#' + x).join(' ' )}</span>
             </div>
-            <div class='likes'
-              onclick="$.ajax({ url: '/ajoumeow/api/gallery/like', type: 'POST', data: { photo_id: '${v.photo_id}' }, success: res => { $(this).children('i').removeClass('far').addClass('fas'); $(this).children('span').text(Number($(this).children('span').text()) + 1); $(this).attr('onclick', null); }}); return false;"
-            >
+            <div class='likes' data-photo_id='${v.photo_id}'>
               <i class='far fa-heart'></i>
               <span style='display: inline-block; width: 1rem; text-align: center'>${v.likes}</span>
             </div>
