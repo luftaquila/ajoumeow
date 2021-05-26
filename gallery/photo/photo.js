@@ -31,16 +31,17 @@ $(function() {
     if($('#mainImage').complete) $($('#mainImage')).trigger('load');
   });
   
-  $('.likes').one('click', () => {
+  $('.likes').on('click', () => {
     $.ajax({
       url: '/ajoumeow/api/gallery/like',
       type: 'POST',
+      beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
       data: { photo_id: pid },
       success: res => {
         $('.likes').children('i').removeClass('far').addClass('fas');
         $('.likes').children('span').text(Number($('.likes').children('span').text()) + 1);
-        $('.likes').attr('onclick', null);
-      }
+      },
+      error: res => alert(res.responseJSON.msg)
     });
   });
 });

@@ -116,7 +116,7 @@ function renderPhoto(photoList, offset) {
               <span style='display: inline-block; width: 1rem; text-align: center'>${v.likes}</span>
             </div>
             <div class='likes edit' style='top: 0; left: 0'><i class='far fa-edit'></i></div>
-            <div class='likes trash' style='top: 0; right: 0;'><i class='far fa-trash-alt'></i></div>
+            <div class='likes trash' onclick='deletePhoto("${v.photo_id}"); return false;' style='top: 0; right: 0;'><i class='far fa-trash-alt'></i></div>
           </div>
        </a>`);
     });
