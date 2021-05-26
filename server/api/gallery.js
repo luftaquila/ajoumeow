@@ -227,4 +227,13 @@ router.post('/like', async (req, res) => {
   finally { conn.release(); }
 });
 
+router.get('/ranking', async (req, res) => {
+  try {
+    
+  }
+  catch(e) {
+    
+  }
+});
+
 export default router
