@@ -202,7 +202,7 @@ router.post('/like', async (req, res) => {
     }
     
     // check if already liked target photo
-    const previous = await conn.query(`SELECT * FROM gallery_like WHERE photo_id='${req.body.photo_id}' AND ip='${req.remoteIP}' AND timestamp > now() - interval 1 DAY;`);
+    const previous = await conn.query(`SELECT * FROM gallery_like WHERE photo_id='${req.body.photo_id}' AND ip='${req.remoteIP}' AND timestamp > now() - interval 30 DAY;`);
     if(previous.length) throw new Error('ALREADY_BEEN_LIKED');
     else await conn.query(`INSERT INTO gallery_like(ip, photo_id, user_id) VALUES('${req.remoteIP}', '${req.body.photo_id}', ${userID});`);
     
@@ -229,10 +229,66 @@ router.post('/like', async (req, res) => {
 
 router.get('/ranking', async (req, res) => {
   try {
+    let lastMonthFirst = new Date();
+    lastMonthFirst.setDate(0);
+    lastMonthFirst.setDate(1);
+    lastMonthFirst.setHours(0,0,0,0);
     
+    let monthFirst = new Date();
+    monthFirst.setDate(1);
+    monthFirst.setHours(0,0,0,0);
+    
+    let weekFirst = new Date(Date.now() - 7 * 24 * 3600000);
+    
+    const likeList = await util.query(`SELECT timestamp, photo_id FROM gallery_like WHERE timestamp >= '${dateformat(lastMonthFirst, 'yyyy-mm-dd')}';`);
+
+    let weekRank = [], monthRank = [], lastMonthRank = [];
+    for(const like of likeList.reverse()) {
+      if(like.timestamp < monthFirst) { // last month
+        const flag = lastMonthRank.find(x => x.photo_id == like.photo_id);
+        if(flag) flag.count++;
+        else lastMonthRank.push({ photo_id: like.photo_id, count: 1 });
+      }
+      else { // this month
+        const flag = monthRank.find(x => x.photo_id == like.photo_id);
+        if(flag) flag.count++;
+        else monthRank.push({ photo_id: like.photo_id, count: 1 });
+      }
+      
+      if(like.timestamp > weekFirst) {
+        const flag = weekRank.find(x => x.photo_id == like.photo_id);
+        if(flag) flag.count++;
+        else weekRank.push({ photo_id: like.photo_id, count: 1 });
+      }
+    }
+    weekRank = weekRank.sort((a, b) => b.count - a.count).slice(0, 3);
+    monthRank = monthRank.sort((a, b) => b.count - a.count).slice(0, 3);
+    lastMonthRank = lastMonthRank.sort((a, b) => b.count - a.count).slice(0, 3);
+    
+    for(let i in weekRank) {
+      const info = await util.query(`SELECT uploader_name FROM gallery_photo WHERE photo_id='${weekRank[i].photo_id}';`);
+      const tags = await util.query(`SELECT tag_name FROM gallery_photo_tag WHERE photo_id='${weekRank[i].photo_id}';`);
+      weekRank[i].uploader = info[0].uploader_name;
+      weekRank[i].tag = tags.map(x => x.tag_name);
+    }
+    for(let i in monthRank) {
+      const info = await util.query(`SELECT uploader_name FROM gallery_photo WHERE photo_id='${monthRank[i].photo_id}';`);
+      const tags = await util.query(`SELECT tag_name FROM gallery_photo_tag WHERE photo_id='${monthRank[i].photo_id}';`);
+      monthRank[i].uploader = info[0].uploader_name;
+      monthRank[i].tag = tags.map(x => x.tag_name);
+    }
+    for(let i in lastMonthRank) {
+      const info = await util.query(`SELECT uploader_name FROM gallery_photo WHERE photo_id='${lastMonthRank[i].photo_id}';`);
+      const tags = await util.query(`SELECT tag_name FROM gallery_photo_tag WHERE photo_id='${lastMonthRank[i].photo_id}';`);
+      lastMonthRank[i].uploader = info[0].uploader_name;
+      lastMonthRank[i].tag = tags.map(x => x.tag_name);
+    }
+    util.logger(new Log('info', req.remoteIP, req.originalPath, '갤러리 랭킹 요청', req.method, 200, null, null));
+    res.status(200).json({ week: weekRank, month: monthRank, lastmonth: lastMonthRank });
   }
   catch(e) {
-    
+    util.logger(new Log('error', req.remoteIP, req.originalPath, '갤러리 랭킹 요청 오류', req.method, 500, null, e.stack));
+    res.status(500).send();
   }
 });
 
