@@ -4,8 +4,10 @@
     <title>미유미유 온라인 사진전 랭킹</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="미유미유 온라인 사진전 랭킹" />
+    <meta property="og:title" content="미유미유 온라인 사진전 랭킹"/>
     <meta property="og:image" content="/assets/images/profile/og.png"/>
+    <meta property="og:description" content="미유미유 온라인 사진전 랭킹"/>
+    
     <link href="https://fonts.googleapis.com/css?family=Work+Sans" rel="stylesheet">
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/open-iconic-bootstrap.min.css">
@@ -15,8 +17,8 @@
     <link rel="stylesheet" href="css/animate.css">
     <link rel="stylesheet" href="css/magic-check.css" />
     <link rel="stylesheet" href="css/style.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/slim-select/1.27.0/slimselect.min.css" rel="stylesheet">
-    <link href="https://releases.transloadit.com/uppy/v1.28.1/uppy.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/fjGallery.css">
+    <link rel="stylesheet" href="/res/fontawesome5/css/all.min.css">
   </head>
   <body>
     <aside class="probootstrap-aside js-probootstrap-aside">
@@ -49,23 +51,31 @@
     <main role="main" class="probootstrap-main js-probootstrap-main">
       <div class="probootstrap-bar">
         <a href="#" class="probootstrap-toggle js-probootstrap-toggle"><span class="oi oi-menu"></span></a>
-        <div class="probootstrap-main-site-logo" style='width: fit-content'><a href="/ajoumeow/gallery">랭킹</a></div>
+        <div class="probootstrap-main-site-logo" style='width: fit-content'><a href="/ajoumeow/gallery">미유미유 온라인 사진전</a></div>
       </div>
-      
-      <div class='sortPhoto'>
-        <div style='display: inline-block; transform: scale(0.75); margin-right: -15px;'>
-          <input class="magic-radio" type="radio" name="rankTerm" id='this' value='this' checked>
-          <label for='this'>이번 달</label>
-        </div>
-        <div style='display: inline-block; transform: scale(0.75); margin-right: -5px;'>
-          <input class="magic-radio" type="radio" name="rankTerm" id='past' value='past'>
-          <label for='past'>저번 달</label>
-        </div>
+
+      <div id='contents'>
+        <h4>최근 일주일</h4>
+        <div id='trending' class="fj-gallery"></div>
+        <br>
+        <h4>이번 달</h4>
+        <div id='this-month' class="fj-gallery"></div>
+        <br>
+        <h4>저번 달</h4>
+        <div id='last-month' class="fj-gallery"></div>
       </div>
-      
-      <!--Contents-->
-      <div id='contents' style='margin-left: 1rem; margin-right: 1rem;'>
-        
+
+      <div class="container-fluid d-md-none">
+        <div class="row">
+          <div class="col-md-12">
+            <ul class="list-unstyled d-flex probootstrap-aside-social" style='height: 3rem; margin-bottom: 0px;'>
+              <li><a href="/ajoumeow" class="p-2"><span class="icon-globe"></span></a></li>
+              <li><a href="https://instagram.com/ajou.meyoumeow" class="p-2"><span class="icon-instagram"></span></a></li>
+              <li><a href="https://facebook.com/meyoumeow" class="p-2"><span class="icon-facebook"></span></a></li>
+            </ul>
+            <p>&copy;<script>document.write(new Date().getFullYear())</script> <a href='/'>LUFT-AQUILA</a>.<br>Template from <a href="https://uicookies.com/" target="_blank">uiCookies:Aside</a>.</p>
+          </div>
+        </div>
       </div>
 
     </main>
@@ -76,8 +86,8 @@
     <script src="js/jquery.waypoints.min.js"></script>
     <script src="js/imagesloaded.pkgd.min.js"></script>
     <script src='/res/js.cookie.min.js'></script>
+    <script src="js/fjGallery.js"></script>
     <script src="js/main.js"></script>
-    
     <script src="js/ranking.js"></script>
   </body>
 </html>
