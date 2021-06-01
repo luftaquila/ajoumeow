@@ -23,12 +23,12 @@ function init(user) {
   userID = user.ID;
   requestPhotoList(0);
   $('input[name=sortPhoto]').change(() => requestPhotoList(0));
-    
+
   loadCount = 0;
   io = new IntersectionObserver((entries, observer) => {
     entries.forEach(entry => {
       if(!entry.isIntersecting) return;
-      
+
       requestPhotoList(loadCount);
       $('.threshold').removeClass('threshold');
       observer.unobserve(entry.target);
@@ -53,7 +53,7 @@ function renderPhoto(photoList, offset) {
   if(!offset) { // if rendered for the first time
     // destroy existing gallery
     $('.fj-gallery').fjGallery('destroy').html('');
-    
+
     // rendering photos
     photoList.forEach(v => {
       $('.fj-gallery').append(`
@@ -74,11 +74,11 @@ function renderPhoto(photoList, offset) {
               <span style='display: inline-block; width: 1rem; text-align: center'>${v.likes}</span>
             </div>
             <div class='likes edit' style='top: 0; left: 0'><i class='far fa-edit'></i></div>
-            <div class='likes trash' onclick='deletePhoto("${v.photo_id}"); return false;' style='top: 0; right: 0;'><i class='far fa-trash-alt'></i></div>
+            <div class='likes trash' onclick='deletePhoto("${v.photo_id}"); return false;' style='top: 0; right: 0; height: fit-content;'><i class='far fa-trash-alt'></i></div>
           </div>
        </a>`);
     });
-    
+
     // initialize gallery
     let initCount = 0;
     loadCount = 0;
@@ -116,11 +116,11 @@ function renderPhoto(photoList, offset) {
               <span style='display: inline-block; width: 1rem; text-align: center'>${v.likes}</span>
             </div>
             <div class='likes edit' style='top: 0; left: 0'><i class='far fa-edit'></i></div>
-            <div class='likes trash' onclick='deletePhoto("${v.photo_id}"); return false;' style='top: 0; right: 0;'><i class='far fa-trash-alt'></i></div>
+            <div class='likes trash' onclick='deletePhoto("${v.photo_id}"); return false;' style='top: 0; right: 0; height: fit-content;'><i class='far fa-trash-alt'></i></div>
           </div>
        </a>`);
     });
-    
+
     $('.fj-gallery').fjGallery('appendImages', $(`.fj-gallery-item:nth-last-child(-n+${photoList.length})`));
   }
   $('a.fj-gallery-item:nth-last-child(3)').addClass('threshold');
