@@ -7,7 +7,7 @@
     <meta property="og:title" content="미유미유 온라인 사진전"/>
     <meta property="og:image" content="/assets/images/profile/og.png"/>
     <meta property="og:description" content="미유미유 온라인 사진전"/>
-    
+
     <link href="https://fonts.googleapis.com/css?family=Work+Sans" rel="stylesheet">
     <link rel="stylesheet" href="../css/bootstrap.min.css">
     <link rel="stylesheet" href="../css/open-iconic-bootstrap.min.css">
@@ -19,7 +19,7 @@
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/fjGallery.css">
     <link rel="stylesheet" href="/res/fontawesome5/css/all.min.css">
-    
+
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&display=swap" rel="stylesheet">
   </head>
@@ -38,6 +38,7 @@
             <li class="probootstrap-animate" data-animate-effect="fadeInLeft"><a href="../cats.html">고양이들</a></li>
             <li class="probootstrap-animate" data-animate-effect="fadeInLeft"><a href="../upload.html">업로드</a></li>
             <li class="probootstrap-animate" data-animate-effect="fadeInLeft"><a href="../ranking.html">랭킹</a></li>
+            <li id='mypage' style='display: none;' class="probootstrap-animate" data-animate-effect="fadeInLeft"><a href="mypage.html">마이페이지</a></li>
           </ul>
         </nav>
         <footer class="probootstrap-aside-footer probootstrap-animate" data-animate-effect="fadeInLeft">
@@ -56,7 +57,7 @@
         <a href="#" class="probootstrap-toggle js-probootstrap-toggle"><span class="oi oi-menu"></span></a>
         <div class="probootstrap-main-site-logo" style='width: fit-content'><a href="/ajoumeow/gallery">미유미유 온라인 사진전</a></div>
       </div>
-      
+
       <div id='contents'>
         <div style='position: relative; width: fit-content; margin: auto'>
           <img id='mainImage'>
@@ -66,23 +67,23 @@
           </div>
         </div>
         <div style='display: none; text-align: center; margin-top: .5rem;'><img id='viewCounter'></div>
-        
+
         <div id='imageInfo'>
           <h3>사진 정보</h3>
           <img src='/ajoumeow/res/image/icons/photographer.png' class='exif'> <span id='photographer'>N/A</span><br>
           <img src='/ajoumeow/res/image/icons/cat.png' class='exif'> <span id='tags'>N/A</span><br>
-          
+
           <img src='/ajoumeow/res/image/icons/calendar.png' class='exif'> <span id='time'>N/A</span><br>
           <img src='/ajoumeow/res/image/icons/location.png' class='exif'> <span id='location'>N/A</span><br>
           <img src='/ajoumeow/res/image/icons/image.png' class='exif'> <span id='size'>N/A</span><br>
-          
+
           <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/deed.ko' style='display: block; text-align: right; margin: -1rem 0 2rem;'>
             <img src='/ajoumeow/res/image/icons/ccl/cc.png' class='exif'>
             <img src='/ajoumeow/res/image/icons/ccl/by.png' class='exif'>
             <img src='/ajoumeow/res/image/icons/ccl/nc.png' class='exif'>
             <img src='/ajoumeow/res/image/icons/ccl/nd.png' class='exif'>
           </a>
-          
+
           <h3>EXIF</h3>
           <img src='/ajoumeow/res/image/icons/camera.png' class='exif'> <span id='camera'>N/A</span><br>
           <img src='/ajoumeow/res/image/icons/lens.png' class='exif'> <span id='lens'>N/A</span><br>
