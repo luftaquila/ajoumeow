@@ -95,23 +95,24 @@ router.get('/1365', async (req, res) => {
             name: member.name,
             '1365ID' : member['1365ID'],
             birthday: member.birthday,
-            date: [ { day: obj.date, hour: 1 } ]
+            date: [ { day: obj.date, hour: 1 } ],
+            phone: member.phone
           });
         }
       }
     }
-    
+
     const cheif = await util.query(`SELECT name, phone FROM \`namelist_${await util.getSettings('currentSemister')}\` WHERE role='회장';`);
-    const response = await axios.post('https://script.google.com/macros/s/AKfycbyh61pZAydKAa_CWzd2z26e3mLyHG-qsvA69LO7E7eokh5Nzh3LdhP_/exec', { 
+    const response = await axios.post('https://script.google.com/macros/s/AKfycbyh61pZAydKAa_CWzd2z26e3mLyHG-qsvA69LO7E7eokh5Nzh3LdhP_/exec', {
       data: JSON.stringify(data),
       private: req.query.private,
-      cheif: { 
+      cheif: {
         name: cheif[0].name,
         phone: cheif[0].phone
       }
     });
     const pdf = Buffer.from(response.data, 'base64');
-    
+
     let readStream = new stream.PassThrough();
     readStream.end(pdf);
     res.set('Content-Type', 'application/pdf');
