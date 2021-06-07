@@ -103,7 +103,7 @@ router.get('/1365', async (req, res) => {
     }
 
     const cheif = await util.query(`SELECT name, phone FROM \`namelist_${await util.getSettings('currentSemister')}\` WHERE role='회장';`);
-    const response = await axios.post('https://script.google.com/macros/s/AKfycbyh61pZAydKAa_CWzd2z26e3mLyHG-qsvA69LO7E7eokh5Nzh3LdhP_/exec', {
+    const response = await axios.post('https://script.google.com/macros/s/AKfycbxFYIGU5xLXo-FtHNBN4jMMZ5KpzAYKBGrVLIUgSsIZqqBQvM8rA-D729b6WwDilVP9/exec', {
       data: JSON.stringify(data),
       private: req.query.private,
       cheif: {
