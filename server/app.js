@@ -10,13 +10,13 @@ import gallery from './api/gallery.js';
 import util from './controllers/util/util.js';
 import { Log } from './controllers/util/interface.js';
 
-import client from './config/node-kakao'
+//import client from './config/node-kakao'
 import kakaoClient from './controllers/kakaoClient.js';
 import weatherClient from './controllers/weatherClient.js';
 import dbClient from './controllers/dbClient.js';
 
 const app = express();
-app.use((req, res, next) => { 
+app.use((req, res, next) => {
   req.originalPath = req.baseUrl + req.path;
   req.remoteIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
   next();
@@ -34,10 +34,6 @@ app.listen(5710, function() {
   util.logger(new Log('info', 'LOCALHOST', '/api', '서버 프로그램 시작', 'internal', 0, null, msg));
 });
 
-client.login(
-  process.env.TalkClientLoginID,
-  process.env.TalkClientLoginPW,
-  true
-).then(kakaoClient);
+kakaoClient();
 weatherClient();
 dbClient();

@@ -2,10 +2,10 @@ import dotenv from 'dotenv'
 import * as nodeKakao from 'node-kakao'
 
 dotenv.config();
+let client;
 
-const kakaoClient = new nodeKakao.TalkClient(
-  process.env.TalkClientName,
-  process.env.TalkClientUUID
-);
+(async () => {
 
-export default kakaoClient;
+})();
+
+export default client;
