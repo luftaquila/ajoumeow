@@ -3,11 +3,11 @@ import dotenv from 'dotenv'
 import { parse, stringify } from 'envfile'
 import schedule from 'node-schedule'
 import dateformat from 'dateformat'
-import { AttachmentTemplate, ReplyAttachment, ChatType, Long } from 'node-kakao'
+import { AuthApiClient, TalkClient, AttachmentTemplate, ReplyAttachment, ChatType, Long } from 'node-kakao'
 import imghash from 'imghash'
 import axios from 'axios'
 
-import client from '../config/node-kakao'
+//import client from '../config/node-kakao'
 import util from './util/util.js'
 import { Log } from './util/interface.js';
 
@@ -15,13 +15,43 @@ dotenv.config();
 Date.prototype.getDayNum = function() { return this.getDay() ? this.getDay() : 7; }
 
 async function kakaoClient() {
-  const msg = 'Kakao login successful. Client program is in startup.';
-  console.log(msg);
-  util.logger(new Log('info', 'kakaoClient', 'kakaoClient()', '카톡 클라이언트 프로그램 시작', 'internal', 0, null, msg));
+  const client = new TalkClient({ });
+  await clientLogin(client);
 
+  chatManager(client);
+  alertManager(client);
+}
+
+async function clientLogin(client) {
+  try {
+    const api = await AuthApiClient.create(process.env.TalkClientName, process.env.TalkClientUUID);
+    const loginRes = await api.login({ email: process.env.TalkClientLoginID, password: process.env.TalkClientLoginPW });
+    if(!loginRes.success) {
+      const msg = `Web API Login failure: ${loginRes.status}`
+      util.logger(new Log('error', 'kakaoClient', 'kakaoClient()', '카톡 클라이언트 프로그램 실패', 'internal', -1, null, msg));
+      return console.error(msg);
+    }
+
+    const clientLoginRes = await client.login(loginRes.result);
+    if(!clientLoginRes.success) {
+      const msg = `Client Login failure: ${loginRes.status}`
+      util.logger(new Log('error', 'kakaoClient', 'kakaoClient()', '카톡 클라이언트 프로그램 실패', 'internal', -1, null, msg));
+      return console.error(msg);
+    }
+
+    const msg = 'Kakao login succeed. Client program is in startup.';
+    console.log(msg);
+    util.logger(new Log('info', 'kakaoClient', 'kakaoClient()', '카톡 클라이언트 프로그램 시작', 'internal', 0, null, msg));
+    client.channelList.get('309677898273074').sendChat(msg);
+  }
+  catch(e) {
+    util.logger(new Log('error', 'kakaoClient', 'kakaoClient()', '카톡 클라이언트 프로그램 실패', 'internal', 0, null, e.stack));
+  }
+}
+async function alertManager(client) {
   const alert_schedule = schedule.scheduleJob('0 15 * * *', async () => { // 3pm at every day
     try {
-      const target = client.channelManager.map.get(process.env.talkChannelId);
+      const target = client.channelList.get(process.env.talkChannelId);
       const result = await util.query("SELECT * FROM record WHERE date BETWEEN '" + dateformat(new Date(), 'yyyy-mm-dd') + "' AND '" + dateformat(new Date(), 'yyyy-mm-dd') + "' ORDER BY date, course, timestamp;");
       let resultString = '안녕하세요! 오늘 급식 신청해주신 분들은\n';
       let noUserCourse = [];
@@ -35,24 +65,43 @@ async function kakaoClient() {
         else noUserCourse.push(i);
       }
       resultString += '입니다. 오늘도 잘 부탁드려요 :D\n\n';
-      
+
       if(noUserCourse.length) {
         if(noUserCourse.length == 3) resultString = '';
         for(let course of noUserCourse) { resultString += (course + ', '); }
         resultString = resultString.slice(0, -2) + '코스에 신청자가 없습니다! 도와주세요ㅠㅠ\n\n';
       }
-    
+
       const wth = JSON.parse(fs.readFileSync('../res/weather.json').toString()).current;
       resultString += `오늘 아주대는 ${wth.weather}, ${wth.temp}℃에요. 체감온도는 ${wth.tempSense}℃입니다!\n미세먼지는 ${wth.dust.pm10}㎍/㎥, 초미세먼지는 ${wth.dust.pm25}㎍/㎥입니다.`;
-    
-      await target.sendText(resultString);
+
+      target.sendChat(resultString);
       util.logger(new Log('info', 'kakaoClient', 'alert_schedule', '카톡 급식 알림 전송', 'internal', 0, null, resultString));
     }
     catch(e) {
       util.logger(new Log('error', 'kakaoClient', 'alert_schedule', '카톡 급식 알림 전송 오류', 'internal', -1, null, e.stack));
     }
   });
-  
+}
+function chatManager(client) {
+  client.on('chat', (chat, channel) => {
+    channel.markRead(chat);
+
+    if(KnownChatType[chat.chat().type].includes('PHOTO')) registerImage(chat, channel);
+    else if(channel.channelId == process.env.verifyChannelId || channel.channelId == process.env.testChannelId) autoVerify(chat, channel);
+  });
+
+  client.on('channel_join', channel => {
+
+  });
+
+  client.on('user_join', (feedChatlog, channel, user, feed) => {
+
+  });
+}
+
+
+/*
   client.on('message', async chat => {
     try {
       await chat.markChatRead(); // Read incoming chat
@@ -73,7 +122,7 @@ async function kakaoClient() {
                 if(chat.channel.id == process.env.verifyChannelId) util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '유사 이미지 검출', 'internal', 0, null, 'ERR_SIMILAR_IMAGE_DETECTED'));
                 if(chat.channel.id == process.env.verifyChannelId || chat.channel.id == process.env.testChannelID) await chat.channel.sendTemplate(new AttachmentTemplate(new ReplyAttachment(ChatType[test[0].chatType], Long.fromString(test[0].chatLogId), Long.fromString(test[0].chatSenderId), false, '원본 이미지', [], Long.ZERO), `기존 이미지와 유사한 이미지를 검출했습니다.\n등록일: ${dateformat(test[0].timestamp, 'yyyy-mm-dd THH:MM:ss')}\n채팅방: ${test[0].chatChannelName}\n유사도: ${(1 - (test[0].hd / 32)) * 100}%\nlog_id: ${test[0].chatLogId}`));
               }
-              
+
               // add image to DB
               if(chat.channel.id != process.env.testChannelId) {
                 util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '이미지 등록', 'internal', 0, String(chat.logId), phash));
@@ -87,15 +136,15 @@ async function kakaoClient() {
           util.logger(new Log('error', 'kakaoClient', 'client.on(message)', '이미지 등록 오류', 'internal', -1, null, e.stack));
         }
       }
-        
+
       // 자동 급식 인증
       if(chat.channel.id == process.env.verifyChannelId || chat.channel.id == process.env.testChannelID) {
         // Only handle message with keywords
         if(chat.text.includes('코스') && ((chat.text.includes('월') && chat.text.includes('일')) || chat.text.includes('/'))) {
           if(!chat.text.includes('인증') && !chat.text.includes('삭제')) return;
-          
+
           const mode = chat.text.includes('인증') ? 'verify' : 'delete';
-          
+
           // Recognizable datestring: m월d일, m월 d일, m/d
           let targetDate = chat.text.match(/\b(\d+)\/(\d+)\b/) || chat.text.match(/(\d+)월 (\d+)일/) || chat.text.match(/(\d+)월(\d+)일/);
           if(targetDate) { // if date detected
@@ -106,7 +155,7 @@ async function kakaoClient() {
             const dateList = [new Date(currentYear, Number(targetMonth) - 1, Number(targetDay)), new Date(Number(currentYear) - 1, Number(targetMonth) - 1, Number(targetDay)), new Date(Number(currentYear) + 1, Number(targetMonth) - 1, Number(targetDay))]
             dateList.sort((a, b) => { return Math.abs(current - a) - Math.abs(current - b); });
             targetDate = dateList[0]; // get nearest target date
-            
+
             // targetDate validation
             if(targetDate.getTime() > new Date().setHours(0, 0, 0, 0)) {
               util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증 실패', 'internal', 0, null, 'ERR_FUTURE_TARGET_DATE'));
@@ -144,7 +193,7 @@ async function kakaoClient() {
                   }
                 }
               }
-              
+
               // Score table
               let score = { weekday: { solo: 1.5, dual: 1}, weekend: { solo: 2, dual: 1.5} }
 
@@ -154,7 +203,7 @@ async function kakaoClient() {
 
               // writing payload
               let payload = [];
-              for(let course of targetCourses) { 
+              for(let course of targetCourses) {
                 for(let member of targetMembers) {
                   payload.push({
                     ID: member.id, name: member.name,
@@ -164,7 +213,7 @@ async function kakaoClient() {
                   });
                 }
               }
-              
+
               if(mode == 'verify') {
                 // add verify data to DB
                 let resultString = greetings(), prevCourse = null;
@@ -200,43 +249,43 @@ async function kakaoClient() {
       util.logger(new Log('error', 'kakaoClient', 'client.on(message)', '자동 급식 인증 오류', 'internal', -1, null, e.stack));
     }
   });
-  
+
   client.on('user_join', async (channel, user) => {
     let info = channel.getUserInfo(user);
     if(!info) return;
-    
+
     let channelName = channel.Name, channelId = channel.Id;
     let userName = info.Nickname, userId = info.Id;
-    
+
     if(userId == process.env.myUserId) {
       try {
         // if myself invited to chatroom, update channelId
         channelId = channelId.toString();
-      
+
         if(channelName.includes('미유미유') && channelName.includes('인증')) {
           await client.channelManager.map.get(process.env.verifyChannelId).leave();
           process.env.verifyChannelId = channelId;
-        
+
           let envFile = parse(fs.readFileSync('./.env'));
           envFile.verifyChannelId = channelId;
           fs.writeFileSync('./.env', stringify(envFile));
           util.logger(new Log('info', 'kakaoClient', 'self user_join: verify', '카톡 인증방 초대 추적', 'internal', 0, null, channelId));
         }
-        
+
         else if(channelName.includes('미유미유') && channelName.includes('공지')) {
           await client.channelManager.map.get(process.env.noticeChannelId).leave();
           process.env.noticeChannelId = channelId;
-        
+
           let envFile = parse(fs.readFileSync('./.env'));
           envFile.noticeChannelId = channelId;
           fs.writeFileSync('./.env', stringify(envFile));
           util.logger(new Log('info', 'kakaoClient', 'self user_join: notice', '카톡 공지방 초대 추적', 'internal', 0, null, channelId));
         }
-        
+
         else if(channelName.includes('미유미유') && channelName.includes('단톡')) {
           await client.channelManager.map.get(process.env.talkChannelId).leave();
           process.env.talkChannelId = channelId;
-        
+
           let envFile = parse(fs.readFileSync('./.env'));
           envFile.talkChannelId = channelId;
           fs.writeFileSync('./.env', stringify(envFile));
@@ -248,7 +297,7 @@ async function kakaoClient() {
       }
     }
   });
-  
+
   function greetings() {
     /*
     // 주말일 때
@@ -257,12 +306,11 @@ async function kakaoClient() {
     let coldweather = ['추운 날씨에 고생하셨어요!'];
     // 그냥
     let normal = ['수고하셨습니다!'];
-    
+
     let target = cold ? coldweather : (new Date().isWeekend ? weekend : normal);
     let greet = target[Math.floor(Math.random() * target.length)];
-    */
+    *//*
     return '수고하셨습니다!\n';
   }
-}
-
+*/
 export default kakaoClient
