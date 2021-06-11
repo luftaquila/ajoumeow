@@ -51,7 +51,6 @@ async function clientLogin(client) {
 async function alertManager(client) {
   const alert_schedule = schedule.scheduleJob('0 15 * * *', async () => { // 3pm at every day
     try {
-      const target = client.channelList.get(process.env.talkChannelId);
       const result = await util.query("SELECT * FROM record WHERE date BETWEEN '" + dateformat(new Date(), 'yyyy-mm-dd') + "' AND '" + dateformat(new Date(), 'yyyy-mm-dd') + "' ORDER BY date, course, timestamp;");
       let resultString = '안녕하세요! 오늘 급식 신청해주신 분들은\n';
       let noUserCourse = [];
@@ -75,7 +74,7 @@ async function alertManager(client) {
       const wth = JSON.parse(fs.readFileSync('../res/weather.json').toString()).current;
       resultString += `오늘 아주대는 ${wth.weather}, ${wth.temp}℃에요. 체감온도는 ${wth.tempSense}℃입니다!\n미세먼지는 ${wth.dust.pm10}㎍/㎥, 초미세먼지는 ${wth.dust.pm25}㎍/㎥입니다.`;
 
-      target.sendChat(resultString);
+      client.channelList.get(process.env.talkChannelId).sendChat(resultString);
       util.logger(new Log('info', 'kakaoClient', 'alert_schedule', '카톡 급식 알림 전송', 'internal', 0, null, resultString));
     }
     catch(e) {
@@ -93,6 +92,7 @@ function chatManager(client) {
   });
 
   client.on('channel_join', channel => {
+    console.log(channel)
     try {
       if(channel.getDisplayName().includes('미유미유') && channel.getDisplayName().includes('인증')) {
         client.channelList.leaveChannel({ channelId: process.env.verifyChannelId });
@@ -130,12 +130,13 @@ function chatManager(client) {
   });
 
   client.on('user_join', (feedChatlog, channel, user, feed) => {
-
+    console.log(feedChatlog, channel, user, feed);
   });
 }
 
 async function registerImage(chat, channel) {
   try {
+    console.log(chat.attachment());
     for(let att of chat.attachment()) {
       if(att.MediaType.includes('image')) {
         // get image buffer from kakao web server
@@ -187,11 +188,11 @@ async function autoVerify(chat, channel) {
     }
 
     // detect target courses and members
-    const filters = ['사진', '요일', '코스', '인증', '삭제'];
+    const filters = ['사진', '요일', '코스', '인증', '삭제', '없'];
     let targetCourses = chat.text.match(/\b(?=\d*[코스])\w+\b/g);
     let targetMembers = chat.text.match(/(?<![가-힣])[가-힣]{2,3}(?![가-힣])/g);
     if(targetMembers) targetMembers = targetMembers.filter(m => {
-      for(const f of filters) { if( !(new RegExp(f).test(m)) ) return false; }
+      for(const f of filters) { if( m.includes(f) ) return false; }
       return true;
     });
     if(!targetCourses || !targetMembers) return;
@@ -259,12 +260,19 @@ async function autoVerify(chat, channel) {
     }
 
     else if(chat.text.includes('삭제')) {
-      let resultString = '';
-      resultString += `다음 급식 기록을 삭제했습니다.`;
+      let targets = [];
       for(let i in payload) {
-        if(dbwrite) await util.query(`DELETE FROM verify WHERE ID=${payload[i].ID} AND date='${payload[i].date}' AND name='${payload[i].name}' AND course='${payload[i].course}';`);
-        resultString += `\n${payload[i].date} ${payload[i].name} ${payload[i].course}`;
+        const res = await util.query(`SELECT name, date, course, ID from verify WHERE ID=${payload[i].ID} AND date='${payload[i].date}' AND name='${payload[i].name}' AND course='${payload[i].course}';`);
+        if(res[0]) targets.push(res[0]);
       }
+      let resultString = targets.length ? '다음 급식 기록을 삭제했습니다.' : '삭제할 데이터가 없습니다.';
+      for(let o of targets) {
+        let result = '';
+        if(dbwrite) result = await util.query(`DELETE FROM verify WHERE ID=${o.ID} AND date='${dateformat(o.date, 'yyyy-mm-dd')}' AND name='${o.name}' AND course='${o.course}';`);
+        resultString += `\n${dateformat(o.date, 'yyyy-mm-dd')} ${o.name} ${o.course}`;
+      }
+      resultString += `\nOkPacket { affectedRows: ${targets.length}, insertId: 0, warningStatus: ${targets.length ? '0' : '1'} }`;
+      
       channel.sendChat( new ChatBuilder().append(new ReplyContent(chat.chat)).text(resultString).build(KnownChatType.REPLY) );
       if(dbwrite) util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증 삭제', 'internal', 0, null, resultString));
     }
