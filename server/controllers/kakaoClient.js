@@ -39,10 +39,10 @@ async function clientLogin(client) {
       return console.error(msg);
     }
 
-    const msg = 'Kakao login succeed. Client program is in startup.';
+    const msg = 'Kakao login succeeded. Client program is in startup.';
     console.log(msg);
     util.logger(new Log('info', 'kakaoClient', 'kakaoClient()', '카톡 클라이언트 프로그램 시작', 'internal', 0, null, msg));
-    client.channelList.get('309677898273074').sendChat(msg);
+    client.channelList.get(process.env.testChannelId).sendChat(msg);
   }
   catch(e) {
     util.logger(new Log('error', 'kakaoClient', 'kakaoClient()', '카톡 클라이언트 프로그램 실패', 'internal', 0, null, e.stack));
