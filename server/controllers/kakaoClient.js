@@ -88,7 +88,7 @@ function chatManager(client) {
     channel.markRead(chat);
 
     if(KnownChatType[chat.chat.type].includes('PHOTO')) registerImage(chat, channel);
-    else if(channel.channelId == process.env.verifyChannelId || channel.channelId == process.env.testChannelId) autoVerify(chat, channel, client);
+    else if(channel.channelId == process.env.verifyChannelId || channel.channelId == process.env.testChannelId) autoVerify(chat, channel);
   });
 
   client.on('channel_join', channel => {
@@ -168,7 +168,7 @@ async function registerImage(chat, channel) {
   }
 }
 
-async function autoVerify(chat, channel, client) {
+async function autoVerify(chat, channel) {
   try {
     if( !chat.text.includes('코스') || (!chat.text.includes('인증') && !chat.text.includes('삭제')) ) return;
 
@@ -249,16 +249,14 @@ async function autoVerify(chat, channel, client) {
       let resultString = greetings(), prevCourse = null;
       resultString += `${dateformat(payload[0].date, 'yyyy년 m월 d일')} 급식 활동을 등록했습니다.`;
       for(let i in payload) {
-        /*if(dbwrite)*/ await util.query(`INSERT INTO verify(ID, date, name, course, score) VALUES(${payload[i].ID}, '${payload[i].date}', '${payload[i].name}', '${payload[i].course}', '${payload[i].score}');`);
+        if(dbwrite) await util.query(`INSERT INTO verify(ID, date, name, course, score) VALUES(${payload[i].ID}, '${payload[i].date}', '${payload[i].name}', '${payload[i].course}', '${payload[i].score}');`);
         if(prevCourse != payload[i].course) resultString += `\n${payload[i].course} `;
         resultString += `${payload[i].name}, `;
         if(!payload[Number(i) + 1] || (payload[Number(i) + 1] && payload[i].course != payload[Number(i) + 1].course)) resultString = `${resultString.slice(0, -2)} 회원님 (${prevCourse == payload[i].course ? '각 ' : ''}${payload[i].score}점)`;
         prevCourse = payload[i].course;
       }
-      chat.chat.sender.userId = '344382412';
-      client.channelList.get(process.env.verifyChannelId).sendChat( new ChatBuilder().append(new ReplyContent(chat.chat)).text(resultString).build(KnownChatType.REPLY) );
-      //channel.sendChat( new ChatBuilder().append(new ReplyContent(chat.chat)).text(resultString).build(KnownChatType.REPLY) );
-      /*if(dbwrite)*/ util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증', 'internal', 0, null, resultString));
+      channel.sendChat( new ChatBuilder().append(new ReplyContent(chat.chat)).text(resultString).build(KnownChatType.REPLY) );
+      if(dbwrite) util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증', 'internal', 0, null, resultString));
     }
 
     else if(chat.text.includes('삭제')) {
@@ -274,7 +272,7 @@ async function autoVerify(chat, channel, client) {
         resultString += `\n${dateformat(o.date, 'yyyy-mm-dd')} ${o.name} ${o.course}`;
       }
       resultString += `\nOkPacket { affectedRows: ${targets.length}, insertId: 0, warningStatus: ${targets.length ? '0' : '1'} }`;
-      
+
       channel.sendChat( new ChatBuilder().append(new ReplyContent(chat.chat)).text(resultString).build(KnownChatType.REPLY) );
       if(dbwrite) util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증 삭제', 'internal', 0, null, resultString));
     }
