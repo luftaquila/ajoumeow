@@ -254,14 +254,14 @@ function setMap() {
     $.ajax({
       url: '/ajoumeow/res/course.json',
       success: function(res) {
-        for(const course of res.course) {
+        for(const course of res) {
           for(const point of course.point) {
             let marker = new google.maps.Marker({
               position: { lat: point.pos.lat, lng: point.pos.lon },
       	      map: map,
             	label: {
                 fontFamily: 'Fontawesome',
-                text: '\uf041',
+                text: '\uf3c5',
                 fontSize: '25px',
                 color: course.color
         	    },
@@ -288,7 +288,7 @@ function setMap() {
             map: map
           });
 
-          $('#courses').append(`<i class='fas fa-map-marker' style='color: ${course.color}; margin-left: 5rem;'> ${course.label}</i>`);
+          $('#courses').append(`<i class='fas fa-map-marker-alt' style='color: ${course.color}; margin-left: 1.5rem;'> ${course.label}</i>`);
         }
       }
     });
@@ -299,7 +299,7 @@ function setMap() {
     	map: map,
     	label: {
         fontFamily: 'Fontawesome',
-        text: '\uf3c5',
+        text: '\uf041',
         fontSize: '25px',
         color: 'deepskyblue'
     	},

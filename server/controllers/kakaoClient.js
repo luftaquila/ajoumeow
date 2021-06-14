@@ -312,4 +312,4 @@ function greetings() {
 }
 
 export default kakaoClient
-export client
+export { client }
