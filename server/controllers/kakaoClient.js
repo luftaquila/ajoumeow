@@ -137,6 +137,7 @@ function chatManager(client) {
 async function registerImage(chat, channel) {
   try {
     console.log(chat.attachment());
+    return;
     for(let att of chat.attachment()) {
       if(att.MediaType.includes('image')) {
         // get image buffer from kakao web server
@@ -195,7 +196,7 @@ async function autoVerify(chat, channel) {
       for(const f of filters) { if( m.includes(f) ) return false; }
       return true;
     });
-    if(!targetCourses || !targetMembers) return;
+    if(!targetCourses.length || !targetMembers.length) return;
 
     // targetMember validation
     for(let i in targetMembers) { // get member student id with name
