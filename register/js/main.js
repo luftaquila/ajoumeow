@@ -6,7 +6,7 @@ $(function () {
     $.ajax("/ajoumeow/api/settings/registerTerm")
   ).done((currentSemister, isRegister, isRegisterRestricted, registerTerm) => {
     let flag = false;
-    
+
     if(isRegister[0].data == 'TRUE') {
       if(isRegisterRestricted[0].data == 'FALSE') flag = true;
       else {
@@ -16,16 +16,16 @@ $(function () {
       }
     }
     else flag = false;
-    
+
     if(flag) {
       $('#semister').text(currentSemister[0].data);
       $('.loading').css('display', 'none');
       $('.container-contact100').css('display', 'block');
-      
-      $.ajax('/ajoumeow/res/collegeList.json').done(collegeDict => {
+
+      $.ajax('/ajoumeow/res/college.json').done(collegeDict => {
         let collegeList = '', departmentList = '';
         for (let college in collegeDict) collegeList += `<option value="${college}">${college}</option>`;
-        
+
         $('#college').html(collegeList).on('change', function() {
           let departmentList = '';
           for (let i in collegeDict[$(this).val()]) departmentList += `<option value="${collegeDict[$(this).val()][i]}">${collegeDict[$(this).val()][i]}</option>`;
@@ -33,7 +33,7 @@ $(function () {
         }).trigger('change');
       });
     }
-    else $('.loading').html('<br><br><br><h4>모집 기간이 아닙니다!<br>다음 모집 때 지원해 주세요 ㅠㅠ</h4><br><br><img src="images/failed.jpg" style="width:90%">'); 
+    else $('.loading').html('<br><br><br><h4>모집 기간이 아닙니다!<br>다음 모집 때 지원해 주세요 ㅠㅠ</h4><br><br><img src="images/failed.jpg" style="width:90%">');
   });
 });
 
@@ -58,7 +58,7 @@ $('.validate-form').on('submit', function (event) {
       연락처: $('#tel').val(),
       학기: $('#semister').text(),
     }
-    
+
     $.ajax({
       url: '/ajoumeow/api/users/register',
       type: 'POST',
@@ -107,7 +107,7 @@ function hideValidate(input) {
   var thisAlert = $(input).parent();
   $(thisAlert).removeClass('alert-validate');
 }
-  
+
 $('#tel').keyup(function (event) {
   event = event || window.event;
   this.value = autoHypen(this.value.trim());

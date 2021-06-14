@@ -7,7 +7,7 @@ function init() {
   user = null;
   let indexOfToday = (new Date(new Date().format('yyyy-mm-dd')).getTime() - new Date(getDateFromCalendarStart(0)).getTime()) / (1000 * 60 * 60 * 24);
   let calendar = $('#calendar');
-  
+
   // Draw calendar
   for(let i = 0; i < 35; i++) {
     if(!(i % 7)) calendar.append('<div class="calendar-table__row"></div>');
@@ -17,7 +17,7 @@ function init() {
     else // valid dates generation
       $('.calendar-table__row').last().append('<div class="calendar-table__col' + (i === indexOfToday ? ' calendar-table__today calendar-table__event' : '') + '" data-date="' + thisDate.format('yyyy-mm-dd') + '"><div class="calendar-table__item"><div>' + thisDate.format(i ? (thisDate.getDate() === 1 ? 'm/d' : 'd') : 'm/d') + '</div></div></div>');
   }
-  
+
   loadWeather(); // Load weather data
   autoLogin(); // Proceed login process
 }
@@ -33,10 +33,10 @@ function eventListener() {
       $('#addRecord').addClass('addRecord_active').css('background-color', '#2196f3');
     else
       $('#addRecord').removeClass('addRecord_active').css('background-color', 'darkgray');
-    
+
     // Show date contents
     $('#contentArea').css('display', 'block');
-    
+
     let datestring = new Date($(this).attr('data-date')).format('m월 d일 ddd요일');
     if(weather) {
       if($(this).hasClass('calendar-table__today')) {
@@ -49,10 +49,10 @@ function eventListener() {
         let tgt = weather.forecast.find(o => o.date == new Date($(this).attr('data-date')).format('yyyy-mm-dd'));
         if(tgt) datestring += `&ensp;<span id="weatherstat" style="font-weight: normal">${tgt.temp}℃ ${tgt.weather}</span>&nbsp;<img src="/ajoumeow/res/image/weather/icon${tgt.icon}.png" style="width: 1rem; height: 1rem;">`;
       }
-    }    
+    }
     $('#dateInfo h4').html(datestring);
     $('#weatherstat').click(function() { alert('weather updated on\n' + weather.update); });
-    
+
     let content = $(this).attr('data-content') ? JSON.parse($(this).attr('data-content')) : [], contentHTML = "";
     $('#contents').html('');
     if($(this).children('div').css('background-image') === 'none') {
@@ -68,7 +68,7 @@ function eventListener() {
         $('#contents').append('<div style="margin-bottom: 0.1rem; margin-top: 0.5rem"><h4>' + obj.course + '코스</h4></div>').append(pplHTML);
       }
     }
-    
+
     if(!$(this).hasClass('calendar-table__inactive')) {
       if(user && user.role != '회원') $('.namecard').not('.example').addClass('partner');
       if(user && user.ID) $('.namecard[data-id=' + user.ID + ']').closest('div').children('span').children('span.namecard').addClass('partner');
@@ -77,7 +77,7 @@ function eventListener() {
     else if(!user) {
       for(let namecard of $('.namecard').not('.partner').not('.example')) $(namecard).text($(namecard).text()[0] + $(namecard).text().slice(1).replace(/./g , '○'));
     }
-    
+
     $('.namecard').not('.example').on('click', function() {
       $('.deleteActive').removeClass('deleteActive');
       if(user && user.role != '회원' || (!$('.calendar-table__event').hasClass('calendar-table__inactive') && user.ID && user.ID == $(this).attr('data-id'))) $(this).addClass('deleteActive');
@@ -94,7 +94,7 @@ function eventListener() {
     });
   });
   $('#addRecord').click(async function() {
-    if($('.calendar-table__event').hasClass('calendar-table__inactive')) return; 
+    if($('.calendar-table__event').hasClass('calendar-table__inactive')) return;
     if($('.calendar-table__event').children('div').css('background-image') === 'none') {
       $('#contents').html('');
       for(let i = 1; i <= 3; i++) $('#contents').append('<div style="margin-bottom: 0.1rem; margin-top: 0.5rem"><h4>' + i + '코스</h4><div class="courseContent" data-course="' + i + '"></div></div>');
@@ -114,7 +114,7 @@ function eventListener() {
       validator('POST', target);
     });
   });
-  $('.sidebar_overlay').click(function() { 
+  $('.sidebar_overlay').click(function() {
     $('#sidebar').css('display', 'none');
   }).children().click(function() { return false; });
   $('#magic').click(function() { (function () { var script = document.createElement('script'); script.src="//cdn.jsdelivr.net/npm/eruda"; document.body.appendChild(script); script.onload = function () { eruda.init() } })(); });
@@ -140,7 +140,7 @@ function load() {
           course[0].ppl.push({ ID: rec.ID, name: rec.name, timestamp: rec.timestamp });
         }
       }
-      
+
       // Set Calendar
       $('.calendar-table__item').not('.hovered').css('background-image', 'none').children('div.my').removeClass('my');
       for(let date of recArr) {
@@ -149,7 +149,7 @@ function load() {
         let svg = dateDataToSvgTranslator(date.courses, svgwidth);
         $('div[data-date="' + date.date + '"]').attr('data-content', JSON.stringify(date.courses));
         $('div[data-date="' + date.date + '"] > div').css('background-image', svg);
-        
+
         // Highlight if reserved by myself
         if(user) {
           let flag = false;
@@ -212,14 +212,14 @@ function dateDataToSvgTranslator(courses, width) {
   let svgString = `url("data:image/svg+xml,%3Csvg width='` + width + `' height='` + width + `' xmlns='http://www.w3.org/2000/svg' version='1.1'%3E`;
   let courseCount = [0, 0];
   for(let course of courses) if(course.ppl.length) courseCount[0]++;
-  
+
   for(let course of courses) {
     let ppl = course.ppl.length;
     if(!ppl) continue;
     svgString += `%3Ccircle cx='` + dotPosition[courseCount[0]][courseCount[1]] + `' cy='` + dotPosition.CxCyRStrW[1] + `' r='` + dotPosition.CxCyRStrW[2] + `' stroke='` + courseColor[course.course] + `' stroke-width='` + dotPosition.CxCyRStrW[3] + `' fill='` + (ppl === 1 ? 'white' : courseColor[course.course]) + `'%3E%3C/circle%3E`;
     courseCount[1]++;
   }
-  
+
   svgString += `%3C/svg%3E`;
   return svgString;
 }
@@ -250,55 +250,49 @@ function setMap() {
       fullscreenControl: true,
       fullscreenControlOptions: { position: google.maps.ControlPosition.RIGHT_BOTTOM }
     });
-    
+
     $.ajax({
-      url: '/ajoumeow/res/map.json',
+      url: '/ajoumeow/res/course.json',
       success: function(res) {
-        for(let pnt of res.points) {
-          let marker = new google.maps.Marker({
-            position: { lat: pnt.pos.lat, lng: pnt.pos.lon },
-    	      map: map,
-          	label: {
-              fontFamily: 'Fontawesome',
-              text: '\uf041',
-              fontSize: '25px',
-              color: pnt.color
-      	    },
-            icon: { 
-              url: "/ajoumeow/res/image/Map/marker.png",
-              scale: 1,
-              labelOrigin: new google.maps.Point(0, 0),
-              size: new google.maps.Size(16,16),
-              anchor: new google.maps.Point(0,12)
-            }
-          });
-      
-          let infowindow = new google.maps.InfoWindow({
-            content: '' + 
-              '<div style="width: 100%; height: 100%">' +
-                '<h2>'+ pnt.label + '</h2>' +
-                '<div>' +
-                  '<img style="margin-top: 0.5rem; width: 100%; height: 100%" src="' + '/ajoumeow/res/image/Map/spot_' + pnt.designator + '.jpg' + '">' +
-                '</div>' +
-              '</div>',
-            pixelOffset: new google.maps.Size(-8, 0)
-          });
-      
-          marker.addListener("click", () => { infowindow.open(map, marker); });
-        }
-    
-        for(let rtu of res.routes) {
+        for(const course of res.course) {
+          for(const point of course.point) {
+            let marker = new google.maps.Marker({
+              position: { lat: point.pos.lat, lng: point.pos.lon },
+      	      map: map,
+            	label: {
+                fontFamily: 'Fontawesome',
+                text: '\uf041',
+                fontSize: '25px',
+                color: course.color
+        	    },
+              icon: {
+                url: "/ajoumeow/res/image/map/marker.png",
+                scale: 1,
+                labelOrigin: new google.maps.Point(0, 0),
+                size: new google.maps.Size(16,16),
+                anchor: new google.maps.Point(0,12)
+              }
+            });
+            let infowindow = new google.maps.InfoWindow({
+              content: `<div style="width: 100%; height: 100%"><h2>${point.label}</h2><div><img style="margin-top: 0.5rem; width: 100%; height: 100%" src="/ajoumeow/res/image/map/${point.label}.jpg"></div></div>`,
+              pixelOffset: new google.maps.Size(-8, 0)
+            });
+            marker.addListener("click", () => { infowindow.open(map, marker); });
+          }
+
           new google.maps.Polyline({
-            path: rtu.coords,
-            strokeColor: rtu.color,
+            path: course.track,
+            strokeColor: course.color,
             strokeOpacity: 0.9,
             strokeWeight: 2,
             map: map
           });
+
+          $('#courses').append(`<i class='fas fa-map-marker' style='color: ${course.color}; margin-left: 5rem;'> ${course.label}</i>`);
         }
       }
     });
-    
+
     let home = new google.maps.Marker({
       // 동아리방 좌표
       position: { lat: 37.283438, lng: 127.046015 },
@@ -309,26 +303,18 @@ function setMap() {
         fontSize: '25px',
         color: 'deepskyblue'
     	},
-      icon: { 
-        url: "/ajoumeow/res/image/Map/marker.png",
+      icon: {
+        url: "/ajoumeow/res/image/map/marker.png",
         scale: 1,
         labelOrigin: new google.maps.Point(0, 0),
         size: new google.maps.Size(16,16),
         anchor: new google.maps.Point(0,12)
       }
     });
-    
     let homeInfo = new google.maps.InfoWindow({
-      content: '' +
-        '<div style="width: 100%; height: 100%">' +
-          '<h2>동아리방</h2>' +
-          '<div>' +
-            '신학생회관 4층 406호' +
-          '</div>' +
-        '</div>',
+      content: `<div style="width: 100%; height: 100%"><h2>동아리방</h2><div>신학생회관 4층 406호<br><img style="margin-top: 0.5rem; width: 100%; height: 100%" src="/ajoumeow/res/image/map/home.jpg"></div></div>`,
       pixelOffset: new google.maps.Size(-8, 0)
     });
-    
     home.addListener("click", () => { homeInfo.open(map, home); });
 
     return get_location();
@@ -354,7 +340,7 @@ function geo_success(position) {
         color: 'hotpink'
       },
       icon: {
-        url: "/ajoumeow/res/image/Map/marker.png",
+        url: "/ajoumeow/res/image/map/marker.png",
         scale: 1,
         labelOrigin: new google.maps.Point(0, 3),
         size: new google.maps.Size(16,16),
