@@ -136,29 +136,42 @@ function chatManager(client) {
 
 async function registerImage(chat, channel) {
   try {
-    console.log(chat.attachment());
-    return;
-    for(let att of chat.attachment()) {
-      if(att.MediaType.includes('image')) {
-        // get image buffer from kakao web server
-        let buffer = await axios.get(att.ImageURL, { responseType: 'arraybuffer'});
+    if(KnownChatType[chat.chat.type].includes('MULTI')) { // MULTIPHOTO
+      for(const i in chat.attachment().imageUrls) {
+        processImage({
+          url: chat.attachment().imageUrls[i],
+          s: chat.attachment().sl[i],
+          w: chat.attachment().wl[i],
+          h: chat.attachment().hl[i]
+        }, chat, channel);
+      }
+    }
+    else processImage(chat.attachment(), chat, channel); // single PHOTO
+
+    async function processImage(img, chat, channel) {
+      try {
+        const dbwrite = channel.channelId == process.env.verifyChannelId;
+        // get image buffer from kakao server
+        let buffer = await axios.get(img.url, { responseType: 'arraybuffer'});
         buffer = Buffer.from(buffer.data);
         const phash = await imghash.hash(buffer);
 
+        // image duplication check
         const test = await util.query(`SELECT *, BIT_COUNT(imgHash ^ ${`0x${phash}`}) as hd FROM verifyImage HAVING hd < 5 ORDER BY hd, timestamp ASC;`);
-        // if image is not on the same chat, on the verify channel
-        if(test.length && test[0].chatLogId != String(chat.chat.logId)) {
-          if(channel.channelId == process.env.verifyChannelId) util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '유사 이미지 검출', 'internal', 0, null, 'ERR_SIMILAR_IMAGE_DETECTED'));
-          if(channel.channelId == process.env.verifyChannelId || channel.channelId == process.env.testChannelID)
-            channel.sendChat( new ChatBuilder().append(new ReplyContent(chat.chat)).text().build(KnownChatType.REPLY) );
-            //await chat.channel.sendTemplate(new AttachmentTemplate(new ReplyAttachment(ChatType[test[0].chatType], Long.fromString(test[0].chatLogId), Long.fromString(test[0].chatSenderId), false, '원본 이미지', [], Long.ZERO), `기존 이미지와 유사한 이미지를 검출했습니다.\n등록일: ${dateformat(test[0].timestamp, 'yyyy-mm-dd THH:MM:ss')}\n채팅방: ${test[0].chatChannelName}\n유사도: ${(1 - (test[0].hd / 32)) * 100}%\nlog_id: ${test[0].chatLogId}`));
+        if(test.length && test[0].chatLogId != chat.chat.logId) { // if test fails and not on the same chat
+          if(dbwrite) util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '유사 이미지 검출', 'internal', 0, null, 'ERR_SIMILAR_IMAGE_DETECTED'));
+          channel.sendChat( new ChatBuilder().append(new ReplyContent({ logId: test[0].chatLogId, sender: { userId: test[0].chatSenderId }, text: '원본 사진', type: KnownChatType[test[0].chatType] })).text(`이전에 등록된 이미지와 ${(1 - (test[0].hd / 32)) * 100}% 유사한 이미지를 검출했습니다.\n\n기존 이미지:\n  등록일: ${dateformat(test[0].timestamp, 'yyyy-mm-dd HH:MM:ss')}\n  채팅방: ${test[0].chatChannelName}\n  전송자: ${chat.getSenderInfo(channel).nickname}`).build(KnownChatType.REPLY) );
         }
 
-        // add image to DB
-        if(channel.channelId != process.env.testChannelId) {
-          util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '이미지 등록', 'internal', 0, String(chat.chat.logId), phash));
-          await util.query(`INSERT INTO verifyImage(chatType, chatLogId, chatSenderId, chatChannelName, imgWidth, imgHeight, imgSize, imgHash, imgHashHex) VALUES('${KnownChatType[chat.chat.type]}', '${chat.chat.logId}', '${chat.getSenderInfo(channel).nickname}', '${channel.getDisplayName()}', ${att.Width}, ${att.Height}, '${att.Size}', ${`0x${phash}`}, '${phash}');`);
+        if(dbwrite) { // add image to DB
+          util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '이미지 등록', 'internal', 0, chat.chat.logId, phash));
+          await util.query(`INSERT INTO verifyImage(chatType, chatLogId, chatSenderId, chatSenderName, chatChannelName, imgWidth, imgHeight, imgSize, imgHash, imgHashHex) VALUES('${KnownChatType[chat.chat.type]}', '${chat.chat.logId}', '${chat.getSenderInfo(channel).userId}', '${chat.getSenderInfo(channel).nickname}', '${channel.getDisplayName()}', ${img.w}, ${img.h}, '${img.s}', ${`0x${phash}`}, '${phash}');`);
         }
+      }
+      catch(e) {
+        console.error(e);
+        channel.sendChat(e.stack);
+        util.logger(new Log('error', 'kakaoClient', 'client.on(message)', '이미지 등록 오류', 'internal', -1, null, e.stack));
       }
     }
   }
@@ -245,7 +258,7 @@ async function autoVerify(chat, channel) {
     }
 
     // db writing and reply
-    const dbwrite = channel.channelId == process.env.verifyChannelId ? true : false;
+    const dbwrite = channel.channelId == process.env.verifyChannelId;
     if(chat.text.includes('인증')) {
       let resultString = greetings(), prevCourse = null;
       resultString += `${dateformat(payload[0].date, 'yyyy년 m월 d일')} 급식 활동을 등록했습니다.`;
