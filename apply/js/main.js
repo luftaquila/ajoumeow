@@ -6,7 +6,7 @@ $(function () {
     $.ajax("/ajoumeow/api/settings/applyTerm")
   ).done((currentSemister, isApply, isApplyRestricted, applyTerm) => {
     let flag = false;
-    
+
     if(isApply[0].data == 'TRUE') {
       if(isApplyRestricted[0].data == 'FALSE') flag = true;
       else {
@@ -16,16 +16,16 @@ $(function () {
       }
     }
     else flag = false;
-    
+
     if(flag) {
       $('.semister').text(currentSemister[0].data);
       $('.loading').css('display', 'none');
       $('#asktype').css('display', 'block');
-      
-      $.ajax('/ajoumeow/res/collegeList.json').done(collegeDict => {
+
+      $.ajax('/ajoumeow/res/college.json').done(collegeDict => {
         let collegeList = '', departmentList = '';
         for (let college in collegeDict) collegeList += `<option value="${college}">${college}</option>`;
-        
+
         $('#college, #o_college').html(collegeList).on('change', function() {
           let departmentList = '';
           for (let i in collegeDict[$(this).val()]) departmentList += `<option value="${collegeDict[$(this).val()][i]}">${collegeDict[$(this).val()][i]}</option>`;
@@ -33,7 +33,7 @@ $(function () {
         }).trigger('change');
       });
     }
-    else $('.loading').html('<br><br><br><h2>모집 기간이 아닙니다!<br>다음 모집 때 지원해 주세요 ㅠㅠ</h2><br><br><img src="images/failed.jpg" style="width:90%">'); 
+    else $('.loading').html('<br><br><br><h2>모집 기간이 아닙니다!<br>다음 모집 때 지원해 주세요 ㅠㅠ</h2><br><br><img src="images/failed.jpg" style="width:90%">');
   });
 });
 
@@ -47,7 +47,7 @@ $('.validate-form').on('submit', function (event) {
 
   let input = $('.' + tgt + ' .validate-input .input100').not('.not');
   let check = true, flag = true, isNew = null;
-  
+
   if(tgt == 'type_new') isNew = true;
   else isNew = false;
 
@@ -146,7 +146,7 @@ $('#tel').keyup(function (event) {
 $('.ask').click(function() {
   $('#asktype').css('display', 'none');
   $('.container-contact100#' + $(this).attr('id').replace('_', '')).css('display', 'block');
-});      
+});
 
 $('#find').click(function() {
   $.ajax({
@@ -162,4 +162,4 @@ $('#find').click(function() {
     },
     error: err => alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
   });
-}); 
+});

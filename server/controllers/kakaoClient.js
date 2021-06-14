@@ -14,8 +14,8 @@ import { Log } from './util/interface.js';
 dotenv.config();
 Date.prototype.getDayNum = function() { return this.getDay() ? this.getDay() : 7; }
 
+const client = new TalkClient({ });
 async function kakaoClient() {
-  const client = new TalkClient({ });
   await clientLogin(client);
 
   chatManager(client);
@@ -312,3 +312,4 @@ function greetings() {
 }
 
 export default kakaoClient
+export client
