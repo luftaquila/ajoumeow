@@ -84,8 +84,7 @@ async function alertManager(client) {
 }
 function chatManager(client) {
   client.on('chat', (chat, channel) => {
-    console.log(chat);
-    channel.markRead(chat);
+    channel.markRead(chat.chat);
 
     if(KnownChatType[chat.chat.type].includes('PHOTO')) registerImage(chat, channel);
     else if(channel.channelId == process.env.verifyChannelId || channel.channelId == process.env.testChannelId) autoVerify(chat, channel);
