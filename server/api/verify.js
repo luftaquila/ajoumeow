@@ -1,6 +1,7 @@
 import axios from 'axios';
 import stream from 'stream';
 import express from 'express';
+import dateformat from 'dateformat';
 import bodyParser from 'body-parser';
 
 import util from '../controllers/util/util.js';
@@ -72,56 +73,45 @@ router.get('/latest', util.isLogin, async (req, res) => {
 
 router.get('/1365', async (req, res) => {
   try {
-    let verify = await util.query(`SELECT * FROM verify WHERE REPLACE(SUBSTRING_INDEX(date, '-', 2), '-', '')='${req.query.month.replace('-', '')}';`);
-    let namelist = await util.query(`SELECT * FROM \`namelist_${req.query.namelist}\`;`);
-    let data = [];
-    for(let obj of verify) {
-      let person = data.find(o => o.ID == obj.ID);
-      if(person) {
-        let day = person.date.find(o => +o.day == +obj.date);
-        if(day) day.hour++;
-        else {
-          person.date.push({
-            day: obj.date,
-            hour: 1
-          });
-        }
-      }
+    const verify = await util.query(`SELECT * FROM verify WHERE date BETWEEN '${req.query.start}' AND '${req.query.end}';`);
+    const namelist = await util.query(`SELECT * FROM \`namelist_${req.query.namelist}\`;`);
+    const cheif = namelist.find(o => o.role == '회장');
+    
+    let payload = [];
+    for(const activity of verify) {
+      const member = namelist.find(o => o.ID == activity.ID);
+      if(!member) continue;
+
+      activity.date = dateformat(activity.date, 'yyyy.mm.dd');
+      
+      const prev = payload.find(data => data.ID == member.ID && data.date == activity.date);
+      if(prev) prev.hour++;
       else {
-        let member = namelist.find(o => o.ID == obj.ID);
-        if(member) {
-          data.push({
-            ID: member.ID,
-            name: member.name,
-            '1365ID' : member['1365ID'],
-            birthday: member.birthday,
-            date: [ { day: obj.date, hour: 1 } ],
-            phone: member.phone
-          });
-        }
+        payload.push({
+          ID: member.ID,
+          volID: member['1365ID'],
+          name: member.name,
+          birthday: member.birthday,
+          phone: member.phone,
+          date: activity.date,
+          hour: 1
+        });
       }
     }
-
-    const cheif = await util.query(`SELECT name, phone FROM \`namelist_${await util.getSettings('currentSemister')}\` WHERE role='회장';`);
-    const response = await axios.post('https://script.google.com/macros/s/AKfycbxFYIGU5xLXo-FtHNBN4jMMZ5KpzAYKBGrVLIUgSsIZqqBQvM8rA-D729b6WwDilVP9/exec', {
-      data: JSON.stringify(data),
-      private: req.query.private,
+    
+    const response = await axios.post('https://script.google.com/macros/s/AKfycbwwUFoQvlCziFm_2rvyyx1qcc7VeG2plfwEkXNNCWDQRBJqKRt_noiT36iCPlGCc_nIIA/exec', {
+      data: payload,
       cheif: {
-        name: cheif[0].name,
-        phone: cheif[0].phone
+        name: cheif ? cheif.name : '',
+        phone: cheif ? cheif.phone : ''
       }
     });
-    const pdf = Buffer.from(response.data, 'base64');
-
-    let readStream = new stream.PassThrough();
-    readStream.end(pdf);
-    res.set('Content-Type', 'application/pdf');
-    res.set('Content-Disposition', `attachment; filename=${encodeURI('미유미유 1365 인증서.pdf')}`);
-    res.set('Content-Length', pdf.length);
-    readStream.pipe(res);
+    
+    res.json(response.data);
     util.logger(new Log('info', req.remoteIP, req.originalPath, '1365 인증서 생성 요청', req.method, 200, req.query, null));
   }
   catch(e) {
+    console.error(e);
     util.logger(new Log('error', req.remoteIP, req.originalPath, '1365 인증서 생성 오류', req.method, 500, req.query, e.stack));
     res.status(500).json(new Response('error', '알 수 없는 오류입니다.', 'ERR_UNKNOWN'));
   }
