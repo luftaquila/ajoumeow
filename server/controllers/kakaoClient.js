@@ -212,7 +212,7 @@ async function autoVerify(chat, channel) {
 
     // targetMember validation
     for(let i in targetMembers) { // get member student id with name
-      let result = await util.query(`SELECT name, ID FROM \`namelist_${await util.getSettings('currentSemister')}\` WHERE name LIKE '%${targetMembers[i]}%';`);
+      let result = await util.query(`SELECT name, ID FROM \`namelist_${await util.getSettings('currentSemister')}\` WHERE name='${targetMembers[i]}';`);
       if(result.length == 1) targetMembers[i] = { name: targetMembers[i], id: result[0].ID };
       else if(!result.length) {
         if(chat.text.includes('인증')) {

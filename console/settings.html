@@ -15,7 +15,7 @@
     <!-- Custom styles for this template-->
     <link rel="stylesheet" href="css/sb-admin-2.min.css">
     <link rel='stylesheet' href='css/console.css'>
-    
+
     <!-- Page level styles -->
     <link rel='stylesheet' href='/res/toggleSwitch.css' />
     <link rel='stylesheet' href='/ajoumeow/res/lib/alertify/alertify.core.css' />
@@ -55,6 +55,12 @@
           <a class="nav-link" href='./settings.html'>
           <i class="fas fa-fw fa-wrench"></i>
           <span>설정</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href='./course.html'>
+          <i class="fas fa-fw fa-route"></i>
+          <span>코스</span>
           </a>
         </li>
         <li class="nav-item">
@@ -109,7 +115,7 @@
               <div id='currentSemister_container'>
                 <b>현재 학기</b>
                 <div style='display: inline-block; margin-left: 3rem;'>
-                  <input id='currentYear' class='setting settingSemister' type="number" min=20 max=99 maxlength=2 style='width: fit-content; text-align: center' required/> - 
+                  <input id='currentYear' class='setting settingSemister' type="number" min=20 max=99 maxlength=2 style='width: fit-content; text-align: center' required/> -
                   <select id='currentSemister' class='setting settingSemister' required>
                     <option>1</option>
                     <option>2</option>
@@ -117,7 +123,7 @@
                   학기
                 </div>
               </div>
-              
+
               <div id='isApply_container' style='margin-top: 1.5rem;'>
                 <b>회원 등록</b>
                 <div style='display: inline-block; margin-left: 3rem;'>
@@ -128,7 +134,7 @@
                   </label>
                 </div>
               </div>
-              
+
               <div id='isApplyRestricted_container' style='padding-left: 2rem; margin-top: 0.5rem'>
                 <b>등록 허용기간 제한</b>
                 <div style='display: inline-block; margin-left: 3rem;'>
@@ -158,7 +164,7 @@
                   </label>
                 </div>
               </div>
-              
+
               <div id='isRegisterRestricted_container' style='padding-left: 2rem; margin-top: 0.5rem'>
                 <b>모집 허용기간 제한</b>
                 <div style='display: inline-block; margin-left: 3rem;'>
@@ -177,12 +183,12 @@
                   </span>
                 </div>
               </div>
-              
+
               <div style='margin-top: 1.5rem;'>
                 <b>공지사항</b>&ensp;v<span id='noticeVersion'></span><br>
                 <textarea class='setting notice' id='notice' style='width: 20rem; height: 4rem; font-size: 0.8rem; line-height: 1rem;'></textarea>
               </div>
-              
+
               <div style='margin-top: 1.5rem'>
                 <b>최대 급식 인원 제한</b>
                 <div style='display: inline-block; margin-left: 1rem;'>
@@ -190,7 +196,7 @@
                 </div>
               </div>
             </div>
-            
+
             <br>
             <div style='font-size: 0.9rem'>
               <ul class='fa-ul'>
@@ -213,18 +219,18 @@
       <!-- End of Content Wrapper -->
     </div>
     <!-- End of Page Wrapper -->
-    
+
     <!-- Bootstrap core JavaScript-->
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    
+
     <!-- Core plugin JavaScript-->
     <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
     <script src='/ajoumeow/res/lib/js.cookie.min.js'></script>
     <script src='/ajoumeow/res/lib/alertify/alertify.min.js'></script>
     <script src="js/sb-admin-2.js"></script>
     <script src='js/authManager.js'></script>
-    
+
     <!-- Page level plugins -->
     <script src='js/settings.js'></script>
   </body>
