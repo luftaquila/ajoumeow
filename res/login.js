@@ -181,9 +181,12 @@ function startIntro() {
     }
     else if(this._currentStep == 3) {
       try { MicroModal.close('help_modal'); } catch(e) { }
+      MicroModal.show('map_modal');
+      /*
       posID = setMap();
       MicroModal.show("map_modal", { onClose: function() { navigator.geolocation.clearWatch(posID); }});
       try { document.querySelector('#map > div > div > div:nth-child(1) > div:nth-child(3) > div > div:nth-child(3) > div:nth-child(1)').click() } catch(e) { }
+      */
     }
     else if(this._currentStep == 4) {
       try { MicroModal.close('map_modal'); } catch(e) { }
