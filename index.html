@@ -72,7 +72,7 @@
       <span id='noticeTrig' class="header__btn header__btn--left" style="font-size: 1.7rem; left: 0rem;" id='notice' onclick='MicroModal.show("notice_modal");'><i class="fas fa-exclamation-circle"></i></span>
       <span id='helpTrig' class="header__btn header__btn--left" style="font-size: 1.7rem; left: 2.5rem;" id='help' onclick='MicroModal.show("help_modal");'><i class="far fa-question-circle"></i></span>
       <span id='galleryTrig' class="header__btn header__btn--left" style="font-size: 1.7rem; left: 5.1rem;"><a href='/ajoumeow/gallery' class='rainbow' style='text-decoration: none; color: black;'><i class="far fa-camera-retro"></i></a></span>
-      <span id='mapTrig' class="header__btn header__btn--right" style="font-size: 1.7rem; right: 5.1rem;" id='direction' onclick='posID = setMap(); MicroModal.show("map_modal", { onClose: function() { navigator.geolocation.clearWatch(posID); }});'><i class='fas fa-street-view'></i></span>
+      <span id='mapTrig' class="header__btn header__btn--right" style="font-size: 1.7rem; right: 5.1rem;" id='direction' onclick='MicroModal.show("map_modal");/*posID = setMap(); MicroModal.show("map_modal", { onClose: function() { navigator.geolocation.clearWatch(posID); }});*/'><i class='fas fa-street-view'></i></span>
       <span id='guideTrig' class="header__btn header__btn--right" style="font-size: 1.7rem; right: 2.6rem;" id='guide' onclick='MicroModal.show("guide_modal");'><i class='fas fa-book-spells rainbow×'></i></span>
       <span id='sidebarTrig' class="header__btn header__btn--right" style="font-size: 1.7rem; right: 0rem;" id='sidebar_open' onclick="$('#sidebar').css('display', 'block');"><i class='fas fa-bars'></i></span>
     </header>
@@ -236,14 +236,14 @@
             <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
           </header>
           <main class="modal__content" id="map_modal-content" style='margin: 0; text-align: center;'>
-            <div id="courses" style='margin: 0.5rem 0'>
+            <div id="courses" style='margin: 0.5rem 0; display: none'>
               급식소 <i class='fas fa-map-marker-alt'></i> 를 누르면 자세한 위치가 나옵니다.<br>
               <i class='fas fa-map-marker' style='color: deepskyblue;'> 동방</i>
             </div>
-            <div style='font-size: 0.8rem'>
+            <div style='font-size: 0.8rem; display: none;'>
               지도의 급식소 위치는 생각보다 정확합니다! (오차율 0.5m)<br>급식소가 안 보인다면 분홍색 핀과 정확히 일치시켜 보세요.
             </div>
-            <div id='map' style='margin-top: 1rem; height: 400px; width: 100%;'></div>
+            <iframe src="https://www.google.com/maps/d/embed?mid=1IoJLJAOMW_roPIcJZxFmAQC-wa52ZSEK&z=17&ll=37.283237,127.045953" frameborder="0" style='border: 0; width: 100%; margin-top: 1rem;' height='400'></iframe>
           </main>
         </div>
       </div>
@@ -298,7 +298,7 @@
               <div style='font-size:0.9rem; padding-left: 1rem;'>
                 <ul>
                   <li style='margin-bottom: 0.3rem'>모든 급식소에는 물그릇과 사료그릇이 있어요. 가져가신 물과 사료로 빈 그릇을 채워주세요.</li>
-                  <li style='margin-bottom: 0.3rem'>코스를 잘 모른다면 <span style='color: royalblue;' onclick='MicroModal.close("guide_modal"); posID = setMap(); MicroModal.show("map_modal", { onClose: function() { navigator.geolocation.clearWatch(posID); }});'><b>급식 지도 <i class="fas fa-street-view"></i></b></span> 또는 아래쪽의 <b><i class='fas fa-chalkboard-teacher'></i> 급식 코스 가이드 영상</b> 의 도움을 받으세요.</li>
+                  <li style='margin-bottom: 0.3rem'>코스를 잘 모른다면 <span style='color: royalblue;' onclick='MicroModal.close("guide_modal"); MicroModal.show("map_modal"); /*posID = setMap(); MicroModal.show("map_modal", { onClose: function() { navigator.geolocation.clearWatch(posID); }});*/'><b>급식 지도 <i class="fas fa-street-view"></i></b></span> 또는 아래쪽의 <b><i class='fas fa-chalkboard-teacher'></i> 급식 코스 가이드 영상</b> 의 도움을 받으세요.</li>
                   <li style='margin-bottom: 0.3rem'><mark>급식 인증을 위해 사진</mark> 찍는 걸 잊지 마세요!</li>
                 </ul>
               </div>
