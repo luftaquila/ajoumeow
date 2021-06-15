@@ -14,6 +14,14 @@ $(function() {
 });
 
 $('#download1365').click(function() {
-  if(!$('#calendar1365').val() || !$('#namelist1365').val()) return alertify.error('기간과 명단 데이터를 모두 선택하세요');
-  window.location.assign(`https://luftaquila.io/ajoumeow/api/verify/1365?month=${$('#calendar1365').val()}&namelist=${$('#namelist1365').val()}&private=${$('#private:checked').length}`);
+  $('#download1365').attr('disabled', true);
+  if(!$('#1365StartDate').val() || !$('#1365EndDate').val() || !$('#namelist1365').val()) return alertify.error('기간과 명단 데이터를 모두 선택하세요');
+  $.ajax({
+    url: `https://luftaquila.io/ajoumeow/api/verify/1365?start=${$('#1365StartDate').val()}&end=${$('#1365EndDate').val()}&namelist=${$('#namelist1365').val()}`,
+    success: res => {
+      if(res.result == 'success') window.location.assign(`https://docs.google.com/spreadsheets/d/1lDmsrTdhIehRCMBMAiQUOZKWqjzqijLAdF_giwdCbyc/export?format=xlsx&gid=1214330815`);
+      else alertify.error(res.result.error);
+      $('#download1365').attr('disabled', false);
+    }
+  })
 });
