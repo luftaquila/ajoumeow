@@ -155,7 +155,8 @@ function startIntro() {
       intro: `<span style="font-size: 0.9rem">사이트 <b>도움말</b> 버튼이에요.<br><br>사이트에서 <b>급식표를 보는 방법</b>, 급식을 <b>신청</b>하고 <b>삭제</b>하는 방법을 알려줍니다.</span>`
     }, {
       element: document.querySelector('#mapTrig'),
-      intro: `<span style="font-size: 0.9rem"><b>급식소 지도</b> 버튼이에요.<br><br>급식 코스와 급식소 위치가 헷갈릴 때 사용하세요!</span>`
+      intro: `<span style="font-size: 0.9rem"><b>급식소 지도</b> 버튼이에요.<br><br>급식 코스와 급식소 위치가 헷갈릴 때 사용하세요!</span>`,
+      position: 'bottom-right-aligned'
     }, {
       element: document.querySelector('#guideTrig'),
       intro: `<span style="font-size: 0.9rem"><b>급식 가이드</b> 버튼이에요.<br><br><i class='fas fa-fw fa-lightbulb-exclamation' style='color: green'></i> <b>급식이 처음이라면 급식 전에 꼭 한 번 찬찬히 읽어 주세요!</b></span>`
