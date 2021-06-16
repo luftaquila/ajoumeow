@@ -265,11 +265,13 @@ header {
 
 .calendar-container {
   background-color: #fff;
-  padding: 0 16px 16px;
+  /*padding: 0 16px 16px;*/
+  padding: 0 0 16px;
 }
 .calendar-container__header {
   display: flex;
   justify-content: space-between;
+  margin-bottom: -.75rem;
 }
 .calendar-container__btn {
   background: transparent;
@@ -329,34 +331,38 @@ header {
   padding: 12px 3px;
   text-align: center;
   text-transform: uppercase;
-  width: 40px;
+  /*width: 40px;*/
   height: 38px;
+  width: 13.5vw;
 }
 @media (min-width: 360px) {
   .calendar-table__header .calendar-table__col {
-    width: 46px;
+    /*width: 46px;*/
   }
 }
 @media (min-width: 410px) {
   .calendar-table__header .calendar-table__col {
-    width: 54px;
+    /*width: 54px;*/
   }
 }
 .calendar-table__body .calendar-table__col {
-  width: 40px;
-  height: 42px;
+  /*width: 40px;
+  height: 42px;*/
+  width: 13.5vw;
+  height: 13.5vw;
+  max-height: 60px;
   padding-bottom: 2px;
 }
 @media (min-width: 360px) {
   .calendar-table__body .calendar-table__col {
-    width: 46px;
-    height: 48px;
+    /*width: 46px;
+    height: 48px;*/
   }
 }
 @media (min-width: 410px) {
   .calendar-table__body .calendar-table__col {
-    width: 54px;
-    height: 56px;
+    /*width: 54px;
+    height: 56px;*/
   }
 }
 .calendar-table__today .calendar-table__item {
