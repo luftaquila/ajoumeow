@@ -163,7 +163,7 @@
   <div id='modals' style="z-index: 30;">
     <div class="modal micromodal-slide" id="notice_modal" aria-hidden="true">
       <div class="modal__overlay" tabindex="-1" data-micromodal-close>
-        <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="notice_modal-title">
+        <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="notice_modal-title" style='width: 96vw;'>
           <header class="modal__header">
             <h2 class="modal__title" id="notice_modal-title">공지사항</h2>
             <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
@@ -185,7 +185,7 @@
           </header>
           <main class="modal__content" id="help_modal-content">
             <div style="font-size: 1rem; color: #333; text-align: center">
-                <div style='font-size: 0.9rem; margin: 0.5rem 0'>날짜 위 점들의 <b>색깔</b>은 <b>코스</b>, <b>모양</b>은 <b>인원 수</b>를 나타내요.</div>
+                <div style='font-size: 0.9rem; margin: 0.5rem 0'>날짜 위 점들은 <b>코스</b>와 <b>인원 수</b>를 나타내요.</div>
                 <div class='calendar-table__item hovered'>
                   <div class='my'>
                     5/12
@@ -211,16 +211,16 @@
               <li style='font-weight: bold; margin-top: 1rem;'>삭제하기</li>
                 <ol style='padding-left: 1rem'>
                   1. 삭제하고 싶은 이름표 <span class='ripple namecard example' style='display: inline-block; font-size: 0.5rem; width: 2rem; height: 1rem; line-height: 0.9rem; text-align: center; border-radius: 3px; border: solid 1px lightcoral; background-color: lightcoral; color: white;'>고양이</span> 를 탭합니다.<br>
-                  2. 다시 한 번 삭제할 이름표 <span class='ripple namecard deleteActiveExample example' style='display: inline-block; font-size: 0.5rem; width: 2rem; height: 1rem; line-height: 0.9rem; text-align: center; border-radius: 3px; border: solid 1px lightcoral; background-color: lightcoral; color: white;'>고양이</span> 를 탭합니다.<br>
+                  2. 삭제할 이름표 <span class='ripple namecard deleteActiveExample example' style='display: inline-block; font-size: 0.5rem; width: 2rem; height: 1rem; line-height: 0.9rem; text-align: center; border-radius: 3px; border: solid 1px lightcoral; background-color: lightcoral; color: white;'>고양이</span> 를 다시 탭합니다.<br>
                 </ol>
               <li style='font-weight: bold; margin-top: 1rem;'>날씨</li>
                 <ul style='padding-left: 1rem; font-size: 0.8rem'>
-                  오늘 날씨와 미세먼지는 아주대학교 실시간 데이터입니다.<br>
-                  일주일 예보는 급식 권장 시간인 오후 6시 예보 데이터입니다.<br>
-                  날씨는 매 시 정각과 30분에 업데이트됩니다.
+                  오늘 날씨와 미세먼지는 실시간 아주대학교 데이터에요.<br>
+                  일주일 예보는 급식 권장 시간인 오후 6시의 예보에요.<br>
+                  날씨는 매 정각과 30분마다 업데이트합니다.
                 </ul>
             </div>
-            <div style="font-size: 1rem; color: #333; text-align: right; margin-top: 1rem">
+            <div style="font-size: 1rem; color: #333; text-align: right; margin-top: .5rem">
               <a class='btn purple' href='https://github.com/luftaquila/ajoumeow'><i class='fab fa-github'></i>&ensp;임원진 가이드</a>
               <a class="btn green" onclick='MicroModal.close("help_modal"); startIntro();'><i class='fas fa-book'></i>&ensp;튜토리얼</a>
             </div>
@@ -250,7 +250,7 @@
     </div>
     <div class="modal micromodal-slide" id="guide_modal" aria-hidden="true">
       <div class="modal__overlay" tabindex="-1" data-micromodal-close>
-        <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="guide_modal-title">
+        <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="guide_modal-title" style='width: 96vw;'>
           <header class="modal__header" style='height: 1.5rem'>
             <h2 class="modal__title" id="guide_modal-title">급식 가이드</h2>
             <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
@@ -298,7 +298,7 @@
               <div style='font-size:0.9rem; padding-left: 1rem;'>
                 <ul>
                   <li style='margin-bottom: 0.3rem'>모든 급식소에는 물그릇과 사료그릇이 있어요. 가져가신 물과 사료로 빈 그릇을 채워주세요.</li>
-                  <li style='margin-bottom: 0.3rem'>코스를 잘 모른다면 <span style='color: royalblue;' onclick='MicroModal.close("guide_modal"); MicroModal.show("map_modal"); /*posID = setMap(); MicroModal.show("map_modal", { onClose: function() { navigator.geolocation.clearWatch(posID); }});*/'><b>급식 지도 <i class="fas fa-street-view"></i></b></span> 또는 아래쪽의 <b><i class='fas fa-chalkboard-teacher'></i> 급식 코스 가이드 영상</b> 의 도움을 받으세요.</li>
+                  <li style='margin-bottom: 0.3rem'>코스를 잘 모른다면 <span style='color: royalblue;' onclick='MicroModal.close("guide_modal"); MicroModal.show("map_modal", { onClose: function() { MicroModal.show("guide_modal"); }}); /*posID = setMap(); MicroModal.show("map_modal", { onClose: function() { navigator.geolocation.clearWatch(posID); }});*/'><b>급식 지도 <i class="fas fa-street-view"></i></b></span> 또는 아래쪽의 <b><i class='fas fa-chalkboard-teacher'></i> 급식 코스 가이드 영상</b> 의 도움을 받으세요.</li>
                   <li style='margin-bottom: 0.3rem'><mark>급식 인증을 위해 사진</mark> 찍는 걸 잊지 마세요!</li>
                 </ul>
               </div>
