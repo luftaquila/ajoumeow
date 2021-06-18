@@ -72,7 +72,7 @@ async function alertManager(client) {
       }
 
       const wth = JSON.parse(fs.readFileSync('../res/weather.json').toString()).current;
-      resultString += `오늘 아주대는 ${wth.weather}, ${wth.temp}℃에요. 체감온도는 ${wth.tempSense}℃입니다!\n미세먼지는 ${wth.dust.pm10}㎍/㎥, 초미세먼지는 ${wth.dust.pm25}㎍/㎥입니다.`;
+      resultString += `오늘 아주대는 ${wth.weather}, ${wth.temp}℃에요.${wth.temp == wth.tempSense ? '' : ` 체감온도는 ${wth.tempSense}℃입니다!`}\n미세먼지는 ${wth.dust.pm10}㎍/㎥, 초미세먼지는 ${wth.dust.pm25}㎍/㎥입니다.`;
 
       client.channelList.get(process.env.talkChannelId).sendChat(resultString);
       util.logger(new Log('info', 'kakaoClient', 'alert_schedule', '카톡 급식 알림 전송', 'internal', 0, null, resultString));
