@@ -34,7 +34,7 @@ async function clientLogin(client) {
 
     const clientLoginRes = await client.login(loginRes.result);
     if(!clientLoginRes.success) {
-      const msg = `Client Login failure: ${loginRes.status}`
+      const msg = `Client Login failure: ${clientLoginRes.status}`
       util.logger(new Log('error', 'kakaoClient', 'kakaoClient()', '카톡 클라이언트 프로그램 실패', 'internal', -1, null, msg));
       return console.error(msg);
     }
