@@ -49,7 +49,7 @@ async function clientLogin(client) {
   }
 }
 async function alertManager(client) {
-  const alert_schedule = schedule.scheduleJob('0 15 * * *', async () => { // 3pm at every day
+  const alert_schedule = schedule.scheduleJob('0 14 * * *', async () => { // 3pm at every day
     try {
       const result = await util.query("SELECT * FROM record WHERE date BETWEEN '" + dateformat(new Date(), 'yyyy-mm-dd') + "' AND '" + dateformat(new Date(), 'yyyy-mm-dd') + "' ORDER BY date, course, timestamp;");
       let resultString = '안녕하세요! 오늘 급식 신청해주신 분들은\n';
@@ -67,8 +67,10 @@ async function alertManager(client) {
 
       if(noUserCourse.length) {
         if(noUserCourse.length == 3) resultString = '';
-        for(let course of noUserCourse) { resultString += (course + ', '); }
-        resultString = resultString.slice(0, -2) + '코스에 신청자가 없습니다! 도와주세요ㅠㅠ\n\n';
+        let noUserNotifyString = '';
+        for(let course of noUserCourse) { noUserNotifyString += (course + ', '); }
+        noUserNotifyString = noUserNotifyString.slice(0, -2) + '코스에 신청자가 없습니다! 도와주세요ㅠㅠ\n\n';
+        resultString = noUserNotifyString + resultString;
       }
 
       const wth = JSON.parse(fs.readFileSync('../res/weather.json').toString()).current;
