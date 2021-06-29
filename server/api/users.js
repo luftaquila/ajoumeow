@@ -70,7 +70,8 @@ router.post('/id', async (req, res) => {
     // check if user lookuped for previously registered
     if(req.body.lookup) {
       util.logger(new Log('info', req.remoteIP, req.originalPath, '기존 회원 등록여부 조회', req.method, 200, req.body, previous));
-      return res.status(200).json(new Response('success', null, previous));
+      if(previous) return res.status(200).json(new Response('success', null, previous));
+      else return res.status(400).json(new Response('error', '기존 회원이 아닙니다.<br>신입 회원으로 등록해 주세요.', 'ERR_NEVER_REGISTERED'));
     }
     
     if(req.body.new == 'true' && previous) {
