@@ -154,11 +154,12 @@ $('#find').click(function() {
     type: "POST",
     data: { 학번: $('#findID').val(), lookup: true },
     success: res => {
-      $('#finddiv').css('display', 'none');
-      $('#confirmdiv').css('display', 'block');
-      for(let [key, value] of Object.entries(res.data)) {
-        $('#o_' + key).val(value).attr('disabled', 'true').trigger('change');
+      if(res.data) {
+        $('#finddiv').css('display', 'none');
+        $('#confirmdiv').css('display', 'block');
+        for(let [key, value] of Object.entries(res.data)) $('#o_' + key).val(value).attr('disabled', 'true').trigger('change');
       }
+      else alertify.error('데이터가 없습니다!');
     },
     error: err => alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
   });
