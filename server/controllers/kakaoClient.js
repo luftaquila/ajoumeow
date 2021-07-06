@@ -160,7 +160,7 @@ async function registerImage(chat, channel) {
         // image duplication check
         if(dbwrite || channel.channelId == process.env.testChannelId) {
           const test = await util.query(`SELECT *, BIT_COUNT(imgHash ^ ${`0x${phash}`}) as hd FROM verifyImage HAVING hd < 5 ORDER BY hd, timestamp ASC;`);
-          if(test.length && test[0].chatLogId != chat.chat.logId) { // if test fails and not on the same chat
+          if(test.length && test[0].chatLogId != chat.chat.logId && new Date() - test[0].timestamp > 1000 * 3600) { // if test fails and not on the same chat and not in a hour
             if(dbwrite) util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '유사 이미지 검출', 'internal', 0, null, 'ERR_SIMILAR_IMAGE_DETECTED'));
             channel.sendChat( new ChatBuilder().append(new ReplyContent({ logId: test[0].chatLogId, sender: { userId: test[0].chatSenderId }, text: '원본 사진', type: KnownChatType[test[0].chatType] })).text(`이전에 등록된 이미지와 ${(1 - (test[0].hd / 32)) * 100}% 유사한 이미지를 검출했습니다.\n\n기존 이미지:\n  등록일: ${dateformat(test[0].timestamp, 'yyyy-mm-dd HH:MM:ss')}\n  채팅방: ${test[0].chatChannelName}\n  전송자: ${test[0].chatSenderName}`).build(KnownChatType.REPLY) );
           }
