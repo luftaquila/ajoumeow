@@ -73,17 +73,17 @@ router.get('/latest', util.isLogin, async (req, res) => {
 
 router.get('/1365', async (req, res) => {
   try {
-    const verify = await util.query(`SELECT * FROM verify WHERE date BETWEEN '${req.query.start}' AND '${req.query.end}';`);
+    const verify = await util.query(`SELECT * FROM verify WHERE date BETWEEN '${req.query.start}' AND '${req.query.end}' ORDER BY date;`);
     const namelist = await util.query(`SELECT * FROM \`namelist_${req.query.namelist}\`;`);
     const cheif = namelist.find(o => o.role == '회장');
-    
+
     let payload = [];
     for(const activity of verify) {
       const member = namelist.find(o => o.ID == activity.ID);
       if(!member) continue;
 
       activity.date = dateformat(activity.date, 'yyyy.mm.dd');
-      
+
       const prev = payload.find(data => data.ID == member.ID && data.date == activity.date);
       if(prev) prev.hour++;
       else {
@@ -98,7 +98,7 @@ router.get('/1365', async (req, res) => {
         });
       }
     }
-    
+
     const response = await axios.post('https://script.google.com/macros/s/AKfycbwwUFoQvlCziFm_2rvyyx1qcc7VeG2plfwEkXNNCWDQRBJqKRt_noiT36iCPlGCc_nIIA/exec', {
       data: payload,
       cheif: {
@@ -106,7 +106,7 @@ router.get('/1365', async (req, res) => {
         phone: cheif ? cheif.phone : ''
       }
     });
-    
+
     res.json(response.data);
     util.logger(new Log('info', req.remoteIP, req.originalPath, '1365 인증서 생성 요청', req.method, 200, req.query, null));
   }
