@@ -136,6 +136,7 @@ function chatManager(client) {
 }
 
 async function registerImage(chat, channel) {
+  return; // Disable photo verifying
   try {
     if(KnownChatType[chat.chat.type].includes('MULTI')) { // MULTIPHOTO
       for(const i in chat.attachment().imageUrls) {
