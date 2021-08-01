@@ -5,7 +5,12 @@ $(function() {
       url: "/ajoumeow/api/auth/autologin",
       beforeSend: xhr => xhr.setRequestHeader('x-access-token', jwt),
       type: "POST",
-      success: res => { if(res.data.user.role == '회원') window.location.href = "/403.html"; },
+      success: res => {
+        if(res.data.user.role == '회원') {
+          if(window.location.pathname == "/ajoumeow/console/dashboard.html") return; // Allow dashboard to members
+          else window.location.href = "/403.html"; // Allow settings to admins only
+        }
+      },
       error: () => window.location.href = "/403.html"
     });
   }
@@ -52,4 +57,3 @@ var dateFormat = function () {
 }();
 Date.prototype.format = function (mask, utc) { return dateFormat(this, mask, utc); };
 Date.prototype.getDayNum = function() { return this.getDay() ? this.getDay() : 7; }
-  
