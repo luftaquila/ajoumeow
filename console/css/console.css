@@ -35,7 +35,7 @@ table#statistics th { padding: .5rem }
 
 .statisticsDate, .logDate {
   font-size: .8rem;
-  padding: .2rem .4rem;
+  padding: .2rem 0rem;
 }
 
 /* typeahead style */

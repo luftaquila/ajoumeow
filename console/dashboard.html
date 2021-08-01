@@ -111,7 +111,7 @@
                 <div class="card-body">
                   <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
-                      <div class="text-xs font-weight-bold text-info text-uppercase mb-1">이번 달 활동자</div>
+                      <div class="text-xs font-weight-bold text-info text-uppercase mb-1">이번 달 활동 인원</div>
                       <div class="h5 mb-0 font-weight-bold text-gray-800" id='activeMember'></div>
                     </div>
                     <div class="col-auto">
@@ -126,7 +126,7 @@
                 <div class="card-body">
                   <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
-                      <div class="text-xs font-weight-bold text-success text-uppercase mb-1">이번 달 활동 시간</div>
+                      <div class="text-xs font-weight-bold text-success text-uppercase mb-1">이번 달 총 활동 시간</div>
                       <div class="h5 mb-0 font-weight-bold text-gray-800" id='activityTime'></div>
                     </div>
                     <div class="col-auto">
@@ -145,18 +145,18 @@
                 <!-- Card Body -->
                 <div class="card-body">
                   <label><input type='radio' name='statisticsType' value='this_feeding' checked> 이번 달 급식 마일리지 순위</label><br>
-                  <label><input type='radio' name='statisticsType' value='this_total'> 이번 달 전체 마일리지 순위</label><br>
+                  <!--<label><input type='radio' name='statisticsType' value='this_total'> 이번 달 전체 마일리지 순위</label><br>-->
                   <label><input type='radio' name='statisticsType' value='prev_feeding'> 저번 달 급식 마일리지 순위</label><br>
                   <label><input type='radio' name='statisticsType' value='total_total'> 전체 기간 마일리지 순위</label><br>
-                  <label><input type='radio' name='statisticsType' value='custom_total' id='custom_total' data-value=''> 특정 기간 마일리지 순위</label><br>&emsp;
+                  <label><input type='radio' name='statisticsType' value='custom_total' id='custom_total' data-value=''> 특정 기간 마일리지 순위</label>
                   <input type='date' id='statisticsStartDate' class='btn btn-primary statisticsDate'>
                   &nbsp;~&nbsp;
                   <input type='date' id='statisticsEndDate' class='btn btn-primary statisticsDate'>
                   <div style='width: 100%; text-align: center; margin: 1.5rem 0 1rem;'>
                     <a class='btn btn-success' id='pick' style='color: white'>이 목록으로 제비뽑기</a>
-                    <div style='margin-top: .5rem'>
-                      뽑힐 확률은 마일리지의 총합 대비 비율입니다.<br>
-                      즉, <code>본인 마일리지 ÷ 목록의 마일리지 총합 × 100(%)</code> 입니다.<br>
+                    <div style='margin-top: .5rem; font-size: .9rem'>
+                      뽑힐 확률은 다음과 같습니다.<br>
+                      <code>본인 마일리지 ÷ 목록의 마일리지 총합 × 100(%)</code><br>
                       리워드 지급 정책에 따라 자유롭게 이용하세요.
                     </div>
                   </div>
