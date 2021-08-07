@@ -16,7 +16,8 @@
     <link rel="stylesheet" href="css/magic-check.css" />
     <link rel="stylesheet" href="css/style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/slim-select/1.27.0/slimselect.min.css" rel="stylesheet">
-    <link href="https://releases.transloadit.com/uppy/v1.28.1/uppy.min.css" rel="stylesheet">
+    <link href="https://releases.transloadit.com/uppy/v1.31.0/uppy.min.css" rel="stylesheet">
+    <link href='css/uppy-image-editor.min.css' rel='stylesheet'>
   </head>
   <body>
     <aside class="probootstrap-aside js-probootstrap-aside">
@@ -56,9 +57,8 @@
       <!--Contents-->
       <div id='contents' style='margin-left: 1rem; margin-right: 1rem;'>
         <ul id='uploadInfo' style='font-size: 0.8rem; line-height: 1.2rem; padding-left: 1rem;'>
-          <li style='font-size: .9rem; color: rgb(50, 50, 50)'>잘 나온 아주냥이 사진을 선별해서 올려주세요!</li>
-          <li>대용량 사진을 한번에 많이 업로드하면 일부 사진은 실패할 수 있습니다. 재시도 아이콘을 누르면 정상적으로 업로드됩니다.</li>
-          <li>사진 삭제는 <a href='/ajoumeow/gallery/mypage.html' style='font-weight: bold'>마이페이지</a>에서 사진 우측 상단의 휴지통 아이콘을 클릭하면 됩니다.</li>
+          <li style='font-size: 1rem; color: rgb(50, 50, 50)'><b>잘 나온 아주냥이 사진을 선별해서 올려주세요!</b></li>
+          <li>사진 편집 기능을 추가했습니다. 대쉬보드에서 사진 옆 연필 모양을 누르면 회전, 크롭, 확대 등이 가능합니다.</li>
           <li>사진 태그 수정은 아직 지원하지 않습니다.</li>
           <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/deed.ko' style='margin-left: -1rem; font-weight: bold'>Creative Commons BY-NC-ND 4.0 라이센스</a>가 사진에 적용됩니다.
         </ul>
@@ -94,7 +94,7 @@
     <script src="js/main.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/slim-select/1.27.0/slimselect.min.js"></script>
-    <script src="https://releases.transloadit.com/uppy/v1.28.1/uppy.min.js"></script>
+    <script src="js/uppy.js"></script>
     <script src="js/upload.js"></script>
   </body>
 </html>
