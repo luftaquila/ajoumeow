@@ -15,57 +15,6 @@ $(function() {
   else autoLoginFailure();
 });
 
-function uppyInit() {
-  uppy = Uppy.Core({
-    debug: false,
-    restrictions: {
-      maxFileSize: 20971520, // 20MiB
-      //maxNumberOfFiles: 3,
-      allowedFileTypes: ['image/*']
-    }
-  })
-  .use(Uppy.ThumbnailGenerator, {
-    thumbnailWidth: 1000,
-    thumbnailType: 'image/jpeg',
-    waitForThumbnailsBeforeUpload: false
-  })
-  .use(Uppy.Dashboard, {
-    inline: true,
-    target: '#drag-drop-area',
-    height: 200,
-    hideUploadButton: true,
-    showLinkToFileUploadResult: false,
-    showProgressDetails: true,
-    proudlyDisplayPoweredByUppy: false,
-    note: '20MB 미만인 사진만 업로드 가능합니다.',
-    locale: {
-      strings: {
-        browse: '선택',
-        cancel: '취소',
-        back: '뒤로',
-        done: '확인',
-        uploading: '업로드 중...',
-        complete: '업로드 성공!',
-        uploadComplete: '업로드를 완료했습니다.',
-        dropPaste: '📷 사진을 %{browse}하거나 여기로 드래그하세요.',
-        addingMoreFiles: '파일 추가',
-        xFilesSelected: '총 %{smart_count}개 사진',
-        uploadingXFiles: '%{smart_count}개 사진 업로드 대기 중...'
-      }
-    }
-  })
-  .use(Uppy.XHRUpload, {
-    endpoint: '/ajoumeow/api/gallery/photo',
-    headers: { 'x-access-token': Cookies.get('jwt') }
-  });
-
-  uppy.on('complete', result => {
-    $('#fileManagerContainer').css('display', 'none');
-  });
-  uppy.on('files-added', generateFileManager);
-  uppy.on('file-removed', generateFileManager);
-}
-
 $('#upload').click(function() {
   $("html, body").animate({ scrollTop: 0 }, "slow");
   
