@@ -19,7 +19,7 @@ $(function() {
       if(EXIF.getTag(this, "Model")) $('#camera').text(EXIF.getTag(this, "Model"));
       if(EXIF.getTag(this, "LensModel")) $('#lens').text(EXIF.getTag(this, "LensModel"));
       if(EXIF.getTag(this, "FNumber")) $('#aperture').text('f/' + EXIF.getTag(this, "FNumber"));
-      if(EXIF.getTag(this, "ExposureTime")) $('#shutterspeed').text(Math.round(EXIF.getTag(this, "ExposureTime") * 1000) / 1000 + 's');
+      if(EXIF.getTag(this, "ExposureTime")) $('#shutterspeed').text(new Fraction(Number(EXIF.getTag(this, "ExposureTime"))).toFraction(true) + 's');
       if(EXIF.getTag(this, "ISOSpeedRatings")) $('#iso').text(EXIF.getTag(this, "ISOSpeedRatings"));
       if(EXIF.getTag(this, "FocalLength")) $('#focal-length').text(EXIF.getTag(this, "FocalLength") + 'mm');
       if(EXIF.getTag(this, "ExposureBias")) $('#exposure').text(Math.round(EXIF.getTag(this, "ExposureBias") * 1000) / 1000 + ' EV');
