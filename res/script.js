@@ -3,6 +3,39 @@ $(function() {
   eventListener();
 });
 
+/*
+   |\---/|
+   | ,_, |
+    \_`_/-..----.
+ ___/ `   ' ,""+ \ 
+(__...'   __\    |`.___.';
+  (_,...'(_,.`__)/'.....+
+  
+  ,-.       _,---._ __  / \
+ /  )    .-'       `./ /   \
+(  (   ,'            `/    /|
+ \  `-"             \'\   / |
+  `.              ,  \ \ /  |
+   /`.          ,'-`----Y   |
+  (            ;        |   '
+  |  ,-.    ,-'         |  /
+  |  | (   | luftaquila | /
+  )  |  \  `.___________|/
+  `--'   `--'
+
+(:`--..___...-''``-._             |`._
+  ```--...--.      . `-..__      .`/ _\  
+            `\     '       ```--`.    />
+            : :   :               `:`-'
+             `.:.  `.._--...___     ``--...__      
+                ``--..,)       ```----....__,)
+                
+      |\      _,,,---,,_
+ZZZzz /,`.-'`'    -.  ;-;;,_
+     |,4-  ) )-,_. ,\ (  `'-'
+    '---''(_/--'  `-'\_)
+*/
+
 function init() {
   user = null;
   let indexOfToday = (new Date(new Date().format('yyyy-mm-dd')).getTime() - new Date(getDateFromCalendarStart(0)).getTime()) / (1000 * 60 * 60 * 24);
@@ -12,7 +45,9 @@ function init() {
   for(let i = 0; i < 35; i++) {
     if(!(i % 7)) calendar.append('<div class="calendar-table__row"></div>');
     let thisDate = new Date(getDateFromCalendarStart(i));
-    if(i < indexOfToday || i > indexOfToday + 14) // no valid dates generation
+    if(i == 34) // add button generation
+      $('.calendar-table__row').last().append(`<div id='addRecord' class="calendar-table__col"><div style='height: 100%; padding: 7px'><div class='ripple calendar-table__item' style='z-index: 0; line-height: 50px; text-align: center; font-size: 1.2rem; border-radius: 50%; background-color: #2196f3; color: white;'><i class='fas fa-plus'></i></div></div></div>`);
+    else if(i < indexOfToday || i > indexOfToday + 14) // no valid dates generation
       $('.calendar-table__row').last().append('<div class="calendar-table__col calendar-table__inactive" data-date="' + thisDate.format('yyyy-mm-dd') + '"><div class="calendar-table__item"><div>' + thisDate.format(i ? (thisDate.getDate() === 1 ? 'm/d' : 'd') : 'm/d') + '</div></div></div>');
     else // valid dates generation
       $('.calendar-table__row').last().append('<div class="calendar-table__col' + (i === indexOfToday ? ' calendar-table__today calendar-table__event' : '') + '" data-date="' + thisDate.format('yyyy-mm-dd') + '"><div class="calendar-table__item"><div>' + thisDate.format(i ? (thisDate.getDate() === 1 ? 'm/d' : 'd') : 'm/d') + '</div></div></div>');
@@ -24,15 +59,16 @@ function init() {
 
 function eventListener() {
   $('.calendar-table__col').on('click', function() {
+    if(this.id == 'addRecord') return;
     // Highlight selected date
     $('.calendar-table__event').removeClass('calendar-table__event');
     $(this).addClass('calendar-table__event');
 
     // Show add record button if active date
     if(!$(this).hasClass('calendar-table__inactive'))
-      $('#addRecord').addClass('addRecord_active').css('background-color', '#2196f3');
+      $('#addRecord').children('div').children('div').addClass('addRecord_active').css('background-color', '#2196f3');
     else
-      $('#addRecord').removeClass('addRecord_active').css('background-color', 'darkgray');
+      $('#addRecord').children('div').children('div').removeClass('addRecord_active').css('background-color', 'darkgray');
 
     // Show date contents
     $('#contentArea').css('display', 'block');
@@ -56,17 +92,20 @@ function eventListener() {
     let content = $(this).attr('data-content') ? JSON.parse($(this).attr('data-content')) : [], contentHTML = "";
     $('#contents').html('');
     if($(this).children('div').css('background-image') === 'none') {
-      $('#contents').append("<div width='100%' style='text-align: center'><br><i class='fas fa-calendar-check' style='font-size: 2rem; color: #aaa'></i></div>");
-      $('#contents').append("<div width='100%' style='text-align: center; color: #bbb; margin: 1rem 0'>급식 신청자가 없습니다!</div>");
+      $('#contents').append("<div style='height: 9.5rem'><div width='100%' style='text-align: center'><br><i class='fas fa-calendar-check' style='font-size: 2rem; color: #aaa'></i></div><div width='100%' style='text-align: center; color: #bbb; margin: 1rem 0'>급식 신청자가 없습니다!</div></div>");
+      $('#contents').append("");
     }
     else {
       let bgColor = { 1: 'lightcoral', 2: 'gold', 3: 'forestgreen' };
+      
+      let table = `<table>`;      
       for(let obj of content) {
-        let pplHTML = "<div class='courseContent' data-course='" + obj.course + "'>";
-        for(let ppl of obj.ppl) pplHTML += "<span style='margin: 0 0.3rem;'><span class='ripple namecard' style='display: inline-block; width: 4rem; height: 2rem; line-height: 1.5rem; text-align: center; border-radius: 3px; border: solid 1px " + bgColor[obj.course] + "; background-color: " + bgColor[obj.course] + "; color: white; padding: 0.2rem' data-id='" + ppl.ID + "' data-name='" + ppl.name + "'>" + ppl.name + "</span></span>";
-        pplHTML += "</div>";
-        $('#contents').append('<div style="margin-bottom: 0.1rem; margin-top: 0.5rem"><h4>' + obj.course + '코스</h4></div>').append(pplHTML);
+        table += `<tr style='height: 3rem'><td style='padding-right: .5rem;'><b>${obj.course}코스</b></td><td class='courseContent' data-course='${obj.course}'>`
+        for(let ppl of obj.ppl) table += `<span class='ripple namecard' style='display: inline-block; width: 4rem; height: 2rem; line-height: 1.5rem; text-align: center; border-radius: 3px; border: solid 1px ${bgColor[obj.course]}; background-color: ${bgColor[obj.course]}; color: white; padding: 0.2rem; margin: 0 .3rem;' data-id='${ppl.ID}' data-name='${ppl.name}'>${ppl.name}</span>`;
+        table += `</td></tr>`;
       }
+      table += `</table>`
+      $('#contents').append(table);
     }
 
     if(!$(this).hasClass('calendar-table__inactive')) {
@@ -85,7 +124,7 @@ function eventListener() {
         // delete record
         let target = {
           date: $('.calendar-table__event').attr('data-date'),
-          course: $(this).closest('div').attr('data-course'),
+          course: $(this).closest('td').attr('data-course'),
           id: $(this).attr('data-id'),
           name: $(this).attr('data-name')
         }
@@ -93,23 +132,24 @@ function eventListener() {
       });
     });
   });
-  $('#addRecord').click(async function() {
+  $('#addRecord').click(async function(e) {
+    e.preventDefault();
     if($('.calendar-table__event').hasClass('calendar-table__inactive')) return;
-    if($('.calendar-table__event').children('div').css('background-image') === 'none') {
-      $('#contents').html('');
-      for(let i = 1; i <= 3; i++) $('#contents').append('<div style="margin-bottom: 0.1rem; margin-top: 0.5rem"><h4>' + i + '코스</h4><div class="courseContent" data-course="' + i + '"></div></div>');
+    if($('.calendar-table__event').children('div').css('background-image') === 'none') { // if there is no any record
+      $('#contents').html('').append(`<table><tr style='height: 3rem'><td style='padding-right: .5rem;'><b>1코스</b></td><td class='courseContent' data-course='1'><tr style='height: 3rem'><td style='padding-right: .5rem;'><b>2코스</b></td><td class='courseContent' data-course='2'><tr style='height: 3rem'><td style='padding-right: .5rem;'><b>3코스</b></td><td class='courseContent' data-course='3'></table>`);
     }
+    
     let max = await $.ajax('/ajoumeow/api/settings/maxFeedingUserCount');
     $('.courseContent').each(function(index, item) {
-      if($(item).children('span.addToCourse').length) return;
-      else if($(item).children('span').children('span.namecard').length >= Number(max.data)) return;
+      if($(item).children('span.addToCourse').length) return; // cancel if add button already activated
+      else if($(item).children('span.namecard').length >= Number(max.data)) return; // cancel if max count met
       $(item).append("<span class='addToCourse' style='margin: 0 0.3rem;'><span class='ripple' style='display: inline-block; width: 4rem; height: 2rem; line-height: 1.5rem; text-align: center; border-radius: 3px; border: dashed 1px gray; color: gray; padding: 0.2rem;'>+</span></span>");
     });
     $('.addToCourse').on('click', function() {
       // add record
       let target = {
         date: $('.calendar-table__event').attr('data-date'),
-        course: $(this).closest('div').attr('data-course')
+        course: $(this).closest('td').attr('data-course')
       }
       validator('POST', target);
     });
