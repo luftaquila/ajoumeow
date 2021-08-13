@@ -79,7 +79,7 @@
     <main>
       <div class="calendar-container">
         <div class="calendar-container__header" style='display: block; text-align: center; padding: .5rem 0 .25rem;'>
-          <img src='/ajoumeow/res/image/headline.png' style='width: 8rem'> 
+          <img src='/ajoumeow/res/image/headline_blue.png' style='width: 8rem'> 
         </div>
         <div class="calendar-container__body">
           <div class="calendar-table">
@@ -148,7 +148,7 @@
             <tr><td>&nbsp;</td><td style='text-align: left'>이번 달</td><td style='text-align: right;'><span id='time_this'></span>시간</td></tr>
           </table><br><br>
           <span id='historyDispenser' style="color: #0366d6; cursor: pointer" onclick='$("#sidebar").css("display", "none"); MicroModal.show("record_modal");' >내 급식 기록</span><br><br>
-          <a id='admin' style='color: #0366d6; cursor: pointer; text-decoration: none; display: none;' href='/ajoumeow/console'><br>관리자 콘솔</a><br>
+          <a id='admin' onclick="window.location.href = '/ajoumeow/console';" style='color: #0366d6; cursor: pointer; text-decoration: none; display: none;' ><br>관리자 콘솔</a><br>
         </div><br><br><br>
         <a onclick='window.location.href = "/";' style="color: black; cursor: pointer; text-decoration: none; font-size: 0.7rem">©<script>document.write(new Date().getFullYear())</script> LUFT - AQUILA</a><br><br>
         <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fluftaquila.io%2Fajoumeow&count_bg=%2379C83D&title_bg=%23555555&icon=googlefit.svg&icon_color=%23E7E7E7&title=hits&edge_flat=false"/>
