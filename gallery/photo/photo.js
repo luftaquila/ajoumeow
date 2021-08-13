@@ -1,18 +1,18 @@
 $(function() {
   const pid = new URLSearchParams(window.location.search).get('pid');
-  
+
   $('#mainImage').attr('src', '/ajoumeow/res/image/gallery/' + pid).one('load', () => {
     $('#imageInfo').css('width', $('#mainImage').width());
     //$('#viewCounter').attr('src', `https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=${window.location.href}&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=views&edge_flat=false`);
-    
+
     EXIF.getData(document.getElementById('mainImage'), async function() {
       const image = await $.ajax({ url: '/ajoumeow/api/gallery/image', data: { photo_id: pid }});
-      
-      $('#photographer').text(image.uploader_name);
-      $('#tags').text(image.tags.map(x => '#' + x).join(' '));
+
+      $('#photographer').html(`<a href='/ajoumeow/gallery/photographer/?uid=${btoa(image.uploader_id)}'>${image.uploader_name}</a>`);
+      $('#tags').html(image.tags.map(x => `<a href='/ajoumeow/gallery/cat/?cid=${encodeURI(x)}'>#${x}</a>`).join(' '));
       $('#size').text(humanFileSize(image.size));
       $('.likes span').text(image.likes);
-      
+
       if(EXIF.getTag(this, "DateTimeOriginal")) $('#time').text(EXIF.getTag(this, "DateTimeOriginal").replace(':', '-').replace(':', '-'));
       else $('#time').text(new Date(image.timestamp).format('yyyy-mm-dd HH:MM:ss'));
 
@@ -23,14 +23,14 @@ $(function() {
       if(EXIF.getTag(this, "ISOSpeedRatings")) $('#iso').text(EXIF.getTag(this, "ISOSpeedRatings"));
       if(EXIF.getTag(this, "FocalLength")) $('#focal-length').text(EXIF.getTag(this, "FocalLength") + 'mm');
       if(EXIF.getTag(this, "ExposureBias")) $('#exposure').text(Math.round(EXIF.getTag(this, "ExposureBias") * 1000) / 1000 + ' EV');
-      if(EXIF.getTag(this, "Flash")) $('#flash').text(EXIF.getTag(this, "Flash").includes('not') ? 'flash off' : 'flash on');      
-      
+      if(EXIF.getTag(this, "Flash")) $('#flash').text(EXIF.getTag(this, "Flash").includes('not') ? 'flash off' : 'flash on');
+
       if(EXIF.getTag(this, "GPSMapDatum")) $('#location').text(`${coordTranslator(EXIF.getTag(this, "GPSLatitude"))}°${EXIF.getTag(this, "GPSLatitudeRef")} ${coordTranslator(EXIF.getTag(this, "GPSLongitude"))}°${EXIF.getTag(this, "GPSLongitudeRef")}`).append(`<br><iframe src="https://www.google.com/maps/embed/v1/place?key=AIzaSyCya2DWkf5zX4lbp4EoHf49Rb6moUk8wIs&zoom=17&q=${coordTranslator(EXIF.getTag(this, "GPSLatitude"))},${coordTranslator(EXIF.getTag(this, "GPSLongitude"))}&center=${coordTranslator(EXIF.getTag(this, "GPSLatitude"))},${coordTranslator(EXIF.getTag(this, "GPSLongitude"))}" frameborder="0" style="width: 100%; max-width:400px; height: 300px;"></iframe>`);
     });
-    
+
     if($('#mainImage').complete) $($('#mainImage')).trigger('load');
   });
-  
+
   $('.likes').on('click', () => {
     $.ajax({
       url: '/ajoumeow/api/gallery/like',
