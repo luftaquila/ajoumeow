@@ -69,44 +69,48 @@ router.get('/statistics', async (req, res) => {
           time: verify.length,
           people: data.length
         };
-        
+
         util.logger(new Log('info', req.remoteIP, req.originalPath, '급식 통계 요청', req.method, 200, req.query, payload));
         return res.status(200).json(new Response('success', null, payload));
-        
+
       case 'this_feeding':
         verify = await util.query(`SELECT * FROM verify WHERE REPLACE(SUBSTRING_INDEX(date, '-', 2), '-', '')='${dateformat(new Date(), 'yyyymm')}' AND course REGEXP '[0-9]코스';`);
         break;
-        
+
       case 'this_total':
         verify = await util.query(`SELECT * FROM verify WHERE REPLACE(SUBSTRING_INDEX(date, '-', 2), '-', '')='${dateformat(new Date(), 'yyyymm')}';`);
         break;
-        
+
       case 'prev_feeding':
         verify = await util.query(`SELECT * FROM verify WHERE REPLACE(SUBSTRING_INDEX(date, '-', 2), '-', '')='${dateformat(new Date(new Date().setDate(0)), 'yyyymm')}' AND course REGEXP '[0-9]코스';`);
         break;
-        
+
       case 'total_total':
         verify = await util.query(`SELECT * FROM verify;`);
         break;
-        
+
       case 'custom_total':
         let [start, end] = req.query.value.split('|');
         verify = await util.query(`SELECT * FROM verify WHERE date BETWEEN '${start}' AND '${end}';`);
         break;
-        
+
       default:
         util.logger(new Log('info', req.remoteIP, req.originalPath, '급식 통계 요청', req.method, 400, req.query, 'ERR_INVALID_TYPE'));
         return res.status(400).json(new Response('error', '유효하지 않은 통계 유형입니다.', 'ERR_INVALID_TYPE'));
     }
-    
+
     for(let obj of verify) {
       let person = data.find(o => o.ID == obj.ID);
-      if(person) person.score += Number(obj.score);
+      if(person) {
+        person.score += Number(obj.score);
+        person.count++;
+      }
       else {
         data.push({
           ID: obj.ID,
           name: obj.name,
-          score: Number(obj.score)
+          score: Number(obj.score),
+          count: 1
         });
       }
     }
