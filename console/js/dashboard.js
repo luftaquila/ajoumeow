@@ -17,7 +17,8 @@ $(function() {
     },
     columns: [
       { data: "name" },
-      { data: "score" }
+      { data: "score" },
+      { data: "count" }
     ]
   });
 
