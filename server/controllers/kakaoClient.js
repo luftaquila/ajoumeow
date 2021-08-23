@@ -203,6 +203,10 @@ async function autoVerify(chat, channel) {
       util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증 실패', 'internal', 0, null, 'ERR_FUTURE_TARGET_DATE'));
       return channel.sendChat( new ChatBuilder().append(new ReplyContent(chat.chat)).text(`${dateformat(targetDate, 'yyyy년 m월 d일')}은 아직 오지 않은 미래입니다. 혹시 시간여행자?!`).build(KnownChatType.REPLY) );
     }
+    else if(targetDate.getTime() < new Date().setHours(0, 0, 0, 0)) {
+      util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증 실패', 'internal', 0, null, 'ERR_PAST_TARGET_DATE'));
+      return channel.sendChat( new ChatBuilder().append(new ReplyContent(chat.chat)).text(`${dateformat(targetDate, 'yyyy년 m월 d일')}은 지난 날짜이므로 자동으로 인증하지 않습니다.`).build(KnownChatType.REPLY) );
+    }
 
     // detect target courses and members
     const filters = ['사진', '요일', '코스', '인증', '삭제', '없'];
