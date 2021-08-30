@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 Widget topbarSection = Row(
@@ -9,25 +10,25 @@ Widget topbarSection = Row(
         IconButton(
           icon: FaIcon(FontAwesomeIcons.solidExclamationCircle),
           iconSize: 30,
-          padding: EdgeInsets.fromLTRB(3, 3, 0, 0),
+          padding: EdgeInsets.only(top: 10, left: 10),
           onPressed: () {},
         ),
         IconButton(
           icon: FaIcon(FontAwesomeIcons.questionCircle),
           iconSize: 30,
-          padding: EdgeInsets.fromLTRB(3, 3, 0, 0),
+          padding: EdgeInsets.only(top: 10, left: 0.03.sw),
           onPressed: () {},
         ),
         IconButton(
           icon: FaIcon(FontAwesomeIcons.cameraRetro),
           iconSize: 30,
-          padding: EdgeInsets.fromLTRB(3, 3, 0, 0),
+          padding: EdgeInsets.only(top: 10, left: 0.03.sw),
           onPressed: () {},
         ),
         IconButton(
           icon: FaIcon(FontAwesomeIcons.trophyAlt),
           iconSize: 30,
-          padding: EdgeInsets.fromLTRB(3, 3, 0, 0),
+          padding: EdgeInsets.only(top: 10, left: 0.03.sw),
           onPressed: () {},
         ),
       ],
@@ -41,19 +42,19 @@ Widget topbarSection = Row(
             IconButton(
               icon: FaIcon(FontAwesomeIcons.solidStreetView),
               iconSize: 30,
-              padding: EdgeInsets.fromLTRB(0, 3, 3, 0),
+              padding: EdgeInsets.only(top: 10, right: 0.03.sw),
               onPressed: () {},
             ),
             IconButton(
               icon: FaIcon(FontAwesomeIcons.solidBookSpells),
               iconSize: 30,
-              padding: EdgeInsets.fromLTRB(0, 3, 3, 0),
+              padding: EdgeInsets.only(top: 10, right: 0.03.sw),
               onPressed: () {},
             ),
             IconButton(
               icon: FaIcon(FontAwesomeIcons.bars),
               iconSize: 30,
-              padding: EdgeInsets.fromLTRB(0, 3, 3, 0),
+              padding: EdgeInsets.only(top: 10, right: 10),
               onPressed: () {},
             ),
           ],
