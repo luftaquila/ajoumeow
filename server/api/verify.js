@@ -76,6 +76,7 @@ router.get('/1365', async (req, res) => {
     const verify = await util.query(`SELECT * FROM verify WHERE date BETWEEN '${req.query.start}' AND '${req.query.end}' ORDER BY date;`);
     const namelist = await util.query(`SELECT * FROM \`namelist_${req.query.namelist}\`;`);
     const cheif = namelist.find(o => o.role == '회장');
+    const mask = req.query.mask == 'true';
 
     let payload = [];
     for(const activity of verify) {
@@ -99,12 +100,13 @@ router.get('/1365', async (req, res) => {
       }
     }
 
-    const response = await axios.post('https://script.google.com/macros/s/AKfycbwwUFoQvlCziFm_2rvyyx1qcc7VeG2plfwEkXNNCWDQRBJqKRt_noiT36iCPlGCc_nIIA/exec', {
+    const response = await axios.post('https://script.google.com/macros/s/AKfycby3AjT7RSRk39MOGBaLf0XjUGUiS4Jfj8J2jdXbxkyS1iwraOX70ATZl11qXIE0Dxm15g/exec', {
       data: payload,
       cheif: {
         name: cheif ? cheif.name : '',
         phone: cheif ? cheif.phone : ''
-      }
+      },
+      mask: mask
     });
 
     res.json(response.data);
