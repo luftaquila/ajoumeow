@@ -90,6 +90,9 @@ async function alertManager(client) {
 
 
     }
+    catch (e) {
+      util.logger(new Log('error', 'kakaoClient', 'alert_schedule', '카톡 미인증 알림 전송 오류', 'internal', -1, null, e.stack));
+    }
   });
 }
 function chatManager(client) {
