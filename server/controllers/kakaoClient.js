@@ -83,6 +83,14 @@ async function alertManager(client) {
       util.logger(new Log('error', 'kakaoClient', 'alert_schedule', '카톡 급식 알림 전송 오류', 'internal', -1, null, e.stack));
     }
   });
+
+  const check_schedule = schedule.scheduleJob('0 20 * * *', async() => {
+    try {
+      const result = await util.query(`SELECT date, name, course FROM verify WHERE date BETWEEN ${dateformat(new Date(), 'yyyy-mm-dd')} AND ${dateformat(new Date(), 'yyyy-mm-dd')} ORDER BY date, course;`);
+
+
+    }
+  });
 }
 function chatManager(client) {
   client.on('chat', (chat, channel) => {
@@ -96,7 +104,7 @@ function chatManager(client) {
     console.log(channel)
     try {
       if(channel.getDisplayName().includes('미유미유') && channel.getDisplayName().includes('인증')) {
-        client.channelList.leaveChannel({ channelId: process.env.verifyChannelId });
+        client.channelList.normal.leaveChannel(client.channelList.get(process.env.verifyChannelId), false);
         process.env.verifyChannelId = channel.channelId;
 
         let envFile = parse(fs.readFileSync('./.env'));
@@ -106,7 +114,7 @@ function chatManager(client) {
       }
 
       else if(channel.getDisplayName().includes('미유미유') && channel.getDisplayName().includes('공지')) {
-        client.channelList.leaveChannel({ channelId: process.env.noticeChannelId });
+        client.channelList.normal.leaveChannel(client.channelList.get(process.env.noticeChannelId), false);
         process.env.noticeChannelId = channel.channelId;
 
         let envFile = parse(fs.readFileSync('./.env'));
@@ -115,14 +123,24 @@ function chatManager(client) {
         util.logger(new Log('info', 'kakaoClient', 'self user_join: notice', '카톡 공지방 초대 추적', 'internal', 0, null, channel.channelId));
       }
 
-      else if(channel.getDisplayName().includes('미유미유') && channel.getDisplayName().includes('단톡')) {
-        client.channelList.leaveChannel({ channelId: process.env.talkChannelId });
+      else if (channel.getDisplayName().includes('미유미유') && channel.getDisplayName().includes('단톡')) {
+        client.channelList.normal.leaveChannel(client.channelList.get(process.env.talkChannelId), false);
         process.env.talkChannelId = channel.channelId;
 
         let envFile = parse(fs.readFileSync('./.env'));
         envFile.talkChannelId = channel.channelId;
         fs.writeFileSync('./.env', stringify(envFile));
         util.logger(new Log('info', 'kakaoClient', 'self user_join: common', '카톡 단톡방 초대 추적', 'internal', 0, null, channel.channelId));
+      }
+
+      else if (channel.getDisplayName().includes('미유미유') && channel.getDisplayName().includes('임원진')) {
+        client.channelList.normal.leaveChannel(client.channelList.get(process.env.staffChannelId), false);
+        process.env.staffChannelId = channel.channelId;
+
+        let envFile = parse(fs.readFileSync('./.env'));
+        envFile.staffChannelId = channel.channelId;
+        fs.writeFileSync('./.env', stringify(envFile));
+        util.logger(new Log('info', 'kakaoClient', 'self user_join: common', '카톡 임원진 초대 추적', 'internal', 0, null, channel.channelId));
       }
     }
     catch(e) {
