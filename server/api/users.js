@@ -1,6 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 
+import { client } from '../controllers/kakaoClient.js'
 import util from '../controllers/util/util.js';
 import { Response, Log } from '../controllers/util/interface.js';
 
@@ -196,6 +197,7 @@ router.post('/register', async (req, res) => {
             ") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
     }
     let result = await util.query(`INSERT INTO \`register_${await util.getSettings('currentSemister')}\`(ID, name, college, department, phone) VALUES(${req.body['학번']}, '${req.body['이름']}', '${req.body['단과대학']}', '${req.body['학과']}', '${req.body['연락처']}');`);
+    client.channelList.get(process.env.staffChannelId).sendChat('새 가입 신청자 등장!');
     util.logger(new Log('info', req.remoteIP, req.originalPath, '가입 신청', req.method, 201, req.body, result));
     res.status(201).json(new Response('success', null, result));
   }
