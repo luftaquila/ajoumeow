@@ -86,9 +86,30 @@ async function alertManager(client) {
 
   const check_schedule = schedule.scheduleJob('0 20 * * *', async() => {
     try {
-      const result = await util.query(`SELECT date, name, course FROM verify WHERE date BETWEEN ${dateformat(new Date(), 'yyyy-mm-dd')} AND ${dateformat(new Date(), 'yyyy-mm-dd')} ORDER BY date, course;`);
-
-
+      const result = await util.query(`SELECT * FROM verify WHERE date BETWEEN '${dateformat(new Date(), 'yyyy-mm-dd')}' AND '${dateformat(new Date(), 'yyyy-mm-dd')}' ORDER BY date, course;`);
+      let courses = new Set(['1코스', '2코스', '3코스']), message = '';
+      
+      for(const data of result) courses.delete(data.course);
+      
+      if(courses.size) {
+        for(const course of courses) message += `${course.replace('코스', '')}, `;
+        message = `${message.slice(0, -2)}코스가 인증되지 않았습니다.\n\n`;
+        
+        for(const course of courses) {
+          message += `${course} 신청자는 `;
+          const users = await util.query(`SELECT * FROM record WHERE date BETWEEN '${dateformat(new Date(), 'yyyy-mm-dd')}' AND '${dateformat(new Date(), 'yyyy-mm-dd')}' AND course='${course}'`);
+          if(users.length) {
+            for(const user of users) message += `${user.name}, `;
+            message = `${message.slice(0, -2)} 님입니다.\n`;
+          }
+          else message += '없습니다.\n';
+        }
+      }
+      
+      message = message.slice(0, -1);
+      
+      client.channelList.get(process.env.staffChannelId).sendChat(message);
+      util.logger(new Log('info', 'kakaoClient', 'alert_schedule', '카톡 미인증 알림 전송', 'internal', 0, null, message));
     }
     catch (e) {
       util.logger(new Log('error', 'kakaoClient', 'alert_schedule', '카톡 미인증 알림 전송 오류', 'internal', -1, null, e.stack));
@@ -103,8 +124,7 @@ function chatManager(client) {
     else if(channel.channelId == process.env.verifyChannelId || channel.channelId == process.env.testChannelId) autoVerify(chat, channel);
   });
 
-  client.on('channel_join', channel => {
-    console.log(channel)
+  client.on('channel_added', channel => {
     try {
       if(channel.getDisplayName().includes('미유미유') && channel.getDisplayName().includes('인증')) {
         client.channelList.normal.leaveChannel(client.channelList.get(process.env.verifyChannelId), false);
