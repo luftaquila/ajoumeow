@@ -1,0 +1,110 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>차밍이 수술비 모금 내역</title>
+  <meta name="title" content="차밍이 수술비 모금 내역">
+  <meta name="description" content="차밍이 수술비 모금 내역">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://chaming.luftaquila.io/log.html">
+  <meta property="og:title" content="차밍이 수술비 모금 내역">
+  <meta property="og:description" content="차밍이 수술비 모금 내역">
+  <meta property="og:image" content="https://chaming.luftaquila.io/chaming.jpg">
+  
+  <link href="https://luftaquila.io/res/btn.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jq-3.6.0/dt-1.11.2/r-2.2.9/sb-1.2.1/sp-1.4.0/datatables.min.css"/>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-1VMKCYHZT1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+  
+    gtag('config', 'G-1VMKCYHZT1');
+  </script>
+</head>
+  
+<body>
+  <div style='margin: 30px auto; width: 100%; max-width: 700px;'>
+    <a href='../' class='btn purple'>← 돌아가기</a>
+    
+    <h1>미유미유 차밍이 수술비<br>후원금 내역</h1>
+    
+    <div id='loading' style='text-align: center; margin: 100px;'>
+      데이터를 불러오는 중...
+    </div>
+    
+    <div id='summary' style='display: none; margin: 50px 0;'>
+      <ul>
+        <li>
+          카카오뱅크에서 당일 내역 내보내기를 제공하지 않는 관계로, 전일 자정까지의 내역만 표시됩니다.
+        </li>
+        <li>내역은 매일 자정 무렵 업데이트하고 있습니다.</li>
+      </ul>
+      <h2 style='text-align: center'>모금 총액: <span id='total'></span>원</h2>
+    </div>
+    
+    <table id="log" style='display: none; width: 100%; max-width: 700px; table-layout: fixed; text-align: center' cellspacing="0">
+      <thead>
+        <th>시간</th>
+        <th>구분</th>
+        <th>금액</th>
+        <th>이름</th>
+      </thead>
+      <tfoot>
+        <th>시간</th>
+        <th>구분</th>
+        <th>금액</th>
+        <th>이름</th>
+      </tfoot>
+    </table>
+  </div>
+  
+  <style>
+    body {
+      background-color: black;
+      color: #ddd!important;
+    }
+    
+    input, select { color: #ddd; }
+    
+    tbody tr { background-color: black!important; }
+    
+    .dataTables_wrapper .dataTables_length,.dataTables_wrapper .dataTables_filter,.dataTables_wrapper .dataTables_info,.dataTables_wrapper .dataTables_processing,.dataTables_wrapper .dataTables_paginate{color:#ccc}
+    table.dataTable thead th, table.dataTable thead td, table.dataTable tfoot th, table.dataTable tfoot td { border-color: #eee; }
+  </style>
+  
+  <script src="https://luftaquila.io/res/jquery-3.5.1.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/v/dt/jq-3.6.0/dt-1.11.2/r-2.2.9/sb-1.2.1/sp-1.4.0/datatables.min.js"></script>
+  <script>
+    $(function() {
+      $.ajax("https://script.google.com/macros/s/AKfycbwF6WhMrs-soQREaGpUymM9UZ7d62C6UmKbEl--r-_MiwAQ4JMp516e9lXc7R0heLqY/exec")
+      .done(res => {
+        $('#loading').css('display', 'none');
+        $('#summary').css('display', 'block');
+        $('#total').text(Number(res.total).toLocaleString());
+        $('#log').css('display', 'block').DataTable({
+          pagingType: "numbers",
+          pageLength: 100,
+          data: res.data,
+          order: [[ 0, 'desc' ]],
+          columns: [
+            { data: "timestamp" },
+            { data: "category" },
+            { data: "amount" },
+            { data: "name" }
+          ],
+          columnDefs: [{
+            render: function ( data, type, row ) { return Number(data).toLocaleString() },
+            targets: 2
+          }]
+        });
+      });
+    });
+  </script>
+</body>
+</html>
