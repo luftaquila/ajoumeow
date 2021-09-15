@@ -52,7 +52,7 @@ async function clientLogin(client) {
 
 async function clientManager(client) {
   const client_schedule = schedule.scheduleJob('0 */6 * * *', async () => {
-    client.channelList.get(process.env.testChannelId).sendChat('chk')
+    client.channelList.get(process.env.myChannelId).sendChat('chk')
     .catch(async err => {
       await clientLogin(client);
       client.channelList.get(process.env.testChannelId).sendChat('chkrtr');
