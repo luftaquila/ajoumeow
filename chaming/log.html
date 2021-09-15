@@ -32,7 +32,7 @@
   <div style='margin: 30px auto; width: 100%; max-width: 700px;'>
     <a href='../' class='btn purple'>← 돌아가기</a>
     
-    <h1>미유미유 차밍이 수술비<br>후원금 내역</h1>
+    <h1 style='color: #eee'>미유미유 차밍이 수술비<br>후원금 내역</h1>
     
     <div id='loading' style='text-align: center; margin: 100px;'>
       데이터를 불러오는 중...
@@ -45,7 +45,7 @@
         </li>
         <li>내역은 매일 자정 무렵 업데이트하고 있습니다.</li>
       </ul>
-      <h2 style='text-align: center'>모금 총액: <span id='total'></span>원</h2>
+      <h2 style='text-align: center; color: white'>모금액: <span id='total'></span>원</h2>
     </div>
     
     <table id="log" style='display: none; width: 100%; max-width: 700px; table-layout: fixed; text-align: center' cellspacing="0">
@@ -82,7 +82,7 @@
   <script type="text/javascript" src="https://cdn.datatables.net/v/dt/jq-3.6.0/dt-1.11.2/r-2.2.9/sb-1.2.1/sp-1.4.0/datatables.min.js"></script>
   <script>
     $(function() {
-      $.ajax("https://script.google.com/macros/s/AKfycbwF6WhMrs-soQREaGpUymM9UZ7d62C6UmKbEl--r-_MiwAQ4JMp516e9lXc7R0heLqY/exec")
+      $.ajax("https://script.google.com/macros/s/AKfycbyfzrd602UsLwnJVopKDSemOwuI5oWHsd4xJlimD5E1ooTYFazbSMehhVN8Nt1XZayW/exec")
       .done(res => {
         $('#loading').css('display', 'none');
         $('#summary').css('display', 'block');
