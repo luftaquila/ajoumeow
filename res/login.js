@@ -103,6 +103,7 @@ function loginProcess(res) {
 
   $('#username').text(user.name);
   $('#userrole').text(user.role);
+  $('#1365id').text(user['1365ID']);
   $('#userInfo').css('display', 'block');
   $('#loginForm').css('display', 'none');
 

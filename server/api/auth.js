@@ -16,7 +16,7 @@ router.use(bodyParser.urlencoded({ extended: true }));
 router.post('/login', async (req, res) => {
   try {
     if(req.body.id) { // if id field exists
-      const result = await util.query(`SELECT name, ID, role FROM \`namelist_${await util.getSettings('currentSemister')}\` WHERE ID='${req.body.id}';`);
+      const result = await util.query(`SELECT name, ID, role, 1365ID FROM \`namelist_${await util.getSettings('currentSemister')}\` WHERE ID='${req.body.id}';`);
       const semister = await util.getSettings('currentSemister');
 
       if(result.length) { // if corresponding user exists
@@ -44,7 +44,7 @@ router.post('/login', async (req, res) => {
 router.post('/autologin', util.isLogin, async (req, res) => {
   try {
     if(req.decoded.id) { // if id field exists
-      const result = await util.query(`SELECT name, ID, role FROM \`namelist_${await util.getSettings('currentSemister')}\` WHERE ID='${req.decoded.id}';`);
+      const result = await util.query(`SELECT name, ID, role, 1365ID FROM \`namelist_${await util.getSettings('currentSemister')}\` WHERE ID='${req.decoded.id}';`);
       const semister = await util.getSettings('currentSemister');
 
       if(result.length) { // if corresponding user exists
