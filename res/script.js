@@ -108,15 +108,6 @@ function eventListener() {
       $('#contents').append(table);
     }
 
-    if(!$(this).hasClass('calendar-table__inactive')) {
-      if(user && user.role != '회원') $('.namecard').not('.example').addClass('partner');
-      if(user && user.ID) $('.namecard[data-id=' + user.ID + ']').closest('td').children('span.namecard').addClass('partner');
-      for(let namecard of $('.namecard').not('.partner').not('.example')) $(namecard).text($(namecard).text()[0] + $(namecard).text().slice(1).replace(/./g , '○'));
-    }
-    else if(!user) {
-      for(let namecard of $('.namecard').not('.partner').not('.example')) $(namecard).text($(namecard).text()[0] + $(namecard).text().slice(1).replace(/./g , '○'));
-    }
-
     $('.namecard').not('.example').on('click', function() {
       $('.deleteActive').removeClass('deleteActive');
       if(user && user.role != '회원' || (!$('.calendar-table__event').hasClass('calendar-table__inactive') && user.ID && user.ID == $(this).attr('data-id'))) $(this).addClass('deleteActive');

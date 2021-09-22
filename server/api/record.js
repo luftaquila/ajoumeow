@@ -1,6 +1,7 @@
 import express from 'express';
 import dateformat from 'dateformat';
 import bodyParser from 'body-parser';
+import jwt from 'jsonwebtoken';
 
 import util from '../controllers/util/util.js';
 import { Response, Log } from '../controllers/util/interface.js';
@@ -12,10 +13,60 @@ router.use(bodyParser.urlencoded({ extended: true }));
 
 router.get('/', async (req, res) => {
   try {
-    const result = await util.query(`SELECT * FROM record WHERE date BETWEEN '${req.query.startDate}' AND '${req.query.endDate} ' ORDER BY date, course, timestamp;`);
+    let result = await util.query(`SELECT * FROM record WHERE date BETWEEN '${req.query.startDate}' AND '${req.query.endDate} ' ORDER BY date, course, timestamp;`);
     const update = await util.query(`SELECT UPDATE_TIME FROM information_schema.tables WHERE TABLE_SCHEMA='ajoumeow' AND TABLE_name='record';`);
+    // user role detection
+    let token = req.headers['cookie'].match(/jwt=([A-z,0-9,.,-]*);/);
+    if(token) {
+      token = token[1];
+      await jwt.verify(token, process.env.JWTSecret, async function(err, decoded) {
+        if(err) result = await maskName(result, null);
+        else result = await maskName(result, decoded.id);
+      });
+    }
+    else result = await maskName(result, null);
+
     util.logger(new Log('info', req.remoteIP, req.originalPath, '급식 신청 기록 요청', req.method, 200, req.query, result));
     res.status(200).json(new Response('success', update, result));
+    
+    async function maskName(data, id) {
+      if(id) {
+        const user = await util.query(`SELECT role FROM \`namelist_${await util.getSettings('currentSemister')}\` WHERE id=${id}`);
+        const role = user[0].role;
+        
+        if(role == '회원') {
+          let mine = [];
+          data.forEach(rec => {
+            if(rec.ID == id) {
+              rec.mine = true;
+              mine.push(rec.date + rec.course);
+            }
+            else {
+              rec.ID = null;
+              rec.mine = false;
+            }
+          });
+          
+          data.forEach(rec => {
+            const isTimePassed = new Date().setHours(0, 0, 0, 0) <= rec.date;
+            const isPartner = mine.includes(rec.date + rec.course);
+            
+            if(isTimePassed && !isPartner) rec.name = rec.name[0] + rec.name.slice(1).replace(/./g , '○');
+          });
+          
+          return data;
+        }
+        else return data;
+      }
+      else {
+        data.forEach(rec => {
+          rec.name = rec.name[0] + rec.name.slice(1).replace(/./g , '○');
+          rec.ID = null;
+          rec.mine = false;
+        });
+        return data;
+      }
+    }
   }
   catch(e) {
     util.logger(new Log('error', req.remoteIP, req.originalPath, '급식 신청 기록 요청 오류', req.method, 500, req.query, e.stack));

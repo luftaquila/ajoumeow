@@ -34,6 +34,6 @@ app.listen(5710, function() {
   util.logger(new Log('info', 'LOCALHOST', '/api', '서버 프로그램 시작', 'internal', 0, null, msg));
 });
 
-kakaoClient();
+//kakaoClient();
 weatherClient();
 dbClient();
