@@ -16,9 +16,8 @@ router.get('/', async (req, res) => {
     let result = await util.query(`SELECT * FROM record WHERE date BETWEEN '${req.query.startDate}' AND '${req.query.endDate} ' ORDER BY date, course, timestamp;`);
     const update = await util.query(`SELECT UPDATE_TIME FROM information_schema.tables WHERE TABLE_SCHEMA='ajoumeow' AND TABLE_name='record';`);
     // user role detection
-    let token = req.headers['cookie'].match(/jwt=([A-z,0-9,.,-]*);/);
+    const token = req.headers['jwt'];
     if(token) {
-      token = token[1];
       await jwt.verify(token, process.env.JWTSecret, async function(err, decoded) {
         if(err) result = await maskName(result, null);
         else result = await maskName(result, decoded.id);
