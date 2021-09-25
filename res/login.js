@@ -4,8 +4,8 @@ $(function() {
       url: "api/auth/login",
       data: { 'id' : $('#loginID').val() },
       type: "POST",
-      success: res => {
-        Cookies.set('jwt', res.msg, { expires: 365 });
+      success: async res => {
+        await Cookies.set('jwt', res.msg, { expires: 365 });
         loginProcess(res);
       },
       error: e => toastr["error"](`${e.responseJSON.msg}<br>${e.responseJSON.data}`)

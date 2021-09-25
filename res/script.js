@@ -155,6 +155,7 @@ function load() {
   $.ajax({
     url: 'api/record',
     data: { 'startDate' : getDateFromCalendarStart(0), 'endDate' : getDateFromCalendarStart(28) },
+    beforeSend: xhr => xhr.setRequestHeader('jwt', Cookies.get('jwt')),
     success: function(record) {
       // Build recArr data
       let recArr = [];
