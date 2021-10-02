@@ -1,6 +1,8 @@
+const api = 'https://ajoumeow.luftaquila.io/api';
+
 $(function() {
   $.ajax({
-    url: '/ajoumeow/api/gallery/ranking',
+    url: `${api}/gallery/ranking`,
     success: res => {
       $('.fj-gallery').fjGallery('destroy').html('');
       
@@ -11,7 +13,7 @@ $(function() {
           <a href="photo?pid=${v.photo_id}" class="fj-gallery-item" style='position: relative;' oncontextmenu="return false;">
             <img
               class="fj-gallery-item-image"
-              src="/ajoumeow/res/image/gallery/thumb_${v.photo_id}"
+              src="/res/image/gallery/thumb_${v.photo_id}"
               width="800" height="600"
               style="max-height: none; max-width: none; margin: 0;"
             />
@@ -25,7 +27,7 @@ $(function() {
                 <span style='display: inline-block; width: 1rem; text-align: center'>${v.count}</span>
               </div>
             </div>
-            <div class='likes edit' style='top: 0rem; left: 1rem; padding: 0px;'><img src='/ajoumeow/gallery/image/${rank[i]}.png' style='width: 40px'></div>
+            <div class='likes edit' style='top: 0rem; left: 1rem; padding: 0px;'><img src='/gallery/image/${rank[i]}.png' style='width: 40px'></div>
          </a>`);
       });
       
@@ -34,7 +36,7 @@ $(function() {
           <a href="photo?pid=${v.photo_id}" class="fj-gallery-item" style='position: relative;' oncontextmenu="return false;">
             <img
               class="fj-gallery-item-image"
-              src="/ajoumeow/res/image/gallery/thumb_${v.photo_id}"
+              src="/res/image/gallery/thumb_${v.photo_id}"
               width="800" height="600"
               style="max-height: none; max-width: none; margin: 0;"
             />
@@ -48,7 +50,7 @@ $(function() {
                 <span style='display: inline-block; width: 1rem; text-align: center'>${v.count}</span>
               </div>
             </div>
-            <div class='likes edit' style='top: 0rem; left: 1rem; padding: 0px;'><img src='/ajoumeow/gallery/image/${rank[i]}.png' style='width: 40px'></div>
+            <div class='likes edit' style='top: 0rem; left: 1rem; padding: 0px;'><img src='/gallery/image/${rank[i]}.png' style='width: 40px'></div>
          </a>`);
       });
       
@@ -57,7 +59,7 @@ $(function() {
           <a href="photo?pid=${v.photo_id}" class="fj-gallery-item" style='position: relative;' oncontextmenu="return false;">
             <img
               class="fj-gallery-item-image"
-              src="/ajoumeow/res/image/gallery/thumb_${v.photo_id}"
+              src="/res/image/gallery/thumb_${v.photo_id}"
               width="800" height="600"
               style="max-height: none; max-width: none; margin: 0;"
             />
@@ -71,7 +73,7 @@ $(function() {
                 <span style='display: inline-block; width: 1rem; text-align: center'>${v.count}</span>
               </div>
             </div>
-            <div class='likes edit' style='top: 0rem; left: 1rem; padding: 0px;'><img src='/ajoumeow/gallery/image/${rank[i]}.png' style='width: 40px'></div>
+            <div class='likes edit' style='top: 0rem; left: 1rem; padding: 0px;'><img src='/gallery/image/${rank[i]}.png' style='width: 40px'></div>
          </a>`);
       });
       

@@ -7,7 +7,7 @@ $(function() {
 async function init() {
   let record, verify;
   $.ajax({
-    url: '/ajoumeow/api/verify/latest',
+    url: `${api}/verify/latest`,
     type: 'GET',
     beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
     success: res => $('#latestConfirm').text(new Date(res.data.date).format('yyyy년 m월 d일')),
@@ -15,7 +15,7 @@ async function init() {
   });
   
   await $.ajax({
-    url: '/ajoumeow/api/verify',
+    url: `${api}/verify`,
     type: 'GET',
     beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
     data: { date: $('#timestamp').datepicker('getDate').format('yyyy-mm-dd') },
@@ -87,7 +87,7 @@ function autoadd_typeahead() {
     },
     source: (query, syncResults, asyncResults) => {
       return $.ajax({
-        url: '/ajoumeow/api/users/name',
+        url: `${api}/users/name`,
         type: 'GET',
         beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
         data: { query: query },
@@ -152,7 +152,7 @@ $("#submit").click(function() {
     }
     if(validator(payload)) {
       $.ajax({
-        url: '/ajoumeow/api/verify',
+        url: `${api}/verify`,
         type: 'DELETE',
         beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
         data: { data : JSON.stringify(payload) },
@@ -209,7 +209,7 @@ function scoreProvider(payload) {
 
 function transmitter(payload) {
   $.ajax({
-    url: '/ajoumeow/api/verify',
+    url: `${api}/verify`,
     type: 'POST',
     beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
     data: { data: JSON.stringify(payload) },

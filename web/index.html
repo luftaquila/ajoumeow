@@ -5,17 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <meta property="og:title" content="아주대학교 미유미유"/>
-  <meta property="og:url" content="https://luftaquila.io/ajoumeow/"/>
-  <meta property="og:image" content="https://luftaquila.io/ajoumeow/res/image/og.png"/>
+  <meta property="og:url" content="https://ajoumeow.luftaquila.io"/>
+  <meta property="og:image" content="https://ajoumeow.luftaquila.io/res/image/og.png"/>
   <meta property="og:description" content="아주대학교 고양이는 미유미유"/>
 
   <title>아주대학교 미유미유</title>
 
-  <link rel="stylesheet" href="/ajoumeow/res/style.css">
-  <link rel="stylesheet" href="/ajoumeow/res/lib/micromodal/micromodal.min.css" />
-  <link rel="stylesheet" href="/ajoumeow/res/lib/intro.js/introjs.min.css" />
-  <link rel="stylesheet" href="/ajoumeow/res/lib/toastr/toastr.min.css" />
-  <link rel="stylesheet" href="/ajoumeow/res/lib/btn.css" />
+  <link rel="stylesheet" href="res/style.css">
+  <link rel="stylesheet" href="res/lib/micromodal/micromodal.min.css" />
+  <link rel="stylesheet" href="res/lib/intro.js/introjs.min.css" />
+  <link rel="stylesheet" href="res/lib/toastr/toastr.min.css" />
+  <link rel="stylesheet" href="res/lib/btn.css" />
 
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700" rel="stylesheet" />
@@ -25,7 +25,7 @@
   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
 
   <script src="https://kit.fontawesome.com/291664cdf8.js" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="/res/fontawesome5/css/all.min.css">
+  <link rel="stylesheet" href="res/lib/fontawesome/css/all.min.css">
   <!-- Browser check -->
   <script>
     if(browserVersionCheck().version > 0 && browserVersionCheck().version < 12) alert('인터넷 익스플로러는 지원하지 않는 오래된 브라우저입니다.\n크롬, 파이어폭스, 오페라, 엣지 등 다른 브라우저를 사용하십시오.');
@@ -70,8 +70,8 @@
     <header>
       <span id='noticeTrig' class="header__btn header__btn--left" style="font-size: 1.7rem; left: 0rem;" onclick='MicroModal.show("notice_modal");'><i class="fas fa-exclamation-circle"></i></span>
       <span id='helpTrig' class="header__btn header__btn--left" style="font-size: 1.7rem; left: 2.5rem;" onclick='MicroModal.show("help_modal");'><i class="far fa-question-circle"></i></span>
-      <span id='galleryTrig' class="header__btn header__btn--left" style="font-size: 1.7rem; left: 5.1rem;"><a href='/ajoumeow/gallery' style='text-decoration: none; color: black;'><i class="far fa-camera-retro"></i></a></span>
-      <span id='rankTrig' class="header__btn header__btn--left" style="font-size: 1.7rem; left: 7.7rem;"><a href='/ajoumeow/console/dashboard.html' style='text-decoration: none; color: black;'><i class="far fa-trophy-alt"></i></a></span>
+      <span id='galleryTrig' class="header__btn header__btn--left" style="font-size: 1.7rem; left: 5.1rem;"><a href='/gallery' style='text-decoration: none; color: black;'><i class="far fa-camera-retro"></i></a></span>
+      <span id='rankTrig' class="header__btn header__btn--left" style="font-size: 1.7rem; left: 7.7rem;"><a href='/console/dashboard.html' style='text-decoration: none; color: black;'><i class="far fa-trophy-alt"></i></a></span>
       <span id='mapTrig' class="header__btn header__btn--right" style="font-size: 1.7rem; right: 5.1rem;" onclick='MicroModal.show("map_modal");/*posID = setMap(); MicroModal.show("map_modal", { onClose: function() { navigator.geolocation.clearWatch(posID); }});*/' data-position="bottom-right-aligned"><i class='fas fa-street-view'></i></span>
       <span id='guideTrig' class="header__btn header__btn--right" style="font-size: 1.7rem; right: 2.6rem;" onclick='MicroModal.show("guide_modal");'><i class='fas fa-book-spells rainbow×'></i></span>
       <span id='sidebarTrig' class="header__btn header__btn--right" style="font-size: 1.7rem; right: 0rem;" onclick="$('#sidebar').css('display', 'block');"><i class='fas fa-bars'></i></span>
@@ -79,7 +79,7 @@
     <main>
       <div class="calendar-container">
         <div class="calendar-container__header" style='display: block; text-align: center; padding: .5rem 0 .25rem;'>
-          <img src='/ajoumeow/res/image/headline_blue.png' style='width: 8rem'> 
+          <img src='res/image/headline_blue.png' style='width: 8rem'> 
         </div>
         <div class="calendar-container__body">
           <div class="calendar-table">
@@ -128,7 +128,7 @@
             <input id='loginID' type="number" style='height: 1.5rem; text-align: center; padding: 0 0.2rem; font-size: 1.2rem; width: 7rem; border: none; border-bottom: solid 2px gray;' placeholder='학번' />
           </div><br>
           <a id='login' class='btn blue' style='font-size: 0.8rem'>로그인</a><br>
-          <a onclick="window.location.href = '/ajoumeow/apply';" id='apply' class='btn green' style='font-size: 0.8rem'>회원 등록</a><br><br>
+          <a onclick="window.location.href = 'apply';" id='apply' class='btn green' style='font-size: 0.8rem'>회원 등록</a><br><br>
         </div>
         <div id='userInfo' style='display: none;'>
           <span style='font-size: 1rem;'><span id='username'></span>&nbsp;<span id='userrole'></span>님<br>안녕하세요!</span><br><br>
@@ -150,7 +150,7 @@
             <tr><td colspan='2' style='text-align: left'>내 1365 ID</td><td><div id='1365id' style='text-align: right;'></div></td></tr>
           </table><br><br>
           <span id='historyDispenser' style="color: #0366d6; cursor: pointer" onclick='$("#sidebar").css("display", "none"); MicroModal.show("record_modal");' >내 급식 기록</span><br><br>
-          <a id='admin' onclick="window.location.href = '/ajoumeow/console';" style='color: #0366d6; cursor: pointer; text-decoration: none; display: none;' ><br>관리자 콘솔</a><br>
+          <a id='admin' onclick="window.location.href = 'console';" style='color: #0366d6; cursor: pointer; text-decoration: none; display: none;' ><br>관리자 콘솔</a><br>
         </div><br><br><br>
         <a onclick='window.location.href = "/";' style="color: black; cursor: pointer; text-decoration: none; font-size: 0.7rem">©<script>document.write(new Date().getFullYear())</script> LUFT - AQUILA</a><br><br>
         <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fluftaquila.io%2Fajoumeow&count_bg=%2379C83D&title_bg=%23555555&icon=googlefit.svg&icon_color=%23E7E7E7&title=hits&edge_flat=false"/>
@@ -335,16 +335,16 @@
               </script>
               <a href='#stepbystep_guide' id='stepbystep_guide_prompt' onclick="toggle_visibility('stepbystep_guide');" style='text-decoration: none; color: RoyalBlue;'><i class='fas fa-chalkboard-teacher'></i> 급식 절차 가이드 영상 보기</a>
               <div id="stepbystep_guide" style='display: none;'>
-                <video controls style='width: 100%' poster="/ajoumeow/res/videos/stepbystep.png">
-                  <source src="/ajoumeow/res/videos/stepbystep_guide.mp4" type="video/mp4">
+                <video controls style='width: 100%' poster="res/videos/stepbystep.png">
+                  <source src="res/videos/stepbystep_guide.mp4" type="video/mp4">
                   Sorry, your browser doesn't support embedded videos.
                 </video>
               </div>
               <div style='height: 0.5rem;'> </div>
               <a href='#course_guide' id='course_guide_prompt' onclick="toggle_visibility('course_guide');" style='text-decoration: none; color: RoyalBlue; margin-top: 1rem;'><i class='fas fa-chalkboard-teacher'></i> 급식 코스 가이드 영상 보기</a>
               <div id="course_guide" style='display: none'>
-                <video id='course_guide_video' controls style='width: 100%' poster="/ajoumeow/res/videos/course.png">
-                  <source src="/ajoumeow/res/videos/course_guide.mp4" type="video/mp4">
+                <video id='course_guide_video' controls style='width: 100%' poster="res/videos/course.png">
+                  <source src="/res/videos/course_guide.mp4" type="video/mp4">
                   Sorry, your browser doesn't support embedded videos.
                 </video>
                 <style>
@@ -388,12 +388,12 @@
     </div>
   </div>
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAioaKVxmqI05VXqQqgEDWSgAUdobXSIrs" type="text/javascript"></script>
-  <script src='/ajoumeow/res/lib/jquery-3.3.1.min.js'></script>
-  <script src='/ajoumeow/res/lib/micromodal/micromodal.min.js'></script>
-  <script src='/ajoumeow/res/lib/toastr/toastr.min.js'></script>
-  <script src='/ajoumeow/res/lib/js.cookie.min.js'></script>
-  <script src='/ajoumeow/res/lib/intro.js/intro.min.js'></script>
-  <script src="/ajoumeow/res/script.js"></script>
-  <script src="/ajoumeow/res/login.js"></script>
+  <script src='res/lib/jquery-3.3.1.min.js'></script>
+  <script src='res/lib/micromodal/micromodal.min.js'></script>
+  <script src='res/lib/toastr/toastr.min.js'></script>
+  <script src='res/lib/js.cookie.min.js'></script>
+  <script src='res/lib/intro.js/intro.min.js'></script>
+  <script src="res/script.js"></script>
+  <script src="res/login.js"></script>
 </body>
 </html>

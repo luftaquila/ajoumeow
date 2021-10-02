@@ -1,9 +1,11 @@
+const api = 'https://ajoumeow.luftaquila.io/api';
+
 $(function () {
   $.when(
-    $.ajax("/ajoumeow/api/settings/currentSemister"),
-    $.ajax("/ajoumeow/api/settings/isApply"),
-    $.ajax("/ajoumeow/api/settings/isApplyRestricted"),
-    $.ajax("/ajoumeow/api/settings/applyTerm")
+    $.ajax(`${api}/settings/currentSemister`),
+    $.ajax(`${api}/settings/isApply`),
+    $.ajax(`${api}/settings/isApplyRestricted`),
+    $.ajax(`${api}/settings/applyTerm`)
   ).done((currentSemister, isApply, isApplyRestricted, applyTerm) => {
     let flag = false;
 
@@ -22,7 +24,7 @@ $(function () {
       $('.loading').css('display', 'none');
       $('#asktype').css('display', 'block');
 
-      $.ajax('/ajoumeow/res/college.json').done(collegeDict => {
+      $.ajax('../res/college.json').done(collegeDict => {
         let collegeList = '', departmentList = '';
         for (let college in collegeDict) collegeList += `<option value="${college}">${college}</option>`;
 
@@ -78,10 +80,10 @@ $('.validate-form').on('submit', function (event) {
       'new': isNew
     }
     $.ajax({
-      url: "https://luftaquila.io/ajoumeow/api/users/id",
+      url: `${api}/users/id`,
       type: "POST",
       data: payload,
-      success: res => { location.href = 'https://luftaquila.io/ajoumeow/apply/success.html' },
+      success: res => { location.href = 'success.html' },
       error: err => alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
     });
   }
@@ -150,7 +152,7 @@ $('.ask').click(function() {
 
 $('#find').click(function() {
   $.ajax({
-    url: "/ajoumeow/api/users/id",
+    url: `${api}/users/id`,
     type: "POST",
     data: { 학번: $('#findID').val(), lookup: true },
     success: res => {

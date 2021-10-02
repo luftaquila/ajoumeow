@@ -2251,7 +2251,7 @@ uppyInit = function() {
       waitForThumbnailsBeforeUpload: false
     })
     .use(XHRUpload, {
-      endpoint: '/ajoumeow/api/gallery/photo',
+      endpoint: 'https://ajoumeow.luftaquila.io/api/gallery/photo',
       headers: { 'x-access-token': Cookies.get('jwt') }
     })
     .use(ImageEditor, {

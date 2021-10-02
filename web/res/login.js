@@ -1,7 +1,7 @@
 $(function() {
   $('#login').click(function() {
     $.ajax({
-      url: "api/auth/login",
+      url: `${api}/auth/login`,
       data: { 'id' : $('#loginID').val() },
       type: "POST",
       success: async res => {
@@ -28,7 +28,7 @@ function autoLogin() {
   const jwt = Cookies.get('jwt');
   if(jwt) { // if jwt exists
     $.ajax({
-      url: "api/auth/autologin",
+      url: `${api}/auth/autologin`,
       beforeSend: xhr => xhr.setRequestHeader('x-access-token', jwt),
       type: "POST",
       success: res => loginProcess(res),
@@ -41,7 +41,7 @@ function autoLogin() {
 function autoLoginFailure() {
   load();
   $.ajax({
-    url: "api/settings/currentSemister",
+    url: `${api}/settings/currentSemister`,
     success: res => {
       if(!Cookies.get('isNew')) { startIntro(); } // if first appearence
       else if(Cookies.get('currentSemister')) { // if previously saved semister exists
@@ -111,7 +111,7 @@ function loginProcess(res) {
   
   // Load notice
   $.ajax({
-    url: "api/settings/notice",
+    url: `${api}/settings/notice`,
     cached: false,
     success: function(res) {
       const notice = res.data.split('$');

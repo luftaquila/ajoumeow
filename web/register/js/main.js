@@ -1,9 +1,11 @@
+const api = 'https://ajoumeow.luftaquila.io/api';
+
 $(function () {
   $.when(
-    $.ajax("/ajoumeow/api/settings/currentSemister"),
-    $.ajax("/ajoumeow/api/settings/isRegister"),
-    $.ajax("/ajoumeow/api/settings/isRegisterRestricted"),
-    $.ajax("/ajoumeow/api/settings/registerTerm")
+    $.ajax(`${api}/settings/currentSemister`),
+    $.ajax(`${api}/settings/isRegister`),
+    $.ajax(`${api}/settings/isRegisterRestricted`),
+    $.ajax(`${api}/settings/registerTerm`)
   ).done((currentSemister, isRegister, isRegisterRestricted, registerTerm) => {
     let flag = false;
 
@@ -22,7 +24,7 @@ $(function () {
       $('.loading').css('display', 'none');
       $('.container-contact100').css('display', 'block');
 
-      $.ajax('/ajoumeow/res/college.json').done(collegeDict => {
+      $.ajax('../res/college.json').done(collegeDict => {
         let collegeList = '', departmentList = '';
         for (let college in collegeDict) collegeList += `<option value="${college}">${college}</option>`;
 
@@ -60,10 +62,10 @@ $('.validate-form').on('submit', function (event) {
     }
 
     $.ajax({
-      url: '/ajoumeow/api/users/register',
+      url: `${api}/users/register`,
       type: 'POST',
       data: payload,
-      success: res => { location.href = 'https://luftaquila.io/ajoumeow/register/success.html' },
+      success: res => { location.href = 'success.html' },
       error: err => alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
     });
   }

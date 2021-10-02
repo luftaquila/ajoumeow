@@ -1,8 +1,10 @@
+const api = 'https://ajoumeow.luftaquila.io/api';
+
 $(function() {
   const jwt = Cookies.get('jwt');
   if(jwt) { // if jwt exists
     $.ajax({
-      url: "/ajoumeow/api/auth/autologin",
+      url: `${api}/auth/autologin`,
       beforeSend: xhr => xhr.setRequestHeader('x-access-token', jwt),
       type: "POST",
       success: res => {
@@ -40,7 +42,7 @@ async function generateFileManager() {
   $('#fileManagerContainer').css('display', uppy.getFiles().length ? 'block' : 'none');
   $('#filecount').text(uppy.getFiles().length);
   
-  let tags = await $.ajax('/ajoumeow/api/gallery/tags');
+  let tags = await $.ajax(`${api}/gallery/tags`);
   tags = tags.map(x => { return { text: x.tag_name } });
   
   uppy.getFiles().forEach((v, i) => {
@@ -59,7 +61,7 @@ async function generateFileManager() {
 }
 
 function autoLoginFailure() {
-  $('#contents').html(`<br><span style='color: black; font-size: 1.5rem;'>📣 앗, 잠깐만요! 🚧</span><br><img src='/ajoumeow/res/image/loading.gif' style='width: 100%; max-width: 500px; margin: 10px 0px'><br>사진 업로드는 미유미유 회원만 가능합니다.<br><a href='/ajoumeow'>미유미유 포탈</a>에서 먼저 로그인을 해 주세요.<br><p style='margin: 1rem 0'>401 Unauthorized.</p><br>`).css('text-align', 'center');
+  $('#contents').html(`<br><span style='color: black; font-size: 1.5rem;'>📣 앗, 잠깐만요! 🚧</span><br><img src='/res/image/loading.gif' style='width: 100%; max-width: 500px; margin: 10px 0px'><br>사진 업로드는 미유미유 회원만 가능합니다.<br><a href='/'>미유미유 포탈</a>에서 먼저 로그인을 해 주세요.<br><p style='margin: 1rem 0'>401 Unauthorized.</p><br>`).css('text-align', 'center');
 }
 
 

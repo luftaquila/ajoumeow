@@ -10,7 +10,7 @@ $(function() {
     order: [[ 0, 'desc' ]],
     search: { regex: true },
     ajax: {
-      url: "/ajoumeow/api/record/log",
+      url: `${api}/record/log`,
       beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
       data: d => {
         const level = Array.from($('input[name=level]:checked'), x => x.value);

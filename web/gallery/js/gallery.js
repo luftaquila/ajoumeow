@@ -1,10 +1,12 @@
+const api = 'https://ajoumeow.luftaquila.io/api';
+
 $(function() {
   requestPhotoList(0);
   $('input[name=sortPhoto]').change(() => requestPhotoList(0));
   $('.fj-gallery').on('click', '.likes', (e) => {
     const target = e.currentTarget;
     $.ajax({
-      url: '/ajoumeow/api/gallery/like',
+      url: `${api}/gallery/like`,
       type: 'POST',
       beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
       data: { photo_id: $(target).data('photo_id') },
@@ -31,7 +33,7 @@ $(function() {
 
 function requestPhotoList(offset) {
   $.ajax({
-    url: '/ajoumeow/api/gallery/photo',
+    url: `${api}/gallery/photo`,
     data: {
       sort: $('input[name=sortPhoto]:checked').val(),
       offset: offset,
@@ -53,7 +55,7 @@ function renderPhoto(photoList, offset) {
         <a href="photo?pid=${v.photo_id}" class="fj-gallery-item" oncontextmenu="return false;">
           <img
             class="fj-gallery-item-image"
-            src="/ajoumeow/res/image/gallery/thumb_${v.photo_id}"
+            src="../res/image/gallery/thumb_${v.photo_id}"
             width="800" height="600"
             style="max-height: none; max-width: none; margin: 0;"
           />
@@ -92,7 +94,7 @@ function renderPhoto(photoList, offset) {
         <a href="photo?pid=${v.photo_id}" class="fj-gallery-item" oncontextmenu="return false;">
           <img
             class="fj-gallery-item-image"
-            src="/ajoumeow/res/image/gallery/thumb_${v.photo_id}"
+            src="../res/image/gallery/thumb_${v.photo_id}"
             width="800" height="600"
             style="max-height: none; max-width: none; margin: 0;"
           />

@@ -1,3 +1,5 @@
+const api = 'https://ajoumeow.luftaquila.io/api';
+
 $(function() {
   requestPhotoList(0);
   $('input[name=sortPhoto]').change(() => requestPhotoList(0));
@@ -16,7 +18,7 @@ $(function() {
 
 function requestPhotoList(offset) {
   $.ajax({
-    url: '/ajoumeow/api/gallery/photo',
+    url: `${api}/gallery/photo`,
     data: {
       sort: $('input[name=sortPhoto]:checked').val(),
       offset: offset,
@@ -35,13 +37,13 @@ function renderPhoto(photoList, offset) {
     // rendering photos
     photoList.forEach(v => {
       $('.fj-gallery').append(`
-        <a href="/ajoumeow/gallery/cat?cid=${v.tag_name}" class="fj-gallery-item" oncontextmenu="return false;">
+        <a href="/gallery/cat?cid=${v.tag_name}" class="fj-gallery-item" oncontextmenu="return false;">
           <img
             class="fj-gallery-item-image"
-            src="/ajoumeow/res/image/gallery/thumb_${v.newest_photo_id}"
+            src="/res/image/gallery/thumb_${v.newest_photo_id}"
             width="800" height="600"
             style="max-height: none; max-width: none; margin: 0;"
-            onerror="this.src = '/ajoumeow/res/image/loading.gif'; $('.fj-gallery').fjGallery('resize');"
+            onerror="this.src = '/res/image/loading.gif'; $('.fj-gallery').fjGallery('resize');"
           />
           <div class='fj-gallery-item-category'>
             <div style='width: fit-content; position: relative; left: 0; bottom: 0; padding: 1rem; font-size: 1.2rem; line-height: 1rem;'>
@@ -74,13 +76,13 @@ function renderPhoto(photoList, offset) {
     // rendering photos
     photoList.forEach(v => {
       $('.fj-gallery').append(`
-        <a href="/ajoumeow/gallery/cat?cid=${v.tag_name}" class="fj-gallery-item" oncontextmenu="return false;">
+        <a href="/gallery/cat?cid=${v.tag_name}" class="fj-gallery-item" oncontextmenu="return false;">
           <img
             class="fj-gallery-item-image"
-            src="/ajoumeow/res/image/gallery/thumb_${v.newest_photo_id}"
+            src="/res/image/gallery/thumb_${v.newest_photo_id}"
             width="800" height="600"
             style="max-height: none; max-width: none; margin: 0;"
-            onerror="this.src = '/ajoumeow/res/image/loading.gif'; $('.fj-gallery').fjGallery('resize');"
+            onerror="this.src = '/res/image/loading.gif'; $('.fj-gallery').fjGallery('resize');"
           />
           <div class='fj-gallery-item-category'>
             <div style='width: fit-content; position: relative; left: 0; bottom: 0; padding: 1rem; font-size: 1.2rem; line-height: 1rem;'>

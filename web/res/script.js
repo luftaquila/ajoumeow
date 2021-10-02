@@ -1,3 +1,4 @@
+const api = 'https://ajoumeow.luftaquila.io/api';
 $(function() {
   init();
   eventListener();
@@ -79,11 +80,11 @@ function eventListener() {
         let pm10 = weather.current.dust.pm10, pm25 = weather.current.dust.pm25;
         let pm10color = pm10 > 30 ? pm10 > 80 ? pm10 > 150 ? '#ff5959' : '#fd9b5a' : '#00c73c' : '#32a1ff';
         let pm25color = pm25 > 15 ? pm25 > 35 ? pm25 > 75 ? '#ff5959' : '#fd9b5a' : '#00c73c' : '#32a1ff';
-        datestring += `&ensp;<span id="weatherstat" style="font-weight: normal">${weather.current.temp}℃ ${weather.current.weather}</span>&nbsp;<img src="/ajoumeow/res/image/weather/icon${weather.current.icon}.png" style="width: 1rem; height: 1rem;">&ensp;<div style="line-height: 0.9rem; vertical-align: middle; display: inline-block; font-weight: normal; font-size: 0.7rem">pm10 : <span style="color: ${pm10color}">${pm10}</span>㎍/㎥<br>pm2.5: <span style="color: ${pm25color}">${pm25}</span>㎍/㎥</div>`;
+        datestring += `&ensp;<span id="weatherstat" style="font-weight: normal">${weather.current.temp}℃ ${weather.current.weather}</span>&nbsp;<img src="res/image/weather/icon${weather.current.icon}.png" style="width: 1rem; height: 1rem;">&ensp;<div style="line-height: 0.9rem; vertical-align: middle; display: inline-block; font-weight: normal; font-size: 0.7rem">pm10 : <span style="color: ${pm10color}">${pm10}</span>㎍/㎥<br>pm2.5: <span style="color: ${pm25color}">${pm25}</span>㎍/㎥</div>`;
       }
       else {
         let tgt = weather.forecast.find(o => o.date == new Date($(this).attr('data-date')).format('yyyy-mm-dd'));
-        if(tgt) datestring += `&ensp;<span id="weatherstat" style="font-weight: normal">${tgt.temp}℃ ${tgt.weather}</span>&nbsp;<img src="/ajoumeow/res/image/weather/icon${tgt.icon}.png" style="width: 1rem; height: 1rem;">`;
+        if(tgt) datestring += `&ensp;<span id="weatherstat" style="font-weight: normal">${tgt.temp}℃ ${tgt.weather}</span>&nbsp;<img src="res/image/weather/icon${tgt.icon}.png" style="width: 1rem; height: 1rem;">`;
       }
     }
     $('#dateInfo h4').html(datestring);
@@ -130,7 +131,7 @@ function eventListener() {
       $('#contents').html('').append(`<table><tr style='height: 3rem'><td style='padding-right: .5rem;'><b>1코스</b></td><td class='courseContent' data-course='1'><tr style='height: 3rem'><td style='padding-right: .5rem;'><b>2코스</b></td><td class='courseContent' data-course='2'><tr style='height: 3rem'><td style='padding-right: .5rem;'><b>3코스</b></td><td class='courseContent' data-course='3'></table>`);
     }
     
-    let max = await $.ajax('/ajoumeow/api/settings/maxFeedingUserCount');
+    let max = await $.ajax(`${api}/settings/maxFeedingUserCount`);
     $('.courseContent').each(function(index, item) {
       if($(item).children('span.addToCourse').length) return; // cancel if add button already activated
       else if($(item).children('span.namecard').length >= Number(max.data)) return; // cancel if max count met
@@ -153,7 +154,7 @@ function eventListener() {
 
 function load() {
   $.ajax({
-    url: 'api/record',
+    url: `${api}/record`,
     data: { 'startDate' : getDateFromCalendarStart(0), 'endDate' : getDateFromCalendarStart(28) },
     beforeSend: xhr => xhr.setRequestHeader('jwt', Cookies.get('jwt')),
     success: function(record) {
@@ -215,7 +216,7 @@ function validator(type, target) {
 function transmitter(data) {
   transmitFlag = true;
   $.ajax({
-    url: 'api/record',
+    url: `${api}/record`,
     type: data.type,
     beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
     data: {
@@ -233,7 +234,7 @@ function transmitter(data) {
 function courseImg(course) {
   $('#courseImg').hide();
   $('#spot_modal-title').text(course.replace('-', '코스 ') + '번째 급식소');
-  $('#courseImg').attr('src', '/ajoumeow/res/image/Map/spot_' + course + '.jpg').show();
+  $('#courseImg').attr('src', 'res/image/Map/spot_' + course + '.jpg').show();
   MicroModal.show('spot_modal');
 }
 
@@ -258,7 +259,7 @@ function dateDataToSvgTranslator(courses, width) {
 
 function loadWeather() {
   $.ajax({
-    url: '/ajoumeow/res/weather.json',
+    url: 'res/weather.json',
     success: res => { weather = res; }
   });
 }
@@ -284,7 +285,7 @@ function setMap() {
     });
 
     $.ajax({
-      url: '/ajoumeow/res/course.json',
+      url: 'res/course.json',
       success: function(res) {
         for(const course of res) {
           for(const point of course.point) {
@@ -298,7 +299,7 @@ function setMap() {
                 color: course.color
         	    },
               icon: {
-                url: "/ajoumeow/res/image/map/marker.png",
+                url: "res/image/map/marker.png",
                 scale: 1,
                 labelOrigin: new google.maps.Point(0, 0),
                 size: new google.maps.Size(16,16),
@@ -336,7 +337,7 @@ function setMap() {
         color: 'deepskyblue'
     	},
       icon: {
-        url: "/ajoumeow/res/image/map/marker.png",
+        url: "res/image/map/marker.png",
         scale: 1,
         labelOrigin: new google.maps.Point(0, 0),
         size: new google.maps.Size(16,16),
@@ -344,7 +345,7 @@ function setMap() {
       }
     });
     let homeInfo = new google.maps.InfoWindow({
-      content: `<div style="width: 100%; height: 100%"><h2>동아리방</h2><div>신학생회관 4층 406호<br><img style="margin-top: 0.5rem; width: 100%; height: 100%" src="/ajoumeow/res/image/map/home.jpg"></div></div>`,
+      content: `<div style="width: 100%; height: 100%"><h2>동아리방</h2><div>신학생회관 4층 406호<br><img style="margin-top: 0.5rem; width: 100%; height: 100%" src="res/image/map/home.jpg"></div></div>`,
       pixelOffset: new google.maps.Size(-8, 0)
     });
     home.addListener("click", () => { homeInfo.open(map, home); });
@@ -372,7 +373,7 @@ function geo_success(position) {
         color: 'hotpink'
       },
       icon: {
-        url: "/ajoumeow/res/image/map/marker.png",
+        url: "res/image/map/marker.png",
         scale: 1,
         labelOrigin: new google.maps.Point(0, 3),
         size: new google.maps.Size(16,16),

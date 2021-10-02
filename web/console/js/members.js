@@ -1,7 +1,7 @@
 $(function() {
   $('#content').click();
   $.ajax({
-    url: "/ajoumeow/api/users/list",
+    url: `${api}/users/list`,
     beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
     data: { semister : 'all' },
     success: res => {
@@ -13,14 +13,14 @@ $(function() {
   });
   
   $.ajax({
-    url: "/ajoumeow/api/settings/currentSemister",
+    url: `${api}/settings/currentSemister`,
     beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
     success: res => {
       $('#currentMembersList').DataTable({
         pagingType: "numbers",
         pageLength: 100,
         ajax: {
-          url: '/ajoumeow/api/users/list',
+          url: `${api}/users/list`,
           beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
           data: { semister : res.data },
           dataSrc: 'data',
@@ -52,7 +52,7 @@ $(function() {
          ],
          onEdited : (prev, changed, index, cell) => {
            $.ajax({
-             url: '/ajoumeow/api/users/id',
+             url: `${api}/users/id`,
              type: 'PUT',
              beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
              data: cell.row(index.row).data(),
@@ -69,7 +69,7 @@ $(function() {
         pagingType: "numbers",
         pageLength: 100,
         ajax: {
-          url: '/ajoumeow/api/users/list',
+          url: `${api}/users/list`,
           beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
           data: d => { d.semister = $('#namelist').val() },
           dataSrc: 'data',
@@ -106,7 +106,7 @@ $(function() {
 
 $('#deleteMember').click(function() {
   $.ajax({
-    url: '/ajoumeow/api/users/id',
+    url: `${api}/users/id`,
     type: 'DELETE',
     beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
     data: { ID: $('#deleteMemberID').val() },
@@ -121,7 +121,7 @@ $('#deleteMember').click(function() {
 $('#namelistDownload').click(function() {
   let semister = $('#namelist').val();
   $.ajax({
-    url: "/ajoumeow/api/users/list",
+    url: `${api}/users/list`,
     beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
     data: { semister : semister },
     success: res => {

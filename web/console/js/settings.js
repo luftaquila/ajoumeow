@@ -3,7 +3,7 @@ $(function() {
   
   // current semister settings
   $.ajax({
-    url: "/ajoumeow/api/settings/currentSemister",
+    url: `${api}/settings/currentSemister`,
     success: res => {
       $('#currentYear').val(res.data.split('-')[0]);
       $('#currentSemister').val(res.data.split('-')[1]);
@@ -13,9 +13,9 @@ $(function() {
   
   // apply settings
   $.when(
-    $.ajax("/ajoumeow/api/settings/isApply"),
-    $.ajax("/ajoumeow/api/settings/isApplyRestricted"),
-    $.ajax("/ajoumeow/api/settings/applyTerm")
+    $.ajax(`${api}/settings/isApply`),
+    $.ajax(`${api}/settings/isApplyRestricted`),
+    $.ajax(`${api}/settings/applyTerm`)
   ).done((isApply, isApplyRestricted, applyTerm) => {
     if(isApply[0].data == 'TRUE') {
       $('#isApply').attr('checked', false);
@@ -40,15 +40,15 @@ $(function() {
   // register settings
   $.when(
     $.ajax({
-      url: "/ajoumeow/api/settings/isRegister",
+      url: `${api}/settings/isRegister`,
       beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt'))
     }),
     $.ajax({
-      url: "/ajoumeow/api/settings/isRegisterRestricted",
+      url: `${api}/settings/isRegisterRestricted`,
       beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt'))
     }),
     $.ajax({
-      url: "/ajoumeow/api/settings/registerTerm",
+      url: `${api}/settings/registerTerm`,
       beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt'))
     })
   ).done((isRegister, isRegisterRestricted, registerTerm) => {
@@ -74,7 +74,7 @@ $(function() {
   
   // notice settings
   $.ajax({
-    url: "/ajoumeow/api/settings/notice",
+    url: `${api}/settings/notice`,
     cached: false,
     success: res => {
       $('#noticeVersion').text(res.data.split('$')[0]);
@@ -85,7 +85,7 @@ $(function() {
   
   // maxFeedingUserCount settings
   $.ajax({
-    url: '/ajoumeow/api/settings/maxFeedingUserCount',
+    url: `${api}/settings/maxFeedingUserCount`,
     cached: false,
     success: res => {
       $('#maxFeedingUserCount').val(res.data);
@@ -155,7 +155,7 @@ $('.setting').change(function() {
   }
 
   $.ajax({
-    url: '/ajoumeow/api/settings/' + req.param,
+    url: `${api}/settings/${req.param}`,
     type: 'PUT',
     beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
     data: { data : req.data },

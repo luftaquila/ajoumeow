@@ -1,8 +1,10 @@
+const api = 'https://ajoumeow.luftaquila.io/api';
+
 $(function() {
   const jwt = Cookies.get('jwt');
   if(jwt) { // if jwt exists
     $.ajax({
-      url: "/ajoumeow/api/auth/autologin",
+      url: `${api}/auth/autologin`,
       beforeSend: xhr => xhr.setRequestHeader('x-access-token', jwt),
       type: "POST",
       success: res => {
@@ -16,7 +18,7 @@ $(function() {
 });
 
 function autoLoginFailure() {
-  $('#contents').html(`<br><span style='color: black; font-size: 1.5rem;'>📣 앗, 잠깐만요! 🚧</span><br><img src='/ajoumeow/res/image/loading.gif' style='width: 100%; max-width: 500px; margin: 10px 0px'><br>사진 업로드는 미유미유 회원만 가능합니다.<br><a href='/ajoumeow'>미유미유 포탈</a>에서 먼저 로그인을 해 주세요.<br><p style='margin: 1rem 0'>401 Unauthorized.</p><br>`).css('text-align', 'center');
+  $('#contents').html(`<br><span style='color: black; font-size: 1.5rem;'>📣 앗, 잠깐만요! 🚧</span><br><img src='/res/image/loading.gif' style='width: 100%; max-width: 500px; margin: 10px 0px'><br>사진 업로드는 미유미유 회원만 가능합니다.<br><a href='/'>미유미유 포탈</a>에서 먼저 로그인을 해 주세요.<br><p style='margin: 1rem 0'>401 Unauthorized.</p><br>`).css('text-align', 'center');
 }
 
 function init(user) {
@@ -38,7 +40,7 @@ function init(user) {
 
 function requestPhotoList(offset) {
   $.ajax({
-    url: '/ajoumeow/api/gallery/photographer',
+    url: `${api}/gallery/photographer`,
     data: {
       sort: $('input[name=sortPhoto]:checked').val(),
       offset: offset,
@@ -57,10 +59,10 @@ function renderPhoto(photoList, offset) {
     // rendering photos
     photoList.forEach(v => {
       $('.fj-gallery').append(`
-        <a href="/ajoumeow/gallery/photo?pid=${v.photo_id}" class="fj-gallery-item" oncontextmenu="return false;">
+        <a href="/gallery/photo?pid=${v.photo_id}" class="fj-gallery-item" oncontextmenu="return false;">
           <img
             class="fj-gallery-item-image"
-            src="/ajoumeow/res/image/gallery/thumb_${v.photo_id}"
+            src="/res/image/gallery/thumb_${v.photo_id}"
             width="200" height="200"
             style="max-height: none; max-width: none; margin: 0;"
           />
@@ -99,10 +101,10 @@ function renderPhoto(photoList, offset) {
     // rendering photos
     photoList.forEach(v => {
       $('.fj-gallery').append(`
-        <a href="/ajoumeow/gallery/photo?pid=${v.photo_id}" class="fj-gallery-item" oncontextmenu="return false;">
+        <a href="/gallery/photo?pid=${v.photo_id}" class="fj-gallery-item" oncontextmenu="return false;">
           <img
             class="fj-gallery-item-image"
-            src="/ajoumeow/res/image/gallery/thumb_${v.photo_id}"
+            src="/res/image/gallery/thumb_${v.photo_id}"
             width="200" height="200"
             style="max-height: none; max-width: none; margin: 0;"
           />
@@ -130,7 +132,7 @@ function renderPhoto(photoList, offset) {
 function deletePhoto(pid) {
   const jwt = Cookies.get('jwt');
   $.ajax({
-    url: '/ajoumeow/api/gallery/photo',
+    url: `${api}/gallery/photo`,
     beforeSend: xhr => xhr.setRequestHeader('x-access-token', jwt),
     type: 'DELETE',
     data: { pid: pid },

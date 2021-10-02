@@ -1,15 +1,17 @@
+const api = 'https://ajoumeow.luftaquila.io/api';
+
 $(function() {
   const pid = new URLSearchParams(window.location.search).get('pid');
 
-  $('#mainImage').attr('src', '/ajoumeow/res/image/gallery/' + pid).one('load', () => {
+  $('#mainImage').attr('src', '/res/image/gallery/' + pid).one('load', () => {
     $('#imageInfo').css('width', $('#mainImage').width());
     //$('#viewCounter').attr('src', `https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=${window.location.href}&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=views&edge_flat=false`);
 
     EXIF.getData(document.getElementById('mainImage'), async function() {
-      const image = await $.ajax({ url: '/ajoumeow/api/gallery/image', data: { photo_id: pid }});
+      const image = await $.ajax({ url: `${api}/gallery/image`, data: { photo_id: pid }});
 
-      $('#photographer').html(`<a href='/ajoumeow/gallery/photographer/?uid=${btoa(image.uploader_id)}'>${image.uploader_name}</a>`);
-      $('#tags').html(image.tags.map(x => `<a href='/ajoumeow/gallery/cat/?cid=${encodeURI(x)}'>#${x}</a>`).join(' '));
+      $('#photographer').html(`<a href='/gallery/photographer/?uid=${btoa(image.uploader_id)}'>${image.uploader_name}</a>`);
+      $('#tags').html(image.tags.map(x => `<a href='/gallery/cat/?cid=${encodeURI(x)}'>#${x}</a>`).join(' '));
       $('#size').text(humanFileSize(image.size));
       $('.likes span').text(image.likes);
 
@@ -33,7 +35,7 @@ $(function() {
 
   $('.likes').on('click', () => {
     $.ajax({
-      url: '/ajoumeow/api/gallery/like',
+      url: `${api}/gallery/like`,
       type: 'POST',
       beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
       data: { photo_id: pid },

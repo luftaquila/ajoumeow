@@ -1,7 +1,7 @@
 $(function() {
   $('#content').click();
   $.ajax({
-    url: "/ajoumeow/api/users/register",
+    url: `${api}/users/register`,
     beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
     data: { semister : 'all' },
     success: res => {
@@ -13,7 +13,7 @@ $(function() {
         pagingType: "numbers",
         pageLength: 10,
         ajax: {
-          url: '/ajoumeow/api/users/register',
+          url: `${api}/users/register`,
           beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
           data: d => { d.semister = $('#tableName').val() },
           dataSrc: 'data',
@@ -44,7 +44,7 @@ $('#tableName').change(function() {
 
 $('#newMemberListDownload').click(function() {
   $.ajax({
-    url: "/ajoumeow/api/users/register",
+    url: `${api}/users/register`,
     beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
     data: { semister: $('#tableName').val() },
     success: res => {
@@ -71,7 +71,7 @@ $('#newMemberListDownload').click(function() {
 
 $('#contactDownload').click(function() {
   $.ajax({
-    url: "/ajoumeow/api/users/register",
+    url: `${api}/users/register`,
     beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
     data: { semister: $('#tableName').val() },
     success: res => {

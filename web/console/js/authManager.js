@@ -1,13 +1,15 @@
+const api = 'https://ajoumeow.luftaquila.io/api';
+
 $(function() {
   const jwt = Cookies.get('jwt');
   if(jwt) { // if jwt exists
     $.ajax({
-      url: "/ajoumeow/api/auth/autologin",
+      url: `${api}/auth/autologin`,
       beforeSend: xhr => xhr.setRequestHeader('x-access-token', jwt),
       type: "POST",
       success: res => {
         if(res.data.user.role == '회원') {
-          if(window.location.pathname == "/ajoumeow/console/dashboard.html") return; // Allow dashboard to members
+          if(window.location.pathname == "/console/dashboard.html") return; // Allow dashboard to members
           else window.location.href = "/403.html"; // Allow settings to admins only
         }
       },
