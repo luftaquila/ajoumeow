@@ -249,6 +249,7 @@ async function registerImage(chat, channel) {
 
 async function autoVerify(chat, channel) {
   try {
+    console.log(chat);
     if(chat.text.includes('자니')) return channel.sendChat('아니요 ㅎㅎ');
     if( !chat.text.includes('코스') || (!chat.text.includes('인증') && !chat.text.includes('삭제')) ) return;
 
@@ -263,7 +264,10 @@ async function autoVerify(chat, channel) {
 
     // targetDate validation in verify mode
     if(chat.text.includes('인증')) {
-      if(targetDate.getTime() > new Date().setHours(0, 0, 0, 0)) {
+      if(chat.text.includes('sudo')) {
+        if(!(chat.chat.sender.userId == process.env.testUserId)) return channel.sendChat( new ChatBuilder().append(new ReplyContent(chat.chat)).text('권한이 없습니다.').build(KnownChatType.REPLY) );
+      }
+      else if(targetDate.getTime() > new Date().setHours(0, 0, 0, 0)) {
         util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증 실패', 'internal', 0, null, 'ERR_FUTURE_TARGET_DATE'));
         return channel.sendChat( new ChatBuilder().append(new ReplyContent(chat.chat)).text(`${dateformat(targetDate, 'yyyy년 m월 d일')}은 아직 오지 않은 미래입니다. 혹시 시간여행자?!`).build(KnownChatType.REPLY) );
       }
@@ -346,6 +350,8 @@ async function autoVerify(chat, channel) {
     }
 
     else if(chat.text.includes('삭제')) {
+      if(!(chat.chat.sender.userId == process.env.testUserId)) return channel.sendChat( new ChatBuilder().append(new ReplyContent(chat.chat)).text('권한이 없습니다.').build(KnownChatType.REPLY) );
+      
       let targets = [];
       for(let i in payload) {
         const res = await util.query(`SELECT name, date, course, ID from verify WHERE ID=${payload[i].ID} AND date='${payload[i].date}' AND name='${payload[i].name}' AND course='${payload[i].course}';`);
