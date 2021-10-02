@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>미유미유 신입집사 모집</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
+    <!--===============================================================================================-->
+    <link rel='stylesheet' href='../res/lib/alertify/alertify.core.css' />
+    <link rel='stylesheet' href='../res/lib/alertify/alertify.default.css' />
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="fonts/Linearicons-Free-v1.0.0/icon-font.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/css-hamburgers/hamburgers.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/animsition/css/animsition.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/daterangepicker/daterangepicker.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="css/util.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <!--===============================================================================================-->
+  </head>
+  <body>
+    <div class='loading' style='width: 100%; text-align: center;'>
+      <br><br>
+      <h3 style='margin-bottom: 1rem'>설문지를 불러오는 중입니다.</h3>
+      <h3>잠시만 기다려 주세요</h3>
+      <br>
+      <img src='images/loading.gif' style='width: 90%;'>
+    </div>
+    <div class="container-contact100" style='display: none;'>
+      <div class="wrap-contact100">
+        <form class="contact100-form validate-form" style='width: 100%; max-width: 560px; margin: 0 auto;'>
+          <span class="contact100-form-title">
+          <span id="semister"></span>학기 미유미유 신입집사 모집
+          </span>
+          <div class="wrap-input100 validate-input" data-validate="이름을 적어주세요 ㅠㅠ">
+            <label class="label-input100" for="name">이름</label>
+            <input id="name" class="input100" type="text" name="name" placeholder="이름을 알려주세요!">
+            <span class="focus-input100"></span>
+          </div>
+          <div class="wrap-input100">
+            <div class="label-input100">단과대학</div>
+            <div>
+              <select class="js-select2" name="college" id="college">
+              </select>
+              <div class="dropDownSelect2"></div>
+            </div>
+            <span class="focus-input100"></span>
+          </div>
+          <div class="wrap-input100">
+            <div class="label-input100">학과</div>
+            <div>
+              <select class="js-select2" name="department" id="department">
+              </select>
+              <div class="dropDownSelect2"></div>
+            </div>
+            <span class="focus-input100"></span>
+          </div>
+          <div class="wrap-input100 validate-input" data-validate="전화번호가 아닌 것 같아요!">
+            <label class="label-input100" for="tel">연락처</label>
+            <input id="tel" class="input100" type="tel" name="tel" placeholder="연락처를 알려주세요!" maxlength="13">
+            <span class="focus-input100"></span>
+          </div>
+          <div class="wrap-input100 validate-input" data-validate="학번이 아닌 것 같아요!">
+            <label class="label-input100" for="number">학번</label>
+            <input id="number" class="input100" type="number" name="number" placeholder="학번 9자리를 알려주세요!">
+            <span class="focus-input100"></span>
+          </div>
+          
+          <div class="wrap-input100 validate-input" data-validate = "동의하지 않으면 가입 신청이 불가합니다ㅠ">
+					  <label class="label-input100" for="agree">개인정보 수집 및 이용 동의</label>
+					  <textarea class="input100 not" style='font-size: 0.7rem' disabled>
+아주대학교 동아리 미유미유에서는 다음과 같이 개인정보를 수집 및 이용하고 있습니다.
+
+- 수집 및 이용 목적: 가입 신청 처리 및 신청자 개별 연락
+- 항목: 이름, 학번, 소속, 휴대폰번호
+- 보유 및 이용기간: 신입 회원 모집 마감 시점
+            </textarea>
+				  	<span class="focus-input100"></span>
+            <input id="agree" class="input100" type="checkbox" name="agree" style='margin: 0 auto; width: 2rem; height: 2rem;'>
+            <br>
+				  </div>
+          
+          <div class="container-contact100-form-btn">
+            <button class="contact100-form-btn">
+            신청하기!
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!--===============================================================================================-->
+    <script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="vendor/animsition/js/animsition.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="vendor/bootstrap/js/popper.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="vendor/select2/select2.min.js"></script>
+    <script>
+      $(".js-select2").each(function(){
+      	$(this).select2({
+      		minimumResultsForSearch: 20,
+      		dropdownParent: $(this).next('.dropDownSelect2')
+      	});
+      })
+      $(".js-select2").each(function(){
+      	$(this).on('select2:open', function (e){
+      		$(this).parent().next().addClass('eff-focus-selection');
+      	});
+      });
+      $(".js-select2").each(function(){
+      	$(this).on('select2:close', function (e){
+      		$(this).parent().next().removeClass('eff-focus-selection');
+      	});
+      });
+      
+    </script>
+    <!--===============================================================================================-->
+    <script src="vendor/daterangepicker/moment.min.js"></script>
+    <script src="vendor/daterangepicker/daterangepicker.js"></script>
+    <!--===============================================================================================-->
+    <script src="vendor/countdowntime/countdowntime.js"></script>
+    <!--===============================================================================================-->
+    <script src='../res/lib/alertify/alertify.min.js'></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>

@@ -62,7 +62,7 @@ function weatherClient() {
             icon: date.icon
           });
         }
-        fs.writeFileSync('../res/weather.json', JSON.stringify(data));
+        fs.writeFileSync('../web/res/weather.json', JSON.stringify(data));
         util.logger(new Log('info', 'weatherClient', 'weather_schedule', '날씨 크롤링 완료', 'internal', 0, null, data));
       });
     }

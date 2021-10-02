@@ -16,7 +16,7 @@ router.use(bodyParser.urlencoded({ extended: true }));
 
 let upload = multer({
   storage: multer.diskStorage({
-    destination: (req, file, cb) => cb(null, __dirname + '/../../res/image/gallery'),
+    destination: (req, file, cb) => cb(null, __dirname + '/../../web/res/image/gallery'),
     filename: (req, file, cb) => cb(null, new Date().getTime() + path.extname(file.originalname))
   })
 });

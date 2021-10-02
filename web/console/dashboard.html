@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>관리자 콘솔</title>
+    <!-- Custom fonts for this template-->
+    <link rel="stylesheet" href="/res/lib/fontawesome/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link rel="stylesheet" href="css/sb-admin-2.min.css">
+    <link rel='stylesheet' href='css/console.css'>
+
+    <!-- Page level styles -->
+    <link rel='stylesheet' href='/res/lib/alertify/alertify.core.css' />
+    <link rel='stylesheet' href='/res/lib/alertify/alertify.default.css' />
+    <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/res/lib/micromodal/micromodal.min.css" />
+  </head>
+  <body id="page-top">
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+      <!-- Sidebar -->
+      <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar" style=''>
+        <!-- Sidebar - Brand -->
+        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="../">
+          <div class="sidebar-brand-icon">
+            <img src='/res/image/logo.png' style='width: 70%'>
+          </div>
+          <div class="sidebar-brand-text mx-3">미유미유<br>관리자 콘솔</div>
+        </a>
+        <!-- Divider -->
+        <hr class="sidebar-divider my-0">
+        <!-- Nav Item - Dashboard -->
+        <li class="nav-item active">
+          <a class="nav-link" href="./dashboard.html">
+          <i class="fas fa-fw fa-chart-pie"></i>
+          <span>통계</span></a>
+        </li>
+        <!-- Divider -->
+        <hr class="sidebar-divider">
+        <!-- Heading -->
+        <div class="sidebar-heading">관리자 도구</div>
+        <li class="nav-item">
+          <a class="nav-link" href="./">
+          <i class="fas fa-fw fa-calendar-check"></i>
+          <span>급식 인증</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href='./settings.html'>
+          <i class="fas fa-fw fa-wrench"></i>
+          <span>설정</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="./members.html">
+          <i class="fas fa-fw fa-user-edit"></i>
+          <span>회원 관리</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="./1365.html">
+          <i class="fas fa-fw fa-hands-helping"></i>
+          <span>1365</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="./recruit.html">
+          <i class="fas fa-fw fa-user-plus"></i>
+          <span>신입 모집</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="./server.html">
+          <i class="fas fa-fw fa-clipboard-list"></i>
+          <span>서버 로그</span></a>
+        </li>
+        <!-- Divider -->
+        <hr class="sidebar-divider d-none d-md-block">
+        <!-- Sidebar Toggler (Sidebar) -->
+        <div class="text-center d-none d-md-inline">
+          <button class="rounded-circle border-0 sidebarToggle" id="sidebarToggle"></button>
+        </div>
+      </ul>
+      <!-- End of Sidebar -->
+      <!-- Content Wrapper -->
+      <div id="content-wrapper" class="d-flex flex-column">
+        <!-- Main Content -->
+        <div id="content">
+          <!-- Topbar -->
+          <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+            <!-- Sidebar Toggle (Topbar) -->
+            <button id="sidebarToggleTop" class="sidebarToggleTop btn btn-link d-md-none rounded-circle mr-3">
+              <i class="fa fa-bars sidebarToggleTop"></i>
+            </button>
+            <a style='color: #0366d6; font-size: 1.2rem; margin-left: 1rem;' onclick="window.location.href = 'https://github.com/luftaquila/ajoumeow';"><i class='far fa-question-circle'></i>&ensp;도움말</a>
+          </nav>
+          <!-- End of Topbar -->
+          <!-- Begin Page Content -->
+          <div class="container-fluid">
+            <!-- Page Heading -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+              <h1 class="h3 mb-0 text-gray-800">통계</h1>
+            </div>
+            <div class="col-xl-3 col-md-8 mb-4" style='padding: 0;'>
+              <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-info text-uppercase mb-1">이번 달 활동 인원</div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800" id='activeMember'></div>
+                    </div>
+                    <div class="col-auto">
+                      <i class="fas fa-user-friends fa-2x text-gray-300"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-md-8 mb-4" style='padding: 0;'>
+              <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-success text-uppercase mb-1">이번 달 총 활동 시간</div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800" id='activityTime'></div>
+                    </div>
+                    <div class="col-auto">
+                      <i class="fas fa-user-clock fa-2x text-gray-300"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-md-8" style='padding: 0;'>
+              <div class="card shadow mb-4">
+                <!-- Card Header - Dropdown -->
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  <h6 class="m-0 font-weight-bold text-primary">활동 통계</h6>
+                </div>
+                <!-- Card Body -->
+                <div class="card-body">
+                  <label><input type='radio' name='statisticsType' value='this_feeding' checked> 이번 달 급식 마일리지 순위</label><br>
+                  <!--<label><input type='radio' name='statisticsType' value='this_total'> 이번 달 전체 마일리지 순위</label><br>-->
+                  <label><input type='radio' name='statisticsType' value='prev_feeding'> 저번 달 급식 마일리지 순위</label><br>
+                  <label><input type='radio' name='statisticsType' value='total_total'> 전체 기간 마일리지 순위</label><br>
+                  <label><input type='radio' name='statisticsType' value='custom_total' id='custom_total' data-value=''> 특정 기간 마일리지 순위</label>
+                  <input type='date' id='statisticsStartDate' class='btn btn-primary statisticsDate'>
+                  &nbsp;~&nbsp;
+                  <input type='date' id='statisticsEndDate' class='btn btn-primary statisticsDate'>
+                  <div style='width: 100%; text-align: center; margin: 1.5rem 0 1rem;'>
+                    <a class='btn btn-success' id='pick' style='color: white'>이 목록으로 제비뽑기</a>
+                    <div style='margin-top: .5rem; font-size: .9rem'>
+                      뽑힐 확률은 다음과 같습니다.<br>
+                      <code>본인 마일리지 ÷ 목록의 마일리지 총합 × 100(%)</code><br>
+                      리워드 지급 정책에 따라 자유롭게 이용하세요.
+                    </div>
+                  </div>
+                  <div class='table-responsive'>
+                    <table class="table table-bordered" id="statistics" width="99%" style='table-layout: fixed; text-align: center' cellspacing="0">
+                      <thead>
+                        <th>이름</th>
+                        <th>마일리지</th>
+                        <th>횟수</th>
+                      </thead>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- End of Main Content -->
+      </div>
+      <!-- End of Content Wrapper -->
+    </div>
+    <!-- End of Page Wrapper -->
+    <!-- Page Modals -->
+    <div class="modal micromodal-slide" id="pop" aria-hidden="true">
+      <div class="modal__overlay" tabindex="-1">
+        <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="randCatModal-title">
+          <header class="modal__header">
+            <h2 class="modal__title" id="randCatModal-title">랜덤랜덤 고양이</h2>
+            <button id='popclose' class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+          </header>
+          <main class="modal__content" id="randCatModal-content">
+            <div style="position: relative; text-align: center">
+              <img id='popgif' src="/res/image/random.png" style="width:100%; height:auto; margin-bottom: 0.8rem;">
+              <p id='poptext' style='width: 100%; text-align: center;'>기지개 켜는 중...</p>
+            </div>
+          </main>
+        </div>
+      </div>
+    </div>
+    <!-- Bootstrap core JavaScript-->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src='/res/lib/js.cookie.min.js'></script>
+    <script src='/res/lib/alertify/alertify.min.js'></script>
+    <script src='/res/lib/micromodal/micromodal.min.js'></script>
+    <script src="js/sb-admin-2.js"></script>
+    <script src='js/authManager.js'></script>
+
+    <!-- Page level plugins -->
+    <script src="vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
+    <script src='js/dashboard.js'></script>
+  </body>
+</html>

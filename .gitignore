@@ -1,6 +1,6 @@
-/res/videos
-/res/image/gallery
-/res/weather.json
+/web/res/videos
+/web/res/image/gallery
+/web/res/weather.json
 /server/node_modules/
 
 **/*.env
