@@ -27,7 +27,7 @@ $(function() {
       if(EXIF.getTag(this, "ExposureBias")) $('#exposure').text(Math.round(EXIF.getTag(this, "ExposureBias") * 1000) / 1000 + ' EV');
       if(EXIF.getTag(this, "Flash")) $('#flash').text(EXIF.getTag(this, "Flash").includes('not') ? 'flash off' : 'flash on');
 
-      if(EXIF.getTag(this, "GPSMapDatum")) $('#location').text(`${coordTranslator(EXIF.getTag(this, "GPSLatitude"))}°${EXIF.getTag(this, "GPSLatitudeRef")} ${coordTranslator(EXIF.getTag(this, "GPSLongitude"))}°${EXIF.getTag(this, "GPSLongitudeRef")}`).append(`<br><iframe src="https://www.google.com/maps/embed/v1/place?key=AIzaSyCya2DWkf5zX4lbp4EoHf49Rb6moUk8wIs&zoom=17&q=${coordTranslator(EXIF.getTag(this, "GPSLatitude"))},${coordTranslator(EXIF.getTag(this, "GPSLongitude"))}&center=${coordTranslator(EXIF.getTag(this, "GPSLatitude"))},${coordTranslator(EXIF.getTag(this, "GPSLongitude"))}" frameborder="0" style="width: 100%; max-width:400px; height: 300px;"></iframe>`);
+      if(EXIF.getTag(this, "GPSMapDatum") || EXIF.getTag(this, "GPSVersionID")) $('#location').text(`${coordTranslator(EXIF.getTag(this, "GPSLatitude"))}°${EXIF.getTag(this, "GPSLatitudeRef")} ${coordTranslator(EXIF.getTag(this, "GPSLongitude"))}°${EXIF.getTag(this, "GPSLongitudeRef")}`).append(`<br><iframe src="https://www.google.com/maps/embed/v1/place?key=AIzaSyAioaKVxmqI05VXqQqgEDWSgAUdobXSIrs&zoom=17&q=${coordTranslator(EXIF.getTag(this, "GPSLatitude"))},${coordTranslator(EXIF.getTag(this, "GPSLongitude"))}&center=${coordTranslator(EXIF.getTag(this, "GPSLatitude"))},${coordTranslator(EXIF.getTag(this, "GPSLongitude"))}" frameborder="0" style="width: 100%; max-width:400px; height: 300px;"></iframe>`);
     });
 
     if($('#mainImage').complete) $($('#mainImage')).trigger('load');
