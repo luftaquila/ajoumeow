@@ -1,0 +1,13 @@
+[Unit]
+Description=Ajoumeow Backend Server
+Wants=network-online.target
+After=network.target network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/luftaquila/ajoumeow/server
+ExecStart=/usr/bin/npx babel-node app.js
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
