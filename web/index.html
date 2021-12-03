@@ -65,14 +65,14 @@
     }
   </script>
 </head>
-<body>
+<body id='body'>
   <div class="main-container-wrapper">
     <header>
       <span id='noticeTrig' class="header__btn header__btn--left" style="font-size: 1.7rem; left: 0rem;" onclick='MicroModal.show("notice_modal");'><i class="fas fa-exclamation-circle"></i></span>
       <span id='helpTrig' class="header__btn header__btn--left" style="font-size: 1.7rem; left: 2.5rem;" onclick='MicroModal.show("help_modal");'><i class="far fa-question-circle"></i></span>
       <span id='galleryTrig' class="header__btn header__btn--left" style="font-size: 1.7rem; left: 5.1rem;"><a href='/gallery' style='text-decoration: none; color: black;'><i class="far fa-camera-retro"></i></a></span>
       <span id='rankTrig' class="header__btn header__btn--left" style="font-size: 1.7rem; left: 7.7rem;"><a href='/console/dashboard.html' style='text-decoration: none; color: black;'><i class="far fa-trophy-alt"></i></a></span>
-      <span id='mapTrig' class="header__btn header__btn--right" style="font-size: 1.7rem; right: 5.1rem;" onclick='MicroModal.show("map_modal");/*posID = setMap(); MicroModal.show("map_modal", { onClose: function() { navigator.geolocation.clearWatch(posID); }});*/' data-position="bottom-right-aligned"><i class='fas fa-street-view'></i></span>
+      <span id='mapTrig' class="header__btn header__btn--right" style="font-size: 1.7rem; right: 5.1rem;" onclick='MicroModal.show("map_modal", { onClose: resetGPS }); loadMap();' data-position="bottom-right-aligned"><i class='fas fa-street-view'></i></span>
       <span id='guideTrig' class="header__btn header__btn--right" style="font-size: 1.7rem; right: 2.6rem;" onclick='MicroModal.show("guide_modal");'><i class='fas fa-book-spells rainbow×'></i></span>
       <span id='sidebarTrig' class="header__btn header__btn--right" style="font-size: 1.7rem; right: 0rem;" onclick="$('#sidebar').css('display', 'block');"><i class='fas fa-bars'></i></span>
     </header>
@@ -240,7 +240,7 @@
             <div style='font-size: 0.8rem; display: none;'>
               지도의 급식소 위치는 생각보다 정확합니다! (오차율 0.5m)<br>급식소가 안 보인다면 분홍색 핀과 정확히 일치시켜 보세요.
             </div>
-            <iframe src="https://www.google.com/maps/d/embed?mid=1IoJLJAOMW_roPIcJZxFmAQC-wa52ZSEK&z=17&ll=37.283237,127.045953" frameborder="0" style='border: 0; width: 100%; margin-top: 1rem;' height='400'></iframe>
+            <div id='map' style='margin-top: 1rem; height: 400px; width: 100%;'></div>
           </main>
         </div>
       </div>
@@ -395,5 +395,8 @@
   <script src='res/lib/intro.js/intro.min.js'></script>
   <script src="res/script.js"></script>
   <script src="res/login.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/postscribe/2.0.8/postscribe.min.js"></script>
+  <script src='res/maps.js'></script>
 </body>
 </html>
