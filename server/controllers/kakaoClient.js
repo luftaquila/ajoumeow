@@ -281,7 +281,7 @@ async function autoVerify(chat, channel) {
     // detect target courses and members
     const filters = ['사진', '요일', '코스', '인증', '삭제', '없'];
     let targetCourses = chat.text.match(/\b(?=\d*[코스])\w+\b/g);
-    let targetMembers = chat.text.match(/(?<![가-힣])[가-힣]{2,3}(?![가-힣])/g);
+    let targetMembers = chat.text.match(/(?<![가-힣])[가-힣]{2,4}(?![가-힣])/g);
     if(targetMembers) targetMembers = targetMembers.filter(m => {
       for(const f of filters) { if( m.includes(f) ) return false; }
       return true;
