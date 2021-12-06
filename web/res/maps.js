@@ -117,7 +117,7 @@ function trackDevice() {
     else {
       maps.current = new Tmapv2.Marker({
         position: current,
-        iconHTML: `<i id='current' class="fas fa-location-arrow" style="position: absolute; font-size: 1.5rem; color: MediumOrchid"></i>`,
+        iconHTML: `<i id='current' class="fas fa-map-marker-smile" style="font-size: 1.5rem; color: MediumOrchid"></i>`,
         iconSize: new Tmapv2.Size(30, 30),
         map: maps.map
       });
@@ -126,36 +126,6 @@ function trackDevice() {
   e => {
 
   }, { enableHighAccuracy: true });
-  window.addEventListener("deviceorientation", onHeadingChange);
-}
-
-function onHeadingChange(event) {
-  let heading = event.alpha;
-  const orientation = getBrowserOrientation();
-
-  let adjustment = 0;
-  if (defaultOrientation === "landscape") adjustment -= 90;
-  if (typeof orientation !== "undefined") {
-    const currentOrientation = orientation.split("-");
-
-    if (defaultOrientation !== currentOrientation[0]) {
-      if (defaultOrientation === "landscape") adjustment -= 270;
-      else adjustment -= 90;
-    }
-    if (currentOrientation[1] === "secondary") adjustment -= 180;
-  }
-
-  heading += adjustment;
-  
-  if(heading !== null) $('#current').removeClass('fa-crosshairs').addClass('fa-location-arrow').css('transform', `scaleX(-1) rotate(${Number(heading) - 45}deg)`);
-  else $('#current').removeClass('fa-location-arrow').addClass('fa-crosshairs');
-}
-
-function getBrowserOrientation() {
-  let orientation;
-  if (screen.orientation && screen.orientation.type) orientation = screen.orientation.type;
-  else orientation = screen.orientation || screen.mozOrientation || screen.msOrientation;
-  return orientation;
 }
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
