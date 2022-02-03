@@ -91,7 +91,7 @@ router.post('/id', async (req, res) => {
             "`college` varchar(10) not null," +
             "`department` varchar(15) not null," +
             "`ID` int(11) not null," +
-            "`name` varchar(10) not null," +
+            "`name` varchar(30) not null," +
             "`phone` varchar(15) not null," +
             "`birthday` varchar(10)," +
             "`1365ID` varchar(30)," +
@@ -189,7 +189,7 @@ router.post('/register', async (req, res) => {
       await util.query("CREATE TABLE `register_" + await util.getSettings('currentSemister') + "` (" +
             "`timestamp` timestamp," +
             "`ID` int(11) not null," +
-            "`name` varchar(10) not null," +
+            "`name` varchar(30) not null," +
             "`college` varchar(10) not null," +
             "`department` varchar(15) not null," +
             "`phone` varchar(15) not null," +
