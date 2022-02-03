@@ -81,7 +81,7 @@ router.get('/1365', async (req, res) => {
     let payload = [];
     for(const activity of verify) {
       const member = namelist.find(o => o.ID == activity.ID);
-      if(!member) continue;
+      if(!member || !member['1365ID']) continue;
 
       activity.date = dateformat(activity.date, 'yyyy.mm.dd');
 
