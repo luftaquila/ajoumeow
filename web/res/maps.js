@@ -30,7 +30,7 @@ async function initMap() {
   trackDevice();
 
   // load points data
-  const points = await $.ajax('res/map.json');
+  const points = await $.ajax('/res/map.json');
 
   for(const [course, data] of Object.entries(points)) {
     // draw home marker
@@ -95,7 +95,7 @@ function drawMarker(obj, map, pos, iconColor, infoImage, infoTitle, infoDescript
       content: `
         <div class='infowindow' style='position: static; display: flex; flex-direction: column; font-size: 14px; box-shadow: 5px 5px 5px #00000040; border-radius: 10px; top: 410px; left : 800px; width : 250px; background: #FFFFFF 0% 0% no-repeat padding-box;'>
         <span onclick="maps['${obj}'].info.setVisible(false); delete maps['${obj}'].info;" ontouchstart="maps['${obj}'].info.setVisible(false); delete maps['${obj}'].info;" style="position: absolute; font-size: 1.5rem; color: white; margin: 0.5rem; height: 2rem; width: 2rem; top: 0; right: 0;"><i class="fal fa-times" aria-hidden="true"></i></span>
-          <img src='res/image/map/${infoImage}' style='width: 100%; height: auto; border-radius: 15px; padding: 5px;'>
+          <img src='/res/image/map/${infoImage}' style='width: 100%; height: auto; border-radius: 15px; padding: 5px;'>
           <div class='info-box' style='padding: 10px;'>
             <h3>${infoTitle}</h3>
             ${infoDescription}

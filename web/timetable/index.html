@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta property="og:title" content="아주대학교 미유미유"/>
+  <meta property="og:url" content="https://ajoumeow.luftaquila.io"/>
+  <meta property="og:image" content="https://ajoumeow.luftaquila.io/res/image/og.png"/>
+  <meta property="og:description" content="아주대학교 고양이는 미유미유"/>
+
+  <title>아주대학교 미유미유</title>
+
+  <link rel="stylesheet" href="/res/style.css">
+  <link rel="stylesheet" href="/res/lib/micromodal/micromodal.min.css" />
+  <link rel="stylesheet" href="/res/lib/intro.js/introjs.min.css" />
+  <link rel="stylesheet" href="/res/lib/toastr/toastr.min.css" />
+  <link rel="stylesheet" href="/res/lib/btn.css" />
+
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Single+Day&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+
+  <script src="https://kit.fontawesome.com/291664cdf8.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="/res/lib/fontawesome/css/all.min.css">
+  <!-- Browser check -->
+  <script>
+    if(browserVersionCheck().version > 0 && browserVersionCheck().version < 12) alert('인터넷 익스플로러는 지원하지 않는 오래된 브라우저입니다.\n크롬, 파이어폭스, 오페라, 엣지 등 다른 브라우저를 사용하십시오.');
+    function browserVersionCheck() {
+      var word;
+      var agent = navigator.userAgent.toLowerCase();
+      var info = {  name: "N/A" , version: -1  };
+      if (navigator.appName == "Microsoft Internet Explorer") word = "msie ";
+      else if (agent.search("trident") > -1) word = "trident/.*rv:";
+      else if (agent.search("edge/") > -1) word = "edge/";
+      else return info;
+      var reg = new RegExp( word + "([0-9]{1,})(\\.{0,}[0-9]{0,1})" );
+      if (reg.exec(agent) != null) {
+        info.version = parseFloat(RegExp.$1 + RegExp.$2);
+        info.name = (word == "edge/") ? "Edge" : "IE";
+      }
+      return info;
+    }
+  </script>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-102734518-4"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-102734518-4');
+  </script>
+
+  <!-- Naver Analytics -->
+  <script type="text/javascript" src="//wcs.naver.net/wcslog.js"></script>
+  <script type="text/javascript">
+    if(!wcs_add) var wcs_add = {};
+    wcs_add["wa"] = "4bbe7a4f4216fc";
+    if(window.wcs) {
+      wcs_do();
+    }
+  </script>
+</head>
+<body id='body'>
+  <div class="main-container-wrapper">
+    <header>
+      <span id='homeTrig' class="header__btn header__btn--left" style="font-size: 1.7rem; left: 0rem;"><a href='/' style='text-decoration: none; color: black;'><i class="fas fa-home"></i></a></span>
+      <span id='noticeTrig' class="header__btn header__btn--left" style="font-size: 1.7rem; left: 2.7rem;" onclick='MicroModal.show("notice_modal");'><i class="far fa-exclamation-circle"></i></span>
+      <span id='helpTrig' class="header__btn header__btn--left" style="font-size: 1.7rem; left: 5.1rem;" onclick='MicroModal.show("help_modal");'><i class="far fa-question-circle"></i></span>
+      <span id='galleryTrig' class="header__btn header__btn--right" style="font-size: 1.7rem; right: 7.8rem;"><a href='/gallery' style='text-decoration: none; color: black;'><i class="far fa-camera-retro"></i></a></span>
+      <span id='rankTrig' class="header__btn header__btn--right" style="font-size: 1.7rem; right: 5.0rem;"><a href='/console/dashboard.html' style='text-decoration: none; color: black;'><i class="far fa-trophy-alt"></i></a></span>
+      <span id='mapTrig' class="header__btn header__btn--right" style="font-size: 1.7rem; right: 2.5rem;" onclick='MicroModal.show("map_modal", { onClose: resetGPS }); loadMap();' data-position="bottom-right-aligned"><i class='fas fa-street-view'></i></span>
+      <span id='sidebarTrig' class="header__btn header__btn--right" style="font-size: 1.7rem; right: 0rem;" onclick="$('#sidebar').css('display', 'block');"><i class='fas fa-bars'></i></span>
+    </header>
+    <main>
+      <div class="calendar-container">
+        <div class="calendar-container__header" style='display: block; text-align: center; padding: .5rem 0 .25rem;'>
+          <img src='/res/image/headline_blue.png' style='width: 8rem'> 
+        </div>
+        <div class="calendar-container__body">
+          <div class="calendar-table">
+            <div class="calendar-table__header">
+              <div class="calendar-table__row">
+                <div class="calendar-table__col" style='color: #ff6666'>S</div>
+                <div class="calendar-table__col">M</div>
+                <div class="calendar-table__col">T</div>
+                <div class="calendar-table__col">W</div>
+                <div class="calendar-table__col">T</div>
+                <div class="calendar-table__col">F</div>
+                <div class="calendar-table__col" style='color: #0080ff'>S</div>
+              </div>
+            </div>
+            <div id='calendar' class="calendar-table__body"></div>
+          </div>
+        </div>
+      </div>
+      <div id='contentArea' style='display: none; margin-top: -20px; background-color: #fff;'>
+        <div id='dateInfo' style='margin-bottom: -10px;'>
+          <h4 style='display: inline-block; vertical-align: middle; height: 1.8rem; line-height: 1.8rem; margin: 0.8rem 0 0.8rem 1rem'>
+          </h4>
+        </div>
+        <div id='contents' style='padding: 0 1rem 1rem'>
+          <div width='100%' style='text-align: center'><i class='fas fa-calendar-check' style='font-size: 2rem; color: #aaa'></i></div>
+          <div width='100%' style='text-align: center; color: #bbb; margin: 1rem 0'>급식 신청자가 없습니다!</div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  <ins class="adsbygoogle"
+       style="display:block; text-align: center; margin: 0 auto;"
+       data-ad-client="ca-pub-7125803081319468"
+       data-ad-slot="2242265519"
+       data-ad-format="horizontal"
+       data-full-width-responsive="true"></ins>
+  <div id='sidebar' style='z-index: 20; display: none; position: fixed; top: 0; left: 0; height: 100%; width: 100%;'>
+    <div class='sidebar_overlay'>
+      <div class='sidebar_container animate-right' style='font-size: 0.8rem; padding: 10; text-align: center;'>
+        <span id='sidebarClose' onclick="$('#sidebar').css('display', 'none');" style='position: absolute; font-size: 1.8rem; margin: 0.5rem; height: 2rem; width: 2rem; text-align: center; top: 0; right: 0;'><i class='fal fa-times-circle'></i></span><br><br><br><br><br><br>
+        <div id='loginForm' style='display: block;'>
+          <div style='display: flex; align-items: center; justify-content: center;'>
+            <i style='height: 1.5rem; font-size: 1.5rem; margin-right: 0.5rem;' class='far fa-id-badge'></i>
+            <input id='loginID' type="number" style='height: 1.5rem; text-align: center; padding: 0 0.2rem; font-size: 1.2rem; width: 7rem; border: none; border-bottom: solid 2px gray;' placeholder='학번' />
+          </div><br>
+          <a id='login' class='btn blue' style='font-size: 0.8rem'>로그인</a><br>
+          <a onclick="window.location.href = '/apply';" id='apply' class='btn green' style='font-size: 0.8rem'>회원 등록</a><br><br>
+        </div>
+        <div id='userInfo' style='display: none;'>
+          <span style='font-size: 1rem;'><span id='username'></span>&nbsp;<span id='userrole'></span>님<br>안녕하세요!</span><br><br>
+          <a id='logout' class='btn red' style='font-size: 0.8rem'>로그아웃</a><br><br><br><br>
+          <table style='width: 90%; margin: 0 5%;'>
+            <colgroup>
+              <col width=10% />
+              <col width=50% />
+              <col width=40% />
+            </colgroup>
+            <tr><td colspan='2' style='text-align: left'>내 마일리지</td><td></td></tr>
+            <tr><td>&nbsp;</td><td style='text-align: left'>전체</td><td style='text-align: right;'><span id='mileage_total'></span>점</td></tr>
+            <tr><td>&nbsp;</td><td style='text-align: left'>이번 달</td><td style='text-align: right;'><span id='mileage_this'></span>점</td></tr>
+            <tr style='height: 0.5rem'><td colspan='3'></td></tr>
+            <tr><td colspan='2' style='text-align: left'>내 봉사활동</td><td></td></tr>
+            <tr><td>&nbsp;</td><td style='text-align: left'>전체</td><td style='text-align: right;'><span id='time_total'></span>시간</td></tr>
+            <tr><td>&nbsp;</td><td style='text-align: left'>이번 달</td><td style='text-align: right;'><span id='time_this'></span>시간</td></tr>
+            <tr style='height: 0.5rem'><td colspan='3'></td></tr>
+            <tr><td colspan='2' style='text-align: left'>내 1365 ID</td><td><div id='1365id' style='text-align: right;'></div></td></tr>
+          </table><br><br>
+          <span id='historyDispenser' style="color: #0366d6; cursor: pointer" onclick='$("#sidebar").css("display", "none"); MicroModal.show("record_modal");' >내 급식 기록</span><br><br>
+          <a id='admin' onclick="window.location.href = '/console';" style='color: #0366d6; cursor: pointer; text-decoration: none; display: none;' ><br>관리자 콘솔</a><br>
+        </div><br><br><br>
+        <a onclick='window.location.href = "/";' style="color: black; cursor: pointer; text-decoration: none; font-size: 0.7rem">©<script>document.write(new Date().getFullYear())</script> LUFT - AQUILA</a><br><br>
+        <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fluftaquila.io%2Fajoumeow&count_bg=%2379C83D&title_bg=%23555555&icon=googlefit.svg&icon_color=%23E7E7E7&title=hits&edge_flat=false"/>
+      </div>
+    </div>
+  </div>
+  <div id='modals' style="z-index: 30;">
+    <div class="modal micromodal-slide" id="notice_modal" aria-hidden="true">
+      <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+        <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="notice_modal-title" style='width: 96vw;'>
+          <header class="modal__header">
+            <h2 class="modal__title" id="notice_modal-title">공지사항</h2>
+            <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+          </header>
+          <main class="modal__content" id="notice_modal-content">
+            <div style="font-size: 0.8rem; text-align: center; min-width: 150px">
+              <span id='notice_content' style="font-size: 0.9rem; line-height: 1.1rem;"></span>
+            </div>
+          </main>
+        </div>
+      </div>
+    </div>
+    <div class="modal micromodal-slide" id="help_modal" aria-hidden="true">
+      <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+        <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="help_modal-title">
+          <header class="modal__header">
+            <h2 class="modal__title" id="help_modal-title">도움말</h2>
+            <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+          </header>
+          <main class="modal__content" id="help_modal-content" style='font-size: 1rem;'>
+            <div style="font-size: 1rem; color: #333; text-align: center">
+                <a class="btn blue" href='/guide'><i class='far fa-book-spells'></i>&ensp;급식 가이드 읽기</a>
+                <div style='margin: 0.5rem 0;'>날짜 위 점들은 <b>코스</b>와 <b>인원 수</b>를 나타내요.</div>
+                <div class='calendar-table__item hovered'>
+                  <div class='my'>
+                    5/12
+                  </div>
+                </div>
+                <div>
+                  <span style='color: red'>1코스</span>&emsp;
+                  <span style='color: gold'>2코스</span>&emsp;
+                  <span style='color: limegreen'>3코스</span>
+                </div>
+                <div>
+                  <i class='far fa-circle'></i> <i class='far fa-equals'></i> <i class='fas fa-male'></i>&emsp;
+                  <i class='fas fa-circle'></i> <i class='far fa-equals'></i> <i class='fas fa-male'></i><i class='fas fa-male'></i><i class='fas fa-male'></i>
+                </div>
+                <div style='margin: 0.5rem 0;'>내가 신청한 날에는 날짜 주위에 <i class='far fa-circle' style='color: lightgreen'></i>가 나타나요.</div>
+            </div>
+            <div style="color: #333; text-align: left">
+              <li style='font-weight: bold; margin-top: 1rem;'>신청하기</li>
+                <ol style='padding-left: 1rem'>
+                  1. 원하는 날짜를 골라 <div id='magic' style='text-align: center; display: inline-block; line-height: 1rem; background-color: rgb(33, 150, 243); height: 1rem; width: 1rem; border-radius: 50%; color: white'>+</div> 를 탭합니다.<br>
+                  2. 원하는 코스에 표시된 <span class='ripple' style='display: inline-block; width: 2rem; height: 1rem; line-height: 0.9rem; text-align: center; border-radius: 3px; border: dashed 1px gray; color: gray;'>+</span> 를 탭합니다.
+                </ol>
+              <li style='font-weight: bold; margin-top: 1rem;'>삭제하기</li>
+                <ol style='padding-left: 1rem'>
+                  1. 삭제하고 싶은 이름표 <span class='ripple namecard example' style='display: inline-block; font-size: 0.5rem; width: 2rem; height: 1rem; line-height: 0.9rem; text-align: center; border-radius: 3px; border: solid 1px lightcoral; background-color: lightcoral; color: white;'>고양이</span> 를 탭합니다.<br>
+                  2. 삭제할 이름표 <span class='ripple namecard deleteActiveExample example' style='display: inline-block; font-size: 0.5rem; width: 3rem!important; height: 1rem; line-height: 0.9rem; text-align: center; border-radius: 3px; border: solid 1px lightcoral; background-color: lightcoral; color: white;'>고양이</span> 를 다시 탭합니다.<br>
+                </ol>
+              <li style='font-weight: bold; margin-top: 1rem;'>날씨</li>
+                <ul style='padding-left: 1rem; font-size: 0.8rem'>
+                  오늘 날씨와 미세먼지는 실시간 아주대학교 데이터에요.<br>
+                  일주일 예보는 급식 권장 시간인 오후 6시의 예보에요.<br>
+                  날씨는 30분마다 업데이트됩니다.
+                </ul>
+            </div>
+          </main>
+        </div>
+      </div>
+    </div>
+    <div class="modal micromodal-slide" id="map_modal" aria-hidden="true">
+      <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+        <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="map_modal-title" style='width: 96vw; padding: 15px!important;'>
+          <header class="modal__header" style='height: 1.5rem'>
+            <h2 class="modal__title" id="map_modal-title">지도</h2>
+            <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+          </header>
+          <main class="modal__content" id="map_modal-content" style='margin: 0; text-align: center;'>
+            <div id="courses" style='margin: 0.5rem 0; display: none'>
+              급식소 <i class='fas fa-map-marker-alt'></i> 를 누르면 자세한 위치가 나옵니다.<br>
+              <i class='fas fa-map-marker' style='color: deepskyblue;'> 동방</i>
+            </div>
+            <div style='font-size: 0.8rem; margin-top: 1rem'>
+              지도에 표시된 급식소는 실제 위치와 오차가 거의 없습니다.<br>급식소가 안 보인다면 내 위치를 정확히 맞춰 보세요!<br>급식소 핀을 클릭하면 사진이 나옵니다.
+            </div>
+            <div id='map' style='margin-top: 1rem; height: 400px; width: 100%;'></div>
+          </main>
+        </div>
+      </div>
+    </div>
+    <div class="modal micromodal-slide" id="record_modal" aria-hidden="true">
+      <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+        <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="record_modal-title">
+          <header class="modal__header">
+            <h2 class="modal__title" id="record_modal-title">급식 기록</h2>
+            <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+          </header>
+          <main class="modal__content" id="record_modal-content">
+            <div id='history' style="font-size: 0.9rem; text-align: center"></div>
+          </main>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAioaKVxmqI05VXqQqgEDWSgAUdobXSIrs" type="text/javascript"></script>
+  <script src='/res/lib/jquery-3.3.1.min.js'></script>
+  <script src='/res/lib/micromodal/micromodal.min.js'></script>
+  <script src='/res/lib/toastr/toastr.min.js'></script>
+  <script src='/res/lib/js.cookie.min.js'></script>
+  <script src='/res/lib/intro.js/intro.min.js'></script>
+  <script src="/res/script.js"></script>
+  <script src="/res/login.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/postscribe/2.0.8/postscribe.min.js"></script>
+  <script src='/res/maps.js'></script>
+</body>
+</html>

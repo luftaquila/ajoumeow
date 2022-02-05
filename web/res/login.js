@@ -43,7 +43,7 @@ function autoLoginFailure() {
   $.ajax({
     url: `${api}/settings/currentSemister`,
     success: res => {
-      if(!Cookies.get('isNew')) { startIntro(); } // if first appearence
+      if(!Cookies.get('isNew')) { /*startIntro();*/ } // if first appearence
       else if(Cookies.get('currentSemister')) { // if previously saved semister exists
         if(Cookies.get('currentSemister') != res.data) { // if current semister and saved semister is different
           let semisterChange = introJs();
@@ -203,7 +203,7 @@ function startIntro() {
       let applyGuide = introJs();
       applyGuide.setOptions({
         steps: [{
-          intro: `<span style="font-size: 0.9rem">사이트를 이용하려면 먼저 회원 등록을 해야 합니다.<div style='width: 100%; text-align: center'><a onclick="window.location.href = 'apply';" style='font-size: 0.75rem' class='btn green'>회원 등록</a></div>버튼을 눌러 회원으로 등록해 주세요!</span>`
+          intro: `<span style="font-size: 0.9rem">사이트를 이용하려면 먼저 회원 등록을 해야 합니다.<div style='width: 100%; text-align: center'><a onclick="window.location.href = '/apply';" style='font-size: 0.75rem' class='btn green'>회원 등록</a></div>버튼을 눌러 회원으로 등록해 주세요!</span>`
         }],
         exitOnOverlayClick: false,
         showStepNumbers: false,

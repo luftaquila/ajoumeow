@@ -80,11 +80,11 @@ function eventListener() {
         let pm10 = weather.current.dust.pm10, pm25 = weather.current.dust.pm25;
         let pm10color = pm10 > 30 ? pm10 > 80 ? pm10 > 150 ? '#ff5959' : '#fd9b5a' : '#00c73c' : '#32a1ff';
         let pm25color = pm25 > 15 ? pm25 > 35 ? pm25 > 75 ? '#ff5959' : '#fd9b5a' : '#00c73c' : '#32a1ff';
-        datestring += `&ensp;<span id="weatherstat" style="font-weight: normal">${weather.current.temp}℃ ${weather.current.weather}</span>&nbsp;<img src="res/image/weather/icon${weather.current.icon}.png" style="width: 1rem; height: 1rem;">&ensp;<div style="line-height: 0.9rem; vertical-align: middle; display: inline-block; font-weight: normal; font-size: 0.7rem">pm10 : <span style="color: ${pm10color}">${pm10}</span>㎍/㎥<br>pm2.5: <span style="color: ${pm25color}">${pm25}</span>㎍/㎥</div>`;
+        datestring += `&ensp;<span id="weatherstat" style="font-weight: normal">${weather.current.temp}℃ ${weather.current.weather}</span>&nbsp;<img src="/res/image/weather/icon${weather.current.icon}.png" style="width: 1rem; height: 1rem;">&ensp;<div style="line-height: 0.9rem; vertical-align: middle; display: inline-block; font-weight: normal; font-size: 0.7rem">pm10 : <span style="color: ${pm10color}">${pm10}</span>㎍/㎥<br>pm2.5: <span style="color: ${pm25color}">${pm25}</span>㎍/㎥</div>`;
       }
       else {
         let tgt = weather.forecast.find(o => o.date == new Date($(this).attr('data-date')).format('yyyy-mm-dd'));
-        if(tgt) datestring += `&ensp;<span id="weatherstat" style="font-weight: normal">${tgt.temp}℃ ${tgt.weather}</span>&nbsp;<img src="res/image/weather/icon${tgt.icon}.png" style="width: 1rem; height: 1rem;">`;
+        if(tgt) datestring += `&ensp;<span id="weatherstat" style="font-weight: normal">${tgt.temp}℃ ${tgt.weather}</span>&nbsp;<img src="/res/image/weather/icon${tgt.icon}.png" style="width: 1rem; height: 1rem;">`;
       }
     }
     $('#dateInfo h4').html(datestring);
@@ -252,7 +252,7 @@ function dateDataToSvgTranslator(courses, width) {
 
 function loadWeather() {
   $.ajax({
-    url: 'res/weather.json',
+    url: '/res/weather.json',
     success: res => { weather = res; }
   });
 }
