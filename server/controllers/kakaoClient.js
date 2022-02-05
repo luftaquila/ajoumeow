@@ -279,19 +279,35 @@ async function autoVerify(chat, channel) {
     }
 
     // detect target courses and members
-    const filters = ['사진', '요일', '코스', '인증', '삭제', '없'];
+    let targetMembers = [];
     let targetCourses = chat.text.match(/\b(?=\d*[코스])\w+\b/g);
-    let targetMembers = chat.text.match(/(?<![가-힣])[가-힣]{2,4}(?![가-힣])/g);
+    let targetMembers_KOR = chat.text.match(/(?<![가-힣])[가-힣]{2,4}(?![가-힣])/g);
+    let targetMembers_ENG = chat.text.match(/[a-zA-Z\s]+\b(?=\s[^a-zA-Z]*)/g);
+
+    targetMembers = targetMembers.concat(targetMembers_KOR).concat(targetMembers_ENG === null ? [] : targetMembers_ENG);
+
+    // filter reserved words
+    const filters = ['사진', '요일', '코스', '인증', '삭제', '없'];
     if(targetMembers) targetMembers = targetMembers.filter(m => {
       for(const f of filters) { if( m.includes(f) ) return false; }
       return true;
     });
+
+    // do not proceed if there is no valid course or member
     if(!targetCourses.length || !targetMembers.length) return;
 
     // targetMember validation
     for(let i in targetMembers) { // get member student id with name
-      let result = await util.query(`SELECT name, ID FROM \`namelist_${await util.getSettings('currentSemister')}\` WHERE name='${targetMembers[i]}';`);
-      if(result.length == 1) targetMembers[i] = { name: targetMembers[i], id: result[0].ID };
+      let result;
+      targetMembers[i] = targetMembers[i].trim(); // trim spaces
+
+      // find member in namelist
+      // if name starts with english character
+      if((/[a-zA-Z]/).test(targetMembers[i][0])) result = await util.query(`SELECT name, ID FROM \`namelist_${await util.getSettings('currentSemister')}\` WHERE UPPER(name) LIKE UPPER('%${targetMembers[i]}%');`);
+      // or else(korean)
+      else result = await util.query(`SELECT name, ID FROM \`namelist_${await util.getSettings('currentSemister')}\` WHERE name='${targetMembers[i]}';`);
+
+      if(result.length == 1) targetMembers[i] = { name: result[0].name, id: result[0].ID };
       else if(!result.length) {
         if(chat.text.includes('인증')) {
           util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증 실패', 'internal', 0, null, 'ERR_NO_ENTRY_DETECTED'));
