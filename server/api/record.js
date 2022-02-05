@@ -1,3 +1,4 @@
+import path from 'path';
 import express from 'express';
 import dateformat from 'dateformat';
 import bodyParser from 'body-parser';
@@ -186,6 +187,18 @@ router.get('/log', util.isAdmin, async(req, res) => {
   catch(e) {
     console.log(e);
     util.logger(new Log('error', req.remoteIP, req.originalPath, '로그 로드 오류', req.method, 500, req.query, e.stack));
+    res.status(500).json(new Response('error', '알 수 없는 오류입니다.', 'ERR_UNKNOWN'));
+  }
+});
+
+router.get('/map', util.isLogin, async(req, res) => {
+  try {
+    util.logger(new Log('info', req.remoteIP, req.originalPath, '지도 파일 요청', req.method, 200, req.query, null));
+    res.status(200).sendFile(path.join(__dirname, '../../web/res/map.json'));
+  }
+  catch(e) {
+    console.log(e);
+    util.logger(new Log('error', req.remoteIP, req.originalPath, '지도 파일 요청 오류', req.method, 500, req.query, e.stack));
     res.status(500).json(new Response('error', '알 수 없는 오류입니다.', 'ERR_UNKNOWN'));
   }
 });

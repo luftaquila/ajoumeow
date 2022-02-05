@@ -74,7 +74,7 @@ $('.validate-form').on('submit', function (event) {
       이름: isNew ? $.trim($('#name').val()) : $.trim($('#o_name').val()),
       전화번호: isNew ? $('#tel').val() : $('#o_phone').val(),
       생년월일: isNew ? $('#birth').val() : $('#o_birthday').val(),
-      '1365 아이디': isNew ? $.trim($('#1365').val().replace('-', '')) : $.trim($('#o_1365ID').val().replace('-', '')),
+      '1365 아이디': isNew ? $.trim($('#1365').val()) : $.trim($('#o_1365ID').val()),
       '가입 학기': isNew ? (`20${$('.semister').first().text()}학기`) : $('#o_register').val(),
       직책: isNew ? '회원' : $('#o_role').val(),
       'new': isNew
