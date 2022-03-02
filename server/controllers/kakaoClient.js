@@ -287,7 +287,7 @@ async function autoVerify(chat, channel) {
     targetMembers = targetMembers.concat(targetMembers_KOR).concat(targetMembers_ENG === null ? [] : targetMembers_ENG);
 
     // filter reserved words
-    const filters = ['사진', '요일', '코스', '인증', '삭제', '없'];
+    const filters = ['사진', '요일', '코스', '인증', '삭제', '없', 'sudo'];
     if(targetMembers) targetMembers = targetMembers.filter(m => {
       for(const f of filters) { if( m.includes(f) ) return false; }
       return true;

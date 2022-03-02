@@ -24,3 +24,10 @@
 .heading, span.title a{
   font-family: yg-jalnan;
 }
+
+img {
+  image-rendering: -webkit-optimize-contrast;
+}
+
+#header { -ms-overflow-style: none; }
+#header::-webkit-scrollbar { display: none; }
