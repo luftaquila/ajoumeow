@@ -31,6 +31,8 @@ router.get('/', async (req, res) => {
     
     async function maskName(data, id) {
       if(id) {
+        return data;
+        /* NOT MASKING NAME IF LOGGED IN
         const user = await util.query(`SELECT role FROM \`namelist_${await util.getSettings('currentSemister')}\` WHERE id=${id}`);
         const role = user[0].role;
         
@@ -57,6 +59,7 @@ router.get('/', async (req, res) => {
           return data;
         }
         else return data;
+        */
       }
       else {
         data.forEach(rec => {

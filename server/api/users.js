@@ -153,7 +153,7 @@ router.get('/register', util.isAdmin, async (req, res) => {
       res.status(200).json(new Response('success', null, map));
     }
     else {
-      let result = await util.query(`SELECT * FROM \`register_${req.query.semister}\`;`);
+      let result = await util.query(`SELECT * FROM \`register_${req.query.semister}\` ORDER BY timestamp DESC;`);
       util.logger(new Log('info', req.remoteIP, req.originalPath, '가입 신청자 명단 요청', req.method, 200, req.query, result));
       res.status(200).json(new Response('success', null, result));
     }
