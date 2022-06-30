@@ -90,6 +90,7 @@ async function alertManager(client) {
       const pm25stat = Number(wth.dust.pm25) > 15 ? Number(wth.dust.pm25) > 35 ? Number(wth.dust.pm25) > 75 ? '🔴매우 나쁨' : '🟡나쁨' : '🟢보통' : '🔵좋음';
       resultString += `오늘 아주대는 ${wth.weather}, ${wth.temp}℃에요.${wth.temp == wth.tempSense ? '' : ` 체감온도는 ${wth.tempSense}℃입니다!`}\n미세먼지는 ${wth.dust.pm10}㎍/㎥로 ${pm10stat}, 초미세먼지는 ${wth.dust.pm25}㎍/㎥로 ${pm25stat}입니다.`;
 
+      //client.channelList.get(process.env.talkChannelId).sendChat(resultString.replaceAll('세요', '냥').replaceAll('님', '고양이').replaceAll('입니다', '이다냥').replaceAll('드려요', '한다냥').replaceAll('에요', '다냥'))
       client.channelList.get(process.env.talkChannelId).sendChat(resultString)
       .catch(async err => {
         await clientLogin(client);
@@ -140,6 +141,7 @@ async function alertManager(client) {
 }
 
 function chatManager(client) {
+  //client.channelList.normal._map.forEach(o => console.log(o.getDisplayName(), o))
   client.on('chat', (chat, channel) => {
     channel.markRead(chat.chat);
 
@@ -165,7 +167,7 @@ function chatManager(client) {
 
         let envFile = parse(fs.readFileSync('./.env'));
         envFile.noticeChannelId = channel.channelId;
-        fs.writeFileSync('./.env', stringify(envFile));
+        fs.writeFileSync('./.env', stringify(envFile)); 
         util.logger(new Log('info', 'kakaoClient', 'self user_join: notice', '카톡 공지방 초대 추적', 'internal', 0, null, channel.channelId));
       }
 
@@ -251,7 +253,9 @@ async function registerImage(chat, channel) {
 
 async function autoVerify(chat, channel) {
   try {
-    if(chat.text.includes('자니')) return channel.sendChat('아니요 ㅎㅎ');
+    if(chat.text.includes('자니')) {
+      return channel.sendChat('아니요 ㅎㅎ');
+    }
     if( !chat.text.includes('코스') || (!chat.text.includes('인증') && !chat.text.includes('삭제')) ) return;
 
     // Recognizable datestring: m월d일, m월 d일, m/d
@@ -362,6 +366,7 @@ async function autoVerify(chat, channel) {
         if(!payload[Number(i) + 1] || (payload[Number(i) + 1] && payload[i].course != payload[Number(i) + 1].course)) resultString = `${resultString.slice(0, -2)} 회원님 (${prevCourse == payload[i].course ? '각 ' : ''}${payload[i].score}점)`;
         prevCourse = payload[i].course;
       }
+      //resultString = resultString.replace('수고하셨습니다!', '수고했다냥').replace(' 급식 활동을 등록했습니다.', '에 준 밥 잘 먹었다냥').replace('코스', '코스에 밥 준 착한 사람은').replace('회원님', '회원님이다냥. 보답으로 마일리지').replace('(', '').replace(')', '') + '을 하사한다냥';
       channel.sendChat( new ChatBuilder().append(new ReplyContent(chat.chat)).text(resultString).build(KnownChatType.REPLY) );
       if(dbwrite) util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증', 'internal', 0, null, resultString));
     }

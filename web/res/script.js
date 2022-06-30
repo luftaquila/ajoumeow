@@ -48,7 +48,7 @@ function init() {
     let thisDate = new Date(getDateFromCalendarStart(i));
     if(i == 34) // add button generation
       $('.calendar-table__row').last().append(`<div id='addRecord' class="calendar-table__col"><div style='height: 100%; padding: 7px'><div class='ripple calendar-table__item' style='z-index: 0; line-height: 50px; text-align: center; font-size: 1.2rem; border-radius: 50%; background-color: #2196f3; color: white;'><i class='fas fa-plus'></i></div></div></div>`);
-    else if(i < indexOfToday || i > indexOfToday + 14) // no valid dates generation
+    else if(i < indexOfToday || i > indexOfToday + 21) // no valid dates generation
       $('.calendar-table__row').last().append('<div class="calendar-table__col calendar-table__inactive" data-date="' + thisDate.format('yyyy-mm-dd') + '"><div class="calendar-table__item"><div>' + thisDate.format(i ? (thisDate.getDate() === 1 ? 'm/d' : 'd') : 'm/d') + '</div></div></div>');
     else // valid dates generation
       $('.calendar-table__row').last().append('<div class="calendar-table__col' + (i === indexOfToday ? ' calendar-table__today calendar-table__event' : '') + '" data-date="' + thisDate.format('yyyy-mm-dd') + '"><div class="calendar-table__item"><div>' + thisDate.format(i ? (thisDate.getDate() === 1 ? 'm/d' : 'd') : 'm/d') + '</div></div></div>');
@@ -155,7 +155,7 @@ function eventListener() {
 function load() {
   $.ajax({
     url: `${api}/record`,
-    data: { 'startDate' : getDateFromCalendarStart(0), 'endDate' : getDateFromCalendarStart(28) },
+    data: { 'startDate' : getDateFromCalendarStart(0), 'endDate' : getDateFromCalendarStart(35) },
     beforeSend: xhr => xhr.setRequestHeader('jwt', Cookies.get('jwt')),
     success: function(record) {
       // Build recArr data

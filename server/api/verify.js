@@ -95,12 +95,13 @@ router.get('/1365', async (req, res) => {
           birthday: member.birthday,
           phone: member.phone,
           date: activity.date,
-          hour: 1
+          hour: 1,
+          timestamp: (activity.date === dateformat(activity.timestamp, 'yyyy.mm.dd')) ? dateformat(activity.timestamp, 'HHMM') : 1900
         });
       }
     }
 
-    const response = await axios.post('https://script.google.com/macros/s/AKfycby3AjT7RSRk39MOGBaLf0XjUGUiS4Jfj8J2jdXbxkyS1iwraOX70ATZl11qXIE0Dxm15g/exec', {
+    const response = await axios.post('https://script.google.com/macros/s/AKfycbwFchf0CScKD_2A7sTyzRfwODJYYE7Rl9cvc2thvx0Yc2qYKJL7pKZWaEMZ6IWUrlxnnA/exec', {
       data: payload,
       cheif: {
         name: cheif ? cheif.name : '',
