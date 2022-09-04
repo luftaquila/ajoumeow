@@ -145,10 +145,87 @@ function chatManager(client) {
   client.on('chat', (chat, channel) => {
     channel.markRead(chat.chat);
 
+    checkChannelAssign(chat, channel);
+
     if(KnownChatType[chat.chat.type].includes('PHOTO')) registerImage(chat, channel);
     else if(channel.channelId == process.env.verifyChannelId || channel.channelId == process.env.testChannelId || channel.channelId == process.env.staffChannelId) autoVerify(chat, channel);
   });
 
+function checkChannelAssign(chat, channel) {
+  if(chat.text.includes("chatchannelregistration")) {
+    if(chat.chat.sender.userId != process.env.testUserId) {
+      return channel.sendChat( new ChatBuilder().append(new ReplyContent(chat.chat)).text('권한이 없습니다.').build(KnownChatType.REPLY) );
+    }
+
+    if(chat.text.includes("talk")) {
+      client.channelList.normal.leaveChannel(client.channelList.get(process.env.talkChannelId), false);
+      process.env.talkChannelId = channel.channelId;
+
+      let envFile = parse(fs.readFileSync('./.env'));
+      envFile.talkChannelId = channel.channelId;
+      fs.writeFileSync('./.env', stringify(envFile));
+      util.logger(new Log('info', 'kakaoClient', 'chatchannelregistration talk', '카톡 단톡방 등록', 'internal', 0, null, channel.channelId));
+
+      channel.sendChat(`채팅방 ${channel.channelId}번(${channel.getDisplayName()})을 단톡 채널로 등록합니다.`);
+    }
+    else if(chat.text.includes("notice")) {
+      client.channelList.normal.leaveChannel(client.channelList.get(process.env.noticeChannelId), false);
+      process.env.noticeChannelId = channel.channelId;
+
+      let envFile = parse(fs.readFileSync('./.env'));
+      envFile.noticeChannelId = channel.channelId;
+      fs.writeFileSync('./.env', stringify(envFile));
+      util.logger(new Log('info', 'kakaoClient', 'chatchannelregistration notice', '카톡 단톡방 등록', 'internal', 0, null, channel.channelId));
+
+      channel.sendChat(`채팅방 ${channel.channelId}번(${channel.getDisplayName()})을 공지 채널로 등록합니다.`);
+    }
+    else if(chat.text.includes("verify")) {
+      client.channelList.normal.leaveChannel(client.channelList.get(process.env.verifyChannelId), false);
+      process.env.verifyChannelId = channel.channelId;
+
+      let envFile = parse(fs.readFileSync('./.env'));
+      envFile.verifyChannelId = channel.channelId;
+      fs.writeFileSync('./.env', stringify(envFile));
+      util.logger(new Log('info', 'kakaoClient', 'chatchannelregistration verify', '카톡 인증방 등록', 'internal', 0, null, channel.channelId));
+
+      channel.sendChat(`채팅방 ${channel.channelId}번(${channel.getDisplayName()})을 급식인증 채널로 등록합니다.`);
+    }
+    else if(chat.text.includes("staff")) {
+      client.channelList.normal.leaveChannel(client.channelList.get(process.env.staffChannelId), false);
+      process.env.staffChannelId = channel.channelId;
+
+      let envFile = parse(fs.readFileSync('./.env'));
+      envFile.staffChannelId = channel.channelId;
+      fs.writeFileSync('./.env', stringify(envFile));
+      util.logger(new Log('info', 'kakaoClient', 'chatchannelregistration staff', '카톡 운영진방 등록', 'internal', 0, null, channel.channelId));
+
+      channel.sendChat(`채팅방 ${channel.channelId}번(${channel.getDisplayName()})을 운영진 채널로 등록합니다.`);
+    }
+    else if(chat.text.includes("test")) {
+      client.channelList.normal.leaveChannel(client.channelList.get(process.env.testChannelId), false);
+      process.env.testChannelId = channel.channelId;
+
+      let envFile = parse(fs.readFileSync('./.env'));
+      envFile.testChannelId = channel.channelId;
+      fs.writeFileSync('./.env', stringify(envFile));
+      util.logger(new Log('info', 'kakaoClient', 'chatchannelregistration test', '카톡 테스트방 등록', 'internal', 0, null, channel.channelId));
+
+      channel.sendChat(`채팅방 ${channel.channelId}번(${channel.getDisplayName()})을 테스트 채널로 등록합니다.`);
+    }
+  }
+
+  else if(chat.text.includes("managerregistration")) {
+    process.env.testUserId = chat.chat.sender.userId;
+    let envFile = parse(fs.readFileSync('./.env'));
+    envFile.testUserId = chat.chat.sender.userId;
+    fs.writeFileSync('./.env', stringify(envFile));
+    util.logger(new Log('info', 'kakaoClient', 'chatchannelregistration test', '카톡 관리자 등록', 'internal', 0, null, channel.channelId));
+
+    channel.sendChat(`사용자 ${chat.chat.sender.userId}를 관리자로 등록합니다.`);
+  }
+}
+
+/*
   client.on('channel_added', channel => {
     try {
       if(channel.getDisplayName().includes('미유미유') && channel.getDisplayName().includes('인증')) {
@@ -195,9 +272,9 @@ function chatManager(client) {
       util.logger(new Log('error', 'kakaoClient', 'self user_join', '카톡 채팅방 초대 추적 오류', 'internal', -1, null, e.stack));
     }
   });
-
+*/
   client.on('user_join', (feedChatlog, channel, user, feed) => {
-    console.log(feedChatlog, channel, user, feed);
+    //console.log(feedChatlog, channel, user, feed);
   });
 }
 
