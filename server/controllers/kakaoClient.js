@@ -147,6 +147,8 @@ function chatManager(client) {
 
     checkChannelAssign(chat, channel);
 
+    console.log(chat.text, channel.channelId);
+
     if(KnownChatType[chat.chat.type].includes('PHOTO')) registerImage(chat, channel);
     else if(channel.channelId == process.env.verifyChannelId || channel.channelId == process.env.testChannelId || channel.channelId == process.env.staffChannelId) autoVerify(chat, channel);
   });
@@ -329,9 +331,10 @@ async function registerImage(chat, channel) {
 }
 
 async function autoVerify(chat, channel) {
+  util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '카톡 메시지 수신', 'internal', 0, null, chat.text));
   try {
     if(chat.text.includes('자니')) {
-      return channel.sendChat('아니요 ㅎㅎ');
+      return setTimeout(() => channel.sendChat('아니요 ㅎㅎ'), 1000);
     }
     if( !chat.text.includes('코스') || (!chat.text.includes('인증') && !chat.text.includes('삭제')) ) return;
 
@@ -347,15 +350,15 @@ async function autoVerify(chat, channel) {
     // targetDate validation in verify mode
     if(chat.text.includes('인증')) {
       if(chat.text.includes('sudo')) {
-        if(!(chat.chat.sender.userId == process.env.testUserId)) return channel.sendChat( new ChatBuilder().append(new ReplyContent(chat.chat)).text('권한이 없습니다.').build(KnownChatType.REPLY) );
+        if(!(chat.chat.sender.userId == process.env.testUserId)) return setTimeout(() => channel.sendChat( new ChatBuilder().append(new ReplyContent(chat.chat)).text('권한이 없습니다.').build(KnownChatType.REPLY) ), 1000);
       }
       else if(targetDate.getTime() > new Date().setHours(0, 0, 0, 0)) {
         util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증 실패', 'internal', 0, null, 'ERR_FUTURE_TARGET_DATE'));
-        return channel.sendChat( new ChatBuilder().append(new ReplyContent(chat.chat)).text(`${dateformat(targetDate, 'yyyy년 m월 d일')}은 아직 오지 않은 미래입니다. 혹시 시간여행자?!`).build(KnownChatType.REPLY) );
+        return setTimeout(() => channel.sendChat( new ChatBuilder().append(new ReplyContent(chat.chat)).text(`${dateformat(targetDate, 'yyyy년 m월 d일')}은 아직 오지 않은 미래입니다. 혹시 시간여행자?!`).build(KnownChatType.REPLY) ), 1000);
       }
       else if(targetDate.getTime() < new Date().setHours(0, 0, 0, 0)) {
         util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증 실패', 'internal', 0, null, 'ERR_PAST_TARGET_DATE'));
-        return channel.sendChat( new ChatBuilder().append(new ReplyContent(chat.chat)).text(`${dateformat(targetDate, 'yyyy년 m월 d일')}은 지난 날짜이므로 자동으로 인증하지 않습니다.`).build(KnownChatType.REPLY) );
+        return setTimeout(() => channel.sendChat( new ChatBuilder().append(new ReplyContent(chat.chat)).text(`${dateformat(targetDate, 'yyyy년 m월 d일')}은 지난 날짜이므로 자동으로 인증하지 않습니다.`).build(KnownChatType.REPLY) ), 1000);
       }
     }
 
@@ -392,21 +395,21 @@ async function autoVerify(chat, channel) {
       else if(!result.length) {
         if(chat.text.includes('인증')) {
           util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증 실패', 'internal', 0, null, 'ERR_NO_ENTRY_DETECTED'));
-          return channel.sendChat( new ChatBuilder().append(new ReplyContent(chat.chat)).text(`${targetMembers[i]}님이 회원 명단에 없어 자동으로 인증하지 못했습니다.`).build(KnownChatType.REPLY) );
+          return setTimeout(() => channel.sendChat( new ChatBuilder().append(new ReplyContent(chat.chat)).text(`${targetMembers[i]}님이 회원 명단에 없어 자동으로 인증하지 못했습니다.`).build(KnownChatType.REPLY) ), 1000);
         }
         else if(chat.text.includes('삭제')) {
           util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증 삭제 실패', 'internal', 0, null, 'ERR_NO_ENTRY_DETECTED'));
-          return channel.sendChat( new ChatBuilder().append(new ReplyContent(chat.chat)).text(`${targetMembers[i]}님이 회원 명단에 없어 인증 기록을 삭제하지 못했습니다.`).build(KnownChatType.REPLY) );
+          return setTimeout(() => channel.sendChat( new ChatBuilder().append(new ReplyContent(chat.chat)).text(`${targetMembers[i]}님이 회원 명단에 없어 인증 기록을 삭제하지 못했습니다.`).build(KnownChatType.REPLY) ), 1000);
         }
       }
       else {
         if(chat.text.includes('인증')) {
           util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증 실패', 'internal', 0, null, 'ERR_SAME_NAME_EXISTS'));
-          return channel.sendChat( new ChatBuilder().append(new ReplyContent(chat.chat)).text(`${targetMembers[i]}님과 이름이 같은 사람이 있어 대화형 자동 인증이 불가능합니다. 관리자 콘솔에서 인증해 주세요.`).build(KnownChatType.REPLY) );
+          return setTimeout(() => channel.sendChat( new ChatBuilder().append(new ReplyContent(chat.chat)).text(`${targetMembers[i]}님과 이름이 같은 사람이 있어 대화형 자동 인증이 불가능합니다. 관리자 콘솔에서 인증해 주세요.`).build(KnownChatType.REPLY) ), 1000);
         }
         else if(chat.text.includes('삭제')) {
           util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증 삭제 실패', 'internal', 0, null, 'ERR_SAME_NAME_EXISTS'));
-          return channel.sendChat( new ChatBuilder().append(new ReplyContent(chat.chat)).text(`${targetMembers[i]}님과 이름이 같은 사람이 있어 대화형 삭제가 불가능합니다. 관리자 콘솔에서 삭제해 주세요.`).build(KnownChatType.REPLY) );
+          return setTimeout(() => channel.sendChat( new ChatBuilder().append(new ReplyContent(chat.chat)).text(`${targetMembers[i]}님과 이름이 같은 사람이 있어 대화형 삭제가 불가능합니다. 관리자 콘솔에서 삭제해 주세요.`).build(KnownChatType.REPLY) ), 1000);
         }
       }
     }
@@ -449,7 +452,7 @@ async function autoVerify(chat, channel) {
     }
 
     else if(chat.text.includes('삭제')) {
-      if(!(chat.chat.sender.userId == process.env.testUserId)) return channel.sendChat( new ChatBuilder().append(new ReplyContent(chat.chat)).text('권한이 없습니다.').build(KnownChatType.REPLY) );
+      if(!(chat.chat.sender.userId == process.env.testUserId)) return setTimeout(() => channel.sendChat( new ChatBuilder().append(new ReplyContent(chat.chat)).text('권한이 없습니다.').build(KnownChatType.REPLY) ), 1000);
       
       let targets = [];
       for(let i in payload) {
@@ -464,12 +467,12 @@ async function autoVerify(chat, channel) {
       }
       resultString += `\nOkPacket { affectedRows: ${targets.length}, insertId: 0, warningStatus: ${targets.length ? '0' : '1'} }`;
 
-      channel.sendChat( new ChatBuilder().append(new ReplyContent(chat.chat)).text(resultString).build(KnownChatType.REPLY) );
+      setTimeout(() => channel.sendChat( new ChatBuilder().append(new ReplyContent(chat.chat)).text(resultString).build(KnownChatType.REPLY) ), 1000);
       if(dbwrite) util.logger(new Log('info', 'kakaoClient', 'client.on(message)', '자동 급식 인증 삭제', 'internal', 0, null, resultString));
     }
   }
   catch(e) {
-    channel.sendChat(e.stack);
+    setTimeout(() => channel.sendChat(e.stack), 1000);
     util.logger(new Log('error', 'kakaoClient', 'client.on(message)', '자동 급식 인증 오류', 'internal', -1, null, e.stack));
   }
 }

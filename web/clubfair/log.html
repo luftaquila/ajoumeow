@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body>
+    <div id='body' style="display: none;">
+      <button id='delete' style="float: right; margin-right: 1rem;">기록 삭제</button>
+      <h4><span id='manager'></span>님 안녕하세요!</h4>
+      
+      <table id='statistics' style='border-collapse:separate; border-spacing: 1.25rem .5rem;'>
+        <thead>
+          <tr>
+            <th style="text-align: left; font-size: 1.2rem;">통계</th>
+            <th>매출액: ₩<span id='sell'></span></th>
+          </tr>
+          <tr>
+            <th>상품명</th>
+            <th>판매량</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <h3 style="margin-bottom: 0; margin-left: 1rem;">판매 기록</h3>
+      <table id='history' style='border-collapse:separate; border-spacing: 1.25rem .5rem;'>
+        <thead>
+          <tr>
+            <th>순번</th>
+            <th>시간</th>
+            <th>담당자</th>
+            <th>매출</th>
+            <th>내역</th>
+            <th>비고</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <style>
+      th, td { white-space: nowrap; text-align: center; }
+    </style>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
+    <script src="log.js"></script>
+  </body>
+</html>
