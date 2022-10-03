@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  <body>
+    <div style='display: table; position: absolute; top: 0; left: 0; height: 100%; width: 100%;'>
+      <div id='container' style='display: none; vertical-align: middle; text-align: center;'>
+        <h4><span id='manager'></span>님 안녕하세요!</h4>
+        <table style='width: 100%; max-width: 400px; border-collapse:separate; border-spacing: 0 .5rem;'>
+          <thead>
+            <tr>
+              <th>상품명</th>
+              <th>가격</th>
+              <th>재고</th>
+              <th>수량</th>
+            </tr>
+          </thead>
+          <tbody id='table-body'></tbody>
+          <tfoot>
+            <tr style="line-height: 3rem">
+              <th></th>
+              <th>가격</th>
+              <th>수동 <input id='manual' type='checkbox'></th>
+              <th>₩ <span id='total-container'><span id='total'>0</span></span></th>
+            </tr>
+            <tr id='manual-container' style="display: none;">
+              <th></th>
+              <th colspan="3"><input id='reason' placeholder='사유'></th>
+            </tr>
+          </tfoot>
+        </table>
+        <button id="submit" style="float: right; margin-top: 1rem; margin-right: 2rem; width: 5rem; height: 2.5rem;">확인</button>
+        <button onclick='window.location = "log.html";' style="float: left; margin-top: 1rem; margin-left: 2rem; width: 5rem; height: 2.5rem;">판매 기록</button>
+      </div>
+    </div>
+    <style>
+      input::-webkit-outer-spin-button,
+      input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+    </style>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
+    <script src="main.js"></script>
+  </body>
+</html>

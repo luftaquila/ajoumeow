@@ -1,7 +1,7 @@
 /web/res/videos
 /web/res/image/gallery
 /web/res/weather.json
-/server/node_modules/
+**/node_modules/
 
 **/*.env
 sitemap.xml
