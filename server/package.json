@@ -19,11 +19,11 @@
   "homepage": "https://github.com/luftaquila/ajoumeow#readme",
   "dependencies": {
     "axios": "^0.21.4",
-    "body-parser": "^1.19.0",
+    "body-parser": "^1.20.1",
     "dateformat": "^4.5.1",
     "dotenv": "^8.2.0",
     "envfile": "^6.14.0",
-    "express": "^4.17.1",
+    "express": "^4.18.2",
     "fill-range": "^4.0.0",
     "imghash": "^0.0.8",
     "jsonwebtoken": "^8.5.1",
