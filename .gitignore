@@ -6,3 +6,5 @@
 **/*.env
 sitemap.xml
 naver6c4682fdb451e9dc130a3a72763daf61.html
+
+*.log
