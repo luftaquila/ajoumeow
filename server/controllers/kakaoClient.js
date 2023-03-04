@@ -103,6 +103,7 @@ async function alertManager(client) {
     }
   });
 
+  /*
   const check_schedule = schedule.scheduleJob('0 20 * * *', async() => {
     try {
       const result = await util.query(`SELECT * FROM verify WHERE date BETWEEN '${dateformat(new Date(), 'yyyy-mm-dd')}' AND '${dateformat(new Date(), 'yyyy-mm-dd')}' ORDER BY date, course;`);
@@ -138,6 +139,7 @@ async function alertManager(client) {
       util.logger(new Log('error', 'kakaoClient', 'alert_schedule', '카톡 미인증 알림 전송 오류', 'internal', -1, null, e.stack));
     }
   });
+  */
 }
 
 function chatManager(client) {
@@ -149,6 +151,8 @@ function chatManager(client) {
 
     console.log(chat.text, channel.channelId);
 
+    return;
+    
     if(KnownChatType[chat.chat.type].includes('PHOTO')) registerImage(chat, channel);
     else if(channel.channelId == process.env.verifyChannelId || channel.channelId == process.env.testChannelId || channel.channelId == process.env.staffChannelId) autoVerify(chat, channel);
   });
