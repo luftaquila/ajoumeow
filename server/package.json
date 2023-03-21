@@ -26,7 +26,7 @@
     "express": "^4.17.1",
     "fill-range": "^4.0.0",
     "imghash": "^0.0.8",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "mariadb": "^2.5.3",
     "multer": "^1.4.2",
     "node-kakao": "^4.5.0",
