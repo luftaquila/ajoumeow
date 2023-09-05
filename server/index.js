@@ -11,7 +11,7 @@ import util from './controllers/util/util.js';
 import { Log } from './controllers/util/interface.js';
 
 //import client from './config/node-kakao'
-import kakaoClient from './controllers/kakaoClient.js';
+//import kakaoClient from './controllers/kakaoClient.js';
 import weatherClient from './controllers/weatherClient.js';
 import dbClient from './controllers/dbClient.js';
 
@@ -34,6 +34,6 @@ app.listen(5710, function() {
   util.logger(new Log('info', 'LOCALHOST', '/api', '서버 프로그램 시작', 'internal', 0, null, msg));
 });
 
-kakaoClient();
+//kakaoClient();
 weatherClient();
 dbClient();
