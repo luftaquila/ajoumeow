@@ -74,7 +74,7 @@ $(function() {
           ajax: {
             url: `${api}/users/list`,
             beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
-            data: d => { d.semister = list },
+            data: d => { d.semister = $('#namelist').val() },
             dataSrc: 'data',
             error: err => alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
           },
@@ -92,7 +92,6 @@ $(function() {
         });
       }
       
-    
       $('#namelist').change(function() {
         if($(this).val() == res.data) {
           $('#current_namelist').css('display', 'block');
