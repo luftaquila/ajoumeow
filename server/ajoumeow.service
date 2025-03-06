@@ -5,7 +5,7 @@ After=network.target network-online.target
 
 [Service]
 Type=simple
-WorkingDirectory=/home/luftaquila/ajoumeow/server
+WorkingDirectory=/var/web/ajoumeow/server
 ExecStart=/usr/bin/npx babel-node index.js
 Restart=always
 
