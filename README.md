@@ -3,24 +3,17 @@
 
 임원진 여러분을 위한 관리자 메뉴 사용설명서입니다.
 
-### 빠른 목차
-[1. 관리자 권한 - 나! 나도 임원진이에요!](https://github.com/luftaquila/ajoumeow#1-%EA%B4%80%EB%A6%AC%EC%9E%90-%EA%B6%8C%ED%95%9C)
+### 목차
 
-[2. 급식 인증 및 삭제 - 밥 주새오](https://github.com/luftaquila/ajoumeow#2-%EA%B8%89%EC%8B%9D-%EC%9D%B8%EC%A6%9D-%EB%B0%8F-%EC%82%AD%EC%A0%9C)
-
-[3. 설정 - 학기 바꿨더니 로그인이 안 되는데요?](https://github.com/luftaquila/ajoumeow#3-%EC%84%A4%EC%A0%95)
-
-[4. 회원 관리 - 회원수도 티끌모아 태산](https://github.com/luftaquila/ajoumeow#4-%ED%9A%8C%EC%9B%90-%EA%B4%80%EB%A6%AC)
-
-[5. 1365 - 봉사시간 모아야 군대가서 꿀빤다](https://github.com/luftaquila/ajoumeow#5-1365)
-
-[6. 신입 모집 - 새내기 주세요!!!](https://github.com/luftaquila/ajoumeow#6-%EC%8B%A0%EC%9E%85-%EB%AA%A8%EC%A7%91)
-
-[7. 서버 로그 - #&*(_#$%#@?](https://github.com/luftaquila/ajoumeow#7-%EC%84%9C%EB%B2%84-%EB%A1%9C%EA%B7%B8)
-
-[8. Dashboard - 리워드 제비뽑기 확률망겜](https://github.com/luftaquila/ajoumeow#8-dashboard)
-
-[9. 카카오톡 봇 - 미유미유의 망령](https://github.com/luftaquila/ajoumeow#9-%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%86%A1-%EB%B4%87)
+1. [관리자 권한](https://github.com/luftaquila/ajoumeow#1-%EA%B4%80%EB%A6%AC%EC%9E%90-%EA%B6%8C%ED%95%9C)
+2. [급식 인증 및 삭제](https://github.com/luftaquila/ajoumeow#2-%EA%B8%89%EC%8B%9D-%EC%9D%B8%EC%A6%9D-%EB%B0%8F-%EC%82%AD%EC%A0%9C)
+3. [설정](https://github.com/luftaquila/ajoumeow#3-%EC%84%A4%EC%A0%95)
+4. [회원 관리](https://github.com/luftaquila/ajoumeow#4-%ED%9A%8C%EC%9B%90-%EA%B4%80%EB%A6%AC)
+5. [1365 봉사시간 인증](https://github.com/luftaquila/ajoumeow#5-1365)
+6. [신입 모집](https://github.com/luftaquila/ajoumeow#6-%EC%8B%A0%EC%9E%85-%EB%AA%A8%EC%A7%91)
+7. [서버 로그](https://github.com/luftaquila/ajoumeow#7-%EC%84%9C%EB%B2%84-%EB%A1%9C%EA%B7%B8)
+8. [Dashboard](https://github.com/luftaquila/ajoumeow#8-dashboard)
+9. [카카오톡 봇](https://github.com/luftaquila/ajoumeow#9-%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%86%A1-%EB%B4%87)
 
 ## 0. 들어가기
 ⚠️ 개발자가 나 쓰자고 만든 거라 버그가 많습니다.
@@ -31,7 +24,7 @@
 
 개발자 연락처
 * <mail@luftaquila.io>
-* [카카오톡](http://qr.kakao.com/talk/RmgKn.t2Sxgy8I7hwdhuYZQF1vc-) / ID: luftaquila
+* [카카오톡](https://go.luftaquila.io/kakao)
 * [아주대학교 전자공학과 18학번 오병준](https://luftaquila.io)
 
 <br>
@@ -39,7 +32,7 @@
 관리자 콘솔은 임원진 여러분에 한해 접속 권한이 부여됩니다.
 
 사이트의 사이드바(☰) 하단 [관리자 콘솔](#) 을 탭해 이동합니다.  
-또는 링크 [luftaquila.io/ajoumeow/console](https://luftaquila.io/ajoumeow/console)에서 접속할 수 있습니다.  
+또는 링크 [ajoumeow.luftaquila.io/console](https://ajoumeow.luftaquila.io/console)에서 접속할 수 있습니다.  
 관리자 콘솔 링크는 급식인증방 공지로 설정해 두면 인증에 편리합니다.
 
 그럼 관리자 권한을 부여받는 방법부터 알아봅시다.
@@ -163,6 +156,10 @@
 
     
 ## 9. 카카오톡 봇
+
+> [!CAUTION]
+> Deprecated.
+
 미유미유 카카오톡 채팅방에 `미유미유의 망령` 닉네임으로 봇이 실행중입니다.  
 
 봇을 계속 사용하고 싶다면 채팅방에 미유미유의 망령을 초대하세요.
@@ -180,6 +177,3 @@
 * 학기가 변경되면 기존 회원 재등록 공지 메시지를 공지방에 보냅니다.  
 
 봇은 카카오톡 공식 API를 이용하는 것이 아니므로 언제든지 작동을 중지할 수 있습니다.
-    
-    
-    
