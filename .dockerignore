@@ -1,10 +1,8 @@
+.git
+**/*Dockerfile*
+**/node_modules
+**/.env
+
 web/res/videos
 web/res/image/gallery
 web/res/weather.json
-**/node_modules
-
-**/*.env
-sitemap.xml
-
-*.log
-*.sql

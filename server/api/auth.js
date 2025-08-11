@@ -36,6 +36,7 @@ router.post('/login', async (req, res) => {
     }
   }
   catch(e) {
+    console.log(e);
     util.logger(new Log('error', req.remoteIP, req.originalPath, '로그인 요청 오류', req.method, 500, req.body, e.stack));
     res.status(500).json(new Response('error', '알 수 없는 오류입니다.', 'ERR_UNKNOWN'));
   }

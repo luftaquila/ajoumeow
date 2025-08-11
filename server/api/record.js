@@ -197,7 +197,7 @@ router.get('/log', util.isAdmin, async(req, res) => {
 router.get('/map', util.isLogin, async(req, res) => {
   try {
     util.logger(new Log('info', req.remoteIP, req.originalPath, '지도 파일 요청', req.method, 200, req.query, null));
-    res.status(200).sendFile(path.join(__dirname, '../../web/res/map.json'));
+    res.status(200).sendFile(path.join(__dirname, '../web/res/map.json'));
   }
   catch(e) {
     console.log(e);

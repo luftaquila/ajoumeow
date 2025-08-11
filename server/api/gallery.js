@@ -16,7 +16,7 @@ router.use(bodyParser.urlencoded({ extended: true }));
 
 let upload = multer({
   storage: multer.diskStorage({
-    destination: (req, file, cb) => cb(null, __dirname + '/../../web/res/image/gallery'),
+    destination: (req, file, cb) => cb(null, __dirname + '/../web/res/image/gallery'),
     filename: (req, file, cb) => cb(null, new Date().getTime() + path.extname(file.originalname))
   })
 });
@@ -168,8 +168,8 @@ router.delete('/photo', util.isLogin, async (req, res) => {
       for(const tag of tags) await conn.query(`UPDATE gallery_tag SET photo_count=photo_count-1, likes=likes-${photo[0].likes} WHERE tag_name='${tag.tag_name}';`);
       await conn.query(`UPDATE gallery_uploader SET photo_count=photo_count-1, likes=likes-${photo[0].likes} WHERE uploader_id='${req.decoded.id}';`);
       
-      await fs.promises.unlink(__dirname + '/../../web/res/image/gallery/' + req.body.pid);
-      await fs.promises.unlink(__dirname + '/../../web/res/image/gallery/thumb_' + req.body.pid);
+      await fs.promises.unlink(__dirname + '/../web/res/image/gallery/' + req.body.pid);
+      await fs.promises.unlink(__dirname + '/../web/res/image/gallery/thumb_' + req.body.pid);
       
       await conn.commit();
       util.logger(new Log('info', req.remoteIP, req.originalPath, '갤러리 사진 삭제', req.method, 204, req.body, null));

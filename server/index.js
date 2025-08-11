@@ -27,6 +27,7 @@ app.use('/api/record', record);
 app.use('/api/verify', verify);
 app.use('/api/users', users);
 app.use('/api/gallery', gallery);
+app.use(express.static('./web'));
 
 app.listen(5710, function() {
   const msg = 'API server is in startup. Listening on :5710';

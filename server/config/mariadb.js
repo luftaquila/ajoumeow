@@ -4,10 +4,10 @@ import mariadb from 'mariadb'
 dotenv.config();
 
 const pool = mariadb.createPool({
-  host: process.env.DBHost, 
-  user: process.env.DBUser,
-  password: process.env.DBPW,
-  database: process.env.DBName,
+  host: 'mariadb',
+  user: 'root',
+  password: '',
+  database: 'ajoumeow',
   idleTimeout: 0
 });
 

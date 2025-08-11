@@ -1,0 +1,49 @@
+name: ajoumeow
+
+services:
+  mariadb:
+    image: mariadb:10.11
+    restart: unless-stopped
+    environment:
+      - MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=true
+      - TZ=Asia/Seoul
+    ports:
+      - 3306:3306
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+        - ajoumeow
+
+  ajoumeow:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    restart: unless-stopped
+    expose:
+      - 5710
+    networks:
+      - traefik
+      - ajoumeow
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.ajoumeow.rule=Host(`ajoumeow.luftaquila.io`)
+      - traefik.http.routers.ajoumeow.entrypoints=websecure
+      - traefik.http.routers.ajoumeow.tls=true
+      - traefik.http.routers.ajoumeow.priority=3
+      - traefik.http.services.ajoumeow.loadbalancer.server.port=5710
+      - traefik.docker.network=traefik
+
+    volumes:
+      - ./web/res/videos:/home/node/ajoumeow/web/res/videos
+      - ./web/res/image/gallery:/home/node/ajoumeow/web/res/image/gallery
+    env_file:
+      - server/.env
+
+volumes:
+  mariadb_data:
+
+networks:
+  traefik:
+    external: true
+  ajoumeow:
+    internal: true
