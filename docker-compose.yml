@@ -29,7 +29,6 @@ services:
       - traefik.http.routers.ajoumeow.rule=Host(`ajoumeow.luftaquila.io`)
       - traefik.http.routers.ajoumeow.entrypoints=websecure
       - traefik.http.routers.ajoumeow.tls=true
-      - traefik.http.routers.ajoumeow.priority=3
       - traefik.http.services.ajoumeow.loadbalancer.server.port=5710
       - traefik.docker.network=traefik
 
