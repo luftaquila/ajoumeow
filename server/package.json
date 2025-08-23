@@ -28,7 +28,7 @@
     "imghash": "^0.0.8",
     "jsonwebtoken": "^9.0.0",
     "mariadb": "^2.5.3",
-    "multer": "^2.0.0",
+    "multer": "^2.0.2",
     "node-schedule": "^2.0.0",
     "pretty-format": "^26.6.2",
     "sharp": "^0.32.6",
