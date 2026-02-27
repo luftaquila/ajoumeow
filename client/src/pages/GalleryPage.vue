@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import api from '@/utils/api';
+import PhotoDetailModal from '@/components/PhotoDetailModal.vue';
 
 interface Photo {
   id: number;
@@ -18,6 +20,9 @@ interface Tag {
   photoCount: number;
   likesCount: number;
 }
+
+const route = useRoute();
+const router = useRouter();
 
 const photos = ref<Photo[]>([]);
 const tags = ref<Tag[]>([]);
@@ -125,6 +130,37 @@ function onScroll() {
   }
 }
 
+// Photo detail modal
+const selectedPhotoId = ref<number | null>(null);
+
+function openPhoto(photoId: number) {
+  router.push({ name: 'gallery', query: { photo: photoId } });
+}
+
+function closePhoto() {
+  router.push({ name: 'gallery', query: {} });
+}
+
+function onPhotoLiked(photoId: number, newCount: number) {
+  const photo = photos.value.find((p) => p.id === photoId);
+  if (photo) {
+    photo.likesCount = newCount;
+  }
+}
+
+// Sync modal with route query
+watch(
+  () => route.query.photo,
+  (val) => {
+    if (val) {
+      selectedPhotoId.value = Number(val);
+    } else {
+      selectedPhotoId.value = null;
+    }
+  },
+  { immediate: true },
+);
+
 onMounted(() => {
   fetchTags();
   fetchPhotos();
@@ -201,7 +237,7 @@ onUnmounted(() => {
         v-for="photo in photos"
         :key="photo.id"
         class="group cursor-pointer overflow-hidden rounded-xl bg-white shadow-sm transition-shadow hover:shadow-md"
-        @click="$router.push({ name: 'gallery', query: { photo: photo.id } })"
+        @click="openPhoto(photo.id)"
       >
         <!-- Thumbnail -->
         <div class="relative aspect-square overflow-hidden bg-gray-100">
@@ -246,5 +282,13 @@ onUnmounted(() => {
     <div v-if="!loading && !hasMore && photos.length > 0" class="py-4 text-center text-sm text-gray-400">
       모든 사진을 불러왔습니다
     </div>
+
+    <!-- Photo detail modal -->
+    <PhotoDetailModal
+      v-if="selectedPhotoId !== null"
+      :photo-id="selectedPhotoId"
+      @close="closePhoto"
+      @liked="onPhotoLiked"
+    />
   </div>
 </template>
