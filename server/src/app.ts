@@ -4,6 +4,7 @@ import Fastify, { type FastifyError } from 'fastify';
 import cors from '@fastify/cors';
 import fastifyStatic from '@fastify/static';
 import loggingPlugin from './plugins/logging.js';
+import authPlugin from './plugins/auth.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -24,6 +25,9 @@ export async function buildApp() {
     prefix: '/gallery/',
     decorateReply: true,
   });
+
+  // Auth plugin (decorates request with user property)
+  await app.register(authPlugin);
 
   // Request logging (logs every request to the DB)
   await app.register(loggingPlugin);
