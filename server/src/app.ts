@@ -1,10 +1,40 @@
-import Fastify from 'fastify';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import Fastify, { type FastifyError } from 'fastify';
+import cors from '@fastify/cors';
+import fastifyStatic from '@fastify/static';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export async function buildApp() {
   const app = Fastify({
     logger: true,
   });
 
+  // CORS
+  await app.register(cors, {
+    origin: true,
+  });
+
+  // Serve gallery images from server/data/gallery/
+  const galleryDir = path.resolve(__dirname, '..', 'data', 'gallery');
+  await app.register(fastifyStatic, {
+    root: galleryDir,
+    prefix: '/gallery/',
+    decorateReply: true,
+  });
+
+  // Global error handler — consistent JSON error responses
+  app.setErrorHandler<FastifyError>((error, _request, reply) => {
+    const statusCode = error.statusCode ?? 500;
+    app.log.error(error);
+    reply.status(statusCode).send({
+      error: error.message || 'Internal Server Error',
+      statusCode,
+    });
+  });
+
+  // Health check
   app.get('/api/health', async () => {
     return { status: 'ok' };
   });

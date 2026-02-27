@@ -17,6 +17,10 @@ server/data/*.db
 server/data/*.db-wal
 server/data/*.db-shm
 
+# Gallery uploads (keep directory, ignore contents)
+server/data/gallery/*
+!server/data/gallery/.gitkeep
+
 # Drizzle migrations (keep SQL + meta for reproducible deploys)
 
 # IDE
