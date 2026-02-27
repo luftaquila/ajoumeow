@@ -2,7 +2,9 @@
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import api from '@/utils/api';
+import { useAuthStore } from '@/stores/auth';
 import PhotoDetailModal from '@/components/PhotoDetailModal.vue';
+import PhotoUploadModal from '@/components/PhotoUploadModal.vue';
 
 interface Photo {
   id: number;
@@ -23,6 +25,14 @@ interface Tag {
 
 const route = useRoute();
 const router = useRouter();
+const authStore = useAuthStore();
+
+const showUploadModal = ref(false);
+
+function onPhotoUploaded() {
+  resetAndFetch();
+  fetchTags();
+}
 
 const photos = ref<Photo[]>([]);
 const tags = ref<Tag[]>([]);
@@ -179,6 +189,18 @@ onUnmounted(() => {
       <h1 class="text-xl font-bold text-gray-800 sm:text-2xl">갤러리</h1>
 
       <div class="flex flex-wrap items-center gap-3">
+        <!-- Upload button (logged-in users only) -->
+        <button
+          v-if="authStore.isLoggedIn"
+          class="flex items-center gap-1.5 rounded-lg bg-primary-500 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-primary-600"
+          @click="showUploadModal = true"
+        >
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          업로드
+        </button>
+
         <!-- Tag filter -->
         <select
           :value="selectedTag"
@@ -289,6 +311,13 @@ onUnmounted(() => {
       :photo-id="selectedPhotoId"
       @close="closePhoto"
       @liked="onPhotoLiked"
+    />
+
+    <!-- Upload modal -->
+    <PhotoUploadModal
+      v-if="showUploadModal"
+      @close="showUploadModal = false"
+      @uploaded="onPhotoUploaded"
     />
   </div>
 </template>
