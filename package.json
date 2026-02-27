@@ -16,6 +16,7 @@
     "lint": "eslint . --ext .ts,.vue",
     "lint:fix": "eslint . --ext .ts,.vue --fix",
     "format": "prettier --write \"**/*.{ts,vue,json,css,html}\"",
+    "migrate": "tsx scripts/migrate.ts",
     "db:generate": "npm run --prefix server db:generate",
     "db:migrate": "npm run --prefix server db:migrate"
   },
@@ -25,6 +26,7 @@
     "eslint": "^9.39.3",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-vue": "^10.8.0",
+    "mariadb": "^3.5.1",
     "typescript-eslint": "^8.56.1"
   }
 }
