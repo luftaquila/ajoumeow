@@ -64,12 +64,47 @@ interface RegisterRow {
   phone: string;
 }
 
+interface RecordRow {
+  ID: number;
+  name: string;
+  date: string;
+  course: string;
+  timestamp: string;
+}
+
+interface VerifyRow {
+  ID: number;
+  name: string;
+  date: string;
+  course: string;
+  score: number;
+  timestamp?: string;
+}
+
+interface SettingsRow {
+  name: string;
+  value: string | null;
+}
+
+interface LogRow {
+  id?: number;
+  level: string;
+  IP: string;
+  endpoint: string;
+  description: string;
+  method: string;
+  status: number;
+  query: string;
+  result: string;
+  timestamp?: string;
+}
+
 interface TableNameRow {
   [key: string]: string;
 }
 
-// ── Main migration ─────────────────────────────────────────────────
-async function migrateMembers() {
+// ── Member/Semester migration ──────────────────────────────────────
+async function migrateMembers(): Promise<Map<string, number>> {
   log('=== Starting member/semester migration ===');
 
   // 1. Discover namelist_* and register_* tables
@@ -256,11 +291,164 @@ async function migrateMembers() {
   log(`  Members (unique): ${memberMap.size}`);
   log(`  Semester-Member relationships: ${totalSemesterMembers}`);
   log(`  Registrations: ${totalRegInserted}`);
+
+  return memberMap;
+}
+
+// ── Records migration ──────────────────────────────────────────────
+async function migrateRecords(memberMap: Map<string, number>) {
+  log('=== Starting records migration ===');
+
+  const rows: RecordRow[] = await mariaConn.query('SELECT * FROM `record`');
+  log(`  record table: ${rows.length} source rows`);
+
+  let inserted = 0;
+  let skipped = 0;
+
+  const tx = sqlite.transaction((data: RecordRow[]) => {
+    for (const row of data) {
+      const studentId = String(row.ID);
+      const memberId = memberMap.get(studentId);
+
+      if (memberId === undefined) {
+        log(`  WARNING: No member found for student_id=${studentId}, skipping record`);
+        skipped++;
+        continue;
+      }
+
+      db.insert(schema.records)
+        .values({
+          memberId,
+          date: row.date,
+          course: row.course,
+          createdAt: row.timestamp || undefined,
+        })
+        .run();
+      inserted++;
+    }
+  });
+
+  tx(rows);
+
+  logCount('records', rows.length, inserted);
+  if (skipped > 0) log(`  records skipped (no matching member): ${skipped}`);
+  log('=== Records migration complete ===');
+}
+
+// ── Verifications migration ────────────────────────────────────────
+async function migrateVerifications(memberMap: Map<string, number>) {
+  log('=== Starting verifications migration ===');
+
+  const rows: VerifyRow[] = await mariaConn.query('SELECT * FROM `verify`');
+  log(`  verify table: ${rows.length} source rows`);
+
+  let inserted = 0;
+  let skipped = 0;
+
+  const tx = sqlite.transaction((data: VerifyRow[]) => {
+    for (const row of data) {
+      const studentId = String(row.ID);
+      const memberId = memberMap.get(studentId);
+
+      if (memberId === undefined) {
+        log(`  WARNING: No member found for student_id=${studentId}, skipping verification`);
+        skipped++;
+        continue;
+      }
+
+      db.insert(schema.verifications)
+        .values({
+          memberId,
+          date: row.date,
+          course: row.course,
+          score: row.score,
+          verifiedAt: row.timestamp || undefined,
+        })
+        .run();
+      inserted++;
+    }
+  });
+
+  tx(rows);
+
+  logCount('verifications', rows.length, inserted);
+  if (skipped > 0) log(`  verifications skipped (no matching member): ${skipped}`);
+  log('=== Verifications migration complete ===');
+}
+
+// ── Settings migration ─────────────────────────────────────────────
+async function migrateSettings() {
+  log('=== Starting settings migration ===');
+
+  const rows: SettingsRow[] = await mariaConn.query('SELECT * FROM `settings`');
+  log(`  settings table: ${rows.length} source rows`);
+
+  let inserted = 0;
+
+  const tx = sqlite.transaction((data: SettingsRow[]) => {
+    for (const row of data) {
+      db.insert(schema.settings)
+        .values({
+          key: row.name,
+          value: row.value,
+        })
+        .onConflictDoUpdate({
+          target: schema.settings.key,
+          set: { value: row.value },
+        })
+        .run();
+      inserted++;
+    }
+  });
+
+  tx(rows);
+
+  logCount('settings', rows.length, inserted);
+  log('=== Settings migration complete ===');
+}
+
+// ── Logs migration ─────────────────────────────────────────────────
+async function migrateLogs() {
+  log('=== Starting logs migration ===');
+
+  const rows: LogRow[] = await mariaConn.query('SELECT * FROM `log`');
+  log(`  log table: ${rows.length} source rows`);
+
+  let inserted = 0;
+
+  const tx = sqlite.transaction((data: LogRow[]) => {
+    for (const row of data) {
+      db.insert(schema.logs)
+        .values({
+          timestamp: row.timestamp || undefined,
+          level: row.level,
+          ip: row.IP,
+          endpoint: row.endpoint,
+          method: row.method,
+          status: row.status,
+          description: row.description,
+          query: row.query,
+          result: row.result,
+        })
+        .run();
+      inserted++;
+    }
+  });
+
+  tx(rows);
+
+  logCount('logs', rows.length, inserted);
+  log('=== Logs migration complete ===');
 }
 
 // ── Run ────────────────────────────────────────────────────────────
 try {
-  await migrateMembers();
+  const memberMap = await migrateMembers();
+  await migrateRecords(memberMap);
+  await migrateVerifications(memberMap);
+  await migrateSettings();
+  await migrateLogs();
+  log('=== All migrations complete ===');
 } catch (err) {
   console.error('[migrate] Migration failed:', err);
   process.exit(1);
