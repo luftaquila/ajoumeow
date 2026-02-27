@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url';
 import Fastify, { type FastifyError } from 'fastify';
 import cors from '@fastify/cors';
 import fastifyStatic from '@fastify/static';
+import loggingPlugin from './plugins/logging.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -23,6 +24,9 @@ export async function buildApp() {
     prefix: '/gallery/',
     decorateReply: true,
   });
+
+  // Request logging (logs every request to the DB)
+  await app.register(loggingPlugin);
 
   // Global error handler — consistent JSON error responses
   app.setErrorHandler<FastifyError>((error, _request, reply) => {
