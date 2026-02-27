@@ -8,6 +8,7 @@ import { authenticate, requireAdmin } from '../plugins/auth.js';
 const certificateQuerySchema = z.object({
   start: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   end: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  members: z.string().optional(),
 });
 
 const createVerificationSchema = z.object({
@@ -131,7 +132,7 @@ export default async function verifyRoutes(app: FastifyInstance) {
       return reply.status(400).send({ error: 'Invalid query parameters. Required: start (YYYY-MM-DD), end (YYYY-MM-DD)', statusCode: 400 });
     }
 
-    const { start, end } = parsed.data;
+    const { start, end, members: membersParam } = parsed.data;
     const mask = query.mask === 'true';
 
     const macroUrl = process.env.MACRO_1365_URL;
@@ -150,7 +151,7 @@ export default async function verifyRoutes(app: FastifyInstance) {
     }
 
     // Get current semester members with their details
-    const memberList = await db
+    let memberList = await db
       .select({
         memberId: members.id,
         studentId: members.studentId,
@@ -163,6 +164,14 @@ export default async function verifyRoutes(app: FastifyInstance) {
       .from(semesterMembers)
       .innerJoin(members, eq(semesterMembers.memberId, members.id))
       .where(eq(semesterMembers.semesterId, currentSemester.id));
+
+    // Filter by selected member student IDs if provided
+    if (membersParam) {
+      const selectedStudentIds = new Set(membersParam.split(',').filter(Boolean));
+      if (selectedStudentIds.size > 0) {
+        memberList = memberList.filter((m) => selectedStudentIds.has(m.studentId));
+      }
+    }
 
     // Get verifications in date range
     const verificationList = await db
