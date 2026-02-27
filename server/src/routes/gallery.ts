@@ -4,13 +4,17 @@ import { fileURLToPath } from 'node:url';
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import sharp from 'sharp';
-import { eq, sql, desc, and, gt } from 'drizzle-orm';
+import { eq, sql, desc, and, gt, gte, lt } from 'drizzle-orm';
 import { db, sqlite } from '../db/index.js';
 import { photos, tags, photoTags, photoLikes, members } from '../db/schema.js';
 import { authenticate } from '../plugins/auth.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const galleryDir = path.resolve(__dirname, '..', '..', 'data', 'gallery');
+
+const rankingQuerySchema = z.object({
+  type: z.enum(['weekly', 'monthly', 'last_month']).optional().default('weekly'),
+});
 
 const photosQuerySchema = z.object({
   page: z.string().regex(/^\d+$/).optional().default('1').transform(Number),
@@ -295,6 +299,81 @@ export default async function galleryRoutes(app: FastifyInstance) {
     }
 
     return { success: true };
+  });
+
+  // GET /api/gallery/ranking?type=weekly|monthly|last_month — photo ranking by likes in period
+  app.get('/api/gallery/ranking', async (request, reply) => {
+    const parsed = rankingQuerySchema.safeParse(request.query);
+    if (!parsed.success) {
+      return reply.status(400).send({ error: 'Invalid query parameters', statusCode: 400 });
+    }
+
+    const { type } = parsed.data;
+
+    // Calculate date range based on type
+    const now = new Date();
+    let fromDate: string;
+    let toDate: string;
+
+    if (type === 'weekly') {
+      const weekAgo = new Date(now);
+      weekAgo.setDate(weekAgo.getDate() - 7);
+      fromDate = weekAgo.toISOString().slice(0, 19).replace('T', ' ');
+      toDate = now.toISOString().slice(0, 19).replace('T', ' ');
+    } else if (type === 'monthly') {
+      fromDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01 00:00:00`;
+      toDate = now.toISOString().slice(0, 19).replace('T', ' ');
+    } else {
+      // last_month
+      const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
+      fromDate = `${lastMonth.getFullYear()}-${String(lastMonth.getMonth() + 1).padStart(2, '0')}-01 00:00:00`;
+      toDate = `${lastMonthEnd.getFullYear()}-${String(lastMonthEnd.getMonth() + 1).padStart(2, '0')}-${String(lastMonthEnd.getDate()).padStart(2, '0')} 23:59:59`;
+    }
+
+    // Count likes per photo within the date range, ranked by count
+    const ranked = await db
+      .select({
+        photoId: photoLikes.photoId,
+        likesInPeriod: sql<number>`count(*)`,
+        filename: photos.filename,
+        uploaderId: photos.uploaderId,
+        uploaderName: members.name,
+        createdAt: photos.createdAt,
+        totalLikes: photos.likesCount,
+      })
+      .from(photoLikes)
+      .innerJoin(photos, eq(photoLikes.photoId, photos.id))
+      .innerJoin(members, eq(photos.uploaderId, members.id))
+      .where(and(gte(photoLikes.createdAt, fromDate), lt(photoLikes.createdAt, toDate)))
+      .groupBy(photoLikes.photoId)
+      .orderBy(sql`count(*) DESC`)
+      .limit(20);
+
+    return { data: ranked, type };
+  });
+
+  // GET /api/gallery/photographers — per-photographer statistics
+  app.get('/api/gallery/photographers', async () => {
+    const photographers = await db
+      .select({
+        uploaderId: photos.uploaderId,
+        uploaderName: members.name,
+        photoCount: sql<number>`count(*)`,
+        totalLikes: sql<number>`coalesce(sum(${photos.likesCount}), 0)`,
+        latestPhoto: sql<string>`max(${photos.createdAt})`,
+        latestFilename: sql<string>`(
+          SELECT p2.filename FROM photos p2
+          WHERE p2.uploader_id = ${photos.uploaderId}
+          ORDER BY p2.created_at DESC LIMIT 1
+        )`,
+      })
+      .from(photos)
+      .innerJoin(members, eq(photos.uploaderId, members.id))
+      .groupBy(photos.uploaderId)
+      .orderBy(sql`count(*) DESC`);
+
+    return { data: photographers };
   });
 
   // POST /api/gallery/photos/:id/like — IP-based like with 30-day cooldown
