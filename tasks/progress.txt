@@ -792,3 +792,60 @@
   - Promise.all with .catch() fallback is useful for loading multiple settings in parallel without one failure blocking others
   - Admin page pattern: loading spinners use `border-primary-200 border-t-primary-500` classes, success/error messages use green-50/red-50 backgrounds
 ---
+
+## 2026-02-28 - US-041
+- What was implemented: Admin console log viewer page with filterable/paginated log table
+- Files changed:
+  - client/src/pages/admin/LogsPage.vue (full implementation replacing stub)
+- Features:
+  - Log table displaying timestamp, level (color-coded badges), IP, endpoint, method, HTTP status (color-coded), and description
+  - Date range filters (from/to date pickers) with immediate filter application
+  - Log level dropdown filter (info/error/all)
+  - Keyword search with 400ms debounce for description field
+  - Pagination with previous/next buttons and page/total display
+  - Responsive design: IP and status hidden on mobile, method hidden on tablet
+  - Loading spinner and empty state
+- **Learnings for future iterations:**
+  - Route for LogsPage was already registered in router/index.ts from US-025 stub creation
+  - API response format: `{ logs: [...], pagination: { page, limit, total, totalPages } }` - standard pattern for paginated endpoints
+  - Debounced search pattern: watch + setTimeout for text input, @change for selects/dates
+  - Status code color coding: green (<300), yellow (300-399), red (400+) - useful pattern for HTTP status display
+---
+
+## 2026-02-28 - US-042
+- What was implemented: Admin certificate generation page for 1365 volunteer certificates
+- Files changed:
+  - client/src/pages/admin/CertificatePage.vue (full implementation replacing stub)
+  - server/src/routes/verify.ts (added optional `members` query param for filtering)
+- Features:
+  - Date range picker with "this month" / "last month" quick-select buttons
+  - Current semester member list with checkboxes and select-all
+  - Shows 1365 volunteer ID status per member (registered/unregistered)
+  - Privacy masking option checkbox
+  - Loading indicator during generation
+  - Result URL display with external link button
+  - Passes selected member student IDs to API for filtering
+- **Learnings for future iterations:**
+  - The GET /api/verify/1365 endpoint now accepts an optional `members` query param (comma-separated student IDs) for filtering
+  - Members without a volunteerId are automatically excluded from certificate generation server-side
+  - The `cheif` (sic) field name in the Google Apps Script payload is kept for backward compatibility with the macro
+  - Admin pages follow consistent pattern: `<script setup lang="ts">` + TailwindCSS card sections with rounded-xl bg-white shadow-sm
+---
+
+## 2026-02-28 - US-043
+- What was implemented: 마일리지/통계 페이지 (StatsPage.vue) with personal mileage cards, monthly bar chart, and activity ranking table
+- Files changed:
+  - client/src/pages/StatsPage.vue (full implementation replacing stub)
+- Features:
+  - Personal mileage card showing total yearly mileage and current month activity count (logged-in users only)
+  - Monthly feeding count bar chart with year navigation (CSS-based, no chart library)
+  - Activity ranking table sorted by mileage score with medal badges for top 3
+  - Current user's row is highlighted in the ranking table
+  - Year selector to view stats for different years
+  - Data fetched from GET /api/records/statistics (yearly + 12 monthly calls in parallel)
+- **Learnings for future iterations:**
+  - CSS bar charts using TailwindCSS are sufficient for simple visualizations without adding chart.js dependency
+  - Statistics API returns per-member aggregation; for monthly totals, need to sum `count` across all members in each monthly response
+  - Parallel API calls (Promise.all) with 13 concurrent requests perform well against SQLite
+  - Personal stats computed properties filter the API response by matching `studentId` from auth store
+---
