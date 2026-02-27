@@ -1,0 +1,709 @@
+## Codebase Patterns
+- Monorepo: client/ (Vue 3 + Vite) and server/ (Fastify + Drizzle ORM), root package.json uses concurrently
+- TypeScript base config at root tsconfig.json, extended by client/tsconfig.app.json and server/tsconfig.json
+- ESLint flat config (eslint.config.js) with typescript-eslint + eslint-plugin-vue + prettier
+- Server uses ES modules ("type": "module"), tsx for dev, tsc for build
+- Client uses Vite with @vitejs/plugin-vue, vue-tsc for typecheck
+- Vite dev proxy: /api → http://localhost:5710 (Fastify server port)
+- Old server node_modules have permission issues from Docker (sharp vendor files) - can be ignored, new deps installed alongside
+- Server .env exists with JWTSecret key (will need JWT_SECRET for new stack)
+- Run `npm run typecheck` from root to check both client and server
+- Fastify app factory pattern: server/src/app.ts exports `buildApp()`, server/src/index.ts calls it
+- @fastify/static serves gallery images from server/data/gallery/ with prefix /gallery/
+- Global error handler returns `{ error: string, statusCode: number }` JSON format
+- Graceful shutdown handles SIGINT/SIGTERM in server/src/index.ts
+- Server .env has JWT_SECRET, PORT keys; loaded via `import 'dotenv/config'` in index.ts
+- Drizzle SQLite: use `integer('col', { mode: 'boolean' })` for booleans, `sql\`(datetime('now'))\`` for timestamp defaults
+- Drizzle SQLite: composite PKs use `primaryKey({ columns: [...] })` in the table's third arg callback
+- Schema is at server/src/db/schema.ts; drizzle.config.ts points to ./data/ajoumeow.db
+- DB connection at server/src/db/index.ts exports `db` (Drizzle instance) and `sqlite` (raw better-sqlite3)
+- WAL mode is set on app startup via `sqlite.pragma('journal_mode = WAL')`
+- Drizzle migrations are in server/drizzle/; run `npm run db:generate` then `npm run db:migrate` from root
+- .gitignore must NOT have `*.sql` (blocks migration files); drizzle migration files + meta must be tracked
+- Migration script at scripts/migrate.ts uses `mariadb` package (devDependency at root) and direct better-sqlite3/Drizzle for SQLite writes
+- MariaDB connection env vars: MARIA_HOST, MARIA_PORT, MARIA_USER, MARIA_PASSWORD, MARIA_DATABASE
+- Old namelist_ columns: college, department, ID (int, student_id), name, phone, birthday, 1365ID (volunteer_id), register, role
+- Old register_ columns: timestamp, ID (int), name, college, department, phone
+- `import * as mariadb from 'mariadb'` (no default export in the mariadb package types)
+- Fastify plugins use `fastify-plugin` (fp) wrapper; plugin files go in server/src/plugins/
+- Service/scheduler files go in server/src/services/; started from index.ts after app.listen()
+- Request IP: use `x-forwarded-for` header (first value, split by comma) with `request.ip` fallback
+- Route files go in server/src/routes/; register in app.ts via `app.register(routeModule)`
+- Use Zod for request body/query validation in routes (safeParse + 400 response on failure)
+- Route pattern: export default async function (app: FastifyInstance) { ... }
+- Current semester lookup: `db.select().from(semesters).where(eq(semesters.isCurrent, true))`
+- Use native `fetch` instead of `axios` for external HTTP calls (Node 18+ built-in, no extra dependency)
+- Zod query param pattern: `.optional().default('1').transform(Number)` — `.default()` must come BEFORE `.transform()` since query params arrive as strings
+- Gallery tag aggregation: LEFT JOIN photo_tags → photos with GROUP BY for per-tag photo count and likes sum
+- For IN clause in Drizzle: `sql\`${col} IN (${sql.join(ids.map(id => sql\`${id}\`), sql\`, \`)})\``
+- Google Apps Script macro URL stored in `MACRO_1365_URL` env var; old field names (cheif, volID) kept for backward compatibility
+- Drizzle `between()` import from `drizzle-orm` for inclusive range queries on text date columns
+- @fastify/multipart: `request.file()` returns file + fields; access field value via `(field as { value: string }).value`
+- Gallery files saved to server/data/gallery/; thumbnails use `thumb_` prefix; filenames are timestamp-based
+- Weather service: in-memory cache with fallback to web/res/weather.json; scheduler in services/, route in routes/
+- Weather data format: `{ current: { weather, temp, tempSense, icon, dust: { pm10, pm25 } }, forecast: [...], update }`
+- Client uses axios with baseURL '/api', token from localStorage attached via `x-access-token` header interceptor
+- Pinia stores use composition API style: `defineStore('name', () => { ... })`
+- Auth store: `useAuthStore()` — user, token, isLoggedIn, isAdmin, login(), autologin(), logout()
+- Settings store: `useSettingsStore()` — announcement, currentSemester, fetchAnnouncement(), fetchCurrentSemester()
+- Router admin guard applied on `/admin` parent route; all admin child routes are auto-protected
+- Stub page components needed for vue-tsc to resolve lazy imports — each page is a minimal `<template>` placeholder until implemented
+- TailwindCSS v3 installed in client/ with postcss.config.ts + tailwind.config.ts; global CSS at src/assets/main.css imported in main.ts
+- DefaultLayout.vue at client/src/layouts/DefaultLayout.vue wraps all pages with header + main + footer
+- App.vue mounts DefaultLayout; DefaultLayout contains RouterView for page content
+- Vite dev proxy: /api AND /gallery both proxied to http://localhost:5710
+- Primary color palette: orange-based (primary-500: #ee7711) — matches cat club theme
+
+---
+
+## 2026-02-27 - US-001
+- What was implemented: Monorepo project structure with Vue 3 + Vite + TypeScript client and Fastify + TypeScript + Drizzle ORM server
+- Files changed:
+  - Root: package.json, tsconfig.json, .prettierrc, eslint.config.js, .gitignore
+  - Client: package.json, tsconfig.json, tsconfig.app.json, tsconfig.node.json, vite.config.ts, index.html, src/main.ts, src/App.vue, src/router/index.ts, src/pages/HomePage.vue, src/vite-env.d.ts
+  - Server: package.json, tsconfig.json, drizzle.config.ts, src/index.ts, src/app.ts
+  - Removed: old Express server files (api/, config/, controllers/, index.js, .babelrc, Dockerfile, ajoumeow.service)
+- **Learnings for future iterations:**
+  - Old server node_modules has permission-locked sharp vendor files from Docker build - cannot rm without sudo
+  - The root tsconfig uses "moduleResolution": "bundler" which works for both Vite (client) and tsx (server)
+  - Client tsconfig uses project references pattern (tsconfig.json → tsconfig.app.json + tsconfig.node.json)
+  - Server entry uses `import './app.js'` extension for ESM compatibility even though source is .ts (tsx handles this)
+---
+
+## 2026-02-27 - US-002
+- What was implemented: Drizzle ORM SQLite schema definitions for all 12 tables in server/src/db/schema.ts
+- Files changed:
+  - server/src/db/schema.ts (new file)
+- Tables defined: members, semesters, semester_members, records, verifications, settings, logs, photos, tags, photo_tags (composite PK), photo_likes, registrations
+- **Learnings for future iterations:**
+  - Drizzle SQLite uses `integer('col', { mode: 'boolean' })` for boolean columns (stored as 0/1)
+  - SQLite default timestamps use `sql\`(datetime('now'))\`` template literal syntax
+  - `real()` type maps to SQLite REAL for floating-point score values
+  - Composite primary keys in Drizzle use `primaryKey({ columns: [...] })` in the third argument callback
+  - The old schema used `student_id` (INT) as PK for namelist tables; new schema normalizes to `members.id` (autoincrement) with `student_id` as unique text field
+  - Old gallery used `photo_id` as VARCHAR filename; new schema uses integer PK with separate `filename` column
+  - Old `gallery_uploader` and `gallery_tag` aggregation tables are dropped in favor of computing aggregates via JOINs
+---
+
+## 2026-02-27 - US-003
+- What was implemented: DB connection module (server/src/db/index.ts) with better-sqlite3 + Drizzle ORM instance, WAL mode, and initial migration generation/application
+- Files changed:
+  - server/src/db/index.ts (new file - DB connection + Drizzle instance)
+  - server/drizzle/0000_uneven_cyclops.sql (generated migration - 12 tables)
+  - server/drizzle/meta/_journal.json, 0000_snapshot.json (migration metadata)
+  - .gitignore (removed *.sql block, kept drizzle migration files tracked)
+- **Learnings for future iterations:**
+  - Exporting the raw `sqlite` instance requires explicit type annotation (`Database` type from better-sqlite3) due to `declaration: true` in tsconfig - TS4023 error otherwise
+  - WAL mode persists in the SQLite DB file once set; `drizzle-kit migrate` creates DB but doesn't set WAL - our app code handles it on startup
+  - drizzle.config.ts already existed from US-001, db:generate/db:migrate scripts also already in both server and root package.json
+  - `.gitignore` had `*.sql` which blocked migration SQL files - had to remove it for drizzle migrations to be tracked
+---
+
+## 2026-02-27 - US-004
+- What was implemented: Migration script (scripts/migrate.ts) for member/semester data from MariaDB to SQLite
+- Files changed:
+  - scripts/migrate.ts (new file - MariaDB→SQLite migration for members, semesters, semester_members, registrations)
+  - package.json (added `migrate` script, `mariadb` devDependency)
+  - package-lock.json (mariadb + deps)
+- Key features:
+  - Auto-discovers namelist_* and register_* tables via SHOW TABLES
+  - Inserts semesters, members (UPSERT by student_id), semester_members (with role)
+  - Migrates register_* → registrations table
+  - SQLite transactions for atomicity (rollback on failure)
+  - Record count comparison output (source rows vs inserted)
+  - Env vars for MariaDB connection (MARIA_HOST, MARIA_PORT, MARIA_USER, MARIA_PASSWORD, MARIA_DATABASE)
+- **Learnings for future iterations:**
+  - `mariadb` package has no default export, use `import * as mariadb from 'mariadb'`
+  - scripts/ directory is outside both client/ and server/ tsconfig scopes, so it doesn't affect `npm run typecheck`
+  - The script runs via `npx tsx scripts/migrate.ts` (or `npm run migrate`)
+  - Old namelist tables use `ID` (int) for student_id and `1365ID` for volunteer_id
+  - Old register tables have `timestamp`, `ID`, `name`, `college`, `department`, `phone` columns
+  - MariaDB on the host system requires auth; docker-compose had MARIADB_ALLOW_EMPTY_ROOT_PASSWORD
+  - SQLite transactions in better-sqlite3 use `sqlite.transaction()` which wraps a synchronous function
+---
+
+## 2026-02-27 - US-005
+- What was implemented: Extended migration script with record→records, verify→verifications, settings→settings, log→logs data migration
+- Files changed:
+  - scripts/migrate.ts (extended with 4 new migration functions + new MariaDB row type interfaces)
+- Key features:
+  - `migrateRecords()`: Maps record.ID (student_id) → members.id FK, warns+skips when no matching member
+  - `migrateVerifications()`: Maps verify.ID (student_id) → members.id FK, warns+skips when no matching member
+  - `migrateSettings()`: Direct copy with name→key column rename, uses onConflictDoUpdate for idempotency
+  - `migrateLogs()`: Direct copy from log table, maps IP→ip column name
+  - Each function outputs source row count vs inserted count
+  - `migrateMembers()` now returns memberMap for downstream use by records/verifications
+- **Learnings for future iterations:**
+  - Old `record` table columns: ID (student_id int), name, date, course, timestamp
+  - Old `verify` table columns: ID (student_id int), name, date, course, score, timestamp
+  - Old `settings` table columns: name (PK), value - "name" maps to "key" in new schema
+  - Old `log` table columns: id, level, IP, endpoint, description, method, status, query, result, timestamp - "IP" maps to "ip"
+  - Drizzle ORM `onConflictDoUpdate` is available as a chained method on insert builder (no extra import needed)
+  - `migrateMembers()` must return `memberMap` so records/verifications can resolve student_id→member.id FK
+- Gallery migration chains: migratePhotos→photoMap + migrateTags→tagMap, both needed by migratePhotoTags and migratePhotoLikes
+- Old gallery used VARCHAR photo_id (filename) as PK; new schema uses integer PK with separate filename column
+- Migration script supports `--dry-run` flag for read-only validation; uses `process.argv.includes('--dry-run')`
+---
+
+## 2026-02-27 - US-006
+- What was implemented: Extended migration script with gallery data migration (photos, tags, photo_tags, photo_likes) + dry-run mode + execution summary
+- Files changed:
+  - scripts/migrate.ts (extended with 4 gallery migration functions, dry-run support, summary output)
+- Key features:
+  - `migratePhotos()`: Maps gallery_photo → photos, uploader_id (student_id) → members.id FK, photo_id (filename) stored as `filename`, returns photoMap for downstream use
+  - `migrateTags()`: Maps gallery_tag → tags, tag_name → name (aggregation fields photo_count/likes/newest_photo_id dropped), returns tagMap
+  - `migratePhotoTags()`: Maps gallery_photo_tag → photo_tags, resolves photo_id→photos.id and tag_name→tags.id via photoMap/tagMap
+  - `migratePhotoLikes()`: Maps gallery_like → photo_likes, resolves photo_id→photos.id via photoMap
+  - `--dry-run` flag: Reads from MariaDB but skips all SQLite writes, builds fake ID maps for validation
+  - `printSummary()`: Formatted table showing source/inserted/skipped counts per table + totals
+  - All existing migration functions (members, records, verifications, settings, logs) also updated with dry-run support and summary tracking
+- **Learnings for future iterations:**
+  - Old `gallery_photo` columns: photo_id (VARCHAR filename PK), size, uploader_id (student_id int), uploader_name, likes, timestamp
+  - Old `gallery_tag` columns: tag_name (PK), photo_count, likes, newest_photo_id - aggregation table, only tag_name migrated
+  - Old `gallery_photo_tag` columns: photo_id (VARCHAR), tag_name - junction table, both need FK remapping
+  - Old `gallery_like` columns: ip, photo_id (VARCHAR), user_id (nullable int), timestamp
+  - `gallery_uploader` is a pure aggregation table (uploader_id, uploader_name, photo_count, likes, newest_photo_id) - not migrated
+  - Gallery migrations chain: migratePhotos returns photoMap, migrateTags returns tagMap, both needed by migratePhotoTags
+  - Dry-run mode uses fake auto-incrementing IDs to build maps without DB writes
+---
+
+## 2026-02-27 - US-007
+- What was implemented: Fastify app factory with @fastify/cors, @fastify/static (gallery images), global JSON error handler, graceful shutdown
+- Files changed:
+  - server/src/app.ts (enhanced with CORS, static file serving, error handler)
+  - server/src/index.ts (enhanced with graceful SIGINT/SIGTERM shutdown)
+  - .gitignore (added server/data/gallery/* ignore pattern with .gitkeep exception)
+  - server/data/gallery/.gitkeep (new - empty directory placeholder)
+  - server/.env (updated JWTSecret→JWT_SECRET, added PORT)
+- **Learnings for future iterations:**
+  - Fastify `setErrorHandler` generic must be typed as `<FastifyError>` to avoid TS18046 on `error` param in strict mode
+  - `@fastify/static` requires the `root` directory to exist on startup (warning level log if missing)
+  - Use `path.resolve(__dirname, '..', 'data', 'gallery')` for gallery path since __dirname is server/src/
+  - ESM needs `const __dirname = path.dirname(fileURLToPath(import.meta.url))` since __dirname is not available
+  - `dotenv/config` import in index.ts must be the first import to ensure env vars available for all modules
+  - Server .env now uses JWT_SECRET (was JWTSecret in old Express stack)
+---
+
+## 2026-02-27 - US-008
+- What was implemented: Request logging middleware (Fastify onResponse hook) and daily log cleanup scheduler (node-schedule)
+- Files changed:
+  - server/src/plugins/logging.ts (new - Fastify plugin with onResponse + onError hooks, logs to DB)
+  - server/src/services/scheduler.ts (new - node-schedule daily midnight job to delete logs >30 days)
+  - server/src/app.ts (registered loggingPlugin)
+  - server/src/index.ts (imported and called startScheduler after listen)
+  - server/package.json (added node-schedule, fastify-plugin, @types/node-schedule)
+- **Learnings for future iterations:**
+  - Fastify plugins use `fastify-plugin` (fp) wrapper to ensure encapsulation is broken and hooks apply globally
+  - `onResponse` hook fires after the response is sent — ideal for non-blocking logging
+  - `onError` hook fires when an error occurs during the request lifecycle — use it to capture error details (stack trace) in query/result fields
+  - `node-schedule` cron syntax: `'0 0 * * *'` for daily midnight; runs in server TZ (should be Asia/Seoul)
+  - Drizzle `lt()` comparator works with SQLite datetime string values; `sql\`datetime('now', '-30 days')\`` for relative date computation
+  - IP extraction: prefer `x-forwarded-for` header (first value) for proxy setups, fall back to `request.ip`
+- Auth plugin exports: `authenticate` and `requireAdmin` preHandler functions, `signToken` helper, `UserPayload` interface
+- JWT token header: `x-access-token` (not Authorization Bearer)
+- UserPayload fields: memberId, studentId, role, semester (camelCase)
+---
+
+## 2026-02-27 - US-009
+- What was implemented: JWT authentication plugin with authenticate/requireAdmin preHandler hooks
+- Files changed:
+  - server/src/plugins/auth.ts (new - JWT auth plugin with decorateRequest, authenticate, requireAdmin, signToken)
+  - server/src/app.ts (registered authPlugin before loggingPlugin)
+  - server/package.json (added jsonwebtoken + @types/jsonwebtoken)
+- Key features:
+  - `authPlugin`: fp-wrapped plugin that decorates `request.user` with `UserPayload` type
+  - `authenticate`: reads `x-access-token` header, verifies JWT via `jwt.verify()`, injects decoded payload into `request.user`, returns 401 if missing/invalid
+  - `requireAdmin`: calls `authenticate` first, then checks `role !== '회원'`, returns 403 if not admin
+  - `signToken`: creates JWT with 365-day expiry using JWT_SECRET env var
+  - Fastify module augmentation for `request.user` typing
+- **Learnings for future iterations:**
+  - Fastify `decorateRequest` needs a null initial value cast to the interface type: `null as unknown as UserPayload`
+  - The `authenticate` and `requireAdmin` functions are standalone preHandlers (not hooks), imported and used as `{ preHandler: authenticate }` on routes
+  - `requireAdmin` calls `authenticate` internally, so routes only need one preHandler
+  - Check `reply.sent` after calling authenticate in requireAdmin to avoid double-sending responses
+  - `jsonwebtoken` default import works fine in ESM with tsx (no `* as jwt` needed)
+---
+
+## 2026-02-27 - US-010
+- What was implemented: Auth API routes - POST /api/auth/login (student_id login with JWT issuance) and POST /api/auth/autologin (JWT verification + re-issuance)
+- Files changed:
+  - server/src/routes/auth.ts (new - login + autologin endpoints)
+  - server/src/app.ts (registered authRoutes)
+  - server/package.json (added zod dependency)
+- **Learnings for future iterations:**
+  - Route files export a default async function taking `FastifyInstance`, registered via `app.register()` in app.ts
+  - Zod v4 is installed (`zod` package); use `z.object({}).safeParse()` for request validation, return 400 on failure
+  - Helper functions (getCurrentSemester, findMemberInSemester) can be defined at module scope in route files for reuse
+  - `preHandler: authenticate` is used as route option for authenticated endpoints, not a global hook
+  - Login response shape: `{ token, user: { id, studentId, name, role, semester } }`
+---
+
+## 2026-02-27 - US-011
+- What was implemented: Users list/search API routes - GET /api/users/list (current semester members), GET /api/users/list?all=true (all semester names), GET /api/users/name?q= (name LIKE search)
+- Files changed:
+  - server/src/routes/users.ts (new file - users list & name search endpoints)
+  - server/src/app.ts (registered usersRoutes)
+- **Learnings for future iterations:**
+  - All three endpoints use `requireAdmin` preHandler for admin-only access
+  - `getCurrentSemester()` helper is duplicated across route files (auth.ts, users.ts) — could be extracted to a shared util in the future
+  - Drizzle `like()` function imported from `drizzle-orm` for LIKE queries
+  - Query params are accessed via `request.query as { ... }` type cast for simple params, or Zod safeParse for validated params
+---
+
+## 2026-02-27 - US-012
+- What was implemented: Member registration, update, and deletion API routes in server/src/routes/users.ts
+- Files changed:
+  - server/src/routes/users.ts (added POST /api/users, PUT /api/users/:studentId, DELETE /api/users/:studentId)
+- Key features:
+  - POST /api/users: Handles both new members (INSERT members + semester_members) and returning members (INSERT semester_members only), with student_id duplicate check and 409 conflict response
+  - PUT /api/users/:studentId: Updates members table fields (name, college, department, phone, birthday, volunteer_id) and semester_members.role separately
+  - DELETE /api/users/:studentId: Removes semester_members record for current semester only, keeps members record intact
+  - All endpoints use requireAdmin preHandler
+  - Zod schemas validate request bodies (createMemberSchema, updateMemberSchema)
+- **Learnings for future iterations:**
+  - Drizzle `.returning()` on INSERT returns the inserted row(s) — useful for getting auto-generated ID
+  - Drizzle `.returning()` on DELETE returns deleted rows — useful for checking if anything was actually deleted
+  - PUT endpoint uses dynamic update object build pattern: accumulate fields into a Record, then pass to `.set()` if non-empty
+  - Role lives on semester_members (per-semester), not on members table — updating role requires knowing the current semester
+  - Route params accessed via `request.params as { paramName: string }` type cast
+---
+
+## 2026-02-27 - US-013
+- What was implemented: Registration application API routes (GET and POST /api/users/register) added to existing users.ts
+- Files changed:
+  - server/src/routes/users.ts (added GET /api/users/register, POST /api/users/register, registerSchema)
+- Key features:
+  - GET /api/users/register: requireAdmin, returns current semester registrations from registrations table
+  - POST /api/users/register: No auth (public), validates body with Zod, checks duplicate against both semester_members and existing registrations, inserts into registrations table
+  - Dual duplicate check: prevents re-registration if already a member OR already submitted an application
+- **Learnings for future iterations:**
+  - Registration routes fit naturally in users.ts alongside member management — no new route file needed
+  - The `registrations` table has a `semesterId` FK, so all queries filter by current semester
+  - POST /api/users/register is intentionally unauthenticated (public endpoint for new applicants)
+  - Duplicate checking should cover both `semester_members` (approved members) and `registrations` (pending applications)
+---
+
+## 2026-02-27 - US-014
+- What was implemented: Records CRUD API routes (GET /api/records, POST /api/records, DELETE /api/records/:id)
+- Files changed:
+  - server/src/routes/records.ts (new file - records CRUD endpoints)
+  - server/src/app.ts (registered recordsRoutes)
+- Key features:
+  - GET /api/records?from=YYYY-MM-DD&to=YYYY-MM-DD: Date range query with JOIN to members for names, non-admin users see masked names (first character + asterisks)
+  - POST /api/records: authenticate preHandler, creates record with member_id from request.user
+  - DELETE /api/records/:id: authenticate preHandler, only the owner (record.memberId === request.user.memberId) can delete their own record
+  - Zod validation for query params (date format regex) and request body
+- **Learnings for future iterations:**
+  - For optional authentication (GET /api/records), manually check x-access-token header and jwt.verify instead of using authenticate preHandler (which would reject unauthenticated users)
+  - Name masking pattern: `name[0] + '*'.repeat(name.length - 1)` for privacy
+  - `gte()` and `lte()` from drizzle-orm work for date string comparisons in SQLite (YYYY-MM-DD format sorts lexicographically)
+  - Route params from Fastify are always strings — parse with parseInt for numeric IDs
+---
+
+## 2026-02-27 - US-015
+- What was implemented: Statistics and map API routes added to server/src/routes/records.ts
+- Files changed:
+  - server/src/routes/records.ts (added GET /api/records/statistics and GET /api/records/map endpoints)
+- Key features:
+  - GET /api/records/statistics?type=monthly|yearly|custom&from=&to=: Aggregates verified feeding activities per member (count + mileage score sum) from verifications table joined with members
+  - Type defaults: monthly = current month, yearly = current year, custom requires explicit from/to
+  - GET /api/records/map: Authenticated endpoint that reads and returns web/res/map.json GPS feeding location data
+  - Zod validation for statistics query params (type enum, optional from/to date format)
+- **Learnings for future iterations:**
+  - Statistics use verifications table (not records) since verifications have mileage scores
+  - Drizzle `sql<number>` template tag allows typed raw SQL expressions for aggregations like `count()` and `sum()`
+  - `coalesce(sum(...), 0)` ensures zero instead of null for members with no scores
+  - Map data is static JSON at web/res/map.json — read with fs.readFileSync and JSON.parse
+  - The map.json structure: { "home": {...}, "1코스": { color, data: [{name, detail, lat, lon}] }, ... }
+  - course.json has route tracks with lat/lng polylines — separate from map.json location points
+---
+
+## 2026-02-27 - US-016
+- What was implemented: Verification CRUD API routes (GET /api/verify, GET /api/verify/latest, POST /api/verify, DELETE /api/verify/:id)
+- Files changed:
+  - server/src/routes/verify.ts (new file - verify CRUD endpoints)
+  - server/src/app.ts (registered verifyRoutes)
+- Key features:
+  - GET /api/verify: Returns today's verifications (joined with members) + unverified records (records with no matching verification for same member/date/course) using NOT EXISTS subquery
+  - GET /api/verify/latest: Returns most recent verification date (ORDER BY date DESC LIMIT 1)
+  - POST /api/verify: requireAdmin, creates verification with member_id, date, course, score (Zod validated)
+  - DELETE /api/verify/:id: requireAdmin, deletes verification by ID with 404 check
+- **Learnings for future iterations:**
+  - Use `sql` template with `NOT EXISTS (SELECT 1 ...)` subquery in Drizzle for anti-join patterns (finding records without matching verifications)
+  - Today's date in ISO format: `new Date().toISOString().slice(0, 10)` — works for SQLite YYYY-MM-DD comparisons
+  - GET /api/verify/latest uses `orderBy(sql\`...\`)` with template literal for DESC ordering on a specific column
+---
+
+## 2026-02-27 - US-017
+- What was implemented: 1365 volunteer certificate generation API route (GET /api/verify/1365) that aggregates verification records and POSTs to Google Apps Script
+- Files changed:
+  - server/src/routes/verify.ts (added GET /api/verify/1365 endpoint, certificateQuerySchema, new imports)
+  - server/.env (added MACRO_1365_URL environment variable)
+- Key features:
+  - GET /api/verify/1365?start=YYYY-MM-DD&end=YYYY-MM-DD&mask=true: Admin-only endpoint
+  - Queries current semester members (with volunteer_id, birthday, phone) via semester_members JOIN members
+  - Queries verifications in date range using Drizzle `between()`
+  - Finds chief (회장 role) from semester members for certificate signer info
+  - Aggregates multiple activities per member per date (hour++ for same member+date)
+  - Timestamp logic: uses verifiedAt time if same day, defaults to 1900
+  - POSTs payload to Google Apps Script macro URL (MACRO_1365_URL env var) with data, cheif, mask fields
+  - Returns Google Apps Script response directly to client
+  - Zod validation for start/end query parameters
+- **Learnings for future iterations:**
+  - The old code used `axios` for the macro POST; new code uses native `fetch` (available in Node 18+)
+  - MACRO_1365_URL must be set in server/.env for the endpoint to work
+  - The Google Apps Script payload keeps the old field names (ID, volID, cheif) for backward compatibility with the existing script
+  - Date format for the macro: `yyyy.mm.dd` (dots, not dashes) — converted via `date.replace(/-/g, '.')`
+  - `between()` from drizzle-orm handles inclusive date range queries on text date columns
+  - The old code used `dateformat` library; new code uses simple string slicing since dates are already in ISO format
+---
+
+## 2026-02-27 - US-018
+- What was implemented: Settings API routes (GET /api/settings/:key and PUT /api/settings/:key) for reading and updating app settings
+- Files changed:
+  - server/src/routes/settings.ts (new file - settings CRUD endpoints)
+  - server/src/app.ts (registered settingsRoutes)
+- Key features:
+  - GET /api/settings/:key: Public endpoint, returns setting key+value from settings table, 404 if not found
+  - PUT /api/settings/:key: requireAdmin, Zod-validated body with `value` field, UPSERT via onConflictDoUpdate
+- **Learnings for future iterations:**
+  - Settings route is very simple (2 endpoints) since the settings table has just key+value columns
+  - UPSERT pattern: `db.insert(settings).values({...}).onConflictDoUpdate({ target: settings.key, set: { value } })` handles both create and update
+  - GET /api/settings/:key is unauthenticated — any visitor can read settings like announcement text
+---
+
+## 2026-02-27 - US-019
+- What was implemented: Gallery read API routes (GET /api/gallery/tags, GET /api/gallery/photos, GET /api/gallery/photos/:id)
+- Files changed:
+  - server/src/routes/gallery.ts (new file - gallery read endpoints)
+  - server/src/app.ts (registered galleryRoutes)
+- Key features:
+  - GET /api/gallery/tags: Returns all tags with per-tag photo count and likes count via LEFT JOIN + GROUP BY aggregation
+  - GET /api/gallery/photos: Paginated photo list with sort (latest/likes), tag filter (via subquery), and uploader filter; returns total count for pagination
+  - GET /api/gallery/photos/:id: Single photo detail with uploader name and tags list (via JOIN photo_tags → tags)
+  - All endpoints are public (no auth required)
+  - Zod validation for query parameters with string-to-number transform
+- **Learnings for future iterations:**
+  - Zod `.default()` must come BEFORE `.transform()` when dealing with query params (strings) — otherwise TS complains about default type mismatch
+  - Tag filtering uses a subquery to get matching photo IDs, then builds an IN clause via `sql.join()` — cleaner than deeply nested JOINs
+  - LEFT JOIN is essential for tags aggregation (tags with 0 photos should still appear)
+  - `coalesce(sum(...), 0)` prevents null results for tags with no photos
+---
+
+## 2026-02-27 - US-020
+- What was implemented: Gallery photo upload API route (POST /api/gallery/photos) with multipart file upload, thumbnail generation, and tag processing
+- Files changed:
+  - server/src/routes/gallery.ts (added POST /api/gallery/photos endpoint)
+  - server/src/app.ts (registered @fastify/multipart plugin)
+  - server/package.json (added @fastify/multipart, sharp dependencies)
+- Key features:
+  - @fastify/multipart for file upload handling (50MB limit)
+  - Timestamp-based filename generation (e.g., 1234567890.jpg)
+  - Sharp thumbnail generation (1000px width resize, `thumb_` prefix, withoutEnlargement)
+  - Tags parsed from multipart field as JSON array string
+  - Tags UPSERT (onConflictDoNothing) + photo_tags INSERT
+  - All DB operations wrapped in better-sqlite3 transaction via `sqlite.transaction()`
+  - Returns 201 with created photo data
+  - Image MIME type validation
+  - Gallery directory auto-creation with `mkdirSync({ recursive: true })`
+- **Learnings for future iterations:**
+  - `@fastify/multipart` `request.file()` returns file data + `fields` object for other form fields
+  - Multipart field access: `data.fields.tags` returns a Multipart field object; access `.value` for the string content
+  - `data.toBuffer()` reads the entire file into memory — fine for images under 50MB
+  - `sharp` has bundled TypeScript types — no separate `@types/sharp` needed
+  - `sqlite.transaction()` returns a function that must be called — `const txn = sqlite.transaction(() => {...}); txn();`
+  - Drizzle `.returning().all()` is needed in synchronous better-sqlite3 context (not `.get()` which returns single row)
+  - `onConflictDoNothing({ target: tags.name })` for UPSERT when we only need the existing row, not an update
+---
+
+## 2026-02-27 - US-021
+- What was implemented: Gallery photo deletion (DELETE /api/gallery/photos/:id) and like (POST /api/gallery/photos/:id/like) API routes
+- Files changed:
+  - server/src/routes/gallery.ts (added DELETE and POST like endpoints, imported photoLikes, and, gt from drizzle-orm)
+- Key features:
+  - DELETE /api/gallery/photos/:id: authenticate preHandler, uploader-only check (403 if not owner), deletes photo_tags + photo_likes + photos in transaction, removes file + thumbnail from disk
+  - POST /api/gallery/photos/:id/like: IP-based (x-forwarded-for fallback to request.ip), 30-day cooldown per IP per photo using `datetime('now', '-30 days')`, photo_likes INSERT + photos.likes_count increment in transaction, 429 status on cooldown violation
+- **Learnings for future iterations:**
+  - Drizzle `gt()` works with SQLite `datetime()` expressions for date comparison in WHERE clauses
+  - File deletion should be wrapped in try/catch (file may not exist on disk even if DB record exists)
+  - Like endpoint is intentionally unauthenticated — uses IP for rate limiting, not user identity
+  - Transaction pattern for multi-table deletes: delete dependent tables first (photo_tags, photo_likes), then parent (photos)
+---
+
+## 2026-02-27 - US-022
+- What was implemented: Gallery ranking (GET /api/gallery/ranking) and photographer stats (GET /api/gallery/photographers) API routes
+- Files changed:
+  - server/src/routes/gallery.ts (added ranking and photographers endpoints, rankingQuerySchema, imported gte/lt)
+- Key features:
+  - GET /api/gallery/ranking?type=weekly|monthly|last_month: Counts likes from photo_likes within the date range per photo, returns top 20 photos ranked by period likes
+  - GET /api/gallery/photographers: Aggregates per-uploader stats (photo count, total likes, latest photo datetime, latest filename via correlated subquery)
+  - Both endpoints are public (no auth required)
+  - Ranking uses `gte`/`lt` for datetime range filtering on photo_likes.createdAt
+- **Learnings for future iterations:**
+  - SQLite datetime comparisons work with ISO-formatted strings (YYYY-MM-DD HH:MM:SS) using `gte()`/`lt()` from drizzle-orm
+  - For "latest filename per group" pattern, use a correlated subquery in the SELECT: `(SELECT col FROM table WHERE group_col = outer.group_col ORDER BY ... LIMIT 1)`
+  - Date range for "last_month": use `new Date(year, month-1, 1)` for start, `new Date(year, month, 0)` for last day of previous month
+  - Ranking endpoints are added to gallery.ts (not a new route file) since they're part of the gallery feature
+---
+
+## 2026-02-27 - US-023
+- What was implemented: Server log query API route (GET /api/logs) with filtering and pagination
+- Files changed:
+  - server/src/routes/logs.ts (new file - logs query endpoint)
+  - server/src/app.ts (registered logsRoutes)
+- Key features:
+  - GET /api/logs?from=&to=&level=&search=&page=&limit=: requireAdmin, paginated log query
+  - Date range filter (from/to with timestamp padding for full-day coverage)
+  - Log level filter (info/error)
+  - Keyword search (description LIKE)
+  - Pagination with total count and totalPages
+  - Results ordered by ID descending (newest first)
+  - Zod validation for all query parameters
+- **Learnings for future iterations:**
+  - Drizzle `and()` can take an array spread of conditions; pass `undefined` when no conditions (returns all rows)
+  - For date range on timestamp columns, pad with ` 00:00:00` and ` 23:59:59` for inclusive full-day coverage
+  - Logs route is simple (single GET endpoint) — separate file keeps it clean since it's a distinct admin feature
+---
+
+## 2026-02-27 - US-024
+- What was implemented: Weather data collection scheduler (30-min interval) and GET /api/weather API endpoint
+- Files changed:
+  - server/src/services/weather.ts (new file - weather fetch + cache + scheduler)
+  - server/src/routes/weather.ts (new file - GET /api/weather endpoint)
+  - server/src/app.ts (registered weatherRoutes)
+  - server/src/index.ts (imported and called startWeatherScheduler after listen)
+- Key features:
+  - `fetchWeatherData()`: Attempts to fetch current weather + dust from kweather.co.kr HTML pages via native `fetch` with 10s timeout, parses with regex
+  - `loadFallbackWeatherJson()`: Reads legacy web/res/weather.json as fallback when kweather fetch fails or returns no usable data
+  - `startWeatherScheduler()`: Runs fetchWeatherData immediately on startup, then every 30 minutes via node-schedule (`*/30 * * * *`)
+  - `getWeatherData()`: Returns in-memory cached WeatherData or null
+  - GET /api/weather: Returns cached weather data, 503 if not yet available
+  - All fetch errors are caught and logged without crashing the app
+- **Learnings for future iterations:**
+  - kweather.co.kr pages render weather data via JavaScript (Selenium was needed in old Python scraper) — plain HTTP fetch may return incomplete HTML
+  - Native `fetch` with `AbortSignal.timeout()` provides request timeouts without external libraries
+  - `Promise.allSettled()` allows parallel fetches where individual failures don't block the others
+  - Weather data format: `{ current: { weather, temp, tempSense, icon, dust: { pm10, pm25 } }, forecast: [...], update }`
+  - Fallback weather.json at web/res/weather.json has the same format
+  - Weather route is a simple read-only endpoint (no auth required) — separate route file for clean organization
+---
+
+## 2026-02-27 - US-025
+- What was implemented: Vue app scaffold — full router with all page routes, Pinia auth/settings stores, axios API client with token interceptor, navigation guards
+- Files changed:
+  - client/src/router/index.ts (rewritten with all routes + admin guard)
+  - client/src/stores/auth.ts (new - Pinia auth store with login/autologin/logout)
+  - client/src/stores/settings.ts (new - Pinia settings store with announcement/currentSemester)
+  - client/src/utils/api.ts (new - axios instance with x-access-token interceptor)
+  - client/package.json (added axios dependency)
+  - Stub page components: LoginPage, TimetablePage, GalleryPage, RegisterPage, StatsPage, WelcomePage, GuidePage, GoodsPage, ClubfairPage, FishbreadPage
+  - Stub admin page components: DashboardPage, MembersPage, RegistrationsPage, VerifyPage, SettingsPage, LogsPage, CertificatePage
+- Key features:
+  - Routes: /, /login, /timetable, /gallery, /register, /stats, /welcome, /guide, /goods, /clubfair, /fishbread, /admin/* (7 sub-routes)
+  - Admin guard (`requireAdmin`): redirects unauthenticated to /login, non-admin to /home; applied as `beforeEnter` on /admin parent route
+  - Auth store: login via POST /api/auth/login, autologin via POST /api/auth/autologin, token persisted in localStorage
+  - Settings store: fetches announcement and currentSemester from GET /api/settings/:key
+  - API client: axios instance with baseURL '/api', auto-attaches x-access-token header from localStorage
+- **Learnings for future iterations:**
+  - Vue Router `NavigationGuardWithThis<undefined>` is the correct type for standalone `beforeEnter` guards
+  - Admin guard on parent route (`/admin`) applies to all children — no need to repeat on each child route
+  - Stub page components (just `<template><div>PageName</div></template>`) are needed so vue-tsc can resolve lazy imports
+  - Pinia setup stores (composition API style with `defineStore('name', () => {...})`) work well with TypeScript
+  - `requireAuth` guard was not used at router level — individual pages handle auth states internally (show/hide UI)
+  - axios baseURL '/api' works with Vite dev proxy (`/api → http://localhost:5710`)
+---
+
+## 2026-02-27 - US-026
+- What was implemented: TailwindCSS v3 setup, PostCSS config, global CSS, DefaultLayout.vue with responsive header/nav/footer, App.vue integration
+- Files changed:
+  - client/package.json (added tailwindcss, postcss, autoprefixer devDependencies)
+  - client/tailwind.config.ts (new - TailwindCSS config with orange primary palette)
+  - client/postcss.config.ts (new - PostCSS config with tailwindcss + autoprefixer)
+  - client/src/assets/main.css (new - Tailwind directives + base font-family)
+  - client/src/layouts/DefaultLayout.vue (new - header + nav + hamburger menu + footer + RouterView)
+  - client/src/App.vue (updated - mounts DefaultLayout, triggers autologin on mount)
+  - client/src/main.ts (updated - imports global CSS)
+  - client/vite.config.ts (updated - added /gallery proxy to Fastify)
+- **Learnings for future iterations:**
+  - TailwindCSS v3 requires postcss.config.ts and tailwind.config.ts at the client/ root
+  - `tailwind.config.ts` requires `import type { Config }` and `satisfies Config` for type checking
+  - DefaultLayout.vue includes both desktop nav and mobile hamburger menu (v-if toggle on mobileMenuOpen ref)
+  - Vue `active-class` attribute on RouterLink applies classes when the route is active — use `!` prefix for Tailwind class overrides
+  - App.vue calls auth.autologin() on mount so returning users get auto-logged in
+  - `/gallery` proxy needed in dev mode since @fastify/static serves gallery images on the server
+  - ESLint vue/attributes-order rule requires `:aria-expanded` and `aria-label` before `@click` event handlers
+---
+
+## 2026-02-27 - US-027
+- What was implemented: Login page (client/src/pages/LoginPage.vue) with student ID form, auto-login on page load, error handling, and redirect on success
+- Files changed:
+  - client/src/pages/LoginPage.vue (replaced stub with full implementation)
+- Key features:
+  - Student ID input form with submit button
+  - On login success: stores token/user in auth store, redirects to home
+  - On login failure: shows error message (401 = unregistered, other = generic error)
+  - On page mount: if token exists in localStorage, attempts autologin API; redirects to home if successful
+  - If already logged in, immediately redirects to home
+  - Loading state disables input and button during API calls
+  - Link to registration page for non-members
+- **Learnings for future iterations:**
+  - LoginPage handles its own autologin attempt on mount (separate from App.vue's global autologin) for immediate redirect
+  - Auth store's `login()` throws on failure — use try/catch in the component to handle errors
+  - Use `router.replace()` instead of `router.push()` for login redirects to avoid back-button returning to login page
+  - Axios error type cast: `(err as { response?: { status?: number } })` for accessing status code without importing AxiosError
+  - `inputmode="numeric"` helps mobile keyboards show number pad for student ID input
+---
+
+## 2026-02-27 - US-028
+- What was implemented: Main homepage (client/src/pages/HomePage.vue) with hero banner, weather card, announcement card, today's feeding schedule, and activities grid
+- Files changed:
+  - client/src/pages/HomePage.vue (replaced stub with full implementation)
+  - client/public/images/ (new - copied banner.jpg, feeding.jpg, tnr.jpg, rescue.jpg, shelter.jpg, etc.jpg, logo.png from web/res/image/)
+  - client/public/images/weather/ (new - copied 13 weather icon PNGs from web/res/image/weather/)
+- Key features:
+  - Hero section: Full-width banner image with gradient overlay, club name/description, CTA buttons (register + timetable)
+  - Weather card: Current temp/conditions with weather icon, dust level indicators (PM10/PM2.5 with color-coded levels), 5-day forecast strip
+  - Announcement card: Displays settings.announcement from Pinia settings store with whitespace-pre-wrap formatting
+  - Today's feeding card: Groups records by course (1코스/2코스/3코스) with color-coded badges, shows member names, links to timetable
+  - Activities section: 5-item image grid with hover zoom effect and gradient name overlay
+  - Responsive: 1-col mobile → 2-col tablet → 3-col desktop for info cards; 2-col → 5-col for activities
+- **Learnings for future iterations:**
+  - Image assets from web/res/image/ should be copied to client/public/images/ for Vite to serve them
+  - Weather icons use `icon01`-`icon13` naming, referenced via `weather.current.icon` from the API
+  - Dust level thresholds: ≤30 좋음(blue), ≤80 보통(green), ≤150 나쁨(orange), >150 매우나쁨(red)
+  - Records API returns masked names (first char + asterisks) for non-admin users — no special handling needed in the component
+  - `recordsByCourse` computed property groups records by course string for sectioned display
+  - Use `v-else-if` chains with loading states for async data sections (loading spinner → data → empty state)
+---
+
+## 2026-02-27 - US-029
+- What was implemented: Timetable calendar view (client/src/pages/TimetablePage.vue) with monthly calendar grid, prev/next month navigation, course-colored records per date cell
+- Files changed:
+  - client/src/pages/TimetablePage.vue (replaced stub with full calendar implementation)
+- Key features:
+  - Monthly calendar grid with 7-column layout (Sun-Sat headers with color-coded weekday names)
+  - Previous/next month navigation buttons + "오늘" (today) button
+  - Previous/next month date padding for complete weeks
+  - Each date cell shows courses (1코스/2코스/3코스) with color-coded backgrounds and dot indicators
+  - Member names displayed on sm+ screens, count-only on mobile for space efficiency
+  - Today's date highlighted with primary-500 circle
+  - Non-current-month dates displayed with muted gray styling
+  - Loading spinner during API fetch
+  - Records grouped by date → course using computed `recordsByDate` map
+  - Fetches GET /api/records with month date range on mount and on month change (via watch)
+  - Name masking handled server-side (non-admin users receive masked names automatically)
+  - Course legend bar showing color codes
+- **Learnings for future iterations:**
+  - Calendar padding: use `new Date(year, month, 0).getDate()` to get last day of previous month
+  - Next month padding: fill to complete last row with `7 - (days.length % 7)` remaining slots
+  - The records API already handles name masking server-side based on x-access-token — no client-side logic needed
+  - `text-[10px]` Tailwind arbitrary value for very small text in calendar cells
+  - `hidden sm:flex` pattern for responsive show/hide of name lists in calendar cells
+---
+
+## 2026-02-27 - US-030
+- What was implemented: Meal application/cancellation functionality on the TimetablePage calendar
+- Files changed:
+  - client/src/pages/TimetablePage.vue (modified — added modal, cancel dialog, auth integration)
+- Features:
+  - Click on a calendar date (current month) opens a meal application modal with date display and course selector dropdown (1코스/2코스/3코스)
+  - Submit calls POST /api/records, then auto-refreshes the calendar
+  - Own records are highlighted with primary color; clicking them opens a cancel confirmation dialog
+  - Cancel calls DELETE /api/records/:id, then auto-refreshes the calendar
+  - Non-logged-in users: no click interaction on dates, no apply modal, no highlighted names
+  - Error handling with inline error message display in the modal
+  - Both modals use Teleport to body with backdrop click to close
+- **Learnings for future iterations:**
+  - Use `@click.stop` on inner elements to prevent parent click handler from firing (e.g., record name click vs. date cell click)
+  - `isOwnRecord()` comparison uses `auth.user.id === record.memberId` — depends on auth store user having `id` field that matches memberId from API
+  - `Teleport to="body"` for modals ensures proper z-index stacking above the layout
+  - API error responses follow `{ error: string, statusCode: number }` format — access via `e.response.data.error`
+---
+
+## 2026-02-27 - US-031
+- What was implemented: Gallery photo grid view page with responsive layout, tag filtering, sort options, and infinite scroll pagination
+- Files changed:
+  - client/src/pages/GalleryPage.vue (rewritten from stub)
+- Features:
+  - Responsive photo thumbnail grid (2 cols mobile, 3 cols tablet, 4 cols desktop)
+  - Infinite scroll loading via scroll event listener (loads more when near bottom)
+  - Tag filter dropdown populated from GET /api/gallery/tags
+  - Sort toggle (최신순/좋아요순) with segmented button UI
+  - Photo count display
+  - Likes badge overlay on thumbnails
+  - Uploader name and date info below each photo
+  - Empty state with icon when no photos
+  - Loading spinners for initial load and load-more
+  - Lazy loading on images (loading="lazy")
+  - Click navigates to gallery route with photo query param (for future detail modal in US-032)
+- **Learnings for future iterations:**
+  - Gallery API returns `{ data: Photo[], total: number, page: number, limit: number }` format
+  - Tags API returns `{ data: Tag[] }` with photoCount and likesCount per tag
+  - Thumbnails are served at `/gallery/thumb_{filename}` via @fastify/static
+  - Use `window.addEventListener('scroll', handler)` with cleanup in `onUnmounted` for infinite scroll
+  - The gallery route query param `?photo=id` is prepared for US-032 photo detail modal
+---
+
+## 2026-02-27 - US-032
+- What was implemented: Gallery photo detail modal with full image view, metadata display, and like functionality
+- Files changed:
+  - client/src/components/PhotoDetailModal.vue (new) — modal component with photo detail, tags, like button with 30-day cooldown error handling
+  - client/src/pages/GalleryPage.vue (modified) — integrated modal via route query param sync, added open/close/liked handlers
+- **Learnings for future iterations:**
+  - Modal state synced with route query params (`?photo=id`) for deep-linking support
+  - Teleport to body for modal overlay to avoid z-index issues within layout
+  - Lock body scroll (`document.body.style.overflow = 'hidden'`) when modal is open, restore on unmount
+  - API error handling: check `err.response.status` for specific codes (429 for rate limit)
+  - Use `watch` with `{ immediate: true }` to handle initial route query on page load
+---
+
+## 2026-02-28 - US-033
+- What was implemented: Gallery photo upload feature with upload button (logged-in only), upload modal with drag-and-drop file selection, image preview, tag input with autocomplete from existing tags, and multipart/form-data POST to the server
+- Files changed:
+  - client/src/components/PhotoUploadModal.vue (new) — upload modal with file drop zone, preview, tag autocomplete, loading indicator
+  - client/src/pages/GalleryPage.vue (modified) — added upload button for logged-in users, integrated PhotoUploadModal, refresh gallery on upload success
+- **Learnings for future iterations:**
+  - For multipart uploads via axios, pass FormData directly with `Content-Type: multipart/form-data` header
+  - Tags are sent as a JSON-stringified array in a `tags` form field alongside the `file` field
+  - `URL.createObjectURL()` for file preview, and `URL.revokeObjectURL()` on cleanup to prevent memory leaks
+  - Tag autocomplete: use `@focus`/`@blur` with setTimeout on blur to allow click on suggestion before dropdown hides
+  - `@mousedown.prevent` on suggestion buttons prevents blur from firing before click registers
+---
+
+## 2026-02-28 - US-034
+- What was implemented: Gallery ranking and photographer views with tab-based navigation
+- Files changed:
+  - client/src/pages/GalleryPage.vue (major update - added view tabs, ranking view, photographer view)
+- Key features added:
+  - Three-tab view switcher: 전체 (All) / 랭킹 (Ranking) / 포토그래퍼 (Photographers)
+  - Ranking view with weekly/monthly/last_month sub-tabs, showing photos ranked by likes in period
+  - Photographer view as card grid with cover photo, upload count, and total likes
+  - Clicking a photographer switches to 'all' view filtered by that uploader
+  - Uploader filter badge with clear button
+- **Learnings for future iterations:**
+  - Vue computed functions must return a value for all paths (vue/return-in-computed-property); add `default` case in switch
+  - The existing gallery API already supports `uploader` query param for filtering by photographer
+  - `window`/`document` no-undef lint errors are pre-existing in the client (eslint env config issue), not blocking
+  - Gallery ranking API returns `likesInPeriod` (likes in the selected time window) and `totalLikes` (all-time)
+---
+
+## 2026-02-28 - US-035
+- What was implemented: RegisterPage.vue - 동아리 가입 신청 페이지
+- Files changed:
+  - client/src/pages/RegisterPage.vue (full implementation replacing stub)
+- Features:
+  - Registration form with name, student ID, college (dropdown), department (dependent dropdown), phone
+  - Client-side validation: required fields, 9-digit student ID, 010-XXXX-XXXX phone format
+  - Auto-hyphen formatting for phone input
+  - Privacy consent checkbox with policy text
+  - New/returning member guidance info box
+  - Success confirmation view after submission
+  - Server error handling (409 duplicate detection with specific messages)
+  - College/department data from web/res/college.json embedded in component
+  - POST /api/users/register API call
+- **Learnings for future iterations:**
+  - College→department cascading dropdowns use a static JSON map; the old site loaded this from web/res/college.json
+  - Phone auto-hyphen pattern: strip non-digits, then slice at 3/7 positions
+  - Server returns 409 with different error messages for "already a member" vs "already applied" — check `response.data.error` string to differentiate
+  - Privacy consent is required before form submission (checkbox validation)
+---
