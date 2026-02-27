@@ -18,12 +18,19 @@ const createVerificationSchema = z.object({
 });
 
 export default async function verifyRoutes(app: FastifyInstance) {
-  // GET /api/verify — today's verifications + unverified records
-  app.get('/api/verify', { preHandler: authenticate }, async () => {
-    const today = new Date().toISOString().slice(0, 10);
+  // GET /api/verify — verifications + unverified records for a given date (default: today)
+  app.get('/api/verify', { preHandler: authenticate }, async (request) => {
+    const query = request.query as { date?: string };
+    const dateSchema = z.object({
+      date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+    });
+    const parsed = dateSchema.safeParse(query);
+    const targetDate = parsed.success && parsed.data.date
+      ? parsed.data.date
+      : new Date().toISOString().slice(0, 10);
 
-    // Today's verifications
-    const todayVerifications = await db
+    // Verifications for the target date
+    const dateVerifications = await db
       .select({
         id: verifications.id,
         memberId: verifications.memberId,
@@ -36,9 +43,9 @@ export default async function verifyRoutes(app: FastifyInstance) {
       })
       .from(verifications)
       .innerJoin(members, eq(verifications.memberId, members.id))
-      .where(eq(verifications.date, today));
+      .where(eq(verifications.date, targetDate));
 
-    // Today's records that have no matching verification
+    // Records for the target date that have no matching verification
     const unverifiedRecords = await db
       .select({
         id: records.id,
@@ -53,7 +60,7 @@ export default async function verifyRoutes(app: FastifyInstance) {
       .innerJoin(members, eq(records.memberId, members.id))
       .where(
         and(
-          eq(records.date, today),
+          eq(records.date, targetDate),
           sql`NOT EXISTS (
             SELECT 1 FROM verifications v
             WHERE v.member_id = ${records.memberId}
@@ -63,7 +70,7 @@ export default async function verifyRoutes(app: FastifyInstance) {
         ),
       );
 
-    return { verifications: todayVerifications, unverified: unverifiedRecords };
+    return { verifications: dateVerifications, unverified: unverifiedRecords };
   });
 
   // GET /api/verify/latest — most recent verification date
