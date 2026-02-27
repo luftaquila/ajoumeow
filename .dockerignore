@@ -1,8 +1,22 @@
 .git
-**/*Dockerfile*
 **/node_modules
 **/.env
 
-web/res/videos
-web/res/image/gallery
-web/res/weather.json
+# SQLite database (mounted as volume)
+server/data/ajoumeow.db
+server/data/ajoumeow.db-wal
+server/data/ajoumeow.db-shm
+
+# Gallery images (mounted as volume)
+server/data/gallery
+
+# Build artifacts
+client/dist
+server/dist
+
+# Dev/CI files
+.claude
+tasks
+scripts
+ajoumeow.sql
+*.md

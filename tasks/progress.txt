@@ -8,6 +8,9 @@
 - Old server node_modules have permission issues from Docker (sharp vendor files) - can be ignored, new deps installed alongside
 - Server .env exists with JWTSecret key (will need JWT_SECRET for new stack)
 - Run `npm run typecheck` from root to check both client and server
+- Docker: multi-stage build (client-build → server-build → production), root Dockerfile, node:22-alpine runtime
+- Production: Fastify serves Vue SPA via @fastify/static with SPA catch-all (setNotFoundHandler), exclude /api/ and /gallery/ from catch-all
+- Docker volumes: server/data/ (SQLite DB + gallery images); env via server/.env
 - Fastify app factory pattern: server/src/app.ts exports `buildApp()`, server/src/index.ts calls it
 - @fastify/static serves gallery images from server/data/gallery/ with prefix /gallery/
 - Global error handler returns `{ error: string, statusCode: number }` JSON format
@@ -53,6 +56,8 @@
 - App.vue mounts DefaultLayout; DefaultLayout contains RouterView for page content
 - Vite dev proxy: /api AND /gallery both proxied to http://localhost:5710
 - Primary color palette: orange-based (primary-500: #ee7711) — matches cat club theme
+- Static page pattern: banner section (rounded-2xl with gradient overlay) + content sections (rounded-xl bg-white shadow-sm p-6) in space-y-8 container
+- Static images go in client/public/images/; large binary files (videos >10MB) should be gitignored and placed manually
 
 ---
 
@@ -848,4 +853,42 @@
   - Statistics API returns per-member aggregation; for monthly totals, need to sum `count` across all members in each monthly response
   - Parallel API calls (Promise.all) with 13 concurrent requests perform well against SQLite
   - Personal stats computed properties filter the API response by matching `studentId` from auth store
+---
+
+## 2026-02-28 - US-044
+- What was implemented: Migrated 5 static pages to Vue components (WelcomePage, GuidePage, GoodsPage, ClubfairPage, FishbreadPage)
+- Files changed:
+  - client/src/pages/WelcomePage.vue - New member orientation with fee usage infographic, embedded Google Docs constitution, social links
+  - client/src/pages/GuidePage.vue - Activity guide with feeding steps, video guide, warnings section
+  - client/src/pages/GoodsPage.vue - Goods catalog with 15 products, grid layout, detail modal
+  - client/src/pages/ClubfairPage.vue - Club fair informational page (old was internal sales management tool, replaced with informational content)
+  - client/src/pages/FishbreadPage.vue - New fishbread (붕어빵) guide page (no old page existed)
+  - client/public/images/fee-usage.png - Fee usage infographic from web/res/image/
+  - client/public/images/goods/ - 15 product images from web/goods/
+  - client/public/videos/stepbystep.png - Video poster from web/res/videos/
+  - client/public/videos/stepbystep_guide.mp4 - Guide video (gitignored, needs manual placement)
+  - .gitignore - Added rule for large video files in client/public/videos/
+- **Learnings for future iterations:**
+  - Static page Vue components follow same TailwindCSS pattern: rounded-xl bg-white p-6 shadow-sm sections with space-y-8 container
+  - Old goods images were referenced without path prefix (relative to goods/index.html); migrated to /images/goods/ with absolute paths
+  - ClubfairPage was an internal sales management tool (Socket.io + jQuery), not a public page; replaced with informational Vue page
+  - FishbreadPage had no old HTML equivalent; created as new informational page
+  - Large video files (100MB+) should be gitignored and placed manually on the server; poster images can be tracked
+  - All 5 static page routes were already defined in router/index.ts from US-025 scaffold
+---
+
+## 2026-02-28 - US-045
+- What was implemented: Docker deployment configuration for the new Vue 3 + Fastify + SQLite stack
+- Files changed:
+  - `Dockerfile` (new) — Multi-stage build: Stage 1 builds Vue client, Stage 2 builds Fastify server TypeScript, Stage 3 creates minimal node:22-alpine production image
+  - `docker-compose.yml` — Removed MariaDB service and internal ajoumeow network, updated Dockerfile reference from server/Dockerfile to root Dockerfile, updated volumes to mount server/data/ (SQLite DB + gallery images)
+  - `server/src/app.ts` — Added production SPA serving: registers @fastify/static for client/dist with SPA catch-all (serves index.html for non-API/non-gallery routes)
+  - `.dockerignore` — Updated for new project structure (excludes node_modules, .env, SQLite files, gallery images, build artifacts, dev files)
+- **Learnings for future iterations:**
+  - @fastify/static can be registered multiple times for different roots; use `decorateReply: false` on subsequent registrations
+  - `setNotFoundHandler` in Fastify is the catch-all for SPA routing; must exclude /api/ and /gallery/ prefixes to avoid swallowing API 404s
+  - Native modules (better-sqlite3, sharp) need python3/make/g++ at install time even in production stage; use `apk del` after to reduce image size
+  - Server reads static data files (map.json, weather.json) from `web/res/` relative to project root via __dirname traversal — must COPY these into Docker image
+  - SQLite DB and gallery images are volume-mounted, so they're excluded from .dockerignore and Docker image
+  - Drizzle migration files (server/drizzle/) and config are included in the image for potential runtime migration
 ---

@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Fastify, { type FastifyError } from 'fastify';
@@ -74,6 +75,26 @@ export async function buildApp() {
   await app.register(logsRoutes);
   await app.register(weatherRoutes);
   await app.register(adminRoutes);
+
+  // In production, serve the built Vue SPA
+  const clientDistDir = path.resolve(__dirname, '..', '..', 'client', 'dist');
+  if (process.env.NODE_ENV === 'production' && fs.existsSync(clientDistDir)) {
+    await app.register(fastifyStatic, {
+      root: clientDistDir,
+      prefix: '/',
+      decorateReply: false,
+      wildcard: false,
+    });
+
+    // SPA catch-all: serve index.html for non-API, non-gallery routes
+    app.setNotFoundHandler((request, reply) => {
+      if (request.url.startsWith('/api/') || request.url.startsWith('/gallery/')) {
+        reply.status(404).send({ error: 'Not Found', statusCode: 404 });
+      } else {
+        reply.sendFile('index.html', clientDistDir);
+      }
+    });
+  }
 
   return app;
 }
