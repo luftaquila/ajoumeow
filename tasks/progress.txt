@@ -762,3 +762,33 @@
   - Bulk operations iterate sequentially to avoid overwhelming the server with concurrent requests
   - Used Set<number> for tracking selected IDs and per-row loading states
 ---
+
+## 2026-02-28 - US-039
+- What was implemented: Admin verification management page (VerifyPage.vue) with full CRUD for meal verification records
+- Files changed:
+  - client/src/pages/admin/VerifyPage.vue (replaced stub with full implementation)
+  - server/src/routes/verify.ts (added optional `date` query param to GET /api/verify)
+- Features:
+  - Tab-based UI: "인증 대기" (pending) and "인증 기록" (history)
+  - Pending tab: shows unverified meal records with checkbox selection, individual/bulk verify with score input, today's completed verifications
+  - History tab: date picker to query past verification records
+  - Delete functionality with confirmation dialog for both tabs
+  - Success/error feedback messages
+- Server change: GET /api/verify now accepts optional `?date=YYYY-MM-DD` param (defaults to today) for historical queries
+- **Learnings for future iterations:**
+  - ESLint config doesn't define browser globals — `setTimeout` causes `no-undef` lint error across all Vue admin pages (pre-existing issue)
+  - GET /api/verify returns both `verifications` and `unverified` arrays — reuse the same endpoint with date param for history view
+  - Admin pages follow consistent patterns: loading spinner, table with shadow-sm, Teleport modals, success/error message refs with auto-clear
+---
+
+## 2026-02-28 - US-040
+- What was implemented: Admin settings page (SettingsPage.vue) for managing current semester and announcement
+- Files changed:
+  - client/src/pages/admin/SettingsPage.vue (replaced stub with full implementation)
+  - tasks/prd.json (marked US-040 as passes: true)
+- **Learnings for future iterations:**
+  - Settings are stored as key-value pairs in the `settings` table, accessed via GET/PUT /api/settings/:key
+  - Semester list is available from GET /api/users/list?all=true (returns string array of semester names)
+  - Promise.all with .catch() fallback is useful for loading multiple settings in parallel without one failure blocking others
+  - Admin page pattern: loading spinners use `border-primary-200 border-t-primary-500` classes, success/error messages use green-50/red-50 backgrounds
+---
