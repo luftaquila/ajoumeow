@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { buildApp } from './app.js';
 import { startScheduler } from './services/scheduler.js';
+import { startWeatherScheduler } from './services/weather.js';
 
 const PORT = Number(process.env.PORT) || 5710;
 const HOST = process.env.HOST || '0.0.0.0';
@@ -21,6 +22,7 @@ async function main() {
   try {
     await app.listen({ port: PORT, host: HOST });
     startScheduler();
+    startWeatherScheduler();
   } catch (err) {
     app.log.error(err);
     process.exit(1);
