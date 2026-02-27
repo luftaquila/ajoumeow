@@ -1,8 +1,16 @@
+import path from 'node:path';
+import fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
-import { eq, sql, desc, asc } from 'drizzle-orm';
-import { db } from '../db/index.js';
-import { photos, tags, photoTags, photoLikes, members } from '../db/schema.js';
+import sharp from 'sharp';
+import { eq, sql, desc } from 'drizzle-orm';
+import { db, sqlite } from '../db/index.js';
+import { photos, tags, photoTags, members } from '../db/schema.js';
+import { authenticate } from '../plugins/auth.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const galleryDir = path.resolve(__dirname, '..', '..', 'data', 'gallery');
 
 const photosQuerySchema = z.object({
   page: z.string().regex(/^\d+$/).optional().default('1').transform(Number),
@@ -141,5 +149,101 @@ export default async function galleryRoutes(app: FastifyInstance) {
       ...photo,
       tags: photoTagList,
     };
+  });
+
+  // POST /api/gallery/photos — upload a photo with tags
+  app.post('/api/gallery/photos', { preHandler: authenticate }, async (request, reply) => {
+    const data = await request.file();
+
+    if (!data) {
+      return reply.status(400).send({ error: 'No file uploaded', statusCode: 400 });
+    }
+
+    // Validate mime type
+    if (!data.mimetype.startsWith('image/')) {
+      return reply.status(400).send({ error: 'Only image files are allowed', statusCode: 400 });
+    }
+
+    // Generate timestamp-based filename
+    const ext = path.extname(data.filename) || '.jpg';
+    const timestamp = Date.now();
+    const filename = `${timestamp}${ext}`;
+    const thumbFilename = `thumb_${filename}`;
+    const filePath = path.join(galleryDir, filename);
+    const thumbPath = path.join(galleryDir, thumbFilename);
+
+    // Ensure gallery directory exists
+    fs.mkdirSync(galleryDir, { recursive: true });
+
+    // Save uploaded file to disk
+    const fileBuffer = await data.toBuffer();
+    fs.writeFileSync(filePath, fileBuffer);
+    const fileSize = fileBuffer.length;
+
+    // Generate thumbnail (1000px width)
+    await sharp(fileBuffer).resize({ width: 1000, withoutEnlargement: true }).toFile(thumbPath);
+
+    // Parse tags from multipart fields
+    let tagNames: string[] = [];
+    if (data.fields.tags) {
+      const tagsField = data.fields.tags;
+      // Handle single field value
+      const rawValue =
+        'value' in tagsField ? (tagsField as { value: string }).value : String(tagsField);
+      try {
+        const parsed = JSON.parse(rawValue);
+        if (Array.isArray(parsed)) {
+          tagNames = parsed.filter((t): t is string => typeof t === 'string');
+        }
+      } catch {
+        // Ignore invalid JSON — no tags
+      }
+    }
+
+    // Wrap all DB operations in a transaction
+    const uploaderId = request.user.memberId;
+
+    const txn = sqlite.transaction(() => {
+      // Insert photo record
+      const [inserted] = db
+        .insert(photos)
+        .values({
+          filename,
+          size: fileSize,
+          uploaderId,
+        })
+        .returning()
+        .all();
+
+      const photoId = inserted.id;
+
+      // Process tags
+      for (const tagName of tagNames) {
+        // UPSERT tag
+        db.insert(tags)
+          .values({ name: tagName })
+          .onConflictDoNothing({ target: tags.name })
+          .run();
+
+        // Get tag ID
+        const [tag] = db.select({ id: tags.id }).from(tags).where(eq(tags.name, tagName)).all();
+
+        if (tag) {
+          db.insert(photoTags).values({ photoId, tagId: tag.id }).run();
+        }
+      }
+
+      return inserted;
+    });
+
+    const result = txn();
+
+    return reply.status(201).send({
+      id: result.id,
+      filename: result.filename,
+      size: result.size,
+      uploaderId: result.uploaderId,
+      createdAt: result.createdAt,
+    });
   });
 }

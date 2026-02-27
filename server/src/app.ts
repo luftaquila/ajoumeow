@@ -2,6 +2,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Fastify, { type FastifyError } from 'fastify';
 import cors from '@fastify/cors';
+import multipart from '@fastify/multipart';
 import fastifyStatic from '@fastify/static';
 import loggingPlugin from './plugins/logging.js';
 import authPlugin from './plugins/auth.js';
@@ -30,6 +31,13 @@ export async function buildApp() {
     root: galleryDir,
     prefix: '/gallery/',
     decorateReply: true,
+  });
+
+  // Multipart file upload support
+  await app.register(multipart, {
+    limits: {
+      fileSize: 50 * 1024 * 1024, // 50MB
+    },
   });
 
   // Auth plugin (decorates request with user property)
