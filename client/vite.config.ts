@@ -16,6 +16,10 @@ export default defineConfig({
         target: 'http://localhost:5710',
         changeOrigin: true,
       },
+      '/gallery': {
+        target: 'http://localhost:5710',
+        changeOrigin: true,
+      },
     },
   },
 });
