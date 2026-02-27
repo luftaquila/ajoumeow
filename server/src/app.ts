@@ -14,6 +14,7 @@ import settingsRoutes from './routes/settings.js';
 import galleryRoutes from './routes/gallery.js';
 import logsRoutes from './routes/logs.js';
 import weatherRoutes from './routes/weather.js';
+import adminRoutes from './routes/admin.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -72,6 +73,7 @@ export async function buildApp() {
   await app.register(galleryRoutes);
   await app.register(logsRoutes);
   await app.register(weatherRoutes);
+  await app.register(adminRoutes);
 
   return app;
 }
