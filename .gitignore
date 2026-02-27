@@ -7,7 +7,6 @@ web/res/weather.json
 sitemap.xml
 
 *.log
-*.sql
 
 # Build outputs
 client/dist
@@ -18,8 +17,7 @@ server/data/*.db
 server/data/*.db-wal
 server/data/*.db-shm
 
-# Drizzle migrations meta
-server/drizzle/meta
+# Drizzle migrations (keep SQL + meta for reproducible deploys)
 
 # IDE
 .vscode
