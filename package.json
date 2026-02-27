@@ -1,0 +1,30 @@
+{
+  "name": "ajoumeow",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Ajoumeow - Vue 3 + Fastify + SQLite monorepo",
+  "scripts": {
+    "dev": "concurrently -n client,server -c blue,green \"npm run dev:client\" \"npm run dev:server\"",
+    "dev:client": "npm run --prefix client dev",
+    "dev:server": "npm run --prefix server dev",
+    "build": "npm run build:client && npm run build:server",
+    "build:client": "npm run --prefix client build",
+    "build:server": "npm run --prefix server build",
+    "start": "npm run --prefix server start",
+    "typecheck": "npm run --prefix client typecheck && npm run --prefix server typecheck",
+    "lint": "eslint . --ext .ts,.vue",
+    "lint:fix": "eslint . --ext .ts,.vue --fix",
+    "format": "prettier --write \"**/*.{ts,vue,json,css,html}\"",
+    "db:generate": "npm run --prefix server db:generate",
+    "db:migrate": "npm run --prefix server db:migrate"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.3",
+    "concurrently": "^9.1.2",
+    "eslint": "^9.39.3",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-vue": "^10.8.0",
+    "typescript-eslint": "^8.56.1"
+  }
+}

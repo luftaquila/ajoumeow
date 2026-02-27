@@ -8,3 +8,19 @@ sitemap.xml
 
 *.log
 *.sql
+
+# Build outputs
+client/dist
+server/dist
+
+# SQLite database
+server/data/*.db
+server/data/*.db-wal
+server/data/*.db-shm
+
+# Drizzle migrations meta
+server/drizzle/meta
+
+# IDE
+.vscode
+.idea
