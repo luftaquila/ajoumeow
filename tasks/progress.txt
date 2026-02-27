@@ -707,3 +707,58 @@
   - Server returns 409 with different error messages for "already a member" vs "already applied" — check `response.data.error` string to differentiate
   - Privacy consent is required before form submission (checkbox validation)
 ---
+
+## 2026-02-28 - US-036
+- What was implemented: Admin console dashboard with statistics cards, recent records table, and mileage-weighted lottery
+- Files changed:
+  - server/src/routes/admin.ts (new file - admin dashboard API routes)
+  - server/src/app.ts (registered admin routes)
+  - client/src/pages/admin/DashboardPage.vue (full implementation replacing stub)
+- **Learnings for future iterations:**
+  - Admin-specific API routes go in server/src/routes/admin.ts, registered as `adminRoutes` in app.ts
+  - Dashboard stats use individual count queries for member count, monthly records, and photo count
+  - Lottery uses weighted random selection: accumulate total score, generate random value, walk through members subtracting scores
+  - Admin pages follow pattern: `<script setup lang="ts">` with api calls in `onMounted`, Tailwind cards/tables for UI
+  - The `requireAdmin` preHandler from auth plugin protects admin API routes on the server side
+  - Admin route guard is already on `/admin` parent route in the client router — child routes auto-protected
+---
+
+## 2026-02-28 - US-037
+- What was implemented: Admin member management page with current semester member table, search, edit modal, and delete confirmation
+- Files changed:
+  - client/src/pages/admin/MembersPage.vue (full implementation replacing stub)
+- Features:
+  - Member table with columns: 학번, 이름, 단과대, 학과, 연락처, 역할
+  - Client-side search filter by name or student ID (computed property)
+  - Click row → edit modal with all fields (name, college, department, phone, birthday, volunteer_id, role)
+  - Role dropdown with options: 회장, 부회장, 총무, 회원
+  - Delete button with confirmation dialog (removes from current semester only)
+  - Responsive: hides college/department/phone columns on smaller screens
+  - Loading spinner, empty state, member count display
+- **Learnings for future iterations:**
+  - Admin page pattern: use `api.get('/users/list')` for member list, `api.put('/users/:studentId')` for update, `api.delete('/users/:studentId')` for semester removal
+  - Edit modal pattern: Teleport to body, `@click.self` for backdrop close, `@keydown.escape` for ESC close, form with `@submit.prevent`
+  - PUT /api/users/:studentId body uses snake_case for `volunteer_id` field (server-side Zod schema)
+  - Delete confirmation uses a separate dialog component pattern (not inline)
+  - Role badges: '회원' gets gray, others get primary-colored badge
+---
+
+## 2026-02-28 - US-038
+- What was implemented: Admin registration approval page with full CRUD
+  - RegistrationsPage.vue: table listing all current semester registrations with checkboxes for bulk selection
+  - Individual approve/reject buttons per row
+  - Bulk approve/reject for selected registrations
+  - Success/error feedback messages
+  - Loading states for individual and bulk operations
+  - Responsive table layout matching MembersPage patterns
+- Server: Added DELETE /api/users/register/:id endpoint for rejecting registrations
+- Files changed:
+  - client/src/pages/admin/RegistrationsPage.vue (replaced stub with full implementation)
+  - server/src/routes/users.ts (added DELETE /api/users/register/:id)
+  - tasks/prd.json (US-038 passes: true)
+- **Learnings for future iterations:**
+  - Approval flow: POST /api/users to create member + DELETE /api/users/register/:id to remove the registration entry
+  - The admin route for registrations was already set up in the router at /admin/registrations
+  - Bulk operations iterate sequentially to avoid overwhelming the server with concurrent requests
+  - Used Set<number> for tracking selected IDs and per-row loading states
+---

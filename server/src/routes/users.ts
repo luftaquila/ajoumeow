@@ -364,4 +364,25 @@ export default async function usersRoutes(app: FastifyInstance) {
 
     return registration;
   });
+
+  // DELETE /api/users/register/:id — reject (delete) a registration application
+  app.delete('/api/users/register/:id', { preHandler: requireAdmin }, async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const registrationId = Number(id);
+
+    if (Number.isNaN(registrationId)) {
+      return reply.status(400).send({ error: 'Invalid registration ID', statusCode: 400 });
+    }
+
+    const result = await db
+      .delete(registrations)
+      .where(eq(registrations.id, registrationId))
+      .returning();
+
+    if (result.length === 0) {
+      return reply.status(404).send({ error: 'Registration not found', statusCode: 404 });
+    }
+
+    return { success: true };
+  });
 }
