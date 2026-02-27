@@ -6,6 +6,7 @@ import fastifyStatic from '@fastify/static';
 import loggingPlugin from './plugins/logging.js';
 import authPlugin from './plugins/auth.js';
 import authRoutes from './routes/auth.js';
+import usersRoutes from './routes/users.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -50,6 +51,7 @@ export async function buildApp() {
 
   // Routes
   await app.register(authRoutes);
+  await app.register(usersRoutes);
 
   return app;
 }
