@@ -5,6 +5,7 @@ import cors from '@fastify/cors';
 import fastifyStatic from '@fastify/static';
 import loggingPlugin from './plugins/logging.js';
 import authPlugin from './plugins/auth.js';
+import authRoutes from './routes/auth.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -46,6 +47,9 @@ export async function buildApp() {
   app.get('/api/health', async () => {
     return { status: 'ok' };
   });
+
+  // Routes
+  await app.register(authRoutes);
 
   return app;
 }
