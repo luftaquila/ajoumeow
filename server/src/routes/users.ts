@@ -2,7 +2,7 @@ import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { eq, and, like } from 'drizzle-orm';
 import { db } from '../db/index.js';
-import { members, semesters, semesterMembers } from '../db/schema.js';
+import { members, semesters, semesterMembers, registrations } from '../db/schema.js';
 import { requireAdmin } from '../plugins/auth.js';
 
 const createMemberSchema = z.object({
@@ -28,6 +28,14 @@ const updateMemberSchema = z.object({
 
 const nameQuerySchema = z.object({
   q: z.string().min(1),
+});
+
+const registerSchema = z.object({
+  student_id: z.string().min(1),
+  name: z.string().min(1),
+  college: z.string().min(1),
+  department: z.string().min(1),
+  phone: z.string().min(1),
 });
 
 async function getCurrentSemester() {
@@ -270,5 +278,90 @@ export default async function usersRoutes(app: FastifyInstance) {
     }
 
     return { success: true };
+  });
+
+  // GET /api/users/register — list current semester registrations (admin only)
+  app.get('/api/users/register', { preHandler: requireAdmin }, async (_request, reply) => {
+    const semester = await getCurrentSemester();
+    if (!semester) {
+      return reply
+        .status(500)
+        .send({ error: 'No current semester configured', statusCode: 500 });
+    }
+
+    const registrationList = await db
+      .select()
+      .from(registrations)
+      .where(eq(registrations.semesterId, semester.id));
+
+    return registrationList;
+  });
+
+  // POST /api/users/register — submit registration application (public, no auth)
+  app.post('/api/users/register', async (request, reply) => {
+    const parsed = registerSchema.safeParse(request.body);
+    if (!parsed.success) {
+      return reply.status(400).send({ error: 'Invalid request body', statusCode: 400 });
+    }
+
+    const { student_id, name, college, department, phone } = parsed.data;
+
+    const semester = await getCurrentSemester();
+    if (!semester) {
+      return reply
+        .status(500)
+        .send({ error: 'No current semester configured', statusCode: 500 });
+    }
+
+    // Check if already registered as a member in current semester
+    const [existingMember] = await db
+      .select({ id: members.id })
+      .from(members)
+      .innerJoin(semesterMembers, eq(members.id, semesterMembers.memberId))
+      .where(
+        and(
+          eq(members.studentId, student_id),
+          eq(semesterMembers.semesterId, semester.id),
+        ),
+      )
+      .limit(1);
+
+    if (existingMember) {
+      return reply
+        .status(409)
+        .send({ error: 'Already registered as a member in current semester', statusCode: 409 });
+    }
+
+    // Check if already submitted a registration application for current semester
+    const [existingRegistration] = await db
+      .select({ id: registrations.id })
+      .from(registrations)
+      .where(
+        and(
+          eq(registrations.studentId, student_id),
+          eq(registrations.semesterId, semester.id),
+        ),
+      )
+      .limit(1);
+
+    if (existingRegistration) {
+      return reply
+        .status(409)
+        .send({ error: 'Registration application already submitted', statusCode: 409 });
+    }
+
+    const [registration] = await db
+      .insert(registrations)
+      .values({
+        studentId: student_id,
+        name,
+        college,
+        department,
+        phone,
+        semesterId: semester.id,
+      })
+      .returning();
+
+    return registration;
   });
 }
