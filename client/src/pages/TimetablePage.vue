@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue';
 import api from '@/utils/api';
+import { useAuthStore } from '@/stores/auth';
 
 interface RecordItem {
   id: number;
@@ -11,10 +12,26 @@ interface RecordItem {
   memberName: string;
 }
 
+const auth = useAuthStore();
+
 const currentYear = ref(new Date().getFullYear());
 const currentMonth = ref(new Date().getMonth()); // 0-indexed
 const records = ref<RecordItem[]>([]);
 const loading = ref(true);
+
+// Modal state
+const showModal = ref(false);
+const modalDate = ref('');
+const modalCourse = ref('1코스');
+const submitting = ref(false);
+const errorMsg = ref('');
+
+// Cancel confirmation
+const showCancelConfirm = ref(false);
+const cancelTarget = ref<RecordItem | null>(null);
+const cancelling = ref(false);
+
+const courseOptions = ['1코스', '2코스', '3코스'];
 
 const courseColors: Record<string, { bg: string; text: string; dot: string }> = {
   '1코스': { bg: 'bg-blue-50', text: 'text-blue-700', dot: 'bg-blue-400' },
@@ -102,6 +119,10 @@ function getRecordsForDateCourse(dateStr: string, course: string): RecordItem[] 
   return recordsByDate.value[dateStr]?.[course] ?? [];
 }
 
+function isOwnRecord(record: RecordItem): boolean {
+  return !!auth.user && record.memberId === auth.user.id;
+}
+
 function prevMonth() {
   if (currentMonth.value === 0) {
     currentMonth.value = 11;
@@ -141,6 +162,58 @@ async function fetchRecords() {
   } finally {
     loading.value = false;
   }
+}
+
+function openApplyModal(dateStr: string) {
+  if (!auth.isLoggedIn) return;
+  modalDate.value = dateStr;
+  modalCourse.value = '1코스';
+  errorMsg.value = '';
+  showModal.value = true;
+}
+
+async function submitRecord() {
+  submitting.value = true;
+  errorMsg.value = '';
+  try {
+    await api.post('/records', {
+      date: modalDate.value,
+      course: modalCourse.value,
+    });
+    showModal.value = false;
+    await fetchRecords();
+  } catch (e: unknown) {
+    const err = e as { response?: { data?: { error?: string } } };
+    errorMsg.value = err.response?.data?.error || '신청에 실패했습니다.';
+  } finally {
+    submitting.value = false;
+  }
+}
+
+function openCancelConfirm(record: RecordItem) {
+  if (!isOwnRecord(record)) return;
+  cancelTarget.value = record;
+  showCancelConfirm.value = true;
+}
+
+async function confirmCancel() {
+  if (!cancelTarget.value) return;
+  cancelling.value = true;
+  try {
+    await api.delete(`/records/${cancelTarget.value.id}`);
+    showCancelConfirm.value = false;
+    cancelTarget.value = null;
+    await fetchRecords();
+  } catch {
+    // silently handle
+  } finally {
+    cancelling.value = false;
+  }
+}
+
+function formatDate(dateStr: string): string {
+  const [y, m, d] = dateStr.split('-');
+  return `${y}년 ${parseInt(m)}월 ${parseInt(d)}일`;
 }
 
 watch([currentYear, currentMonth], () => {
@@ -225,7 +298,9 @@ onMounted(() => {
           :class="[
             !day.isCurrentMonth ? 'bg-gray-50' : '',
             idx % 7 === 6 ? 'border-r-0' : '',
+            day.isCurrentMonth && auth.isLoggedIn ? 'cursor-pointer hover:bg-orange-50/50' : '',
           ]"
+          @click="day.isCurrentMonth && auth.isLoggedIn ? openApplyModal(day.dateStr) : undefined"
         >
           <!-- Date number -->
           <div class="mb-1 flex items-center justify-between">
@@ -271,7 +346,13 @@ onMounted(() => {
                 <span
                   v-for="record in getRecordsForDateCourse(day.dateStr, course)"
                   :key="record.id"
-                  class="rounded bg-white/70 px-1 text-[10px] text-gray-600"
+                  class="rounded px-1 text-[10px]"
+                  :class="[
+                    isOwnRecord(record)
+                      ? 'cursor-pointer bg-primary-100 font-medium text-primary-700 hover:bg-primary-200'
+                      : 'bg-white/70 text-gray-600',
+                  ]"
+                  @click.stop="isOwnRecord(record) ? openCancelConfirm(record) : undefined"
                 >
                   {{ record.memberName }}
                 </span>
@@ -281,5 +362,89 @@ onMounted(() => {
         </div>
       </div>
     </div>
+
+    <!-- Apply Modal -->
+    <Teleport to="body">
+      <div
+        v-if="showModal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+        @click.self="showModal = false"
+      >
+        <div class="w-full max-w-sm rounded-xl bg-white p-6 shadow-xl">
+          <h2 class="mb-4 text-lg font-bold text-gray-800">급식 신청</h2>
+
+          <div class="mb-4">
+            <label class="mb-1 block text-sm font-medium text-gray-700">날짜</label>
+            <div class="rounded-lg bg-gray-100 px-3 py-2 text-sm text-gray-800">
+              {{ formatDate(modalDate) }}
+            </div>
+          </div>
+
+          <div class="mb-6">
+            <label class="mb-1 block text-sm font-medium text-gray-700">코스</label>
+            <select
+              v-model="modalCourse"
+              class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
+            >
+              <option v-for="c in courseOptions" :key="c" :value="c">{{ c }}</option>
+            </select>
+          </div>
+
+          <div v-if="errorMsg" class="mb-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">
+            {{ errorMsg }}
+          </div>
+
+          <div class="flex gap-2">
+            <button
+              class="flex-1 rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200"
+              :disabled="submitting"
+              @click="showModal = false"
+            >
+              취소
+            </button>
+            <button
+              class="flex-1 rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-600 disabled:opacity-50"
+              :disabled="submitting"
+              @click="submitRecord"
+            >
+              {{ submitting ? '신청 중...' : '신청하기' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
+
+    <!-- Cancel Confirmation Dialog -->
+    <Teleport to="body">
+      <div
+        v-if="showCancelConfirm"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+        @click.self="showCancelConfirm = false"
+      >
+        <div class="w-full max-w-sm rounded-xl bg-white p-6 shadow-xl">
+          <h2 class="mb-2 text-lg font-bold text-gray-800">급식 취소</h2>
+          <p v-if="cancelTarget" class="mb-6 text-sm text-gray-600">
+            {{ formatDate(cancelTarget.date) }} {{ cancelTarget.course }} 신청을 취소하시겠습니까?
+          </p>
+
+          <div class="flex gap-2">
+            <button
+              class="flex-1 rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200"
+              :disabled="cancelling"
+              @click="showCancelConfirm = false"
+            >
+              아니오
+            </button>
+            <button
+              class="flex-1 rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-600 disabled:opacity-50"
+              :disabled="cancelling"
+              @click="confirmCancel"
+            >
+              {{ cancelling ? '취소 중...' : '취소하기' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
