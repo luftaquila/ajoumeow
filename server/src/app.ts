@@ -9,6 +9,7 @@ import authRoutes from './routes/auth.js';
 import usersRoutes from './routes/users.js';
 import recordsRoutes from './routes/records.js';
 import verifyRoutes from './routes/verify.js';
+import settingsRoutes from './routes/settings.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -56,6 +57,7 @@ export async function buildApp() {
   await app.register(usersRoutes);
   await app.register(recordsRoutes);
   await app.register(verifyRoutes);
+  await app.register(settingsRoutes);
 
   return app;
 }
