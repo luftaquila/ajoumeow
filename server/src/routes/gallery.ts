@@ -4,9 +4,9 @@ import { fileURLToPath } from 'node:url';
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import sharp from 'sharp';
-import { eq, sql, desc } from 'drizzle-orm';
+import { eq, sql, desc, and, gt } from 'drizzle-orm';
 import { db, sqlite } from '../db/index.js';
-import { photos, tags, photoTags, members } from '../db/schema.js';
+import { photos, tags, photoTags, photoLikes, members } from '../db/schema.js';
 import { authenticate } from '../plugins/auth.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -245,5 +245,118 @@ export default async function galleryRoutes(app: FastifyInstance) {
       uploaderId: result.uploaderId,
       createdAt: result.createdAt,
     });
+  });
+
+  // DELETE /api/gallery/photos/:id — delete own photo + related records + files
+  app.delete('/api/gallery/photos/:id', { preHandler: authenticate }, async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const photoId = parseInt(id, 10);
+
+    if (isNaN(photoId)) {
+      return reply.status(400).send({ error: 'Invalid photo ID', statusCode: 400 });
+    }
+
+    // Fetch photo to check ownership and get filename
+    const [photo] = await db
+      .select({ id: photos.id, filename: photos.filename, uploaderId: photos.uploaderId })
+      .from(photos)
+      .where(eq(photos.id, photoId))
+      .limit(1);
+
+    if (!photo) {
+      return reply.status(404).send({ error: 'Photo not found', statusCode: 404 });
+    }
+
+    if (photo.uploaderId !== request.user.memberId) {
+      return reply.status(403).send({ error: 'Only the uploader can delete this photo', statusCode: 403 });
+    }
+
+    // Delete DB records in a transaction
+    const txn = sqlite.transaction(() => {
+      db.delete(photoTags).where(eq(photoTags.photoId, photoId)).run();
+      db.delete(photoLikes).where(eq(photoLikes.photoId, photoId)).run();
+      db.delete(photos).where(eq(photos.id, photoId)).run();
+    });
+    txn();
+
+    // Delete files from disk
+    const filePath = path.join(galleryDir, photo.filename);
+    const thumbPath = path.join(galleryDir, `thumb_${photo.filename}`);
+
+    try {
+      if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    } catch {
+      // Ignore file deletion errors
+    }
+    try {
+      if (fs.existsSync(thumbPath)) fs.unlinkSync(thumbPath);
+    } catch {
+      // Ignore file deletion errors
+    }
+
+    return { success: true };
+  });
+
+  // POST /api/gallery/photos/:id/like — IP-based like with 30-day cooldown
+  app.post('/api/gallery/photos/:id/like', async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const photoId = parseInt(id, 10);
+
+    if (isNaN(photoId)) {
+      return reply.status(400).send({ error: 'Invalid photo ID', statusCode: 400 });
+    }
+
+    // Check photo exists
+    const [photo] = await db
+      .select({ id: photos.id })
+      .from(photos)
+      .where(eq(photos.id, photoId))
+      .limit(1);
+
+    if (!photo) {
+      return reply.status(404).send({ error: 'Photo not found', statusCode: 404 });
+    }
+
+    // Get client IP
+    const forwarded = request.headers['x-forwarded-for'];
+    const ip = forwarded
+      ? String(forwarded).split(',')[0].trim()
+      : request.ip;
+
+    // Check 30-day cooldown for same IP on this photo
+    const thirtyDaysAgo = sql`datetime('now', '-30 days')`;
+    const [recentLike] = await db
+      .select({ id: photoLikes.id })
+      .from(photoLikes)
+      .where(
+        and(
+          eq(photoLikes.photoId, photoId),
+          eq(photoLikes.ip, ip),
+          gt(photoLikes.createdAt, thirtyDaysAgo),
+        ),
+      )
+      .limit(1);
+
+    if (recentLike) {
+      return reply.status(429).send({
+        error: 'Already liked this photo within 30 days',
+        statusCode: 429,
+      });
+    }
+
+    // Insert like and increment count in a transaction
+    const txn = sqlite.transaction(() => {
+      db.insert(photoLikes)
+        .values({ photoId, ip })
+        .run();
+
+      db.update(photos)
+        .set({ likesCount: sql`${photos.likesCount} + 1` })
+        .where(eq(photos.id, photoId))
+        .run();
+    });
+    txn();
+
+    return { success: true };
   });
 }
