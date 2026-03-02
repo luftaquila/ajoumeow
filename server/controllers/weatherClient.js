@@ -1,4 +1,6 @@
 import https from 'https'
+import path from 'path'
+import { fileURLToPath } from 'url'
 import axios from 'axios'
 import schedule from 'node-schedule'
 import dateformat from 'dateformat'
@@ -6,6 +8,9 @@ import fs from 'fs'
 
 import util from './util/util.js'
 import { Log } from './util/interface.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const weatherPath = path.join(__dirname, '../web/res/weather.json');
 
 function weatherClient() {
   const msg = 'Weather crawler is in startup.';
@@ -66,7 +71,7 @@ function weather() {
           icon: date.icon
         });
       }
-      fs.writeFileSync('web/res/weather.json', JSON.stringify(data));
+      fs.writeFileSync(weatherPath, JSON.stringify(data));
       util.logger(new Log('info', 'weatherClient', 'weather_schedule', '날씨 크롤링 완료', 'internal', 0, null, data));
     });
   }
