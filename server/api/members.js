@@ -23,6 +23,8 @@ export default async function(fastify, opts) {
           m.phone,
           m.birthday,
           m.volunteer_id AS volunteerId,
+          m.google_id AS googleId,
+          m.google_email AS googleEmail,
           sm.role,
           (SELECT s2.name FROM semester_members sm2
            JOIN semesters s2 ON sm2.semester_id = s2.id
@@ -73,19 +75,6 @@ export default async function(fastify, opts) {
       const studentId = String(request.params.studentId);
       const currentSemester = util.getCurrentSemester();
 
-      // Check if already registered in current semester
-      if (currentSemester) {
-        const existing = db.select().from(semesterMembers)
-          .innerJoin(members, eq(semesterMembers.memberId, members.id))
-          .where(and(eq(members.studentId, studentId), eq(semesterMembers.semesterId, currentSemester.id)))
-          .get();
-
-        if (existing) {
-          util.logger(new Log('info', request.remoteIP, request.originalPath, '회원 등록', request.method, 400, request.params, 'ERR_ALREADY_REGISTERED'));
-          return reply.code(400).send(error('ERR_ALREADY_REGISTERED', '이미 이번 학기 회원으로 등록되셨습니다.'));
-        }
-      }
-
       const previousMember = db.select().from(members).where(eq(members.studentId, studentId)).get();
       util.logger(new Log('info', request.remoteIP, request.originalPath, '기존 회원 등록여부 조회', request.method, 200, request.params, previousMember));
 
@@ -98,6 +87,15 @@ export default async function(fastify, opts) {
           ORDER BY sm.id ASC LIMIT 1
         `).get(previousMember.id);
 
+        // Check if already registered in current semester
+        let alreadyRegistered = false;
+        if (currentSemester) {
+          const existing = db.select().from(semesterMembers)
+            .where(and(eq(semesterMembers.memberId, previousMember.id), eq(semesterMembers.semesterId, currentSemester.id)))
+            .get();
+          alreadyRegistered = !!existing;
+        }
+
         return reply.code(200).send(success({
           college: previousMember.college,
           department: previousMember.department,
@@ -108,6 +106,7 @@ export default async function(fastify, opts) {
           volunteerId: previousMember.volunteerId,
           enrolledSemester: smInfo ? smInfo.enrolledSemester : null,
           role: smInfo ? smInfo.role : '회원',
+          alreadyRegistered,
         }));
       }
       else {
