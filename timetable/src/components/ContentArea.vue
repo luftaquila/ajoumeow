@@ -1,46 +1,45 @@
 <template>
-  <div v-if="selectedDate" class="-mt-5 bg-white">
-    <div class="-mb-2.5">
-      <h4 class="inline-block align-middle h-[1.8rem] leading-[1.8rem] my-3 ml-4">
-        {{ dateLabel }}
-        <WeatherInfo
-          v-if="weather"
-          :current="selectedCell?.isToday ? weather.current : null"
-          :forecast="!selectedCell?.isToday ? getWeatherForDate(selectedDate) : null"
-        />
-      </h4>
+  <div v-if="selectedDate" class="card-section">
+    <div class="flex items-center gap-2 mb-4">
+      <h4 class="text-base font-bold text-text m-0">{{ dateLabel }}</h4>
+      <WeatherInfo
+        v-if="weather"
+        :current="selectedCell?.isToday ? weather.current : null"
+        :forecast="!selectedCell?.isToday ? getWeatherForDate(selectedDate) : null"
+      />
     </div>
-    <div class="px-4 pb-4">
-      <!-- No records -->
-      <div v-if="!hasContent" class="h-[9.5rem]">
-        <div class="text-center"><br><i class="fas fa-calendar-check text-[2rem] text-[#aaa]"></i></div>
-        <div class="text-center text-[#bbb] my-4">급식 신청자가 없습니다!</div>
+    <!-- No records -->
+    <div v-if="!hasContent" class="py-8 flex flex-col items-center justify-center gap-3">
+      <i class="far fa-cat text-[2.5rem] text-text-muted opacity-40"></i>
+      <div class="text-text-muted text-sm">급식 신청자가 없습니다!</div>
+    </div>
+    <!-- Has records -->
+    <div v-else class="flex flex-col gap-3">
+      <div v-for="courseData in displayCourses" :key="courseData.course" class="flex items-start gap-3">
+        <span
+          class="shrink-0 mt-1 inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold"
+          :class="[`bg-course${courseData.course}-bg`, `text-course${courseData.course}-text`]"
+        >
+          {{ COURSES[courseData.course].label }}
+        </span>
+        <div class="flex flex-wrap items-center gap-1.5">
+          <NameCard
+            v-for="(ppl, pi) in courseData.ppl"
+            :key="pi"
+            :name="ppl.name"
+            :id="ppl.ID"
+            :course="courseData.course"
+            :can-delete="canDelete(ppl.ID)"
+            @delete="onDelete(courseData.course, ppl)"
+          />
+          <span
+            v-if="addModeActive && courseData.ppl.length < addModeMaxCount"
+            @click="$emit('add-record', courseData.course)"
+          >
+            <span class="ripple inline-flex items-center justify-center w-14 h-7 rounded-lg border-2 border-dashed border-text-muted/40 text-text-muted text-sm cursor-pointer hover:border-primary/50 hover:text-primary transition-colors duration-200">+</span>
+          </span>
+        </div>
       </div>
-      <!-- Has records -->
-      <table v-else>
-        <tr v-for="courseData in displayCourses" :key="courseData.course" class="h-12">
-          <td class="pr-2"><b>{{ courseData.course }}코스</b></td>
-          <td>
-            <NameCard
-              v-for="(ppl, pi) in courseData.ppl"
-              :key="pi"
-              :name="ppl.name"
-              :id="ppl.ID"
-              :course="courseData.course"
-              :bg-color="bgColor[courseData.course]"
-              :can-delete="canDelete(ppl.ID)"
-              @delete="onDelete(courseData.course, ppl)"
-            />
-            <span
-              v-if="addModeActive && courseData.ppl.length < addModeMaxCount"
-              class="mx-1"
-              @click="$emit('add-record', courseData.course)"
-            >
-              <span class="ripple inline-block w-16 h-8 leading-6 text-center rounded border border-dashed border-gray text-gray p-0.5">+</span>
-            </span>
-          </td>
-        </tr>
-      </table>
     </div>
   </div>
 </template>
@@ -52,6 +51,7 @@ import { useAuth } from '../composables/useAuth.js'
 import { useWeather } from '../composables/useWeather.js'
 import { useAddMode } from '../composables/useAddMode.js'
 import { formatDate } from '../utils/dateFormat.js'
+import { COURSES } from '../constants.js'
 import NameCard from './NameCard.vue'
 import WeatherInfo from './WeatherInfo.vue'
 
@@ -61,8 +61,6 @@ const { selectedDate, selectedCell, isSelectedActive } = useCalendar()
 const { user, isAdmin } = useAuth()
 const { weather, getWeatherForDate } = useWeather()
 const { addModeActive, addModeMaxCount } = useAddMode()
-
-const bgColor = { 1: 'lightcoral', 2: 'gold', 3: 'forestgreen' }
 
 const content = computed(() => selectedCell.value?.content || null)
 const hasContent = computed(() => {

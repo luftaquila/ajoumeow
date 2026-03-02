@@ -1,7 +1,12 @@
 <template>
   <span
-    class="ripple inline-block w-16 h-8 leading-6 text-center rounded border border-solid text-white p-0.5 mx-1"
-    :style="{ borderColor: bgColor, backgroundColor: bgColor, cursor: canDelete ? 'pointer' : 'default' }"
+    class="ripple inline-flex items-center justify-center h-7 px-3 rounded-lg text-xs font-semibold border transition-all duration-200"
+    :class="[
+      `bg-course${course}-bg`,
+      `text-course${course}-text`,
+      `border-course${course}/30`,
+      canDelete ? 'cursor-pointer hover:shadow-[0_1px_4px_rgba(0,0,0,0.1)]' : 'cursor-default',
+    ]"
     @click="onClick($event)"
   >
     {{ name }}
@@ -15,7 +20,6 @@ const props = defineProps({
   name: String,
   id: [String, Number],
   course: [String, Number],
-  bgColor: String,
   canDelete: Boolean,
 })
 

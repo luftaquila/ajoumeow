@@ -1,52 +1,72 @@
 <template>
-  <Drawer v-model:visible="drawerVisible" position="right" :style="{ width: '45%', maxWidth: '250px' }">
+  <Drawer v-model:visible="drawerVisible" position="right" :style="{ width: '48%', maxWidth: '260px' }">
     <template #header>
       <span></span>
     </template>
-    <div class="text-sm text-center">
+    <div class="text-sm">
       <!-- Login form -->
-      <div v-if="!isLoggedIn">
-        <div class="flex items-center justify-center">
-          <i class="far fa-id-badge h-6 text-2xl mr-2"></i>
+      <div v-if="!isLoggedIn" class="text-center">
+        <div class="flex items-center justify-center gap-2">
+          <i class="far fa-id-badge text-xl text-text-secondary"></i>
           <InputText
             v-model="loginId"
             placeholder="학번"
-            class="h-6 text-center text-xl w-28"
+            class="h-7 text-center text-lg w-28"
             @keyup.enter="onLogin"
           />
-        </div><br>
-        <Button label="로그인" severity="info" size="small" @click="onLogin" /><br>
-        <a href="/apply"><Button label="회원 등록" severity="success" size="small" /></a><br><br>
+        </div>
+        <div class="flex flex-col items-center gap-2 mt-4">
+          <Button label="로그인" severity="info" size="small" @click="onLogin" />
+          <a href="/apply"><Button label="회원 등록" severity="success" size="small" /></a>
+        </div>
       </div>
 
       <!-- User info -->
       <div v-else>
-        <span class="text-base">
-          <span>{{ user.name }}</span>&nbsp;
-          <span>{{ user.role }}</span>님<br>안녕하세요!
-        </span><br><br>
-        <Button label="로그아웃" severity="danger" size="small" @click="onLogout" /><br><br><br><br>
-        <table class="w-[90%] mx-[5%]">
-          <colgroup>
-            <col width="10%" /><col width="50%" /><col width="40%" />
-          </colgroup>
-          <tr><td colspan="2" class="text-left">내 마일리지</td><td></td></tr>
-          <tr><td>&nbsp;</td><td class="text-left">전체</td><td class="text-right">{{ mileageTotal }}점</td></tr>
-          <tr><td>&nbsp;</td><td class="text-left">이번 달</td><td class="text-right">{{ mileageThis }}점</td></tr>
-          <tr class="h-2"><td colspan="3"></td></tr>
-          <tr><td colspan="2" class="text-left">내 봉사활동</td><td></td></tr>
-          <tr><td>&nbsp;</td><td class="text-left">전체</td><td class="text-right">{{ timeTotal }}시간</td></tr>
-          <tr><td>&nbsp;</td><td class="text-left">이번 달</td><td class="text-right">{{ timeThis }}시간</td></tr>
-          <tr class="h-2"><td colspan="3"></td></tr>
-          <tr><td colspan="2" class="text-left">내 1365 ID</td><td><div class="text-right">{{ user['1365ID'] }}</div></td></tr>
-        </table><br><br>
-        <span class="text-[#0366d6] cursor-pointer" @click="drawerVisible = false; $emit('open-record-history')">내 급식 기록</span><br><br>
-        <a v-if="isAdmin" href="/console" class="text-[#0366d6] cursor-pointer no-underline"><br>관리자 콘솔</a><br>
+        <div class="text-center mb-5">
+          <div class="text-base font-semibold text-text">
+            {{ user.name }}
+            <span class="text-text-secondary font-normal">{{ user.role }}</span>
+          </div>
+          <div class="text-text-secondary mt-0.5">안녕하세요!</div>
+          <div class="mt-3">
+            <Button label="로그아웃" severity="danger" size="small" @click="onLogout" />
+          </div>
+        </div>
+
+        <div class="border-t border-surface-border pt-4 mx-1 flex flex-col gap-4">
+          <!-- Mileage section -->
+          <div>
+            <div class="text-xs font-bold text-text-muted uppercase tracking-wider mb-2">마일리지</div>
+            <div class="flex justify-between text-text-secondary"><span>전체</span><span class="font-semibold text-text">{{ mileageTotal }}점</span></div>
+            <div class="flex justify-between text-text-secondary mt-1"><span>이번 달</span><span class="font-semibold text-text">{{ mileageThis }}점</span></div>
+          </div>
+
+          <!-- Volunteer section -->
+          <div>
+            <div class="text-xs font-bold text-text-muted uppercase tracking-wider mb-2">봉사활동</div>
+            <div class="flex justify-between text-text-secondary"><span>전체</span><span class="font-semibold text-text">{{ timeTotal }}시간</span></div>
+            <div class="flex justify-between text-text-secondary mt-1"><span>이번 달</span><span class="font-semibold text-text">{{ timeThis }}시간</span></div>
+          </div>
+
+          <!-- 1365 ID -->
+          <div>
+            <div class="text-xs font-bold text-text-muted uppercase tracking-wider mb-2">1365 ID</div>
+            <div class="text-text">{{ user['1365ID'] }}</div>
+          </div>
+        </div>
+
+        <div class="border-t border-surface-border mt-4 pt-4 mx-1 flex flex-col items-center gap-3">
+          <span class="text-primary cursor-pointer text-sm font-medium" @click="drawerVisible = false; $emit('open-record-history')">내 급식 기록</span>
+          <a v-if="isAdmin" href="/console" class="text-primary cursor-pointer no-underline text-sm font-medium">관리자 콘솔</a>
+        </div>
       </div>
-      <br><br><br>
-      <a href="/" class="text-black cursor-pointer no-underline text-xs">
-        &copy;{{ new Date().getFullYear() }} LUFT - AQUILA
-      </a><br><br>
+
+      <div class="mt-10 text-center">
+        <a href="/" class="text-text-muted cursor-pointer no-underline text-[10px]">
+          &copy;{{ new Date().getFullYear() }} LUFT - AQUILA
+        </a>
+      </div>
     </div>
   </Drawer>
 </template>
