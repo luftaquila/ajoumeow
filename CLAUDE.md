@@ -7,7 +7,7 @@
 ## 아키텍처
 
 - **백엔드**: Fastify 5 (Node.js, native ESM)
-- **프론트엔드**: Vite MPA — Vue 3 SPA (timetable) + 레거시 페이지 (apply, register, console, gallery)
+- **프론트엔드**: Vite MPA — Vue 3 SPA (timetable, console, apply, register) + 레거시 페이지 (gallery)
 - **DB**: SQLite (better-sqlite3 + Drizzle ORM)
 - **배포**: Docker multi-stage build, Traefik 리버스 프록시
 
@@ -16,18 +16,29 @@
 ```
 frontend/                   # 통합 Vite MPA 프로젝트
   package.json              # Vue + jQuery/Bootstrap 등 통합 의존성
-  vite.config.js            # MPA 설정 (23개 HTML entry)
-  uno.config.js             # UnoCSS (timetable용)
+  vite.config.js            # MPA 설정 (13개 HTML entry)
+  uno.config.js             # UnoCSS (Vue SPA들 공용)
+  shared/                   # 앱 간 공유 코드
+    api.js                  # fetch wrapper (request, get, post, put, del, authHeader)
+    composables/useTheme.js # 다크/라이트 모드
+    utils/dateFormat.js     # 한국어 날짜 포맷
   timetable/                # Vue 3 SPA (급식 캘린더)
     index.html
     src/                    # main.js, App.vue, components/, composables/, api/, utils/
-  apply/                    # 레거시 MPA — 회원 등록
-    index.html, success.html, entry.js
-  register/                 # 레거시 MPA — 신입 모집
-    index.html, success.html, entry.js
-  console/                  # 레거시 MPA — 관리자 콘솔 (7 HTML)
-    entry-base.js           # 공통 vendor (jQuery, Bootstrap, js-cookie, alertify, SCSS)
-    entry-{page}.js         # 페이지별 진입점
+  console/                  # Vue 3 SPA + vue-router (관리자 콘솔)
+    index.html              # 단일 진입점
+    src/                    # main.js, App.vue, router.js
+      api/                  # auth, settings, members, verifications, records, semesters, registrations, logs
+      composables/          # useAuth, useSemesters
+      components/layout/    # AppLayout, AppSidebar, AppTopbar, SidebarItem
+      pages/                # Dashboard, Verify, Settings, Members, Export1365, Recruit, ServerLog
+      utils/                # scoreCalculator, contactExport
+  apply/                    # Vue 3 SPA (회원 등록)
+    index.html
+    src/                    # main.js, App.vue, components/, composables/
+  register/                 # Vue 3 SPA (신입 모집)
+    index.html
+    src/                    # main.js, App.vue, components/, composables/
   gallery/                  # 레거시 MPA — 갤러리 (9 HTML)
     entry-base.js           # 공통 vendor (jQuery, Bootstrap, owl.carousel 등)
     entry-{page}.js         # 페이지별 진입점
@@ -80,12 +91,19 @@ npm run build              # = cd frontend && vite build → server/dist/
 ## 프론트엔드 구조
 
 ### Vite MPA 설정
-- `vite.config.js`에 23개 HTML entry point 정의 (rollupOptions.input)
+- `vite.config.js`에 13개 HTML entry point 정의 (rollupOptions.input)
 - `build.target: 'esnext'` — 레거시 entry 파일의 top-level await 지원
 - `rollupOptions.external: /res/` — `/res/` 절대경로는 번들링하지 않음
 - `public/` 파일은 빌드 시 그대로 `dist/`로 복사
 
-### 레거시 페이지 패턴
+### Vue 3 SPA 패턴 (timetable, console, apply, register)
+- 각 SPA는 `index.html` + `src/main.js` + `src/App.vue` 구조
+- `main.js`에서 Vue + PrimeVue(Aura 테마) + UnoCSS + ToastService 부트스트랩
+- `shared/api.js`의 `get()/post()/put()/del()` 헬퍼 사용 (JWT 자동 첨부)
+- `shared/composables/useTheme.js`로 다크/라이트 모드 관리
+- console은 `vue-router`를 사용하는 SPA (7개 라우트)
+
+### 레거시 페이지 패턴 (gallery만 해당)
 - 각 페이지 그룹에 `entry-base.js` (공통 vendor) + `entry-{page}.js` (페이지별)
 - `entry-base.js`에서 jQuery, Bootstrap 등을 import 후 `window.$`, `window.Cookies` 등 글로벌 설정
 - 레거시 JS 파일은 `await import('./js/xxx.js')`로 동적 로딩 (모듈 스코프)
@@ -95,7 +113,7 @@ npm run build              # = cd frontend && vite build → server/dist/
 ### 정적 파일 서빙 (프로덕션)
 - `server/dist/` 하나로 모든 프론트엔드 서빙
 - `globalThis.__distRoot` — 서버 모듈에서 dist 루트 경로 참조 (res/ 내 파일 접근용)
-- `/timetable/*` 404 → `timetable/index.html` SPA 폴백
+- `/timetable/*`, `/console/*` 404 → 해당 `index.html` SPA 폴백
 
 ## 주요 규칙
 
