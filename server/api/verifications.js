@@ -159,8 +159,20 @@ export default async function(fastify, opts) {
     const mask = query.mask == 'true';
 
     function maskName(name) {
-      if (!mask || !name || name.length < 2) return name;
-      return name[0] + '*'.repeat(name.length - 2) + name[name.length - 1];
+      if (!mask || !name || name.length < 1) return name;
+      return name[0] + '**';
+    }
+
+    function maskBirthday(birthday) {
+      if (!mask || !birthday) return birthday;
+      return '******';
+    }
+
+    function maskPhone(phone) {
+      if (!mask || !phone) return phone;
+      const digits = phone.replace(/\D/g, '');
+      const last4 = digits.slice(-4);
+      return `010-****-${last4}`;
     }
 
     let rows = [];
@@ -185,7 +197,7 @@ export default async function(fastify, opts) {
       }
     }
 
-    return { rows, chief, mask, maskName };
+    return { rows, chief, mask, maskName, maskBirthday, maskPhone };
   }
 
   fastify.get('/1365-export', async (request, reply) => {
@@ -224,20 +236,20 @@ export default async function(fastify, opts) {
         return reply.code(400).send(error('ERR_SEMESTER_NOT_FOUND', '해당 학기를 찾을 수 없습니다.'));
       }
 
-      const { rows, chief, maskName } = result;
+      const { rows, chief, maskName, maskBirthday, maskPhone } = result;
 
       const data = {
         rows: rows.map(r => ({
           volID: r.volID,
           name: maskName(r.name),
-          birthday: r.birthday || '',
-          phone: r.phone || '',
+          birthday: maskBirthday(r.birthday) || '',
+          phone: maskPhone(r.phone) || '',
           date: r.date,
           hour: r.hour,
           startTime: r.timestamp,
         })),
         chief: {
-          name: chief ? maskName(chief.name) : '',
+          name: chief ? chief.name : '',
           phone: chief ? chief.phone : '',
         },
       };

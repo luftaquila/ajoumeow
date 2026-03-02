@@ -33,7 +33,7 @@
 
         <div class="flex items-center gap-2">
           <Checkbox v-model="maskPrivacy" :binary="true" inputId="mask" />
-          <label for="mask" class="text-sm cursor-pointer">개인정보 숨기기 (이름 마스킹)</label>
+          <label for="mask" class="text-sm cursor-pointer">개인정보 보호 (이름, 생년월일, 연락처 마스킹)</label>
         </div>
 
         <Button
