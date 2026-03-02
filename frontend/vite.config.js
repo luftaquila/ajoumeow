@@ -4,8 +4,12 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import UnoCSS from 'unocss/vite'
 
+// SPA apps that use client-side routing (vue-router)
+const spaRoots = ['/console', '/timetable']
+
 // Handle MPA directory routing in dev server:
 // - Rewrite / to /index.html (serves public/index.html)
+// - SPA fallback: /console/*, /timetable/* subroutes → their index.html
 // - Redirect /path to /path/ when path/index.html exists
 function serveMPA() {
   return {
@@ -15,8 +19,19 @@ function serveMPA() {
         const url = req.url?.split('?')[0] ?? ''
         if (url === '/') {
           req.url = '/index.html'
-        } else if (!url.endsWith('/') && !extname(url)) {
-          if (existsSync(resolve(__dirname, url.slice(1), 'index.html'))) {
+          return next()
+        }
+        // SPA fallback: rewrite subroutes to the SPA's index.html
+        for (const root of spaRoots) {
+          if (url.startsWith(root + '/') && !extname(url)) {
+            req.url = root + '/index.html'
+            return next()
+          }
+        }
+        if (!url.endsWith('/') && !extname(url)) {
+          const rel = url.slice(1)
+          if (existsSync(resolve(__dirname, rel, 'index.html')) ||
+              existsSync(resolve(__dirname, 'public', rel, 'index.html'))) {
             const qs = req.url?.includes('?') ? req.url.slice(req.url.indexOf('?')) : ''
             res.writeHead(301, { Location: url + '/' + qs })
             res.end()
@@ -53,17 +68,10 @@ export default defineConfig({
     rollupOptions: {
       input: {
         timetable: resolve(__dirname, 'timetable/index.html'),
+        dashboard: resolve(__dirname, 'dashboard/index.html'),
         apply: resolve(__dirname, 'apply/index.html'),
-        'apply-success': resolve(__dirname, 'apply/success.html'),
         register: resolve(__dirname, 'register/index.html'),
-        'register-success': resolve(__dirname, 'register/success.html'),
         'console': resolve(__dirname, 'console/index.html'),
-        'console-dashboard': resolve(__dirname, 'console/dashboard.html'),
-        'console-members': resolve(__dirname, 'console/members.html'),
-        'console-recruit': resolve(__dirname, 'console/recruit.html'),
-        'console-settings': resolve(__dirname, 'console/settings.html'),
-        'console-server': resolve(__dirname, 'console/server.html'),
-        'console-1365': resolve(__dirname, 'console/1365.html'),
         gallery: resolve(__dirname, 'gallery/index.html'),
         'gallery-cats': resolve(__dirname, 'gallery/cats.html'),
         'gallery-upload': resolve(__dirname, 'gallery/upload.html'),
