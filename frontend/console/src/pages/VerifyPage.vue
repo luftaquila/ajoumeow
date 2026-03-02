@@ -138,11 +138,11 @@
           </div>
         </div>
 
-        <!-- Auto mode instructions (collapsible) -->
-        <details v-if="mode === 'auto'" class="mt-6">
-          <summary class="text-xs text-text-muted cursor-pointer hover:text-text select-none">
+        <!-- Auto mode instructions -->
+        <div v-if="mode === 'auto'" class="mt-6">
+          <p class="text-xs text-text-muted select-none">
             <span class="i-lucide-circle-help text-sm align-text-bottom mr-1"></span>사용 안내
-          </summary>
+          </p>
           <ol class="list-decimal pl-4 flex flex-col gap-1 mt-2 text-xs text-text-muted">
             <li>날짜를 선택하면 해당일의 급식 신청자가 모두 표시됩니다.</li>
             <li>인증할 회원만 좌측 체크박스에 체크합니다. 기본값은 전체 체크입니다.</li>
@@ -152,7 +152,7 @@
           <div class="mt-2 text-xs text-yellow-600">
             <p>같은 날 같은 코스 급식자는 한 번에 인증해야 합니다. 따로 인증하면 1인 급식으로 처리됩니다.</p>
           </div>
-        </details>
+        </div>
       </div>
     </div>
   </div>
