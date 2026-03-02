@@ -1,8 +1,10 @@
 import jwt from 'jsonwebtoken';
 import prettify from 'pretty-format';
+import { eq, and } from 'drizzle-orm';
 
 import { Response, Log } from './interface.js';
-import pool from '../../config/mariadb.js';
+import { db, sqlite } from '../../db/index.js';
+import { members, semesters, semesterMembers, settings, logs } from '../../db/schema.js';
 
 let util = {};
 
@@ -57,37 +59,32 @@ util.isAdmin = async function(request, reply) {
   }
 };
 
-util.query = async function(query) {
-  try {
-    const db = await pool.getConnection();
-    const result = await db.query(query);
-    await db.end();
-    util.logger(new Log('info', 'DB', 'util.query', 'DB 쿼리', 'internal', 0, query, result));
-    return result;
-  }
-  catch(e) {
-    console.log(e);
-    util.logger(new Log('error', 'DB', 'util.query', 'DB 쿼리 오류', 'internal', -1, query, e.stack));
-    throw e;
-  }
-}
+util.getSettings = function(name) {
+  const row = db.select({ value: settings.value }).from(settings).where(eq(settings.key, name)).get();
+  return row ? row.value : null;
+};
 
-util.getSettings = async function(name) {
-  const result = await util.query(`SELECT value FROM settings WHERE name='${name}';`);
-  if(result.length) return result[0].value;
-  else return null;
-}
+util.getCurrentSemester = function() {
+  const semesterName = util.getSettings('currentSemister');
+  if (!semesterName) return null;
+  return db.select().from(semesters).where(eq(semesters.name, semesterName)).get();
+};
 
-util.logger = async function(log) {
+util.getMemberByStudentId = function(studentId) {
+  return db.select().from(members).where(eq(members.studentId, String(studentId))).get();
+};
+
+const logStmt = sqlite.prepare(
+  `INSERT INTO logs (level, ip, endpoint, description, method, status, query, result) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+);
+
+util.logger = function(log) {
   try {
     log = logValidator(log);
-    const db = await pool.getConnection();
-    const query = `INSERT INTO \`log\` (\`level\`, \`IP\`, \`endpoint\`, \`description\`, \`method\`, \`status\`, \`query\`, \`result\`) VALUES(${db.escape(log.level)}, ${db.escape(log.IP)}, ${db.escape(log.endpoint)}, ${db.escape(log.description)}, ${db.escape(log.method)}, ${db.escape(log.status)}, ${db.escape(log.query)}, ${db.escape(log.result)});`;
-    const result = await db.query(query);
-    await db.end();
+    logStmt.run(log.level, log.IP, log.endpoint, log.description, log.method, log.status, log.query, log.result);
   }
   catch(e) { console.log(e); }
-}
+};
 
 function logValidator(log) {
   for(let prop of Object.getOwnPropertyNames(log)) {
@@ -99,4 +96,4 @@ function logValidator(log) {
   return log;
 }
 
-export default util
+export default util;
