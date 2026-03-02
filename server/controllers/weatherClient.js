@@ -1,6 +1,5 @@
 import https from 'https'
 import path from 'path'
-import { fileURLToPath } from 'url'
 import axios from 'axios'
 import schedule from 'node-schedule'
 import dateformat from 'dateformat'
@@ -9,8 +8,7 @@ import fs from 'fs'
 import util from './util/util.js'
 import { Log } from './util/interface.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const weatherPath = path.join(__dirname, '../web/res/weather.json');
+const weatherPath = path.join(globalThis.__webRoot, 'res/weather.json');
 
 function weatherClient() {
   const msg = 'Weather crawler is in startup.';

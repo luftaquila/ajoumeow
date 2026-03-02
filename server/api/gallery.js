@@ -1,6 +1,5 @@
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import { pipeline } from 'stream/promises';
 import sharp from 'sharp';
 import jwt from 'jsonwebtoken';
@@ -10,8 +9,7 @@ import util from '../controllers/util/util.js';
 import { Response, Log } from '../controllers/util/interface.js';
 import pool from '../config/mariadb.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const galleryDir = path.join(__dirname, '../web/res/image/gallery');
+const galleryDir = path.join(globalThis.__webRoot, 'res/image/gallery');
 
 export default async function(fastify, opts) {
   // Register multipart only in this plugin scope (avoids conflict with formbody)

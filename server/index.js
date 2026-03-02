@@ -17,7 +17,17 @@ import { Log } from './controllers/util/interface.js';
 import weatherClient from './controllers/weatherClient.js';
 import dbClient from './controllers/dbClient.js';
 
+import fs from 'fs';
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Resolve web/ directory: Docker copies it into server/, local dev has it as sibling
+const webRoot = fs.existsSync(path.join(__dirname, 'web'))
+  ? path.join(__dirname, 'web')
+  : path.join(__dirname, '..', 'web');
+
+// Export for other modules
+globalThis.__webRoot = webRoot;
 
 const fastify = Fastify({ logger: false });
 
@@ -47,7 +57,7 @@ await fastify.register(fastifyStatic, {
 
 // Serve existing static web files
 await fastify.register(fastifyStatic, {
-  root: path.join(__dirname, 'web'),
+  root: webRoot,
   prefix: '/',
   decorateReply: false,
 });

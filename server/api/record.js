@@ -1,13 +1,11 @@
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import dateformat from 'dateformat';
 import jwt from 'jsonwebtoken';
 
 import util from '../controllers/util/util.js';
 import { Response, Log } from '../controllers/util/interface.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default async function(fastify, opts) {
 
@@ -175,7 +173,7 @@ export default async function(fastify, opts) {
   fastify.get('/map', { preHandler: [util.isLogin] }, async(request, reply) => {
     try {
       util.logger(new Log('info', request.remoteIP, request.originalPath, '지도 파일 요청', request.method, 200, request.query, null));
-      const filePath = path.join(__dirname, '../web/res/map.json');
+      const filePath = path.join(globalThis.__webRoot, 'res/map.json');
       const content = await fs.promises.readFile(filePath, 'utf-8');
       return reply.code(200).header('content-type', 'application/json').send(content);
     }
