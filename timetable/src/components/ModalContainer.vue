@@ -8,9 +8,6 @@
   <Dialog v-model:visible="modals.map.value" header="지도" modal :style="{ width: '96vw', maxWidth: '600px' }" @hide="resetGPS">
     <MapModal :visible="modals.map.value" />
   </Dialog>
-  <Dialog v-model:visible="modals.recordHistory.value" header="급식 기록" modal :style="{ width: '90vw', maxWidth: '500px' }">
-    <RecordHistoryModal />
-  </Dialog>
   <Dialog v-model:visible="modals.recruit.value" header="개발자 구해요!" modal :style="{ width: '96vw', maxWidth: '600px' }">
     <RecruitModal />
   </Dialog>
@@ -23,7 +20,7 @@ import { useMap } from '../composables/useMap.js'
 import NoticeModal from './modals/NoticeModal.vue'
 import HelpModal from './modals/HelpModal.vue'
 import MapModal from './modals/MapModal.vue'
-import RecordHistoryModal from './modals/RecordHistoryModal.vue'
+
 import RecruitModal from './modals/RecruitModal.vue'
 
 const { modals } = useModal()

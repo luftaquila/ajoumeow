@@ -15,13 +15,11 @@
       />
     </main>
 
-    <AppFooter />
   </div>
 
   <SidebarPanel
     :visible="sidebarOpen"
     @close="sidebarOpen = false"
-    @open-record-history="openModal('recordHistory')"
   />
 
   <Toast position="bottom-right" />
@@ -39,13 +37,14 @@ import { useAuth } from './composables/useAuth.js'
 import { useWeather } from './composables/useWeather.js'
 import { useModal } from './composables/useModal.js'
 import { useNotice } from './composables/useNotice.js'
+import { useTheme } from './composables/useTheme.js'
 import Cookies from 'js-cookie'
 
 import HeaderNav from './components/HeaderNav.vue'
 import CalendarSection from './components/CalendarSection.vue'
 import ContentArea from './components/ContentArea.vue'
 import SidebarPanel from './components/SidebarPanel.vue'
-import AppFooter from './components/AppFooter.vue'
+
 import ModalContainer from './components/ModalContainer.vue'
 
 const { initCalendar, selectedDate, isSelectedActive } = useCalendar()
@@ -54,6 +53,7 @@ const { doAutoLogin, user } = useAuth()
 const { loadWeather } = useWeather()
 const { openModal } = useModal()
 const { noticeVersion, loadNotice } = useNotice()
+const { initTheme } = useTheme()
 
 const sidebarOpen = ref(false)
 
@@ -67,6 +67,7 @@ async function onDeleteRecord(target) {
 }
 
 onMounted(async () => {
+  initTheme()
   initCalendar()
   loadWeather()
 
