@@ -3,12 +3,12 @@ const api = '/api';
 $(function() {
   requestPhotoList(0);
   $('input[name=sortPhoto]').change(() => requestPhotoList(0));
-    
+
   loadCount = 0;
   io = new IntersectionObserver((entries, observer) => {
     entries.forEach(entry => {
       if(!entry.isIntersecting) return;
-      
+
       requestPhotoList(loadCount);
       $('.threshold').removeClass('threshold');
       observer.unobserve(entry.target);
@@ -18,13 +18,12 @@ $(function() {
 
 function requestPhotoList(offset) {
   $.ajax({
-    url: `${api}/gallery/photo`,
+    url: `${api}/gallery/cats`,
     data: {
       sort: $('input[name=sortPhoto]:checked').val(),
       offset: offset,
-      type: 'cat'
     },
-    success: res => renderPhoto(res, offset)
+    success: res => renderPhoto(res.data, offset)
   });
 }
 
@@ -33,21 +32,21 @@ function renderPhoto(photoList, offset) {
   if(!offset) { // if rendered for the first time
     // destroy existing gallery
     $('.fj-gallery').fjGallery('destroy').html('');
-    
+
     // rendering photos
     photoList.forEach(v => {
       $('.fj-gallery').append(`
-        <a href="/gallery/cat?cid=${v.tag_name}" class="fj-gallery-item" oncontextmenu="return false;">
+        <a href="/gallery/cat?cid=${v.tagName}" class="fj-gallery-item" oncontextmenu="return false;">
           <img
             class="fj-gallery-item-image"
-            src="/res/image/gallery/thumb_${v.newest_photo_id}"
+            src="/res/image/gallery/thumb_${v.newestPhotoId}"
             width="800" height="600"
             style="max-height: none; max-width: none; margin: 0;"
             onerror="this.src = '/res/image/loading.gif'; $('.fj-gallery').fjGallery('resize');"
           />
           <div class='fj-gallery-item-category'>
             <div style='width: fit-content; position: relative; left: 0; bottom: 0; padding: 1rem; font-size: 1.2rem; line-height: 1rem;'>
-              <span>#${v.tag_name}</span> <span style='font-weight: bold'>${v.photo_count}</span>
+              <span>#${v.tagName}</span> <span style='font-weight: bold'>${v.photoCount}</span>
             </div>
             <div style='width: fit-content; position: absolute; right: .5rem; bottom: 0; padding: 1rem; font-size: 1.2rem; line-height: 1.2rem;'>
               <i class='far fa-heart'></i>
@@ -56,7 +55,7 @@ function renderPhoto(photoList, offset) {
           </div>
        </a>`);
     });
-    
+
     // initialize gallery
     let initCount = 0;
     loadCount = 0;
@@ -76,17 +75,17 @@ function renderPhoto(photoList, offset) {
     // rendering photos
     photoList.forEach(v => {
       $('.fj-gallery').append(`
-        <a href="/gallery/cat?cid=${v.tag_name}" class="fj-gallery-item" oncontextmenu="return false;">
+        <a href="/gallery/cat?cid=${v.tagName}" class="fj-gallery-item" oncontextmenu="return false;">
           <img
             class="fj-gallery-item-image"
-            src="/res/image/gallery/thumb_${v.newest_photo_id}"
+            src="/res/image/gallery/thumb_${v.newestPhotoId}"
             width="800" height="600"
             style="max-height: none; max-width: none; margin: 0;"
             onerror="this.src = '/res/image/loading.gif'; $('.fj-gallery').fjGallery('resize');"
           />
           <div class='fj-gallery-item-category'>
             <div style='width: fit-content; position: relative; left: 0; bottom: 0; padding: 1rem; font-size: 1.2rem; line-height: 1rem;'>
-              <span>#${v.tag_name}</span> <span style='font-weight: bold'>${v.photo_count}</span>
+              <span>#${v.tagName}</span> <span style='font-weight: bold'>${v.photoCount}</span>
             </div>
             <div style='width: fit-content; position: absolute; right: .5rem; bottom: 0; padding: 1rem; font-size: 1.2rem; line-height: 1.2rem;'>
               <i class='far fa-heart'></i>
@@ -95,7 +94,7 @@ function renderPhoto(photoList, offset) {
           </div>
        </a>`);
     });
-    
+
     $('.fj-gallery').fjGallery('appendImages', $(`.fj-gallery-item:nth-last-child(-n+${photoList.length})`));
   }
   $('a.fj-gallery-item:nth-last-child(3)').addClass('threshold');

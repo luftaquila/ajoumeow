@@ -7,15 +7,16 @@ $(function() {
     $('#imageInfo').css('width', $('#mainImage').width());
 
     EXIF.getData(document.getElementById('mainImage'), async function() {
-      const image = await $.ajax({ url: `${api}/gallery/image`, data: { photo_id: pid }});
+      const res = await $.ajax({ url: `${api}/gallery/photos/${pid}` });
+      const image = res.data;
 
-      $('#photographer').html(`<a href='/gallery/photographer/?uid=${btoa(image.uploader_id)}'>${image.uploader_name}</a>`);
+      $('#photographer').html(`<a href='/gallery/photographer/?uid=${btoa(image.uploaderId)}'>${image.uploaderName}</a>`);
       $('#tags').html(image.tags.map(x => `<a href='/gallery/cat/?cid=${encodeURI(x)}'>#${x}</a>`).join(' '));
       $('#size').text(humanFileSize(image.size));
       $('.likes span').text(image.likes);
 
       if(EXIF.getTag(this, "DateTimeOriginal")) $('#time').text(EXIF.getTag(this, "DateTimeOriginal").replace(':', '-').replace(':', '-'));
-      else $('#time').text(new Date(image.timestamp).format('yyyy-mm-dd HH:MM:ss'));
+      else $('#time').text(new Date(image.createdAt).format('yyyy-mm-dd HH:MM:ss'));
 
       if(EXIF.getTag(this, "Model")) $('#camera').text(EXIF.getTag(this, "Model"));
       if(EXIF.getTag(this, "LensModel")) $('#lens').text(EXIF.getTag(this, "LensModel"));
@@ -34,15 +35,14 @@ $(function() {
 
   $('.likes').on('click', () => {
     $.ajax({
-      url: `${api}/gallery/like`,
+      url: `${api}/gallery/photos/${pid}/likes`,
       type: 'POST',
-      beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
-      data: { photo_id: pid },
+      beforeSend: xhr => xhr.setRequestHeader('Authorization', 'Bearer ' + Cookies.get('jwt')),
       success: res => {
         $('.likes').children('i').removeClass('far').addClass('fas');
         $('.likes').children('span').text(Number($('.likes').children('span').text()) + 1);
       },
-      error: res => alert(res.responseJSON.msg)
+      error: res => alert(res.responseJSON.error.message)
     });
   });
 });

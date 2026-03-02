@@ -44,8 +44,8 @@ uppyInit = function() {
       waitForThumbnailsBeforeUpload: false
     })
     .use(XHRUpload, {
-      endpoint: '/ajoumeow/api/gallery/photo',
-      headers: { 'x-access-token': Cookies.get('jwt') }
+      endpoint: '/ajoumeow/api/gallery/photos',
+      headers: { 'Authorization': 'Bearer ' + Cookies.get('jwt') }
     })
     .use(ImageEditor, {
       target: Dashboard,

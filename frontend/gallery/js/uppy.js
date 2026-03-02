@@ -2251,8 +2251,8 @@ uppyInit = function() {
       waitForThumbnailsBeforeUpload: false
     })
     .use(XHRUpload, {
-      endpoint: '/api/gallery/photo',
-      headers: { 'x-access-token': Cookies.get('jwt') }
+      endpoint: '/api/gallery/photos',
+      headers: { 'Authorization': 'Bearer ' + Cookies.get('jwt') }
     })
     .use(ImageEditor, {
       target: Dashboard,

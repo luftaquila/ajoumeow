@@ -5,25 +5,25 @@ $(function() {
   $('input[name=sortPhoto]').change(() => requestPhotoList(0));
   $('.fj-gallery').on('click', '.likes', (e) => {
     const target = e.currentTarget;
+    const photoId = $(target).data('photo_id');
     $.ajax({
-      url: `${api}/gallery/like`,
+      url: `${api}/gallery/photos/${photoId}/likes`,
       type: 'POST',
-      beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
-      data: { photo_id: $(target).data('photo_id') },
+      beforeSend: xhr => xhr.setRequestHeader('Authorization', 'Bearer ' + Cookies.get('jwt')),
       success: res => {
         $(target).children('i').removeClass('far').addClass('fas');
         $(target).children('span').text(Number($(target).children('span').text()) + 1);
       },
-      error: res => alert(res.responseJSON.msg)
+      error: res => alert(res.responseJSON.error.message)
     });
     e.preventDefault();
   });
-    
+
   loadCount = 0;
   io = new IntersectionObserver((entries, observer) => {
     entries.forEach(entry => {
       if(!entry.isIntersecting) return;
-      
+
       requestPhotoList(loadCount);
       $('.threshold').removeClass('threshold');
       observer.unobserve(entry.target);
@@ -32,14 +32,14 @@ $(function() {
 });
 
 function requestPhotoList(offset) {
+  const uid = atob(new URLSearchParams(window.location.search).get('uid'));
   $.ajax({
-    url: `${api}/gallery/photographer`,
+    url: `${api}/gallery/uploaders/${uid}/photos`,
     data: {
       sort: $('input[name=sortPhoto]:checked').val(),
       offset: offset,
-      uid: atob(new URLSearchParams(window.location.search).get('uid'))
     },
-    success: res => renderPhoto(res, offset)
+    success: res => renderPhoto(res.data, offset)
   });
 }
 
@@ -48,30 +48,30 @@ function renderPhoto(photoList, offset) {
   if(!offset) { // if rendered for the first time
     // destroy existing gallery
     $('.fj-gallery').fjGallery('destroy').html('');
-    
+
     // rendering photos
     photoList.forEach(v => {
       $('.fj-gallery').append(`
-        <a href="/gallery/photo?pid=${v.photo_id}" class="fj-gallery-item" oncontextmenu="return false;">
+        <a href="/gallery/photo?pid=${v.photoId}" class="fj-gallery-item" oncontextmenu="return false;">
           <img
             class="fj-gallery-item-image"
-            src="/res/image/gallery/thumb_${v.photo_id}"
+            src="/res/image/gallery/thumb_${v.photoId}"
             width="800" height="600"
             style="max-height: none; max-width: none; margin: 0;"
           />
           <div class='fj-gallery-item-info'>
             <div style='width: fit-content; position: relative; left: 0; bottom: 0; padding: .75rem; line-height: 1rem;'>
-              <span>${v.uploader_name}</span><br>
+              <span>${v.uploaderName}</span><br>
               <span style='font-size: .8rem'>${v.tags.map(x => '#' + x).join(' ')}</span>
             </div>
-            <div class='likes' data-photo_id='${v.photo_id}'>
+            <div class='likes' data-photo_id='${v.photoId}'>
               <i class='far fa-heart'></i>
               <span style='display: inline-block; width: 1rem; text-align: center'>${v.likes}</span>
             </div>
           </div>
        </a>`);
     });
-    
+
     // initialize gallery
     let initCount = 0;
     loadCount = 0;
@@ -91,26 +91,26 @@ function renderPhoto(photoList, offset) {
     // rendering photos
     photoList.forEach(v => {
       $('.fj-gallery').append(`
-        <a href="/gallery/photo?pid=${v.photo_id}" class="fj-gallery-item" oncontextmenu="return false;">
+        <a href="/gallery/photo?pid=${v.photoId}" class="fj-gallery-item" oncontextmenu="return false;">
           <img
             class="fj-gallery-item-image"
-            src="/res/image/gallery/thumb_${v.photo_id}"
+            src="/res/image/gallery/thumb_${v.photoId}"
             width="800" height="600"
             style="max-height: none; max-width: none; margin: 0;"
           />
           <div class='fj-gallery-item-info'>
             <div style='width: fit-content; position: relative; left: 0; bottom: 0; padding: .75rem; line-height: 1rem;'>
-              <span>${v.uploader_name}</span><br>
+              <span>${v.uploaderName}</span><br>
               <span style='font-size: .8rem'>${v.tags.map(x => '#' + x).join(' ' )}</span>
             </div>
-            <div class='likes' data-photo_id='${v.photo_id}'>
+            <div class='likes' data-photo_id='${v.photoId}'>
               <i class='far fa-heart'></i>
               <span style='display: inline-block; width: 1rem; text-align: center'>${v.likes}</span>
             </div>
           </div>
        </a>`);
     });
-    
+
     $('.fj-gallery').fjGallery('appendImages', $(`.fj-gallery-item:nth-last-child(-n+${photoList.length})`));
   }
   $('a.fj-gallery-item:nth-last-child(3)').addClass('threshold');

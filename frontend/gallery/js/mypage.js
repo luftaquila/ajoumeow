@@ -4,13 +4,10 @@ $(function() {
   const jwt = Cookies.get('jwt');
   if(jwt) { // if jwt exists
     $.ajax({
-      url: `${api}/auth/autologin`,
-      beforeSend: xhr => xhr.setRequestHeader('x-access-token', jwt),
+      url: `${api}/auth/refresh`,
+      beforeSend: xhr => xhr.setRequestHeader('Authorization', 'Bearer ' + jwt),
       type: "POST",
-      success: res => {
-        if(res.stat = 'success') init(res.data.user);
-        else autoLoginFailure();
-      },
+      success: res => init(res.data.user),
       error: autoLoginFailure
     });
   }
@@ -22,7 +19,7 @@ function autoLoginFailure() {
 }
 
 function init(user) {
-  userID = user.ID;
+  userID = user.memberId;
   requestPhotoList(0);
   $('input[name=sortPhoto]').change(() => requestPhotoList(0));
 
@@ -40,13 +37,12 @@ function init(user) {
 
 function requestPhotoList(offset) {
   $.ajax({
-    url: `${api}/gallery/photographer`,
+    url: `${api}/gallery/uploaders/${userID}/photos`,
     data: {
       sort: $('input[name=sortPhoto]:checked').val(),
       offset: offset,
-      uid: userID
     },
-    success: res => renderPhoto(res, offset)
+    success: res => renderPhoto(res.data, offset)
   });
 }
 
@@ -59,16 +55,16 @@ function renderPhoto(photoList, offset) {
     // rendering photos
     photoList.forEach(v => {
       $('.fj-gallery').append(`
-        <a href="/gallery/photo?pid=${v.photo_id}" class="fj-gallery-item" oncontextmenu="return false;">
+        <a href="/gallery/photo?pid=${v.photoId}" class="fj-gallery-item" oncontextmenu="return false;">
           <img
             class="fj-gallery-item-image"
-            src="/res/image/gallery/thumb_${v.photo_id}"
+            src="/res/image/gallery/thumb_${v.photoId}"
             width="200" height="200"
             style="max-height: none; max-width: none; margin: 0;"
           />
           <div class='fj-gallery-item-info' style='height: 100%'>
             <div style='width: fit-content; position: absolute; left: 0; bottom: 0; padding: .75rem; line-height: 1rem;'>
-              <span>${v.uploader_name}</span><br>
+              <span>${v.uploaderName}</span><br>
               <span style='font-size: .8rem'>${v.tags.map(x => '#' + x).join(' ')}</span>
             </div>
             <div class='likes'>
@@ -76,7 +72,7 @@ function renderPhoto(photoList, offset) {
               <span style='display: inline-block; width: 1rem; text-align: center'>${v.likes}</span>
             </div>
             <div class='likes edit' style='top: 0; left: 0'><i class='far fa-edit'></i></div>
-            <div class='likes trash' onclick='deletePhoto("${v.photo_id}"); return false;' style='top: 0; right: 0; height: fit-content;'><i class='far fa-trash-alt'></i></div>
+            <div class='likes trash' onclick='deletePhoto("${v.photoId}"); return false;' style='top: 0; right: 0; height: fit-content;'><i class='far fa-trash-alt'></i></div>
           </div>
        </a>`);
     });
@@ -101,16 +97,16 @@ function renderPhoto(photoList, offset) {
     // rendering photos
     photoList.forEach(v => {
       $('.fj-gallery').append(`
-        <a href="/gallery/photo?pid=${v.photo_id}" class="fj-gallery-item" oncontextmenu="return false;">
+        <a href="/gallery/photo?pid=${v.photoId}" class="fj-gallery-item" oncontextmenu="return false;">
           <img
             class="fj-gallery-item-image"
-            src="/res/image/gallery/thumb_${v.photo_id}"
+            src="/res/image/gallery/thumb_${v.photoId}"
             width="200" height="200"
             style="max-height: none; max-width: none; margin: 0;"
           />
           <div class='fj-gallery-item-info' style='height: 100%'>
             <div style='width: fit-content; position: absolute; left: 0; bottom: 0; padding: .75rem; line-height: 1rem;'>
-              <span>${v.uploader_name}</span><br>
+              <span>${v.uploaderName}</span><br>
               <span style='font-size: .8rem'>${v.tags.map(x => '#' + x).join(' ')}</span>
             </div>
             <div class='likes'>
@@ -118,7 +114,7 @@ function renderPhoto(photoList, offset) {
               <span style='display: inline-block; width: 1rem; text-align: center'>${v.likes}</span>
             </div>
             <div class='likes edit' style='top: 0; left: 0'><i class='far fa-edit'></i></div>
-            <div class='likes trash' onclick='deletePhoto("${v.photo_id}"); return false;' style='top: 0; right: 0; height: fit-content;'><i class='far fa-trash-alt'></i></div>
+            <div class='likes trash' onclick='deletePhoto("${v.photoId}"); return false;' style='top: 0; right: 0; height: fit-content;'><i class='far fa-trash-alt'></i></div>
           </div>
        </a>`);
     });
@@ -132,11 +128,10 @@ function renderPhoto(photoList, offset) {
 function deletePhoto(pid) {
   const jwt = Cookies.get('jwt');
   $.ajax({
-    url: `${api}/gallery/photo`,
-    beforeSend: xhr => xhr.setRequestHeader('x-access-token', jwt),
+    url: `${api}/gallery/photos/${pid}`,
+    beforeSend: xhr => xhr.setRequestHeader('Authorization', 'Bearer ' + jwt),
     type: 'DELETE',
-    data: { pid: pid },
     success: res => requestPhotoList(0),
-    error: res => alert(res.msg)
+    error: res => alert(res.responseJSON.error.message)
   });
 }
