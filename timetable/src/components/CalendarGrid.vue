@@ -1,13 +1,13 @@
 <template>
   <div>
-    <div class="flex justify-center" v-for="(row, ri) in rows" :key="ri">
+    <div class="grid grid-cols-7 items-start" v-for="(row, ri) in rows" :key="ri">
       <template v-for="cell in row" :key="cell.index">
         <!-- Add button (last cell) -->
         <div v-if="cell.isAddButton" class="cal-body-col" @click="onAddClick">
           <div class="h-full p-[7px]">
             <div
               class="ripple cal-item text-white text-base"
-              :class="[isSelectedActive ? 'bg-primary shadow-[0_2px_8px_rgba(33,150,243,0.3)]' : 'bg-[#CBD5E1]']"
+              :class="[isSelectedActive ? 'bg-primary shadow-[0_2px_8px_rgba(99,102,241,0.3)]' : 'bg-calendar-inactive']"
             >
               <i class="fas fa-plus"></i>
             </div>
