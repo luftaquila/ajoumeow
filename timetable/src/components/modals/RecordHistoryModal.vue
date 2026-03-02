@@ -6,7 +6,12 @@
       <Column field="course" header="코스" />
       <Column field="score" header="점수" />
     </DataTable>
-    <div v-else class="text-[#bbb] py-8">기록이 없습니다.</div>
+    <div v-else class="py-8 flex flex-col items-center gap-3">
+      <div class="w-14 h-14 rounded-full bg-surface-muted flex items-center justify-center">
+        <i class="far fa-clipboard-list text-xl text-text-muted"></i>
+      </div>
+      <div class="text-text-muted">기록이 없습니다.</div>
+    </div>
   </div>
 </template>
 

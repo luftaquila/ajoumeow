@@ -58,11 +58,19 @@ export function useCalendar() {
     return cell && cell.isActive
   })
 
+  const displayMonth = computed(() => {
+    if (cells.value.length < 16) return { year: new Date().getFullYear(), month: new Date().getMonth() + 1 }
+    const midCell = cells.value[15]
+    const date = new Date(midCell.date)
+    return { year: date.getFullYear(), month: date.getMonth() + 1 }
+  })
+
   return {
     cells,
     selectedDate,
     selectedCell,
     isSelectedActive,
+    displayMonth,
     initCalendar,
     selectDate,
   }
