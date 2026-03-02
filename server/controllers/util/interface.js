@@ -22,4 +22,14 @@ class Log {
   }
 }
 
-export { Response, Log }
+function success(data, meta) {
+  const res = { data };
+  if (meta) res.meta = meta;
+  return res;
+}
+
+function error(code, message) {
+  return { error: { code, message } };
+}
+
+export { Response, Log, success, error }

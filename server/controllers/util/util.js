@@ -2,17 +2,23 @@ import jwt from 'jsonwebtoken';
 import prettify from 'pretty-format';
 import { eq, and } from 'drizzle-orm';
 
-import { Response, Log } from './interface.js';
+import { Response, Log, error } from './interface.js';
 import { db, sqlite } from '../../db/index.js';
 import { members, semesters, semesterMembers, settings, logs } from '../../db/schema.js';
 
 let util = {};
 
+util.extractToken = function(request) {
+  const auth = request.headers['authorization'];
+  if (auth && auth.startsWith('Bearer ')) return auth.slice(7);
+  return null;
+};
+
 util.isLogin = async function(request, reply) {
-  const token = request.headers['x-access-token'];
+  const token = util.extractToken(request);
   if (!token) {
     util.logger(new Log('info', 'util', 'util.isLogin', '로그인 확인', 'internal', 400, token, 'ERR_NO_TOKEN'));
-    reply.code(400).send(new Response('error', '로그인 상태가 아닙니다.', 'ERR_NO_TOKEN'));
+    reply.code(400).send(error('ERR_NO_TOKEN', '로그인 상태가 아닙니다.'));
     return reply;
   }
   try {
@@ -26,16 +32,16 @@ util.isLogin = async function(request, reply) {
     util.logger(new Log('info', 'util', 'util.isLogin', '로그인 확인', 'internal', 0, token, request.decoded));
   } catch (err) {
     util.logger(new Log('info', 'util', 'util.isLogin', '로그인 확인', 'internal', 401, token, 'ERR_INVALID_TOKEN'));
-    reply.code(401).send(new Response('error', '로그인이 만료되었습니다.<br>다시 로그인해 주세요.', 'ERR_INVALID_TOKEN'));
+    reply.code(401).send(error('ERR_INVALID_TOKEN', '로그인이 만료되었습니다. 다시 로그인해 주세요.'));
     return reply;
   }
 };
 
 util.isAdmin = async function(request, reply) {
-  const token = request.headers['x-access-token'];
+  const token = util.extractToken(request);
   if (!token) {
     util.logger(new Log('info', 'util', 'util.isAdmin', '관리자 확인', 'internal', 400, token, 'ERR_NO_TOKEN'));
-    reply.code(400).send(new Response('error', '로그인 상태가 아닙니다.', 'ERR_NO_TOKEN'));
+    reply.code(400).send(error('ERR_NO_TOKEN', '로그인 상태가 아닙니다.'));
     return reply;
   }
   try {
@@ -47,16 +53,42 @@ util.isAdmin = async function(request, reply) {
     });
     if (decoded.role == '회원') {
       util.logger(new Log('info', 'util', 'util.isAdmin', '관리자 확인', 'internal', 403, token, 'ERR_USER_NOT_ADMIN'));
-      reply.code(403).send(new Response('error', '관리자가 아닙니다.', 'ERR_USER_NOT_ADMIN'));
+      reply.code(403).send(error('ERR_USER_NOT_ADMIN', '관리자가 아닙니다.'));
       return reply;
     }
     request.decoded = decoded;
     util.logger(new Log('info', 'util', 'util.isAdmin', '관리자 확인', 'internal', 0, token, request.decoded));
   } catch (err) {
     util.logger(new Log('info', 'util', 'util.isAdmin', '관리자 확인', 'internal', 401, token, 'ERR_INVALID_TOKEN'));
-    reply.code(401).send(new Response('error', '로그인이 만료되었습니다.<br>다시 로그인해 주세요.', 'ERR_INVALID_TOKEN'));
+    reply.code(401).send(error('ERR_INVALID_TOKEN', '로그인이 만료되었습니다. 다시 로그인해 주세요.'));
     return reply;
   }
+};
+
+util.optionalAuth = async function(request, reply) {
+  const token = util.extractToken(request);
+  if (!token) {
+    request.decoded = null;
+    return;
+  }
+  try {
+    const decoded = await new Promise((resolve, reject) => {
+      jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+        if (err) reject(err);
+        else resolve(decoded);
+      });
+    });
+    request.decoded = decoded;
+  } catch (err) {
+    request.decoded = null;
+  }
+};
+
+util.resolveMemberId = function(decoded) {
+  if (!decoded) return null;
+  if (decoded.memberId) return decoded.memberId;
+  const member = util.getMemberByStudentId(decoded.id);
+  return member ? member.id : null;
 };
 
 util.getSettings = function(name) {
@@ -65,7 +97,7 @@ util.getSettings = function(name) {
 };
 
 util.getCurrentSemester = function() {
-  const semesterName = util.getSettings('currentSemister');
+  const semesterName = util.getSettings('currentSemester');
   if (!semesterName) return null;
   return db.select().from(semesters).where(eq(semesters.name, semesterName)).get();
 };
