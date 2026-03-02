@@ -26,7 +26,7 @@
       </template>
     </ActionBar>
 
-    <div class="card overflow-hidden">
+    <div class="card overflow-x-auto">
       <DataTable
         :value="members"
         :loading="loading"
@@ -42,22 +42,22 @@
         filterDisplay="row"
         v-model:filters="filters"
       >
-        <Column field="college" header="단과대학" sortable :showFilterMenu="false" style="width: 7rem">
+        <Column field="college" header="단과대학" sortable :showFilterMenu="false" style="min-width: 7rem">
           <template #filter="{ filterModel, filterCallback }">
             <InputText v-model="filterModel.value" @input="filterCallback()" placeholder="검색" size="small" class="w-full" />
           </template>
         </Column>
-        <Column field="department" header="학과" sortable :showFilterMenu="false" style="width: 8rem">
+        <Column field="department" header="학과" sortable :showFilterMenu="false" style="min-width: 8rem">
           <template #filter="{ filterModel, filterCallback }">
             <InputText v-model="filterModel.value" @input="filterCallback()" placeholder="검색" size="small" class="w-full" />
           </template>
         </Column>
-        <Column field="studentId" header="학번" sortable :showFilterMenu="false" style="width: 7rem">
+        <Column field="studentId" header="학번" sortable :showFilterMenu="false" style="min-width: 7rem">
           <template #filter="{ filterModel, filterCallback }">
             <InputText v-model="filterModel.value" @input="filterCallback()" placeholder="검색" size="small" class="w-full" />
           </template>
         </Column>
-        <Column field="name" header="이름" sortable :showFilterMenu="false" style="width: 5rem">
+        <Column field="name" header="이름" sortable :showFilterMenu="false" style="min-width: 5rem">
           <template #filter="{ filterModel, filterCallback }">
             <InputText v-model="filterModel.value" @input="filterCallback()" placeholder="검색" size="small" class="w-full" />
           </template>
@@ -65,34 +65,34 @@
             <InputText v-model="data[field]" size="small" class="w-full" />
           </template>
         </Column>
-        <Column field="phone" header="연락처" sortable style="width: 9rem">
+        <Column field="phone" header="연락처" sortable style="min-width: 9rem">
           <template #editor="{ data, field }">
             <InputText v-model="data[field]" size="small" class="w-full" />
           </template>
         </Column>
-        <Column field="birthday" header="생년월일" sortable style="width: 7rem">
+        <Column field="birthday" header="생년월일" sortable style="min-width: 7rem">
           <template #editor="{ data, field }">
             <InputText v-model="data[field]" size="small" class="w-full" />
           </template>
         </Column>
-        <Column field="volunteerId" header="1365 ID" sortable style="width: 7rem">
+        <Column field="volunteerId" header="1365 ID" sortable style="min-width: 7rem">
           <template #editor="{ data, field }">
             <InputText v-model="data[field]" size="small" class="w-full" />
           </template>
         </Column>
-        <Column field="googleEmail" header="Google" sortable style="width: 7rem">
+        <Column field="googleEmail" header="Google" sortable style="min-width: 7rem">
           <template #body="{ data }">
             <span v-if="data.googleEmail" class="text-xs" :title="data.googleEmail">{{ data.googleEmail.split('@')[0] }}</span>
             <span v-else class="text-xs text-text-muted">미연동</span>
           </template>
         </Column>
-        <Column field="enrolledSemester" header="가입학기" sortable style="width: 6rem" />
-        <Column field="role" header="직책" sortable style="width: 5rem">
+        <Column field="enrolledSemester" header="가입학기" sortable style="min-width: 6rem" />
+        <Column field="role" header="직책" sortable style="min-width: 5rem">
           <template #editor="{ data, field }">
             <InputText v-model="data[field]" size="small" class="w-full" />
           </template>
         </Column>
-        <Column header="" style="width: 3rem">
+        <Column header="" style="min-width: 3rem">
           <template #body="{ data }">
             <button @click="confirmDelete(data)" class="text-text-muted hover:text-red-500 cursor-pointer" title="제명">
               <span class="i-lucide-trash-2 text-base"></span>

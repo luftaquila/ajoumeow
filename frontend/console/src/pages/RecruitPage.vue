@@ -48,7 +48,7 @@
       </template>
     </ActionBar>
 
-    <div class="card overflow-hidden">
+    <div class="card overflow-x-auto">
       <DataTable
         :value="registrations"
         :loading="loading"
@@ -60,16 +60,16 @@
         stripedRows
         class="text-sm"
       >
-        <Column field="createdAt" header="신청일" sortable style="width: 11rem">
+        <Column field="createdAt" header="신청일" sortable style="min-width: 11rem">
           <template #body="{ data }">
             <span class="text-xs">{{ formatLocal(data.createdAt) }}</span>
           </template>
         </Column>
-        <Column field="studentId" header="학번" sortable style="width: 7rem" />
-        <Column field="name" header="이름" sortable style="width: 5rem" />
-        <Column field="college" header="단과대학" sortable />
-        <Column field="department" header="학과" sortable />
-        <Column field="phone" header="연락처" sortable style="width: 9rem" />
+        <Column field="studentId" header="학번" sortable style="min-width: 7rem" />
+        <Column field="name" header="이름" sortable style="min-width: 5rem" />
+        <Column field="college" header="단과대학" sortable style="min-width: 7rem" />
+        <Column field="department" header="학과" sortable style="min-width: 8rem" />
+        <Column field="phone" header="연락처" sortable style="min-width: 9rem" />
       </DataTable>
     </div>
   </div>

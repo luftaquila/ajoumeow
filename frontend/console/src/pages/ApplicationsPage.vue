@@ -31,7 +31,7 @@
       </template>
     </ActionBar>
 
-    <div class="card overflow-hidden">
+    <div class="card overflow-x-auto">
       <DataTable
         :value="applications"
         :loading="loading"
@@ -43,32 +43,32 @@
         stripedRows
         class="text-sm row-normal"
       >
-        <Column field="createdAt" header="신청일" sortable style="width: 11rem">
+        <Column field="createdAt" header="신청일" sortable style="min-width: 11rem">
           <template #body="{ data }">
             <span class="text-xs">{{ formatLocal(data.createdAt) }}</span>
           </template>
         </Column>
-        <Column field="isNew" header="유형" sortable style="width: 5rem">
+        <Column field="isNew" header="유형" sortable style="min-width: 5rem">
           <template #body="{ data }">
             <Tag :value="data.isNew ? '신규' : '기존'" :severity="data.isNew ? 'info' : 'secondary'" />
           </template>
         </Column>
-        <Column field="studentId" header="학번" sortable style="width: 7rem" />
-        <Column field="name" header="이름" sortable style="width: 5rem" />
-        <Column field="college" header="단과대학" sortable />
-        <Column field="department" header="학과" sortable />
-        <Column field="phone" header="연락처" sortable style="width: 9rem" />
-        <Column field="googleEmail" header="Google" sortable>
+        <Column field="studentId" header="학번" sortable style="min-width: 7rem" />
+        <Column field="name" header="이름" sortable style="min-width: 5rem" />
+        <Column field="college" header="단과대학" sortable style="min-width: 7rem" />
+        <Column field="department" header="학과" sortable style="min-width: 8rem" />
+        <Column field="phone" header="연락처" sortable style="min-width: 9rem" />
+        <Column field="googleEmail" header="Google" sortable style="min-width: 10rem">
           <template #body="{ data }">
             <span class="text-xs text-text-muted">{{ data.googleEmail }}</span>
           </template>
         </Column>
-        <Column field="status" header="상태" sortable style="width: 6rem">
+        <Column field="status" header="상태" sortable style="min-width: 6rem">
           <template #body="{ data }">
             <Tag :value="statusLabel(data.status)" :severity="statusSeverity(data.status)" />
           </template>
         </Column>
-        <Column header="" style="width: 10rem">
+        <Column header="" style="min-width: 10rem">
           <template #body="{ data }">
             <div v-if="data.status === 'pending'" class="flex gap-1">
               <Button label="승인" severity="success" size="small" @click="confirmApprove(data)" />
