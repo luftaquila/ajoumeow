@@ -2,7 +2,10 @@ import fs from 'fs';
 import path from 'path';
 import dateformat from 'dateformat';
 import jwt from 'jsonwebtoken';
+import { eq, and, between, like, sql, desc, asc, max } from 'drizzle-orm';
 
+import { db, sqlite } from '../db/index.js';
+import { records, members, verifications, logs } from '../db/schema.js';
 import util from '../controllers/util/util.js';
 import { Response, Log } from '../controllers/util/interface.js';
 
@@ -11,8 +14,22 @@ export default async function(fastify, opts) {
 
   fastify.get('/', async (request, reply) => {
     try {
-      let result = await util.query(`SELECT * FROM record WHERE date BETWEEN '${request.query.startDate}' AND '${request.query.endDate} ' ORDER BY date, course, timestamp;`);
-      const update = await util.query(`SELECT UPDATE_TIME FROM information_schema.tables WHERE TABLE_SCHEMA='ajoumeow' AND TABLE_name='record';`);
+      let result = db.select({
+        id: records.id,
+        ID: members.studentId,
+        name: members.name,
+        date: records.date,
+        course: records.course,
+        timestamp: records.createdAt,
+      })
+        .from(records)
+        .innerJoin(members, eq(records.memberId, members.id))
+        .where(between(records.date, request.query.startDate, request.query.endDate))
+        .orderBy(asc(records.date), asc(records.course), asc(records.createdAt))
+        .all();
+
+      const updateRow = db.select({ updateTime: max(records.createdAt) }).from(records).get();
+      const update = updateRow ? [{ UPDATE_TIME: updateRow.updateTime }] : [{ UPDATE_TIME: null }];
 
       const token = request.headers['jwt'];
       if(token) {
@@ -23,17 +40,17 @@ export default async function(fastify, opts) {
               else resolve(decoded);
             });
           });
-          result = await maskName(result, decoded.id);
+          result = maskName(result, decoded.id);
         } catch(err) {
-          result = await maskName(result, null);
+          result = maskName(result, null);
         }
       }
-      else result = await maskName(result, null);
+      else result = maskName(result, null);
 
       util.logger(new Log('info', request.remoteIP, request.originalPath, '급식 신청 기록 요청', request.method, 200, request.query, result));
       return reply.code(200).send(new Response('success', update, result));
 
-      async function maskName(data, id) {
+      function maskName(data, id) {
         if(id) {
           return data;
         }
@@ -56,13 +73,25 @@ export default async function(fastify, opts) {
   fastify.post('/', { preHandler: [util.isLogin] }, async (request, reply) => {
     try {
       const payload = request.body;
-      const test = await util.query(`SELECT * FROM record WHERE ID=${payload.ID} AND name='${payload.name}' AND date='${payload.date}' AND course='${payload.course}'`);
+      const member = util.getMemberByStudentId(payload.ID);
+      if (!member) {
+        return reply.code(400).send(new Response('error', '등록되지 않은 학번입니다.', 'ERR_NOT_REGISTERED'));
+      }
+
+      const test = db.select().from(records)
+        .where(and(eq(records.memberId, member.id), eq(records.date, payload.date), eq(records.course, payload.course)))
+        .all();
+
       if(test.length) {
         util.logger(new Log('info', request.remoteIP, request.originalPath, '급식 신청', request.method, 400, request.body, 'ERR_DUP_ENTRY'));
         return reply.code(400).send(new Response('error', '이미 신청되었습니다.', 'ERR_DUP_ENTRY'));
       }
       else {
-        const result = await util.query(`INSERT INTO record(ID, name, date, course) VALUES(${payload.ID}, '${payload.name}', '${payload.date}', '${payload.course}');`);
+        const result = db.insert(records).values({
+          memberId: member.id,
+          date: payload.date,
+          course: payload.course,
+        }).run();
         util.logger(new Log('info', request.remoteIP, request.originalPath, '급식 신청', request.method, 201, request.body, result));
         return reply.code(201).send(new Response('success', null, result));
       }
@@ -75,7 +104,14 @@ export default async function(fastify, opts) {
 
   fastify.delete('/', { preHandler: [util.isLogin] }, async (request, reply) => {
     try {
-      const result = await util.query(`DELETE FROM record WHERE ID=${request.body.ID} AND name='${request.body.name}' AND date='${request.body.date}' AND course='${request.body.course}';`);
+      const member = util.getMemberByStudentId(request.body.ID);
+      if (!member) {
+        return reply.code(400).send(new Response('error', '등록되지 않은 학번입니다.', 'ERR_NOT_REGISTERED'));
+      }
+
+      const result = db.delete(records)
+        .where(and(eq(records.memberId, member.id), eq(records.date, request.body.date), eq(records.course, request.body.course)))
+        .run();
       util.logger(new Log('info', request.remoteIP, request.originalPath, '급식 신청 삭제', request.method, 200, request.body, result));
       return reply.code(200).send(new Response('success', null, result));
     }
@@ -88,9 +124,19 @@ export default async function(fastify, opts) {
   fastify.get('/statistics', async (request, reply) => {
     try {
       let data = [], verify = null;
+      const currentMonth = dateformat(new Date(), 'yyyy-mm');
+      const prevMonth = dateformat(new Date(new Date().setDate(0)), 'yyyy-mm');
+
       switch(request.query.type) {
         case 'summary':
-          verify = await util.query(`SELECT * FROM verify WHERE REPLACE(SUBSTRING_INDEX(date, '-', 2), '-', '')='${dateformat(new Date(), 'yyyymm')}';`);
+          verify = db.select({
+            ID: members.studentId,
+          })
+            .from(verifications)
+            .innerJoin(members, eq(verifications.memberId, members.id))
+            .where(like(verifications.date, `${currentMonth}%`))
+            .all();
+
           for(let obj of verify) {
             let person = data.find(o => o.ID == obj.ID);
             if(!person) data.push({ ID: obj.ID });
@@ -104,25 +150,65 @@ export default async function(fastify, opts) {
           return reply.code(200).send(new Response('success', null, payload));
 
         case 'this_feeding':
-          verify = await util.query(`SELECT * FROM verify WHERE REPLACE(SUBSTRING_INDEX(date, '-', 2), '-', '')='${dateformat(new Date(), 'yyyymm')}' AND course REGEXP '[0-9]코스';`);
+          verify = db.select({
+            ID: members.studentId,
+            name: members.name,
+            score: verifications.score,
+          })
+            .from(verifications)
+            .innerJoin(members, eq(verifications.memberId, members.id))
+            .where(and(like(verifications.date, `${currentMonth}%`), like(verifications.course, '%코스')))
+            .all();
           break;
 
         case 'this_total':
-          verify = await util.query(`SELECT * FROM verify WHERE REPLACE(SUBSTRING_INDEX(date, '-', 2), '-', '')='${dateformat(new Date(), 'yyyymm')}';`);
+          verify = db.select({
+            ID: members.studentId,
+            name: members.name,
+            score: verifications.score,
+          })
+            .from(verifications)
+            .innerJoin(members, eq(verifications.memberId, members.id))
+            .where(like(verifications.date, `${currentMonth}%`))
+            .all();
           break;
 
         case 'prev_feeding':
-          verify = await util.query(`SELECT * FROM verify WHERE REPLACE(SUBSTRING_INDEX(date, '-', 2), '-', '')='${dateformat(new Date(new Date().setDate(0)), 'yyyymm')}' AND course REGEXP '[0-9]코스';`);
+          verify = db.select({
+            ID: members.studentId,
+            name: members.name,
+            score: verifications.score,
+          })
+            .from(verifications)
+            .innerJoin(members, eq(verifications.memberId, members.id))
+            .where(and(like(verifications.date, `${prevMonth}%`), like(verifications.course, '%코스')))
+            .all();
           break;
 
         case 'total_total':
-          verify = await util.query(`SELECT * FROM verify;`);
+          verify = db.select({
+            ID: members.studentId,
+            name: members.name,
+            score: verifications.score,
+          })
+            .from(verifications)
+            .innerJoin(members, eq(verifications.memberId, members.id))
+            .all();
           break;
 
-        case 'custom_total':
+        case 'custom_total': {
           let [start, end] = request.query.value.split('|');
-          verify = await util.query(`SELECT * FROM verify WHERE date BETWEEN '${start}' AND '${end}';`);
+          verify = db.select({
+            ID: members.studentId,
+            name: members.name,
+            score: verifications.score,
+          })
+            .from(verifications)
+            .innerJoin(members, eq(verifications.memberId, members.id))
+            .where(between(verifications.date, start, end))
+            .all();
           break;
+        }
 
         default:
           util.logger(new Log('info', request.remoteIP, request.originalPath, '급식 통계 요청', request.method, 400, request.query, 'ERR_INVALID_TYPE'));
@@ -155,12 +241,25 @@ export default async function(fastify, opts) {
 
   fastify.get('/log', { preHandler: [util.isAdmin] }, async(request, reply) => {
     try {
-      let check = [];
-      if(request.query.level) check.push(`level REGEXP '${request.query.level.join('|')}'`);
-      if(request.query.type) check.push(`IP REGEXP '${request.query.type.join('|')}'`);
-      check = check.length ? (check.join(' AND ') + ' AND') : '';
-      const query = `SELECT * FROM log WHERE ${check} timestamp BETWEEN '${request.query.start}' AND '${request.query.end}';`;
-      const result = await util.query(query);
+      let conditions = [];
+      let params = [];
+
+      if(request.query.level) {
+        const levels = Array.isArray(request.query.level) ? request.query.level : [request.query.level];
+        conditions.push(`(${levels.map(() => 'level = ?').join(' OR ')})`);
+        params.push(...levels);
+      }
+      if(request.query.type) {
+        const types = Array.isArray(request.query.type) ? request.query.type : [request.query.type];
+        conditions.push(`(${types.map(() => 'ip LIKE ?').join(' OR ')})`);
+        params.push(...types.map(t => `%${t}%`));
+      }
+
+      let whereClause = conditions.length ? conditions.join(' AND ') + ' AND ' : '';
+      const query = `SELECT * FROM logs WHERE ${whereClause}timestamp BETWEEN ? AND ?`;
+      params.push(request.query.start, request.query.end);
+
+      const result = sqlite.prepare(query).all(...params);
       return reply.code(200).send(new Response('success', null, result));
     }
     catch(e) {

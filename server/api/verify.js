@@ -1,15 +1,51 @@
 import axios from 'axios';
 import dateformat from 'dateformat';
+import { eq, and, between, desc } from 'drizzle-orm';
 
+import { db } from '../db/index.js';
+import { members, semesters, semesterMembers, records, verifications } from '../db/schema.js';
 import util from '../controllers/util/util.js';
 import { Response, Log } from '../controllers/util/interface.js';
+
+function getVerificationsWithMember(whereClause) {
+  return db.select({
+    id: verifications.id,
+    ID: members.studentId,
+    name: members.name,
+    date: verifications.date,
+    course: verifications.course,
+    score: verifications.score,
+    timestamp: verifications.verifiedAt,
+  })
+    .from(verifications)
+    .innerJoin(members, eq(verifications.memberId, members.id))
+    .where(whereClause)
+    .orderBy(verifications.course)
+    .all();
+}
+
+function getRecordsWithMember(date) {
+  return db.select({
+    id: records.id,
+    ID: members.studentId,
+    name: members.name,
+    date: records.date,
+    course: records.course,
+    timestamp: records.createdAt,
+  })
+    .from(records)
+    .innerJoin(members, eq(records.memberId, members.id))
+    .where(eq(records.date, date))
+    .orderBy(records.course)
+    .all();
+}
 
 export default async function(fastify, opts) {
 
   fastify.get('/', { preHandler: [util.isLogin] }, async (request, reply) => {
     try {
-      let record = await util.query(`SELECT * FROM record WHERE date='${request.query.date}' ORDER BY course;`);
-      let verify = await util.query(`SELECT * FROM verify WHERE date='${request.query.date}' ORDER BY course;`);
+      let record = getRecordsWithMember(request.query.date);
+      let verify = getVerificationsWithMember(eq(verifications.date, request.query.date));
       util.logger(new Log('info', request.remoteIP, request.originalPath, '인증 기록 요청', request.method, 200, request.query, verify));
       return reply.code(200).send(new Response('success', record, verify));
     }
@@ -24,7 +60,14 @@ export default async function(fastify, opts) {
       let payload = JSON.parse(request.body.data);
       let result = [];
       for(let obj of payload) {
-        let att = await util.query(`INSERT INTO verify(ID, date, name, course, score) VALUES(${obj.ID}, '${obj.date}', '${obj.name}', '${obj.course}', '${obj.score}');`);
+        const member = util.getMemberByStudentId(obj.ID);
+        if (!member) continue;
+        const att = db.insert(verifications).values({
+          memberId: member.id,
+          date: obj.date,
+          course: obj.course,
+          score: obj.score,
+        }).run();
         result.push(att);
       }
       util.logger(new Log('info', request.remoteIP, request.originalPath, '급식 인증', request.method, 201, request.body, result));
@@ -41,7 +84,11 @@ export default async function(fastify, opts) {
       let payload = JSON.parse(request.body.data);
       let result = [];
       for(let obj of payload) {
-        let att = await util.query(`DELETE FROM verify WHERE ID=${obj.ID} AND date='${obj.date}' AND name='${obj.name}' AND course='${obj.course}';`);
+        const member = util.getMemberByStudentId(obj.ID);
+        if (!member) continue;
+        const att = db.delete(verifications)
+          .where(and(eq(verifications.memberId, member.id), eq(verifications.date, obj.date), eq(verifications.course, obj.course)))
+          .run();
         result.push(att);
       }
       util.logger(new Log('info', request.remoteIP, request.originalPath, '급식 인증 삭제', request.method, 200, request.body, result));
@@ -55,9 +102,21 @@ export default async function(fastify, opts) {
 
   fastify.get('/latest', { preHandler: [util.isLogin] }, async (request, reply) => {
     try {
-      let result = await util.query(`SELECT * FROM verify ORDER BY date DESC LIMIT 1;`);
-      util.logger(new Log('info', request.remoteIP, request.originalPath, '최근 급식 인증 날짜 요청', request.method, 200, request.query, result));
-      return reply.code(200).send(new Response('success', null, result[0]));
+      const row = db.select({
+        ID: members.studentId,
+        name: members.name,
+        date: verifications.date,
+        course: verifications.course,
+        score: verifications.score,
+      })
+        .from(verifications)
+        .innerJoin(members, eq(verifications.memberId, members.id))
+        .orderBy(desc(verifications.date))
+        .limit(1)
+        .get();
+
+      util.logger(new Log('info', request.remoteIP, request.originalPath, '최근 급식 인증 날짜 요청', request.method, 200, request.query, row));
+      return reply.code(200).send(new Response('success', null, row || null));
     }
     catch(e) {
       util.logger(new Log('error', request.remoteIP, request.originalPath, '최근 급식 인증 날짜 요청 오류', request.method, 500, request.query, e.stack));
@@ -67,13 +126,43 @@ export default async function(fastify, opts) {
 
   fastify.get('/1365', async (request, reply) => {
     try {
-      const verify = await util.query(`SELECT * FROM verify WHERE date BETWEEN '${request.query.start}' AND '${request.query.end}' ORDER BY date;`);
-      const namelist = await util.query(`SELECT * FROM \`namelist_${request.query.namelist}\`;`);
+      const semester = db.select().from(semesters).where(eq(semesters.name, request.query.namelist.replace('namelist_', ''))).get();
+      if (!semester) {
+        return reply.code(400).send(new Response('error', '해당 학기를 찾을 수 없습니다.', 'ERR_SEMESTER_NOT_FOUND'));
+      }
+
+      const verifyRows = db.select({
+        ID: members.studentId,
+        name: members.name,
+        date: verifications.date,
+        course: verifications.course,
+        score: verifications.score,
+        timestamp: verifications.verifiedAt,
+      })
+        .from(verifications)
+        .innerJoin(members, eq(verifications.memberId, members.id))
+        .where(between(verifications.date, request.query.start, request.query.end))
+        .orderBy(verifications.date)
+        .all();
+
+      const namelist = db.select({
+        ID: members.studentId,
+        name: members.name,
+        phone: members.phone,
+        birthday: members.birthday,
+        '1365ID': members.volunteerId,
+        role: semesterMembers.role,
+      })
+        .from(semesterMembers)
+        .innerJoin(members, eq(semesterMembers.memberId, members.id))
+        .where(eq(semesterMembers.semesterId, semester.id))
+        .all();
+
       const cheif = namelist.find(o => o.role == '회장');
       const mask = request.query.mask == 'true';
 
       let payload = [];
-      for(const activity of verify) {
+      for(const activity of verifyRows) {
         const member = namelist.find(o => o.ID == activity.ID);
         if(!member || !member['1365ID']) continue;
 

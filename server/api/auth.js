@@ -1,21 +1,58 @@
 import jwt from 'jsonwebtoken';
+import { eq, and } from 'drizzle-orm';
 
+import { db } from '../db/index.js';
+import { members, semesters, semesterMembers, verifications } from '../db/schema.js';
 import util from '../controllers/util/util.js';
 import { Response, Log } from '../controllers/util/interface.js';
+
+function getMemberInfo(studentId) {
+  const semester = util.getCurrentSemester();
+  if (!semester) return null;
+
+  const rows = db.select({
+    name: members.name,
+    ID: members.studentId,
+    role: semesterMembers.role,
+    '1365ID': members.volunteerId,
+    memberId: members.id,
+  })
+    .from(members)
+    .innerJoin(semesterMembers, eq(semesterMembers.memberId, members.id))
+    .where(and(eq(members.studentId, String(studentId)), eq(semesterMembers.semesterId, semester.id)))
+    .all();
+
+  return rows.length ? rows[0] : null;
+}
+
+function getStatistics(memberId) {
+  return db.select({
+    date: verifications.date,
+    course: verifications.course,
+    score: verifications.score,
+  })
+    .from(verifications)
+    .where(eq(verifications.memberId, memberId))
+    .orderBy(verifications.date)
+    .all()
+    .reverse();
+}
 
 export default async function(fastify, opts) {
 
   fastify.post('/login', async (request, reply) => {
     try {
       if(request.body.id) {
-        const result = await util.query(`SELECT name, ID, role, 1365ID FROM \`namelist_${await util.getSettings('currentSemister')}\` WHERE ID='${request.body.id}';`);
-        const semister = await util.getSettings('currentSemister');
+        const result = getMemberInfo(request.body.id);
+        const semister = util.getSettings('currentSemister');
 
-        if(result.length) {
-          const token = jwt.sign(request.body, process.env.JWT_SECRET, { expiresIn: '365d' });
-          const statistics = await util.query(`SELECT date, course, score FROM verify WHERE id=${request.body.id} ORDER BY date DESC;`);
+        if(result) {
+          const tokenPayload = { id: request.body.id, memberId: result.memberId, role: result.role };
+          const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, { expiresIn: '365d' });
+          const statistics = getStatistics(result.memberId);
+          const user = { name: result.name, ID: result.ID, role: result.role, '1365ID': result['1365ID'] };
           util.logger(new Log('info', request.remoteIP, request.originalPath, '로그인 요청', request.method, 200, request.body, token));
-          return reply.code(200).send(new Response('success', token, { user: result[0], statistics: statistics, semister: semister }));
+          return reply.code(200).send(new Response('success', token, { user, statistics, semister }));
         }
         else {
           util.logger(new Log('info', request.remoteIP, request.originalPath, '로그인 요청', request.method, 400, request.body, 'ERR_NOT_REGISTERED'));
@@ -37,13 +74,14 @@ export default async function(fastify, opts) {
   fastify.post('/autologin', { preHandler: [util.isLogin] }, async (request, reply) => {
     try {
       if(request.decoded.id) {
-        const result = await util.query(`SELECT name, ID, role, 1365ID FROM \`namelist_${await util.getSettings('currentSemister')}\` WHERE ID='${request.decoded.id}';`);
-        const semister = await util.getSettings('currentSemister');
+        const result = getMemberInfo(request.decoded.id);
+        const semister = util.getSettings('currentSemister');
 
-        if(result.length) {
-          const statistics = await util.query(`SELECT date, course, score FROM verify WHERE id=${request.decoded.id} ORDER BY date DESC;`);
-          util.logger(new Log('info', request.remoteIP, request.originalPath, '자동 로그인', request.method, 200, request.decoded, result[0]));
-          return reply.code(200).send(new Response('success', null, { user: result[0], statistics: statistics, semister: semister }));
+        if(result) {
+          const statistics = getStatistics(result.memberId);
+          const user = { name: result.name, ID: result.ID, role: result.role, '1365ID': result['1365ID'] };
+          util.logger(new Log('info', request.remoteIP, request.originalPath, '자동 로그인', request.method, 200, request.decoded, user));
+          return reply.code(200).send(new Response('success', null, { user, statistics, semister }));
         }
         else {
           util.logger(new Log('info', request.remoteIP, request.originalPath, '자동 로그인', request.method, 400, request.decoded, 'ERR_NOT_REGISTERED'));

@@ -1,3 +1,7 @@
+import { eq, and, like } from 'drizzle-orm';
+
+import { db } from '../db/index.js';
+import { members, semesters, semesterMembers, registrations } from '../db/schema.js';
 import util from '../controllers/util/util.js';
 import { Response, Log } from '../controllers/util/interface.js';
 
@@ -7,13 +11,32 @@ export default async function(fastify, opts) {
   fastify.get('/list', { preHandler: [util.isAdmin] }, async (request, reply) => {
     try {
       if(request.query.semister == 'all') {
-        let result = await util.query(`SHOW TABLES LIKE '%namelist_%';`);
-        let map = result.map(x => x['Tables_in_ajoumeow (%namelist_%)']);
+        const rows = db.select({ name: semesters.name }).from(semesters).all();
+        const map = rows.map(r => `namelist_${r.name}`);
         util.logger(new Log('info', request.remoteIP, request.originalPath, '명단 목록 요청', request.method, 200, request.query, map));
         return reply.code(200).send(new Response('success', null, map));
       }
       else {
-        let result = await util.query(`SELECT * FROM \`namelist_${request.query.semister}\`;`);
+        const semester = db.select().from(semesters).where(eq(semesters.name, request.query.semister)).get();
+        if (!semester) {
+          return reply.code(400).send(new Response('error', '해당 학기를 찾을 수 없습니다.', 'ERR_SEMESTER_NOT_FOUND'));
+        }
+        const result = db.select({
+          college: members.college,
+          department: members.department,
+          ID: members.studentId,
+          name: members.name,
+          phone: members.phone,
+          birthday: members.birthday,
+          '1365ID': members.volunteerId,
+          register: semesterMembers.registeredAt,
+          role: semesterMembers.role,
+        })
+          .from(semesterMembers)
+          .innerJoin(members, eq(semesterMembers.memberId, members.id))
+          .where(eq(semesterMembers.semesterId, semester.id))
+          .all();
+
         util.logger(new Log('info', request.remoteIP, request.originalPath, '명단 요청', request.method, 200, request.query, result));
         return reply.code(200).send(new Response('success', null, result));
       }
@@ -27,7 +50,19 @@ export default async function(fastify, opts) {
   // Get users info by name
   fastify.get('/name', { preHandler: [util.isAdmin] }, async (request, reply) => {
     try {
-      let result = await util.query(`SELECT name, ID FROM \`namelist_${await util.getSettings('currentSemister')}\` WHERE name LIKE '%${request.query.query}%';`);
+      const semester = util.getCurrentSemester();
+      if (!semester) {
+        return reply.code(400).send(new Response('error', '현재 학기 설정이 없습니다.', 'ERR_NO_SEMESTER'));
+      }
+      const result = db.select({
+        name: members.name,
+        ID: members.studentId,
+      })
+        .from(members)
+        .innerJoin(semesterMembers, eq(semesterMembers.memberId, members.id))
+        .where(and(eq(semesterMembers.semesterId, semester.id), like(members.name, `%${request.query.query}%`)))
+        .all();
+
       util.logger(new Log('info', request.remoteIP, request.originalPath, '사용자 정보 요청', request.method, 200, request.query, result));
       return reply.code(200).send(new Response('success', null, result));
     }
@@ -40,64 +75,106 @@ export default async function(fastify, opts) {
   // Add new user
   fastify.post('/id', async (request, reply) => {
     try {
-      let namelists = await util.query(`SHOW TABLES LIKE '%namelist_%';`);
-      namelists = namelists.map(x => x['Tables_in_ajoumeow (%namelist_%)']).reverse();
-      let currentNamelist = namelists[namelists.indexOf(`namelist_${await util.getSettings('currentSemister')}`)];
+      const currentSemester = util.getCurrentSemester();
+      const studentId = String(request.body['학번']);
 
-      // check if duplicates
-      if(currentNamelist) {
-        const test = await util.query(`SELECT ID FROM \`${currentNamelist}\` WHERE ID=${request.body['학번']};`);
-        if(test.length) {
+      // check if already registered in current semester
+      if (currentSemester) {
+        const existing = db.select().from(semesterMembers)
+          .innerJoin(members, eq(semesterMembers.memberId, members.id))
+          .where(and(eq(members.studentId, studentId), eq(semesterMembers.semesterId, currentSemester.id)))
+          .get();
+
+        if (existing) {
           util.logger(new Log('info', request.remoteIP, request.originalPath, '회원 등록', request.method, 400, request.body, 'ERR_ALREADY_REGISTERED'));
           return reply.code(400).send(new Response('error', '이미 이번 학기 회원으로 등록되셨습니다.', 'ERR_ALREADY_REGISTERED'));
         }
       }
 
-      // test if user is previously registered
-      let previous = false;
-      for(let namelist of namelists) {
-        const test = await util.query(`SELECT * FROM \`${namelist}\` WHERE ID=${request.body['학번']};`);
-        if(test.length) {
-          previous = test[0];
-          break;
-        }
-      }
+      // check if user was previously registered (in any semester)
+      const previousMember = db.select().from(members).where(eq(members.studentId, studentId)).get();
 
       // check if user lookuped for previously registered
       if(request.body.lookup) {
-        util.logger(new Log('info', request.remoteIP, request.originalPath, '기존 회원 등록여부 조회', request.method, 200, request.body, previous));
-        if(previous) return reply.code(200).send(new Response('success', null, previous));
+        util.logger(new Log('info', request.remoteIP, request.originalPath, '기존 회원 등록여부 조회', request.method, 200, request.body, previousMember));
+        if(previousMember) {
+          // Get the latest semester membership info for the response
+          const smInfo = db.select({
+            role: semesterMembers.role,
+            register: semesterMembers.registeredAt,
+          }).from(semesterMembers).where(eq(semesterMembers.memberId, previousMember.id)).limit(1).get();
+
+          return reply.code(200).send(new Response('success', null, {
+            college: previousMember.college,
+            department: previousMember.department,
+            ID: previousMember.studentId,
+            name: previousMember.name,
+            phone: previousMember.phone,
+            birthday: previousMember.birthday,
+            '1365ID': previousMember.volunteerId,
+            register: smInfo ? smInfo.register : null,
+            role: smInfo ? smInfo.role : '회원',
+          }));
+        }
         else return reply.code(400).send(new Response('error', '기존 회원이 아닙니다.<br>신입 회원으로 등록해 주세요.', 'ERR_NEVER_REGISTERED'));
       }
 
-      if(request.body.new == 'true' && previous) {
+      if(request.body.new == 'true' && previousMember) {
         util.logger(new Log('info', request.remoteIP, request.originalPath, '회원 등록', request.method, 400, request.body, 'ERR_REGISTERED_BEFORE'));
         return reply.code(400).send(new Response('error', '지난 학기에 가입한 적이 있습니다.<br>기존 회원으로 등록해 주세요.', 'ERR_REGISTERED_BEFORE'));
       }
-      else if(request.body.new == 'false' && !previous) {
+      else if(request.body.new == 'false' && !previousMember) {
         util.logger(new Log('info', request.remoteIP, request.originalPath, '회원 등록', request.method, 400, request.body, 'ERR_NEVER_REGISTERED'));
         return reply.code(400).send(new Response('error', '기존 회원이 아닙니다.<br>신입 회원으로 등록해 주세요.', 'ERR_NEVER_REGISTERED'));
       }
 
-      /* proceeding apply */
-      // create table if current semister's namelist not exists
-      if(!currentNamelist) {
-        await util.query("CREATE TABLE `namelist_" + await util.getSettings('currentSemister') + "` (" +
-              "`college` varchar(10) not null," +
-              "`department` varchar(15) not null," +
-              "`ID` int(11) not null," +
-              "`name` varchar(30) not null," +
-              "`phone` varchar(15) not null," +
-              "`birthday` varchar(10)," +
-              "`1365ID` varchar(30)," +
-              "`register` varchar(20)," +
-              "`role` varchar(10) default '회원'," +
-              "PRIMARY KEY (`ID`)" +
-              ") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+      // Ensure current semester exists
+      let semesterId;
+      if (currentSemester) {
+        semesterId = currentSemester.id;
+      } else {
+        const semesterName = util.getSettings('currentSemister');
+        const result = db.insert(semesters).values({ name: semesterName }).run();
+        semesterId = result.lastInsertRowid;
       }
-      let result = await util.query(`INSERT INTO \`namelist_${await util.getSettings('currentSemister')}\`(college, department, ID, name, phone, birthday, 1365ID, register, role) VALUES('${request.body['단과대학']}', '${request.body['학과']}', ${request.body['학번']}, '${request.body['이름']}', '${request.body['전화번호']}', '${request.body['생년월일']}', '${request.body['1365 아이디']}', '${request.body['가입 학기']}', '${request.body['직책']}');`);
-      util.logger(new Log('info', request.remoteIP, request.originalPath, '회원 등록', request.method, 201, request.body, result));
-      return reply.code(201).send(new Response('success', null, result));
+
+      // Insert or update member
+      let memberId;
+      if (previousMember) {
+        // Update existing member info
+        db.update(members).set({
+          college: request.body['단과대학'],
+          department: request.body['학과'],
+          name: request.body['이름'],
+          phone: request.body['전화번호'],
+          birthday: request.body['생년월일'],
+          volunteerId: request.body['1365 아이디'],
+        }).where(eq(members.id, previousMember.id)).run();
+        memberId = previousMember.id;
+      } else {
+        // Insert new member
+        const result = db.insert(members).values({
+          studentId: studentId,
+          name: request.body['이름'],
+          college: request.body['단과대학'],
+          department: request.body['학과'],
+          phone: request.body['전화번호'],
+          birthday: request.body['생년월일'],
+          volunteerId: request.body['1365 아이디'],
+        }).run();
+        memberId = result.lastInsertRowid;
+      }
+
+      // Add semester membership
+      db.insert(semesterMembers).values({
+        semesterId: semesterId,
+        memberId: memberId,
+        role: request.body['직책'] || '회원',
+        registeredAt: request.body['가입 학기'] || new Date().toISOString(),
+      }).run();
+
+      util.logger(new Log('info', request.remoteIP, request.originalPath, '회원 등록', request.method, 201, request.body, 'success'));
+      return reply.code(201).send(new Response('success', null, { affectedRows: 1 }));
     }
     catch(e) {
       util.logger(new Log('error', request.remoteIP, request.originalPath, '회원 등록 오류', request.method, 500, request.body, e.stack));
@@ -108,9 +185,34 @@ export default async function(fastify, opts) {
   // Modify user info by id
   fastify.put('/id', { preHandler: [util.isAdmin] }, async (request, reply) => {
     try {
-      let result = await util.query(`UPDATE \`namelist_${await util.getSettings('currentSemister')}\` SET college='${request.body.college}', department='${request.body.department}', name='${request.body.name}', phone='${request.body.phone}', birthday='${request.body.birthday}', 1365ID='${request.body['1365ID']}', role='${request.body.role}', register='${request.body.register}' WHERE ID=${request.body.ID};`);
-      util.logger(new Log('info', request.remoteIP, request.originalPath, '회원 정보 수정', request.method, 200, request.body, result));
-      return reply.code(200).send(new Response('success', null, result));
+      const semester = util.getCurrentSemester();
+      if (!semester) {
+        return reply.code(400).send(new Response('error', '현재 학기 설정이 없습니다.', 'ERR_NO_SEMESTER'));
+      }
+
+      const member = util.getMemberByStudentId(request.body.ID);
+      if (!member) {
+        return reply.code(400).send(new Response('error', '회원을 찾을 수 없습니다.', 'ERR_NOT_FOUND'));
+      }
+
+      // Update member info
+      db.update(members).set({
+        college: request.body.college,
+        department: request.body.department,
+        name: request.body.name,
+        phone: request.body.phone,
+        birthday: request.body.birthday,
+        volunteerId: request.body['1365ID'],
+      }).where(eq(members.id, member.id)).run();
+
+      // Update semester membership
+      db.update(semesterMembers).set({
+        role: request.body.role,
+        registeredAt: request.body.register,
+      }).where(and(eq(semesterMembers.memberId, member.id), eq(semesterMembers.semesterId, semester.id))).run();
+
+      util.logger(new Log('info', request.remoteIP, request.originalPath, '회원 정보 수정', request.method, 200, request.body, 'success'));
+      return reply.code(200).send(new Response('success', null, { affectedRows: 1 }));
     }
     catch(e) {
       util.logger(new Log('error', request.remoteIP, request.originalPath, '회원 정보 수정 오류', request.method, 500, request.body, e.stack));
@@ -121,11 +223,25 @@ export default async function(fastify, opts) {
   // Delete user by id
   fastify.delete('/id', { preHandler: [util.isAdmin] }, async (request, reply) => {
     try {
-      if(!request.body.ID) request.body.ID = 0;
-      let result = await util.query(`DELETE FROM \`namelist_${await util.getSettings('currentSemister')}\` WHERE ID=${request.body.ID}`);
-      if(result.affectedRows) {
+      const semester = util.getCurrentSemester();
+      if (!semester) {
+        return reply.code(400).send(new Response('error', '현재 학기 설정이 없습니다.', 'ERR_NO_SEMESTER'));
+      }
+
+      const studentId = String(request.body.ID || 0);
+      const member = util.getMemberByStudentId(studentId);
+      if (!member) {
+        util.logger(new Log('info', request.remoteIP, request.originalPath, '회원 삭제', request.method, 400, request.body, 'ERR_NO_MATCHING_ID'));
+        return reply.code(400).send(new Response('error', 'No matching ID', 'ERR_NO_MATCHING_ID'));
+      }
+
+      const result = db.delete(semesterMembers)
+        .where(and(eq(semesterMembers.memberId, member.id), eq(semesterMembers.semesterId, semester.id)))
+        .run();
+
+      if(result.changes) {
         util.logger(new Log('info', request.remoteIP, request.originalPath, '회원 삭제', request.method, 200, request.body, result));
-        return reply.code(200).send(new Response('success', null, result));
+        return reply.code(200).send(new Response('success', null, { affectedRows: result.changes }));
       }
       else {
         util.logger(new Log('info', request.remoteIP, request.originalPath, '회원 삭제', request.method, 400, request.body, 'ERR_NO_MATCHING_ID'));
@@ -142,13 +258,30 @@ export default async function(fastify, opts) {
   fastify.get('/register', { preHandler: [util.isAdmin] }, async (request, reply) => {
     try {
       if(request.query.semister == 'all') {
-        let result = await util.query(`SHOW TABLES LIKE '%register_%';`);
-        let map = result.map(x => x['Tables_in_ajoumeow (%register_%)']);
+        const rows = db.select({ name: semesters.name }).from(semesters).all();
+        const map = rows.map(r => `register_${r.name}`);
         util.logger(new Log('info', request.remoteIP, request.originalPath, '가입 신청자 명단 목록 요청', request.method, 200, request.query, map));
         return reply.code(200).send(new Response('success', null, map));
       }
       else {
-        let result = await util.query(`SELECT * FROM \`register_${request.query.semister}\` ORDER BY timestamp DESC;`);
+        const semester = db.select().from(semesters).where(eq(semesters.name, request.query.semister)).get();
+        if (!semester) {
+          return reply.code(400).send(new Response('error', '해당 학기를 찾을 수 없습니다.', 'ERR_SEMESTER_NOT_FOUND'));
+        }
+        const result = db.select({
+          timestamp: registrations.createdAt,
+          ID: registrations.studentId,
+          name: registrations.name,
+          college: registrations.college,
+          department: registrations.department,
+          phone: registrations.phone,
+        })
+          .from(registrations)
+          .where(eq(registrations.semesterId, semester.id))
+          .orderBy(registrations.createdAt)
+          .all()
+          .reverse();
+
         util.logger(new Log('info', request.remoteIP, request.originalPath, '가입 신청자 명단 요청', request.method, 200, request.query, result));
         return reply.code(200).send(new Response('success', null, result));
       }
@@ -162,36 +295,35 @@ export default async function(fastify, opts) {
   // register user
   fastify.post('/register', async (request, reply) => {
     try {
-      // check if registered again
-      let registers = await util.query(`SHOW TABLES LIKE '%register_%';`);
-      registers = registers.map(x => x['Tables_in_ajoumeow (%register_%)']).reverse();
+      const semesterName = util.getSettings('currentSemister');
+      let semester = db.select().from(semesters).where(eq(semesters.name, semesterName)).get();
 
-      let currentRegister = null;
-      if(registers.indexOf(`register_${await util.getSettings('currentSemister')}`) != -1)
-        currentRegister = registers.splice(registers.indexOf(`register_${await util.getSettings('currentSemister')}`), 1);
-
-      if(currentRegister) {
-        const test = await util.query(`SELECT ID FROM \`${currentRegister}\` WHERE ID=${request.body['학번']};`);
-        if(test.length) {
-          util.logger(new Log('info', request.remoteIP, request.originalPath, '가입 신청', request.method, 400, request.body, 'ERR_ALREADY_REGISTERED'));
-          return reply.code(400).send(new Response('error', '이미 가입 신청하셨습니다!<br>조금만 기다리시면 임원진이 연락을 드릴 거에요.', 'ERR_ALREADY_REGISTERED'));
-        }
+      // Create semester if not exists
+      if (!semester) {
+        const result = db.insert(semesters).values({ name: semesterName }).run();
+        semester = { id: result.lastInsertRowid, name: semesterName };
       }
 
-      /* proceeding register */
-      // create table if current semister's register table not exists
-      if(!currentRegister) {
-        await util.query("CREATE TABLE `register_" + await util.getSettings('currentSemister') + "` (" +
-              "`timestamp` timestamp," +
-              "`ID` int(11) not null," +
-              "`name` varchar(30) not null," +
-              "`college` varchar(10) not null," +
-              "`department` varchar(15) not null," +
-              "`phone` varchar(15) not null," +
-              "PRIMARY KEY (`ID`)" +
-              ") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+      // check if already registered
+      const studentId = String(request.body['학번']);
+      const test = db.select().from(registrations)
+        .where(and(eq(registrations.studentId, studentId), eq(registrations.semesterId, semester.id)))
+        .get();
+
+      if(test) {
+        util.logger(new Log('info', request.remoteIP, request.originalPath, '가입 신청', request.method, 400, request.body, 'ERR_ALREADY_REGISTERED'));
+        return reply.code(400).send(new Response('error', '이미 가입 신청하셨습니다!<br>조금만 기다리시면 임원진이 연락을 드릴 거에요.', 'ERR_ALREADY_REGISTERED'));
       }
-      let result = await util.query(`INSERT INTO \`register_${await util.getSettings('currentSemister')}\`(ID, name, college, department, phone) VALUES(${request.body['학번']}, '${request.body['이름']}', '${request.body['단과대학']}', '${request.body['학과']}', '${request.body['연락처']}');`);
+
+      const result = db.insert(registrations).values({
+        studentId: studentId,
+        name: request.body['이름'],
+        college: request.body['단과대학'],
+        department: request.body['학과'],
+        phone: request.body['연락처'],
+        semesterId: semester.id,
+      }).run();
+
       util.logger(new Log('info', request.remoteIP, request.originalPath, '가입 신청', request.method, 201, request.body, result));
       return reply.code(201).send(new Response('success', null, result));
     }

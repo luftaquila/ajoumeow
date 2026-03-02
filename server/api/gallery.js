@@ -4,20 +4,70 @@ import { pipeline } from 'stream/promises';
 import sharp from 'sharp';
 import jwt from 'jsonwebtoken';
 import dateformat from 'dateformat';
+import { eq, and, desc, asc, sql, gte, count } from 'drizzle-orm';
 
+import { db, sqlite } from '../db/index.js';
+import { members, photos, tags, photoTags, photoLikes } from '../db/schema.js';
 import util from '../controllers/util/util.js';
 import { Response, Log } from '../controllers/util/interface.js';
-import pool from '../config/mariadb.js';
 
-const galleryDir = path.join(globalThis.__webRoot, 'res/image/gallery');
+function getPhotoWithDetails(photoRow) {
+  const tagRows = db.select({ name: tags.name })
+    .from(photoTags)
+    .innerJoin(tags, eq(photoTags.tagId, tags.id))
+    .where(eq(photoTags.photoId, photoRow.id))
+    .all();
+
+  const uploader = db.select({ name: members.name })
+    .from(members)
+    .where(eq(members.id, photoRow.uploaderId))
+    .get();
+
+  return {
+    photo_id: photoRow.filename,
+    size: photoRow.size,
+    uploader_id: photoRow.uploaderId,
+    uploader_name: uploader ? uploader.name : '',
+    timestamp: photoRow.createdAt,
+    likes: photoRow.likesCount,
+    tags: tagRows.map(t => t.name),
+  };
+}
+
+function getPhotosListWithDetails(photoRows) {
+  return photoRows.map(row => getPhotoWithDetails(row));
+}
 
 export default async function(fastify, opts) {
-  // Register multipart only in this plugin scope (avoids conflict with formbody)
+  const galleryDir = path.join(globalThis.__webRoot, 'res/image/gallery');
   await fastify.register(import('@fastify/multipart'), { limits: { fileSize: 50 * 1024 * 1024 } });
 
   fastify.get('/tags', async (request, reply) => {
     try {
-      const result = await util.query(`SELECT * FROM gallery_tag;`);
+      const result = db.select({
+        tag_name: tags.name,
+        photo_count: count(photoTags.photoId),
+        likes: sql`COALESCE(SUM(${photos.likesCount}), 0)`.as('likes'),
+      })
+        .from(tags)
+        .leftJoin(photoTags, eq(photoTags.tagId, tags.id))
+        .leftJoin(photos, eq(photoTags.photoId, photos.id))
+        .groupBy(tags.id)
+        .all();
+
+      // Add newest_photo_id for each tag
+      for (const tag of result) {
+        const newest = db.select({ filename: photos.filename })
+          .from(photoTags)
+          .innerJoin(tags, eq(photoTags.tagId, tags.id))
+          .innerJoin(photos, eq(photoTags.photoId, photos.id))
+          .where(eq(tags.name, tag.tag_name))
+          .orderBy(desc(photos.id))
+          .limit(1)
+          .get();
+        tag.newest_photo_id = newest ? newest.filename : null;
+      }
+
       util.logger(new Log('info', request.remoteIP, request.originalPath, '갤러리 태그 목록 요청', request.method, 200, request.query, result));
       return reply.code(200).send(result);
     }
@@ -29,12 +79,12 @@ export default async function(fastify, opts) {
 
   fastify.get('/image', async (request, reply) => {
     try {
-      const result = await util.query(`SELECT * FROM gallery_photo WHERE photo_id='${request.query.photo_id}';`);
-      const tags = await util.query(`SELECT tag_name FROM gallery_photo_tag WHERE photo_id='${request.query.photo_id}';`);
-      result[0].tags = tags.map(x => x.tag_name);
+      const photo = db.select().from(photos).where(eq(photos.filename, request.query.photo_id)).get();
+      if (!photo) return reply.code(404).send();
+      const result = getPhotoWithDetails(photo);
 
-      util.logger(new Log('info', request.remoteIP, request.originalPath, '사진 세부정보 요청', request.method, 200, request.query, result[0]));
-      return reply.code(200).send(result[0]);
+      util.logger(new Log('info', request.remoteIP, request.originalPath, '사진 세부정보 요청', request.method, 200, request.query, result));
+      return reply.code(200).send(result);
     }
     catch(e) {
       util.logger(new Log('error', request.remoteIP, request.originalPath, '사진 세부정보 요청 오류', request.method, 500, request.query, e.stack));
@@ -43,13 +93,16 @@ export default async function(fastify, opts) {
   });
 
   fastify.get('/photographer', async (request, reply) => {
-    const row = { latest: 'photo_id', popular: 'likes' };
+    const orderCol = request.query.sort === 'popular' ? desc(photos.likesCount) : desc(photos.id);
     try {
-      const result = await util.query(`SELECT * FROM gallery_photo WHERE uploader_id=${request.query.uid} ORDER BY ${row[request.query.sort]} DESC LIMIT 10 OFFSET ${request.query.offset};`);
-      for(const i in result) {
-        const tags = await util.query(`SELECT tag_name FROM gallery_photo_tag WHERE photo_id='${result[i].photo_id}';`);
-        result[i].tags = tags.map(x => x.tag_name);
-      }
+      const photoRows = db.select().from(photos)
+        .where(eq(photos.uploaderId, Number(request.query.uid)))
+        .orderBy(orderCol)
+        .limit(10)
+        .offset(Number(request.query.offset))
+        .all();
+
+      const result = getPhotosListWithDetails(photoRows);
       util.logger(new Log('info', request.remoteIP, request.originalPath, '갤러리 사진작가 사진 목록 요청', request.method, 200, request.query, result));
       return reply.code(200).send(result);
     }
@@ -61,14 +114,23 @@ export default async function(fastify, opts) {
 
   fastify.get('/cat', async (request, reply) => {
     try {
-      let result = [];
-      const tagResult = await util.query(`SELECT * FROM gallery_photo_tag WHERE tag_name='${request.query.cid}' ORDER BY photo_id DESC LIMIT 10 OFFSET ${request.query.offset};`);
-      for(const photo of tagResult) {
-        const detail = await util.query(`SELECT * FROM gallery_photo WHERE photo_id='${photo.photo_id}'`);
-        const tags = await util.query(`SELECT tag_name FROM gallery_photo_tag WHERE photo_id='${photo.photo_id}';`);
-        detail[0].tags = tags.map(x => x.tag_name);
-        result.push(detail[0]);
+      const tag = db.select().from(tags).where(eq(tags.name, request.query.cid)).get();
+      if (!tag) return reply.code(200).send([]);
+
+      const photoIds = db.select({ photoId: photoTags.photoId })
+        .from(photoTags)
+        .where(eq(photoTags.tagId, tag.id))
+        .orderBy(desc(photoTags.photoId))
+        .limit(10)
+        .offset(Number(request.query.offset))
+        .all();
+
+      const result = [];
+      for (const { photoId } of photoIds) {
+        const photo = db.select().from(photos).where(eq(photos.id, photoId)).get();
+        if (photo) result.push(getPhotoWithDetails(photo));
       }
+
       util.logger(new Log('info', request.remoteIP, request.originalPath, '갤러리 태그 사진 목록 요청', request.method, 200, request.query, result));
       return reply.code(200).send(result);
     }
@@ -79,27 +141,60 @@ export default async function(fastify, opts) {
   });
 
   fastify.get('/photo', async (request, reply) => {
-    const row = { latest: 'photo_id', popular: 'likes' };
+    const orderCol = request.query.sort === 'popular' ? desc(photos.likesCount) : desc(photos.id);
 
     try {
       if(request.query.type == 'gallery') {
-        const result = await util.query(`SELECT * FROM gallery_photo ORDER BY ${row[request.query.sort]} DESC LIMIT 10 OFFSET ${request.query.offset};`);
-        for(const i in result) {
-          const tags = await util.query(`SELECT tag_name FROM gallery_photo_tag WHERE photo_id='${result[i].photo_id}';`);
-          result[i].tags = tags.map(x => x.tag_name);
-        }
+        const photoRows = db.select().from(photos)
+          .orderBy(orderCol)
+          .limit(10)
+          .offset(Number(request.query.offset))
+          .all();
 
+        const result = getPhotosListWithDetails(photoRows);
         util.logger(new Log('info', request.remoteIP, request.originalPath, '갤러리 사진 목록 요청', request.method, 200, request.query, result));
         return reply.code(200).send(result);
       }
       else if(request.query.type == 'uploader') {
-        const result = await util.query(`SELECT * FROM gallery_uploader WHERE photo_count > 0 ORDER BY ${row[request.query.sort] ? `${row[request.query.sort]} DESC,` : '' } uploader_name ASC LIMIT 10 OFFSET ${request.query.offset};`);
+        // Aggregate uploaders from photos
+        const orderClause = request.query.sort === 'popular'
+          ? sql`SUM(${photos.likesCount}) DESC, ${members.name} ASC`
+          : sql`MAX(${photos.id}) DESC, ${members.name} ASC`;
+
+        const result = sqlite.prepare(`
+          SELECT
+            p.uploader_id,
+            m.name AS uploader_name,
+            COUNT(*) AS photo_count,
+            SUM(p.likes_count) AS likes,
+            (SELECT p2.filename FROM photos p2 WHERE p2.uploader_id = p.uploader_id ORDER BY p2.id DESC LIMIT 1) AS newest_photo_id
+          FROM photos p
+          INNER JOIN members m ON p.uploader_id = m.id
+          GROUP BY p.uploader_id
+          HAVING photo_count > 0
+          ORDER BY ${request.query.sort === 'popular' ? 'likes DESC,' : 'newest_photo_id DESC,'} uploader_name ASC
+          LIMIT 10 OFFSET ?
+        `).all(Number(request.query.offset));
 
         util.logger(new Log('info', request.remoteIP, request.originalPath, '갤러리 사진작가 목록 요청', request.method, 200, request.query, result));
         return reply.code(200).send(result);
       }
       else if(request.query.type == 'cat') {
-        const result = await util.query(`SELECT * FROM gallery_tag WHERE photo_count > 0 ORDER BY ${row[request.query.sort] ? `${row[request.query.sort]} DESC,` : '' } tag_name ASC LIMIT 10 OFFSET ${request.query.offset};`);
+        // Aggregate tags from photo_tags
+        const result = sqlite.prepare(`
+          SELECT
+            t.name AS tag_name,
+            COUNT(pt.photo_id) AS photo_count,
+            COALESCE(SUM(p.likes_count), 0) AS likes,
+            (SELECT p2.filename FROM photo_tags pt2 INNER JOIN photos p2 ON pt2.photo_id = p2.id WHERE pt2.tag_id = t.id ORDER BY p2.id DESC LIMIT 1) AS newest_photo_id
+          FROM tags t
+          INNER JOIN photo_tags pt ON pt.tag_id = t.id
+          INNER JOIN photos p ON pt.photo_id = p.id
+          GROUP BY t.id
+          HAVING photo_count > 0
+          ORDER BY ${request.query.sort === 'popular' ? 'likes DESC,' : 'newest_photo_id DESC,'} tag_name ASC
+          LIMIT 10 OFFSET ?
+        `).all(Number(request.query.offset));
 
         util.logger(new Log('info', request.remoteIP, request.originalPath, '갤러리 태그 목록 요청', request.method, 200, request.query, result));
         return reply.code(200).send(result);
@@ -113,7 +208,6 @@ export default async function(fastify, opts) {
   });
 
   fastify.post('/photo', { preHandler: [util.isLogin] }, async (request, reply) => {
-    const conn = await pool.getConnection();
     let savedFilePath = null;
     let savedThumbPath = null;
     try {
@@ -140,53 +234,71 @@ export default async function(fastify, opts) {
       await sharp(fileInfo.path).resize(1000).withMetadata().toFile(thumbPath);
       savedThumbPath = thumbPath;
 
-      await conn.beginTransaction();
-
-      let uploader_name = await conn.query(`SELECT name FROM \`namelist_${await util.getSettings('currentSemister')}\` WHERE ID=${request.decoded.id};`);
-      uploader_name = uploader_name[0].name;
-      await conn.query(`INSERT INTO gallery_photo(photo_id, size, uploader_id, uploader_name, timestamp) VALUES('${fileInfo.filename}', ${fileInfo.size}, ${request.decoded.id}, '${uploader_name}', '${dateformat(Number(path.parse(fileInfo.filename).name), 'yyyy-mm-dd HH:MM:ss')}');`);
-
-      // tag analysis
-      for(const tag of JSON.parse(fields.tags)) {
-        await conn.query(`INSERT INTO gallery_tag(tag_name, photo_count, newest_photo_id) VALUES('${tag.text}', 1, '${fileInfo.filename}') ON DUPLICATE KEY UPDATE photo_count=photo_count+1, newest_photo_id='${fileInfo.filename}';`);
-        await conn.query(`INSERT INTO gallery_photo_tag(photo_id, tag_name) VALUES('${fileInfo.filename}', '${tag.text}');`);
+      // Resolve uploader memberId
+      let memberId = request.decoded.memberId;
+      if (!memberId) {
+        const member = util.getMemberByStudentId(request.decoded.id);
+        memberId = member ? member.id : null;
       }
-      // gallery_uploader update
-      await conn.query(`INSERT INTO gallery_uploader(uploader_id, uploader_name, photo_count, newest_photo_id) VALUES(${request.decoded.id}, '${uploader_name}', 1, '${fileInfo.filename}') ON DUPLICATE KEY UPDATE photo_count=photo_count+1, newest_photo_id='${fileInfo.filename}';`);
 
-      await conn.commit();
+      const uploadTx = sqlite.transaction(() => {
+        // Insert photo
+        const photoResult = sqlite.prepare(
+          `INSERT INTO photos (filename, size, uploader_id, created_at) VALUES (?, ?, ?, ?)`
+        ).run(fileInfo.filename, fileInfo.size, memberId, dateformat(Number(path.parse(fileInfo.filename).name), 'yyyy-mm-dd HH:MM:ss'));
+
+        const photoId = photoResult.lastInsertRowid;
+
+        // Process tags
+        for (const tag of JSON.parse(fields.tags)) {
+          // Upsert tag
+          sqlite.prepare(`INSERT INTO tags (name) VALUES (?) ON CONFLICT(name) DO NOTHING`).run(tag.text);
+          const tagRow = sqlite.prepare(`SELECT id FROM tags WHERE name = ?`).get(tag.text);
+          // Insert photo_tag
+          sqlite.prepare(`INSERT INTO photo_tags (photo_id, tag_id) VALUES (?, ?)`).run(photoId, tagRow.id);
+        }
+      });
+
+      uploadTx();
+
       util.logger(new Log('info', request.remoteIP, request.originalPath, '갤러리 사진 업로드', request.method, 200, fields, null));
       return reply.code(200).send();
     }
     catch(e) {
-      await conn.rollback();
       // Cleanup uploaded files on error
-      if (savedFilePath) try { await fs.promises.unlink(savedFilePath); } catch(_) {}
-      if (savedThumbPath) try { await fs.promises.unlink(savedThumbPath); } catch(_) {}
+      if (savedFilePath) try { fs.unlinkSync(savedFilePath); } catch(_) {}
+      if (savedThumbPath) try { fs.unlinkSync(savedThumbPath); } catch(_) {}
       util.logger(new Log('error', request.remoteIP, request.originalPath, '갤러리 사진 업로드 오류', request.method, 500, null, e.stack));
       return reply.code(500).send();
     }
-    finally { conn.release(); }
   });
 
   fastify.delete('/photo', { preHandler: [util.isLogin] }, async (request, reply) => {
-    const conn = await pool.getConnection();
     try {
-      await conn.beginTransaction();
+      const photo = db.select().from(photos).where(eq(photos.filename, request.body.pid)).get();
+      if (!photo) return reply.code(404).send();
 
-      const photo = await conn.query(`SELECT * FROM gallery_photo WHERE photo_id='${request.body.pid}';`);
-      if(photo[0].uploader_id == request.decoded.id) {
-        const tags = await conn.query(`SELECT tag_name FROM gallery_photo_tag WHERE photo_id='${request.body.pid}';`);
+      // Check ownership: support both memberId (new token) and studentId (old token)
+      let isOwner = false;
+      if (request.decoded.memberId) {
+        isOwner = photo.uploaderId === request.decoded.memberId;
+      } else {
+        const member = util.getMemberByStudentId(request.decoded.id);
+        isOwner = member && photo.uploaderId === member.id;
+      }
 
-        await conn.query(`DELETE FROM gallery_photo WHERE photo_id='${request.body.pid}';`);
-        await conn.query(`DELETE FROM gallery_photo_tag WHERE photo_id='${request.body.pid}';`);
-        for(const tag of tags) await conn.query(`UPDATE gallery_tag SET photo_count=photo_count-1, likes=likes-${photo[0].likes} WHERE tag_name='${tag.tag_name}';`);
-        await conn.query(`UPDATE gallery_uploader SET photo_count=photo_count-1, likes=likes-${photo[0].likes} WHERE uploader_id='${request.decoded.id}';`);
+      if (isOwner) {
+        const deleteTx = sqlite.transaction(() => {
+          sqlite.prepare(`DELETE FROM photo_tags WHERE photo_id = ?`).run(photo.id);
+          sqlite.prepare(`DELETE FROM photo_likes WHERE photo_id = ?`).run(photo.id);
+          sqlite.prepare(`DELETE FROM photos WHERE id = ?`).run(photo.id);
+        });
+
+        deleteTx();
 
         await fs.promises.unlink(path.join(galleryDir, request.body.pid));
         await fs.promises.unlink(path.join(galleryDir, 'thumb_' + request.body.pid));
 
-        await conn.commit();
         util.logger(new Log('info', request.remoteIP, request.originalPath, '갤러리 사진 삭제', request.method, 200, request.body, null));
         return reply.code(200).send();
       }
@@ -196,18 +308,13 @@ export default async function(fastify, opts) {
       }
     }
     catch(e) {
-      await conn.rollback();
       util.logger(new Log('error', request.remoteIP, request.originalPath, '갤러리 사진 삭제 오류', request.method, 500, request.body, e.stack));
       return reply.code(500).send(new Response('error', '알 수 없는 오류입니다.', 'ERR_UNKNOWN'));
     }
-    finally { conn.release(); }
   });
 
   fastify.post('/like', async (request, reply) => {
-    const conn = await pool.getConnection();
     try {
-      await conn.beginTransaction();
-
       const token = request.headers['x-access-token'];
       let userID = null;
 
@@ -219,36 +326,40 @@ export default async function(fastify, opts) {
               else resolve(decoded);
             });
           });
-          userID = decoded.id;
+          userID = decoded.memberId || null;
+          if (!userID && decoded.id) {
+            const member = util.getMemberByStudentId(decoded.id);
+            userID = member ? member.id : null;
+          }
         } catch(_) {}
       }
 
-      // check if already liked target photo
-      const previous = await conn.query(`SELECT * FROM gallery_like WHERE photo_id='${request.body.photo_id}' AND ip='${request.remoteIP}' AND timestamp > now() - interval 30 DAY;`);
-      if(previous.length) throw new Error('ALREADY_BEEN_LIKED');
-      else await conn.query(`INSERT INTO gallery_like(ip, photo_id, user_id) VALUES('${request.remoteIP}', '${request.body.photo_id}', ${userID});`);
+      const photo = db.select().from(photos).where(eq(photos.filename, request.body.photo_id)).get();
+      if (!photo) return reply.code(404).send();
 
-      const uploader = await conn.query(`SELECT uploader_id FROM gallery_photo WHERE photo_id='${request.body.photo_id}';`);
-      const tags = await conn.query(`SELECT tag_name FROM gallery_photo_tag WHERE photo_id='${request.body.photo_id}';`);
-      await conn.query(`UPDATE gallery_photo SET likes=likes+1 WHERE photo_id='${request.body.photo_id}';`);
-      for (const tag of tags) {
-        await conn.query(`UPDATE gallery_tag SET likes=likes+1 WHERE tag_name='${tag.tag_name}';`);
+      // Check if already liked within 30 days
+      const previous = sqlite.prepare(
+        `SELECT * FROM photo_likes WHERE photo_id = ? AND ip = ? AND created_at > datetime('now', '-30 days')`
+      ).all(photo.id, request.remoteIP);
+
+      if(previous.length) {
+        return reply.code(400).send(new Response('error', '이미 좋아요한 사진입니다.', 'ERR_ALREADY_BEEN_LIKED'));
       }
-      await conn.query(`UPDATE gallery_uploader SET likes=likes+1 WHERE uploader_id=${uploader[0].uploader_id};`);
 
-      await conn.commit();
+      const likeTx = sqlite.transaction(() => {
+        sqlite.prepare(`INSERT INTO photo_likes (photo_id, ip, user_id) VALUES (?, ?, ?)`).run(photo.id, request.remoteIP, userID);
+        sqlite.prepare(`UPDATE photos SET likes_count = likes_count + 1 WHERE id = ?`).run(photo.id);
+      });
+
+      likeTx();
+
       util.logger(new Log('info', request.remoteIP, request.originalPath, '갤러리 좋아요 요청', request.method, 200, request.body, null));
       return reply.code(200).send();
     }
     catch(e) {
-      await conn.rollback();
-      if(e.message == 'ALREADY_BEEN_LIKED') return reply.code(400).send(new Response('error', '이미 좋아요한 사진입니다.', 'ERR_ALREADY_BEEN_LIKED'));
-      else {
-        util.logger(new Log('error', request.remoteIP, request.originalPath, '갤러리 좋아요 요청 오류', request.method, 500, request.body, e.stack));
-        return reply.code(500).send();
-      }
+      util.logger(new Log('error', request.remoteIP, request.originalPath, '갤러리 좋아요 요청 오류', request.method, 500, request.body, e.stack));
+      return reply.code(500).send();
     }
-    finally { conn.release(); }
   });
 
   fastify.get('/ranking', async (request, reply) => {
@@ -264,49 +375,58 @@ export default async function(fastify, opts) {
 
       let weekFirst = new Date(Date.now() - 7 * 24 * 3600000);
 
-      const likeList = await util.query(`SELECT timestamp, photo_id FROM gallery_like WHERE timestamp >= '${dateformat(lastMonthFirst, 'yyyy-mm-dd')}';`);
+      const likeList = sqlite.prepare(
+        `SELECT created_at as timestamp, photo_id FROM photo_likes WHERE created_at >= ?`
+      ).all(dateformat(lastMonthFirst, 'yyyy-mm-dd'));
 
       let weekRank = [], monthRank = [], lastMonthRank = [];
       for(const like of likeList.reverse()) {
-        if(like.timestamp < monthFirst) {
-          const flag = lastMonthRank.find(x => x.photo_id == like.photo_id);
+        const likeDate = new Date(like.timestamp);
+        const photoId = like.photo_id;
+
+        if(likeDate < monthFirst) {
+          const flag = lastMonthRank.find(x => x.photo_id == photoId);
           if(flag) flag.count++;
-          else lastMonthRank.push({ photo_id: like.photo_id, count: 1 });
+          else lastMonthRank.push({ photo_id: photoId, count: 1 });
         }
         else {
-          const flag = monthRank.find(x => x.photo_id == like.photo_id);
+          const flag = monthRank.find(x => x.photo_id == photoId);
           if(flag) flag.count++;
-          else monthRank.push({ photo_id: like.photo_id, count: 1 });
+          else monthRank.push({ photo_id: photoId, count: 1 });
         }
 
-        if(like.timestamp > weekFirst) {
-          const flag = weekRank.find(x => x.photo_id == like.photo_id);
+        if(likeDate > weekFirst) {
+          const flag = weekRank.find(x => x.photo_id == photoId);
           if(flag) flag.count++;
-          else weekRank.push({ photo_id: like.photo_id, count: 1 });
+          else weekRank.push({ photo_id: photoId, count: 1 });
         }
       }
       weekRank = weekRank.sort((a, b) => b.count - a.count).slice(0, 3);
       monthRank = monthRank.sort((a, b) => b.count - a.count).slice(0, 3);
       lastMonthRank = lastMonthRank.sort((a, b) => b.count - a.count).slice(0, 3);
 
-      for(let i in weekRank) {
-        const info = await util.query(`SELECT uploader_name FROM gallery_photo WHERE photo_id='${weekRank[i].photo_id}';`);
-        const tags = await util.query(`SELECT tag_name FROM gallery_photo_tag WHERE photo_id='${weekRank[i].photo_id}';`);
-        weekRank[i].uploader = info[0].uploader_name;
-        weekRank[i].tag = tags.map(x => x.tag_name);
+      // Enrich ranking data with photo info
+      function enrichRank(rankList) {
+        for (let item of rankList) {
+          const photo = db.select().from(photos).where(eq(photos.id, item.photo_id)).get();
+          if (photo) {
+            item.photo_id = photo.filename;
+            const uploader = db.select({ name: members.name }).from(members).where(eq(members.id, photo.uploaderId)).get();
+            item.uploader = uploader ? uploader.name : '';
+            const tagRows = db.select({ name: tags.name })
+              .from(photoTags)
+              .innerJoin(tags, eq(photoTags.tagId, tags.id))
+              .where(eq(photoTags.photoId, photo.id))
+              .all();
+            item.tag = tagRows.map(t => t.name);
+          }
+        }
       }
-      for(let i in monthRank) {
-        const info = await util.query(`SELECT uploader_name FROM gallery_photo WHERE photo_id='${monthRank[i].photo_id}';`);
-        const tags = await util.query(`SELECT tag_name FROM gallery_photo_tag WHERE photo_id='${monthRank[i].photo_id}';`);
-        monthRank[i].uploader = info[0].uploader_name;
-        monthRank[i].tag = tags.map(x => x.tag_name);
-      }
-      for(let i in lastMonthRank) {
-        const info = await util.query(`SELECT uploader_name FROM gallery_photo WHERE photo_id='${lastMonthRank[i].photo_id}';`);
-        const tags = await util.query(`SELECT tag_name FROM gallery_photo_tag WHERE photo_id='${lastMonthRank[i].photo_id}';`);
-        lastMonthRank[i].uploader = info[0].uploader_name;
-        lastMonthRank[i].tag = tags.map(x => x.tag_name);
-      }
+
+      enrichRank(weekRank);
+      enrichRank(monthRank);
+      enrichRank(lastMonthRank);
+
       util.logger(new Log('info', request.remoteIP, request.originalPath, '갤러리 랭킹 요청', request.method, 200, null, null));
       return reply.code(200).send({ week: weekRank, month: monthRank, lastmonth: lastMonthRank });
     }

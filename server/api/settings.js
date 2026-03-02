@@ -1,3 +1,7 @@
+import { eq } from 'drizzle-orm';
+
+import { db } from '../db/index.js';
+import { settings } from '../db/schema.js';
 import util from '../controllers/util/util.js';
 import { Response, Log } from '../controllers/util/interface.js';
 
@@ -5,7 +9,7 @@ export default async function(fastify, opts) {
 
   fastify.get('/*', async (request, reply) => {
     try {
-      let result = await util.getSettings(request.params['*']);
+      let result = util.getSettings(request.params['*']);
       util.logger(new Log('info', request.remoteIP, request.originalPath, '설정값 요청', request.method, 200, request.query, result));
       return reply.code(200).send(new Response('success', null, result));
     }
@@ -17,7 +21,7 @@ export default async function(fastify, opts) {
 
   fastify.put('/*', { preHandler: [util.isAdmin] }, async (request, reply) => {
     try {
-      let result = await util.query(`UPDATE settings SET value='${request.body.data}' WHERE name='${request.params['*']}'`);
+      let result = db.update(settings).set({ value: request.body.data }).where(eq(settings.key, request.params['*'])).run();
       util.logger(new Log('info', request.remoteIP, request.originalPath, '설정값 수정', request.method, 200, request.body, result));
       return reply.code(200).send(new Response('success', null, result));
     }
