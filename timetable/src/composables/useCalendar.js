@@ -65,6 +65,5 @@ export function useCalendar() {
     isSelectedActive,
     initCalendar,
     selectDate,
-    getDateFromCalendarStart,
   }
 }
