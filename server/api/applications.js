@@ -66,6 +66,27 @@ export default async function(fastify, opts) {
 
       const isNewBool = isNew === true || isNew === 'true';
 
+      // Auto-approve for officers already registered in current semester
+      const officerMember = sqlite.prepare(`SELECT id FROM members WHERE student_id = ?`).get(String(studentId));
+      if (officerMember) {
+        const sm = sqlite.prepare(`SELECT role FROM semester_members WHERE semester_id = ? AND member_id = ?`).get(semester.id, officerMember.id);
+        if (sm && sm.role !== '회원') {
+          const tx = sqlite.transaction(() => {
+            sqlite.prepare(`UPDATE members SET phone = ?, birthday = ?, volunteer_id = ?, google_id = ?, google_email = ? WHERE id = ?`)
+              .run(phone, birthday || null, volunteerId || null, googleId, googleEmail, officerMember.id);
+
+            sqlite.prepare(`
+              INSERT INTO applications (google_id, google_email, google_name, student_id, name, college, department, phone, birthday, volunteer_id, is_new, semester_id, status, reviewed_at)
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'approved', datetime('now'))
+            `).run(googleId, googleEmail, googleName, String(studentId), name, college, department, phone, birthday || null, volunteerId || null, isNewBool ? 1 : 0, semester.id);
+          });
+          tx();
+
+          util.logger(new Log('info', request.remoteIP, request.originalPath, '임원 자동 승인', request.method, 201, { googleEmail, studentId, name, role: sm.role }, 'auto-approved'));
+          return reply.code(201).send(success({ submitted: true, autoApproved: true }));
+        }
+      }
+
       // Auto-approve for admin emails
       const adminEmails = (process.env.ADMIN_EMAILS || '').split(',').map(s => s.trim()).filter(Boolean);
       if (adminEmails.includes(googleEmail)) {
