@@ -70,5 +70,5 @@ export function getMapData() {
 }
 
 export function getWeather() {
-  return fetch('/res/weather.json').then(r => r.json())
+  return fetch('/api/data/weather').then(r => r.json())
 }

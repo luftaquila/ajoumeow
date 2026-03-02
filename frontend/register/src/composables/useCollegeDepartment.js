@@ -6,7 +6,7 @@ const loaded = ref(false)
 export function useCollegeDepartment() {
   async function loadColleges() {
     if (loaded.value) return
-    const res = await fetch('/res/college.json')
+    const res = await fetch('/api/data/college')
     collegeMap.value = await res.json()
     loaded.value = true
   }

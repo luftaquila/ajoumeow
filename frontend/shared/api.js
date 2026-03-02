@@ -56,6 +56,17 @@ export function put(path, data) {
   })
 }
 
+export function putJSON(path, data) {
+  return request(`${API_BASE}${path}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      ...authHeader(),
+    },
+    body: JSON.stringify(data),
+  })
+}
+
 export function del(path, data) {
   if (data) {
     return request(`${API_BASE}${path}`, {

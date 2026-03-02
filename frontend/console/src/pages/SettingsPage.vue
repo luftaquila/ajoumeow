@@ -48,7 +48,7 @@
       <div class="card-section">
         <h2 class="text-base font-semibold mb-4 flex items-center gap-2">
           <span class="i-lucide-user-check text-lg text-text-secondary"></span>
-          회원 등록 (Apply)
+          회원 등록
         </h2>
         <div class="flex flex-col gap-4">
           <div class="flex items-center justify-between">
@@ -74,7 +74,7 @@
       <div class="card-section">
         <h2 class="text-base font-semibold mb-4 flex items-center gap-2">
           <span class="i-lucide-user-plus text-lg text-text-secondary"></span>
-          신입 모집 (Register)
+          신입 모집
         </h2>
         <div class="flex flex-col gap-4">
           <div class="flex items-center justify-between">
@@ -105,6 +105,94 @@
         <Textarea v-model="noticeContent" rows="5" class="w-full" placeholder="공지사항 내용 (HTML 가능)" />
         <Button label="저장" size="small" class="mt-3" @click="saveNotice" />
       </div>
+
+      <!-- College / Department Editor -->
+      <div class="card-section">
+        <h2 class="text-base font-semibold mb-4 flex items-center gap-2">
+          <span class="i-lucide-school text-lg text-text-secondary"></span>
+          단과대 / 학과
+        </h2>
+        <div v-if="dataLoading.college" class="text-center py-4">
+          <div class="i-lucide-loader-circle text-xl text-primary animate-spin mx-auto"></div>
+        </div>
+        <div v-else>
+          <Accordion :multiple="true">
+            <AccordionPanel v-for="(depts, college) in collegeData" :key="college" :value="college">
+              <AccordionHeader>
+                <div class="flex items-center justify-between w-full pr-2">
+                  <span>{{ college }} ({{ depts.length }})</span>
+                </div>
+              </AccordionHeader>
+              <AccordionContent>
+                <div class="flex flex-col gap-2">
+                  <div v-for="(dept, di) in depts" :key="di" class="flex items-center gap-2">
+                    <InputText v-model="depts[di]" class="flex-1" size="small" />
+                    <Button icon="i-lucide-x" severity="danger" text size="small" @click="depts.splice(di, 1)" />
+                  </div>
+                  <Button label="학과 추가" icon="i-lucide-plus" severity="secondary" text size="small" @click="depts.push('')" />
+                  <div class="border-t border-surface-border mt-2 pt-2">
+                    <Button label="단과대 삭제" icon="i-lucide-trash-2" severity="danger" text size="small" @click="deleteCollege(college)" />
+                  </div>
+                </div>
+              </AccordionContent>
+            </AccordionPanel>
+          </Accordion>
+          <div class="flex items-center gap-2 mt-4">
+            <InputText v-model="newCollegeName" placeholder="새 단과대 이름" size="small" />
+            <Button label="단과대 추가" icon="i-lucide-plus" size="small" severity="secondary" @click="addCollege" />
+          </div>
+          <Button label="저장" size="small" class="mt-3" :loading="dataSaving.college" @click="saveCollege" />
+        </div>
+      </div>
+
+      <!-- Map Location Editor -->
+      <div class="card-section">
+        <h2 class="text-base font-semibold mb-4 flex items-center gap-2">
+          <span class="i-lucide-map-pin text-lg text-text-secondary"></span>
+          급식소 위치
+        </h2>
+        <div v-if="dataLoading.map" class="text-center py-4">
+          <div class="i-lucide-loader-circle text-xl text-primary animate-spin mx-auto"></div>
+        </div>
+        <div v-else-if="mapData">
+          <!-- Home -->
+          <div class="mb-4">
+            <h3 class="text-sm font-medium mb-2 text-text-secondary">동아리방</h3>
+            <div class="grid grid-cols-2 gap-2">
+              <InputText v-model="mapData.home.name" placeholder="이름" size="small" />
+              <InputText v-model="mapData.home.detail" placeholder="상세" size="small" />
+              <InputText v-model="mapData.home.lat" placeholder="위도" size="small" />
+              <InputText v-model="mapData.home.lon" placeholder="경도" size="small" />
+            </div>
+          </div>
+          <!-- Courses -->
+          <Accordion :multiple="true">
+            <AccordionPanel v-for="courseKey in mapCourseKeys" :key="courseKey" :value="courseKey">
+              <AccordionHeader>
+                <div class="flex items-center gap-2">
+                  <span class="w-3 h-3 rounded-full inline-block" :style="{ backgroundColor: courseColor(courseKey) }"></span>
+                  <span>{{ courseKey }} ({{ mapData[courseKey].data.length }})</span>
+                </div>
+              </AccordionHeader>
+              <AccordionContent>
+                <div class="flex flex-col gap-2">
+                  <div v-for="(loc, li) in mapData[courseKey].data" :key="li" class="flex items-center gap-2 flex-wrap">
+                    <InputText v-model="loc.name" placeholder="이름" size="small" class="flex-1 min-w-24" />
+                    <InputText v-model="loc.detail" placeholder="상세" size="small" class="flex-1 min-w-24" />
+                    <InputText v-model="loc.lat" placeholder="위도" size="small" class="w-28" />
+                    <InputText v-model="loc.lon" placeholder="경도" size="small" class="w-28" />
+                    <Button icon="i-lucide-x" severity="danger" text size="small" @click="mapData[courseKey].data.splice(li, 1)" />
+                  </div>
+                  <Button label="위치 추가" icon="i-lucide-plus" severity="secondary" text size="small"
+                    @click="mapData[courseKey].data.push({ name: '', detail: '', lat: '', lon: '' })" />
+                </div>
+              </AccordionContent>
+            </AccordionPanel>
+          </Accordion>
+          <Button label="저장" size="small" class="mt-3" :loading="dataSaving.map" @click="saveMap" />
+        </div>
+      </div>
+
     </div>
 
     <!-- Semester transition dialog -->
@@ -157,18 +245,25 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, reactive, onMounted } from 'vue'
 import { useToast } from 'primevue/usetoast'
 import InputNumber from 'primevue/inputnumber'
+import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import Button from 'primevue/button'
 import ToggleSwitch from 'primevue/toggleswitch'
 import DatePicker from 'primevue/datepicker'
 import Textarea from 'primevue/textarea'
 import Dialog from 'primevue/dialog'
+import Accordion from 'primevue/accordion'
+import AccordionPanel from 'primevue/accordionpanel'
+import AccordionHeader from 'primevue/accordionheader'
+import AccordionContent from 'primevue/accordioncontent'
 import PageHeader from '../components/PageHeader.vue'
 import { getSetting, updateSetting } from '../api/settings.js'
 import { previewTransition, executeTransition } from '../api/semesters.js'
+import { getData, updateData } from '../api/data.js'
+import { COURSES } from '../../../timetable/src/constants.js'
 import { formatDate } from '../../../shared/utils/dateFormat.js'
 
 const toast = useToast()
@@ -198,6 +293,23 @@ const showTransitionDialog = ref(false)
 const previewLoading = ref(false)
 const transitionPreview = ref(null)
 const executing = ref(false)
+
+// Data editor state
+const dataLoading = reactive({ college: true, map: true })
+const dataSaving = reactive({ college: false, map: false })
+const collegeData = ref({})
+const newCollegeName = ref('')
+const mapData = ref(null)
+
+const mapCourseKeys = computed(() => {
+  if (!mapData.value) return []
+  return Object.keys(mapData.value).filter(k => k !== 'home')
+})
+
+function courseColor(courseKey) {
+  const num = courseKey.match(/\d+/)?.[0]
+  return COURSES[num]?.color || '#888'
+}
 
 function fmtDate(d) {
   return formatDate(d, 'yyyy-mm-dd')
@@ -252,7 +364,24 @@ onMounted(async () => {
   } finally {
     loading.value = false
   }
+
+  // Load data editors in parallel
+  loadData('college', d => { collegeData.value = d })
+  loadData('map', d => { mapData.value = d })
 })
+
+async function loadData(key, setter) {
+  try {
+    const d = await getData(key)
+    setter(d)
+  } catch {
+    toast.add({ severity: 'error', summary: `${key} 데이터 로드 실패`, life: 3000 })
+  } finally {
+    dataLoading[key] = false
+  }
+}
+
+// --- Existing settings save functions ---
 
 async function onTransition() {
   const name = `${semesterYear.value}-${semesterTerm.value}`
@@ -331,5 +460,44 @@ async function saveMaxCount() {
     await updateSetting('maxFeedingUserCount', String(maxCount.value))
     toast.add({ severity: 'success', summary: '최대 인원이 변경되었습니다.', life: 2000 })
   } catch { toast.add({ severity: 'error', summary: '저장 실패', life: 2000 }) }
+}
+
+// --- Data editor functions ---
+
+function addCollege() {
+  const name = newCollegeName.value.trim()
+  if (!name) return
+  if (collegeData.value[name]) {
+    toast.add({ severity: 'warn', summary: '이미 존재하는 단과대입니다.', life: 2000 })
+    return
+  }
+  collegeData.value[name] = []
+  newCollegeName.value = ''
+}
+
+function deleteCollege(college) {
+  delete collegeData.value[college]
+}
+
+async function saveCollege() {
+  dataSaving.college = true
+  try {
+    await updateData('college', collegeData.value)
+    toast.add({ severity: 'success', summary: '단과대/학과가 저장되었습니다.', life: 2000 })
+  } catch { toast.add({ severity: 'error', summary: '저장 실패', life: 2000 }) }
+  finally { dataSaving.college = false }
+}
+
+async function saveMap() {
+  dataSaving.map = true
+  try {
+    // Sync course colors from timetable constants
+    for (const key of mapCourseKeys.value) {
+      mapData.value[key].color = courseColor(key)
+    }
+    await updateData('map', mapData.value)
+    toast.add({ severity: 'success', summary: '급식소 위치가 저장되었습니다.', life: 2000 })
+  } catch { toast.add({ severity: 'error', summary: '저장 실패', life: 2000 }) }
+  finally { dataSaving.map = false }
 }
 </script>
