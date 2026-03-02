@@ -30,7 +30,7 @@ async function initMap() {
   trackDevice();
 
   // load points data
-  const points = await $.ajax('/api/record/map', { beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')) });
+  const points = await $.ajax('/api/records/map', { beforeSend: xhr => xhr.setRequestHeader('Authorization', 'Bearer ' + Cookies.get('jwt')) });
 
   for(const [course, data] of Object.entries(points)) {
     // draw home marker

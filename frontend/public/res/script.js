@@ -102,7 +102,7 @@ function eventListener() {
       let table = `<table>`;      
       for(let obj of content) {
         table += `<tr style='height: 3rem'><td style='padding-right: .5rem;'><b>${obj.course}코스</b></td><td class='courseContent' data-course='${obj.course}'>`
-        for(let ppl of obj.ppl) table += `<span class='ripple namecard' style='display: inline-block; width: 4rem; height: 2rem; line-height: 1.5rem; text-align: center; border-radius: 3px; border: solid 1px ${bgColor[obj.course]}; background-color: ${bgColor[obj.course]}; color: white; padding: 0.2rem; margin: 0 .3rem;' data-id='${ppl.ID}' data-name='${ppl.name}'>${ppl.name}</span>`;
+        for(let ppl of obj.ppl) table += `<span class='ripple namecard' style='display: inline-block; width: 4rem; height: 2rem; line-height: 1.5rem; text-align: center; border-radius: 3px; border: solid 1px ${bgColor[obj.course]}; background-color: ${bgColor[obj.course]}; color: white; padding: 0.2rem; margin: 0 .3rem;' data-id='${ppl.id}' data-student-id='${ppl.studentId}' data-name='${ppl.name}'>${ppl.name}</span>`;
         table += `</td></tr>`;
       }
       table += `</table>`
@@ -111,7 +111,7 @@ function eventListener() {
 
     $('.namecard').not('.example').on('click', function() {
       $('.deleteActive').removeClass('deleteActive');
-      if(user && user.role != '회원' || (!$('.calendar-table__event').hasClass('calendar-table__inactive') && user.ID && user.ID == $(this).attr('data-id'))) $(this).addClass('deleteActive');
+      if(user && user.role != '회원' || (!$('.calendar-table__event').hasClass('calendar-table__inactive') && user.studentId && user.studentId == $(this).attr('data-student-id'))) $(this).addClass('deleteActive');
       $('.deleteActive').on('click', function() {
         // delete record
         let target = {
@@ -154,9 +154,9 @@ function eventListener() {
 
 function load() {
   $.ajax({
-    url: `${api}/record`,
+    url: `${api}/records`,
     data: { 'startDate' : getDateFromCalendarStart(0), 'endDate' : getDateFromCalendarStart(35) },
-    beforeSend: xhr => xhr.setRequestHeader('jwt', Cookies.get('jwt')),
+    beforeSend: xhr => xhr.setRequestHeader('Authorization', 'Bearer ' + Cookies.get('jwt')),
     success: function(record) {
       // Build recArr data
       let recArr = [];
@@ -166,11 +166,11 @@ function load() {
         if(!target.length) {
           recArr.push({ date: recDate, courses: [{ course: 1, ppl: [] }, { course: 2, ppl: [] }, { course: 3, ppl: [] }] });
           let course = recArr[recArr.length - 1].courses.filter(o => o.course == rec.course.replace(/\D/g, ''));
-          course[0].ppl.push({ ID: rec.ID, name: rec.name, timestamp: rec.timestamp });
+          course[0].ppl.push({ id: rec.id, studentId: rec.studentId, name: rec.name, createdAt: rec.createdAt });
         }
         else {
           let course = target[0].courses.filter(o => o.course == rec.course.replace(/\D/g, ''));
-          course[0].ppl.push({ ID: rec.ID, name: rec.name, timestamp: rec.timestamp });
+          course[0].ppl.push({ id: rec.id, studentId: rec.studentId, name: rec.name, createdAt: rec.createdAt });
         }
       }
 
@@ -187,7 +187,7 @@ function load() {
         if(user) {
           let flag = false;
           for(let e of date.courses) {
-            if(e.ppl.filter(o => o.ID == user.ID).length) {
+            if(e.ppl.filter(o => o.studentId == user.studentId).length) {
               flag = true;
               break;
             }
@@ -197,7 +197,7 @@ function load() {
       }
       $('.calendar-table__event').trigger('click');
     },
-    error: e => toastr["error"](`${e.responseJSON.msg}<br>${e.responseJSON.data}`)
+    error: e => toastr["error"](e.responseJSON.error.message)
   });
 }
 
@@ -205,28 +205,29 @@ transmitFlag = false;
 function validator(type, target) {
   if(!user) return toastr['error']('로그인을 해 주세요!');
   else if(transmitFlag) return toastr['error']('요청이 진행 중입니다.');
-  transmitter({
-    type: type,
-    date: target.date,
-    course: target.course + '코스',
-    id: target.id ? target.id : Number(user.ID),
-    name: target.name ? target.name : user.name
-  });
+  if(type === 'POST') {
+    transmitter({
+      type: 'POST',
+      url: `${api}/records`,
+      data: { studentId: user.studentId, date: target.date, course: target.course + '코스' }
+    });
+  } else if(type === 'DELETE') {
+    transmitter({
+      type: 'DELETE',
+      url: `${api}/records/${target.id}`,
+      data: null
+    });
+  }
 }
 function transmitter(data) {
   transmitFlag = true;
   $.ajax({
-    url: `${api}/record`,
+    url: data.url,
     type: data.type,
-    beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
-    data: {
-      date: data.date,
-      course: data.course,
-      ID: data.id,
-      name: data.name
-    },
+    beforeSend: xhr => xhr.setRequestHeader('Authorization', 'Bearer ' + Cookies.get('jwt')),
+    data: data.data,
     success: load,
-    error: e => toastr["error"](`${e.responseJSON.msg}<br>${e.responseJSON.data}`),
+    error: e => toastr["error"](e.responseJSON.error.message),
     complete: function() { transmitFlag = false; }
   });
 }

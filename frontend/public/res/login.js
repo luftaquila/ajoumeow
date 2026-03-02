@@ -2,21 +2,21 @@ $(function() {
   $('#login').click(function() {
     $.ajax({
       url: `${api}/auth/login`,
-      data: { 'id' : $('#loginID').val() },
+      data: { 'studentId' : $('#loginID').val() },
       type: "POST",
       success: async res => {
-        await Cookies.set('jwt', res.msg, { expires: 365 });
+        await Cookies.set('jwt', res.data.token, { expires: 365 });
         loginProcess(res);
       },
-      error: e => toastr["error"](`${e.responseJSON.msg}<br>${e.responseJSON.data}`)
+      error: e => toastr["error"](`${e.responseJSON.error.message}`)
     });
   });
-  
+
   $('#logout').click(function() {
     Cookies.remove('jwt');
     user = null;
     load();
-  
+
     $('#admin').css('display', 'none');
     $('#loginForm').css('display', 'block');
     $('#userInfo').css('display', 'none');
@@ -28,8 +28,8 @@ function autoLogin() {
   const jwt = Cookies.get('jwt');
   if(jwt) { // if jwt exists
     $.ajax({
-      url: `${api}/auth/autologin`,
-      beforeSend: xhr => xhr.setRequestHeader('x-access-token', jwt),
+      url: `${api}/auth/refresh`,
+      beforeSend: xhr => xhr.setRequestHeader('Authorization', 'Bearer ' + jwt),
       type: "POST",
       success: res => loginProcess(res),
       error: autoLoginFailure
@@ -41,13 +41,13 @@ function autoLogin() {
 function autoLoginFailure() {
   load();
   $.ajax({
-    url: `${api}/settings/currentSemister`,
+    url: `${api}/settings/currentSemester`,
     success: res => {
       if(!Cookies.get('isNew')) { /*startIntro();*/ } // if first appearence
-      else if(Cookies.get('currentSemister')) { // if previously saved semister exists
-        if(Cookies.get('currentSemister') != res.data) { // if current semister and saved semister is different
-          let semisterChange = introJs();
-          semisterChange.setOptions({
+      else if(Cookies.get('currentSemester')) { // if previously saved semester exists
+        if(Cookies.get('currentSemester') != res.data) { // if current semester and saved semester is different
+          let semesterChange = introJs();
+          semesterChange.setOptions({
             steps: [{
               intro: `<span style="font-size: 0.8rem">새 학기가 밝았습니다!</span>`
             }, {
@@ -58,20 +58,20 @@ function autoLoginFailure() {
             showBullets: false,
             showProgress: true
           });
-          semisterChange.onbeforechange(function(elem) {
+          semesterChange.onbeforechange(function(elem) {
             if(this._currentStep == 1) $('#sidebar').css('display', 'block');
           }).onexit(function() {
-            Cookies.set('currentSemister', res.data, { expires : 365 });
+            Cookies.set('currentSemester', res.data, { expires : 365 });
           }).start();
         }
         else $('#sidebar').css('display', 'block');
       }
       else {
-        Cookies.set('currentSemister', res.data, { expires : 365 });
+        Cookies.set('currentSemester', res.data, { expires : 365 });
         $('#sidebar').css('display', 'block');
-      }  
+      }
     },
-    error: e => toastr["error"](`${e.responseJSON.msg}<br>${e.responseJSON.data}`)
+    error: e => toastr["error"](`${e.responseJSON.error.message}`)
   });
 }
 
@@ -103,12 +103,12 @@ function loginProcess(res) {
 
   $('#username').text(user.name);
   $('#userrole').text(user.role);
-  $('#1365id').text(user['1365ID']);
+  $('#1365id').text(user.volunteerId);
   $('#userInfo').css('display', 'block');
   $('#loginForm').css('display', 'none');
 
-  Cookies.set('currentSemister', res.data.semister, { expires : 365 });
-  
+  Cookies.set('currentSemester', res.data.semester, { expires : 365 });
+
   // Load notice
   $.ajax({
     url: `${api}/settings/notice`,
@@ -121,7 +121,7 @@ function loginProcess(res) {
         MicroModal.show('notice_modal');
       }
     },
-    error: e => toastr["error"](`${e.responseJSON.msg}<br>${e.responseJSON.data}`)
+    error: e => toastr["error"](`${e.responseJSON.error.message}`)
   });
 }
 
@@ -184,11 +184,6 @@ function startIntro() {
     else if(this._currentStep == 3) {
       try { MicroModal.close('help_modal'); } catch(e) { }
       MicroModal.show('map_modal');
-      /*
-      posID = setMap();
-      MicroModal.show("map_modal", { onClose: function() { navigator.geolocation.clearWatch(posID); }});
-      try { document.querySelector('#map > div > div > div:nth-child(1) > div:nth-child(3) > div > div:nth-child(3) > div:nth-child(1)').click() } catch(e) { }
-      */
     }
     else if(this._currentStep == 4) {
       try { MicroModal.close('map_modal'); } catch(e) { }
