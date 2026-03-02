@@ -11,7 +11,6 @@ import verifications from './api/verifications.js';
 import members from './api/members.js';
 import semestersRoute from './api/semesters.js';
 import registrations from './api/registrations.js';
-import logs from './api/logs.js';
 import gallery from './api/gallery.js';
 import data from './api/data.js';
 
@@ -21,7 +20,6 @@ import { db } from './db/index.js';
 import { settings as settingsTable } from './db/schema.js';
 
 import weatherClient from './controllers/weatherClient.js';
-import dbClient from './controllers/dbClient.js';
 
 import fs from 'fs';
 
@@ -61,7 +59,6 @@ await fastify.register(verifications, { prefix: '/api/verifications' });
 await fastify.register(members, { prefix: '/api/members' });
 await fastify.register(semestersRoute, { prefix: '/api/semesters' });
 await fastify.register(registrations, { prefix: '/api/registrations' });
-await fastify.register(logs, { prefix: '/api/logs' });
 await fastify.register(gallery, { prefix: '/api/gallery' });
 await fastify.register(data, { prefix: '/api/data' });
 
@@ -112,4 +109,3 @@ try {
 }
 
 weatherClient();
-dbClient();

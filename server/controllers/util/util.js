@@ -1,10 +1,9 @@
 import jwt from 'jsonwebtoken';
-import prettify from 'pretty-format';
 import { eq, and } from 'drizzle-orm';
 
 import { Log, error } from './interface.js';
-import { db, sqlite } from '../../db/index.js';
-import { members, semesters, semesterMembers, settings, logs } from '../../db/schema.js';
+import { db } from '../../db/index.js';
+import { members, semesters, semesterMembers, settings } from '../../db/schema.js';
 
 let util = {};
 
@@ -106,26 +105,46 @@ util.getMemberByStudentId = function(studentId) {
   return db.select().from(members).where(eq(members.studentId, String(studentId))).get();
 };
 
-const logStmt = sqlite.prepare(
-  `INSERT INTO logs (level, ip, endpoint, description, method, status, query, result) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
-);
-
-util.logger = function(log) {
-  try {
-    log = logValidator(log);
-    logStmt.run(log.level, log.IP, log.endpoint, log.description, log.method, log.status, log.query, log.result);
-  }
-  catch(e) { console.log(e); }
+const c = {
+  r: '\x1b[0m', d: '\x1b[2m', b: '\x1b[1m',
+  red: '\x1b[31m', grn: '\x1b[32m', ylw: '\x1b[33m', cyn: '\x1b[36m',
 };
 
-function logValidator(log) {
-  for(let prop of Object.getOwnPropertyNames(log)) {
-    if(typeof(log[prop]) == 'object') {
-      log[prop] = prettify(log[prop], { min: true });
-      if(log[prop].length > 300) log[prop] = log[prop].substr(0, 300) + '...';
-    }
+util.logger = function(log) {
+  const fn = log.level === 'error' ? console.error : console.log;
+  const ts = new Date().toISOString().replace('T', ' ').slice(0, 19);
+  const lvl = log.level === 'error' ? `${c.red}${c.b}ERR${c.r}` : `${c.grn}INF${c.r}`;
+
+  let line = `${lvl} ${c.d}${ts}${c.r} `;
+
+  if (log.method === 'internal') {
+    line += `${c.d}[${log.IP}]${c.r} `;
+  } else {
+    line += `${c.cyn}${log.method}${c.r} ${log.endpoint} `;
   }
-  return log;
-}
+
+  if (log.status > 0) {
+    const sc = log.status >= 500 ? c.red : log.status >= 400 ? c.ylw : c.d;
+    line += `${sc}${log.status}${c.r} `;
+  }
+
+  line += log.description;
+
+  if (log.method !== 'internal' && log.IP) {
+    line += ` ${c.d}← ${log.IP}${c.r}`;
+  }
+
+  fn(line);
+
+  if (log.level === 'error') {
+    const trunc = (v) => {
+      if (v == null) return null;
+      const s = typeof v === 'object' ? JSON.stringify(v) : String(v);
+      return s.length > 200 ? s.slice(0, 200) + '…' : s;
+    };
+    if (log.query != null) fn(`    ${c.d}query:${c.r}  ${trunc(log.query)}`);
+    if (log.result != null) fn(`    ${c.d}result:${c.r} ${trunc(log.result)}`);
+  }
+};
 
 export default util;

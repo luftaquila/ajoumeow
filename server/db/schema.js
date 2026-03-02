@@ -71,22 +71,6 @@ export const settings = sqliteTable('settings', {
   value: text('value'),
 });
 
-// ── logs ────────────────────────────────────────────────────────────
-export const logs = sqliteTable('logs', {
-  id: integer('id').primaryKey({ autoIncrement: true }),
-  timestamp: text('timestamp')
-    .notNull()
-    .default(sql`(datetime('now'))`),
-  level: text('level').notNull(),
-  ip: text('ip'),
-  endpoint: text('endpoint'),
-  method: text('method'),
-  status: integer('status'),
-  description: text('description'),
-  query: text('query'),
-  result: text('result'),
-});
-
 // ── photos ──────────────────────────────────────────────────────────
 export const photos = sqliteTable('photos', {
   id: integer('id').primaryKey({ autoIncrement: true }),
