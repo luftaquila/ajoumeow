@@ -17,7 +17,7 @@ services:
   ajoumeow:
     build:
       context: .
-      dockerfile: server/Dockerfile
+      dockerfile: Dockerfile
     restart: unless-stopped
     expose:
       - 5710
