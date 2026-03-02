@@ -124,71 +124,85 @@ export default async function(fastify, opts) {
     }
   });
 
+  function build1365Payload(query) {
+    const semester = db.select().from(semesters).where(eq(semesters.name, query.semester)).get();
+    if (!semester) return null;
+
+    const verifyRows = db.select({
+      studentId: members.studentId,
+      name: members.name,
+      date: verifications.date,
+      course: verifications.course,
+      score: verifications.score,
+      createdAt: verifications.verifiedAt,
+    })
+      .from(verifications)
+      .innerJoin(members, eq(verifications.memberId, members.id))
+      .where(between(verifications.date, query.startDate, query.endDate))
+      .orderBy(verifications.date)
+      .all();
+
+    const namelist = db.select({
+      studentId: members.studentId,
+      name: members.name,
+      phone: members.phone,
+      birthday: members.birthday,
+      volunteerId: members.volunteerId,
+      role: semesterMembers.role,
+    })
+      .from(semesterMembers)
+      .innerJoin(members, eq(semesterMembers.memberId, members.id))
+      .where(eq(semesterMembers.semesterId, semester.id))
+      .all();
+
+    const chief = namelist.find(o => o.role == '회장');
+    const mask = query.mask == 'true';
+
+    function maskName(name) {
+      if (!mask || !name || name.length < 2) return name;
+      return name[0] + '*'.repeat(name.length - 2) + name[name.length - 1];
+    }
+
+    let rows = [];
+    for (const activity of verifyRows) {
+      const member = namelist.find(o => o.studentId == activity.studentId);
+      if (!member || !member.volunteerId) continue;
+
+      const fmtDate = dateformat(activity.date, 'yyyy.mm.dd');
+      const prev = rows.find(data => data.ID == member.studentId && data.date == fmtDate);
+      if (prev) prev.hour++;
+      else {
+        rows.push({
+          ID: member.studentId,
+          volID: member.volunteerId,
+          name: member.name,
+          birthday: member.birthday,
+          phone: member.phone,
+          date: fmtDate,
+          hour: 1,
+          timestamp: (fmtDate === dateformat(activity.createdAt, 'yyyy.mm.dd')) ? Number(dateformat(activity.createdAt, 'HHMM')) : 1900,
+        });
+      }
+    }
+
+    return { rows, chief, mask, maskName };
+  }
+
   fastify.get('/1365-export', async (request, reply) => {
     try {
-      const semester = db.select().from(semesters).where(eq(semesters.name, request.query.semester)).get();
-      if (!semester) {
+      const result = build1365Payload(request.query);
+      if (!result) {
         return reply.code(400).send(error('ERR_SEMESTER_NOT_FOUND', '해당 학기를 찾을 수 없습니다.'));
       }
 
-      const verifyRows = db.select({
-        studentId: members.studentId,
-        name: members.name,
-        date: verifications.date,
-        course: verifications.course,
-        score: verifications.score,
-        createdAt: verifications.verifiedAt,
-      })
-        .from(verifications)
-        .innerJoin(members, eq(verifications.memberId, members.id))
-        .where(between(verifications.date, request.query.startDate, request.query.endDate))
-        .orderBy(verifications.date)
-        .all();
-
-      const namelist = db.select({
-        studentId: members.studentId,
-        name: members.name,
-        phone: members.phone,
-        birthday: members.birthday,
-        volunteerId: members.volunteerId,
-        role: semesterMembers.role,
-      })
-        .from(semesterMembers)
-        .innerJoin(members, eq(semesterMembers.memberId, members.id))
-        .where(eq(semesterMembers.semesterId, semester.id))
-        .all();
-
-      const cheif = namelist.find(o => o.role == '회장');
-      const mask = request.query.mask == 'true';
-
-      let payload = [];
-      for(const activity of verifyRows) {
-        const member = namelist.find(o => o.studentId == activity.studentId);
-        if(!member || !member.volunteerId) continue;
-
-        activity.date = dateformat(activity.date, 'yyyy.mm.dd');
-
-        const prev = payload.find(data => data.ID == member.studentId && data.date == activity.date);
-        if(prev) prev.hour++;
-        else {
-          payload.push({
-            ID: member.studentId,
-            volID: member.volunteerId,
-            name: member.name,
-            birthday: member.birthday,
-            phone: member.phone,
-            date: activity.date,
-            hour: 1,
-            timestamp: (activity.date === dateformat(activity.createdAt, 'yyyy.mm.dd')) ? dateformat(activity.createdAt, 'HHMM') : 1900
-          });
-        }
-      }
+      const { rows, chief, mask } = result;
+      const payload = rows.map(r => ({ ...r, name: mask ? result.maskName(r.name) : r.name }));
 
       const response = await axios.post('https://script.google.com/macros/s/AKfycbwFchf0CScKD_2A7sTyzRfwODJYYE7Rl9cvc2thvx0Yc2qYKJL7pKZWaEMZ6IWUrlxnnA/exec', {
         data: payload,
         cheif: {
-          name: cheif ? cheif.name : '',
-          phone: cheif ? cheif.phone : ''
+          name: chief ? chief.name : '',
+          phone: chief ? chief.phone : ''
         },
         mask: mask
       });
@@ -199,6 +213,41 @@ export default async function(fastify, opts) {
     catch(e) {
       console.error(e);
       util.logger(new Log('error', request.remoteIP, request.originalPath, '1365 인증서 생성 오류', request.method, 500, request.query, e.stack));
+      return reply.code(500).send(error('ERR_UNKNOWN', '알 수 없는 오류입니다.'));
+    }
+  });
+
+  fastify.get('/1365-data', { preHandler: [util.isAdmin] }, async (request, reply) => {
+    try {
+      const result = build1365Payload(request.query);
+      if (!result) {
+        return reply.code(400).send(error('ERR_SEMESTER_NOT_FOUND', '해당 학기를 찾을 수 없습니다.'));
+      }
+
+      const { rows, chief, maskName } = result;
+
+      const data = {
+        rows: rows.map(r => ({
+          volID: r.volID,
+          name: maskName(r.name),
+          birthday: r.birthday || '',
+          phone: r.phone || '',
+          date: r.date,
+          hour: r.hour,
+          startTime: r.timestamp,
+        })),
+        chief: {
+          name: chief ? maskName(chief.name) : '',
+          phone: chief ? chief.phone : '',
+        },
+      };
+
+      util.logger(new Log('info', request.remoteIP, request.originalPath, '1365 인증서 데이터 요청', request.method, 200, request.query, null));
+      return reply.code(200).send(success(data));
+    }
+    catch(e) {
+      console.error(e);
+      util.logger(new Log('error', request.remoteIP, request.originalPath, '1365 인증서 데이터 요청 오류', request.method, 500, request.query, e.stack));
       return reply.code(500).send(error('ERR_UNKNOWN', '알 수 없는 오류입니다.'));
     }
   });
