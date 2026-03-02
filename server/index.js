@@ -1,4 +1,8 @@
-import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import Fastify from 'fastify';
+import fastifyStatic from '@fastify/static';
+import fastifyFormbody from '@fastify/formbody';
 
 import auth from './api/auth.js';
 import settings from './api/settings.js';
@@ -10,31 +14,62 @@ import gallery from './api/gallery.js';
 import util from './controllers/util/util.js';
 import { Log } from './controllers/util/interface.js';
 
-//import client from './config/node-kakao'
-//import kakaoClient from './controllers/kakaoClient.js';
 import weatherClient from './controllers/weatherClient.js';
 import dbClient from './controllers/dbClient.js';
 
-const app = express();
-app.use((req, res, next) => {
-  req.originalPath = req.baseUrl + req.path;
-  req.remoteIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-  next();
-});
-app.use('/api/auth', auth);
-app.use('/api/settings', settings);
-app.use('/api/record', record);
-app.use('/api/verify', verify);
-app.use('/api/users', users);
-app.use('/api/gallery', gallery);
-app.use(express.static('./web'));
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-app.listen(5710, function() {
+const fastify = Fastify({ logger: false });
+
+// Register formbody (replaces body-parser urlencoded)
+await fastify.register(fastifyFormbody);
+
+// Add hook to set originalPath and remoteIP (replaces Express middleware)
+fastify.addHook('onRequest', async (request, reply) => {
+  request.originalPath = request.url;
+  request.remoteIP = request.headers['x-forwarded-for'] || request.ip;
+});
+
+// Register route plugins
+await fastify.register(auth, { prefix: '/api/auth' });
+await fastify.register(settings, { prefix: '/api/settings' });
+await fastify.register(record, { prefix: '/api/record' });
+await fastify.register(verify, { prefix: '/api/verify' });
+await fastify.register(users, { prefix: '/api/users' });
+await fastify.register(gallery, { prefix: '/api/gallery' });
+
+// Serve Vue timetable build
+await fastify.register(fastifyStatic, {
+  root: path.join(__dirname, 'timetable-dist'),
+  prefix: '/timetable/',
+  decorateReply: false,
+});
+
+// Serve existing static web files
+await fastify.register(fastifyStatic, {
+  root: path.join(__dirname, 'web'),
+  prefix: '/',
+  decorateReply: false,
+});
+
+// SPA fallback: serve timetable index.html for unmatched /timetable routes
+fastify.setNotFoundHandler(async (request, reply) => {
+  if (request.url.startsWith('/timetable')) {
+    return reply.sendFile('index.html', path.join(__dirname, 'timetable-dist'));
+  }
+  reply.code(404).send({ error: 'Not Found' });
+});
+
+// Start server
+try {
+  await fastify.listen({ port: 5710, host: '0.0.0.0' });
   const msg = 'API server is in startup. Listening on :5710';
   console.log(msg);
   util.logger(new Log('info', 'LOCALHOST', '/api', '서버 프로그램 시작', 'internal', 0, null, msg));
-});
+} catch (err) {
+  console.error(err);
+  process.exit(1);
+}
 
-//kakaoClient();
 weatherClient();
 dbClient();

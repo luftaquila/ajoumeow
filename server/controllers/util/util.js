@@ -1,62 +1,63 @@
-import dotenv from 'dotenv'
 import jwt from 'jsonwebtoken';
 import prettify from 'pretty-format';
-//import inspect from 'object-inspect';
 
 import { Response, Log } from './interface.js';
-import pool from '../../config/mariadb';
-
-dotenv.config();
+import pool from '../../config/mariadb.js';
 
 let util = {};
 
-util.isLogin = function(req, res, next) { // check if jwt is vaild
-  const token = req.headers['x-access-token'];
-  if(!token) {
+util.isLogin = async function(request, reply) {
+  const token = request.headers['x-access-token'];
+  if (!token) {
     util.logger(new Log('info', 'util', 'util.isLogin', '로그인 확인', 'internal', 400, token, 'ERR_NO_TOKEN'));
-    res.status(400).json(new Response('error', '로그인 상태가 아닙니다.', 'ERR_NO_TOKEN'));
+    reply.code(400).send(new Response('error', '로그인 상태가 아닙니다.', 'ERR_NO_TOKEN'));
+    return reply;
   }
-  else {
-    jwt.verify(token, process.env.JWT_SECRET, function(err, decoded) {
-      if(err) {
-        util.logger(new Log('info', 'util', 'util.isLogin', '로그인 확인', 'internal', 401, token, 'ERR_INVALID_TOKEN'));
-        res.status(401).json(new Response('error', '로그인이 만료되었습니다.<br>다시 로그인해 주세요.', 'ERR_INVALID_TOKEN'));
-      }
-      else {
-        req.decoded = decoded;
-        util.logger(new Log('info', 'util', 'util.isLogin', '로그인 확인', 'internal', 0, token, req.decoded));
-        next();
-      }
+  try {
+    const decoded = await new Promise((resolve, reject) => {
+      jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+        if (err) reject(err);
+        else resolve(decoded);
+      });
     });
+    request.decoded = decoded;
+    util.logger(new Log('info', 'util', 'util.isLogin', '로그인 확인', 'internal', 0, token, request.decoded));
+  } catch (err) {
+    util.logger(new Log('info', 'util', 'util.isLogin', '로그인 확인', 'internal', 401, token, 'ERR_INVALID_TOKEN'));
+    reply.code(401).send(new Response('error', '로그인이 만료되었습니다.<br>다시 로그인해 주세요.', 'ERR_INVALID_TOKEN'));
+    return reply;
   }
 };
 
-util.isAdmin = function(req, res, next) { // check if jwt is vaild
-  const token = req.headers['x-access-token'];
-  if(!token) {
+util.isAdmin = async function(request, reply) {
+  const token = request.headers['x-access-token'];
+  if (!token) {
     util.logger(new Log('info', 'util', 'util.isAdmin', '관리자 확인', 'internal', 400, token, 'ERR_NO_TOKEN'));
-    res.status(400).json(new Response('error', '로그인 상태가 아닙니다.', 'ERR_NO_TOKEN'));
+    reply.code(400).send(new Response('error', '로그인 상태가 아닙니다.', 'ERR_NO_TOKEN'));
+    return reply;
   }
-  else {
-    jwt.verify(token, process.env.JWT_SECRET, function(err, decoded) {
-      if(err) {
-        util.logger(new Log('info', 'util', 'util.isAdmin', '관리자 확인', 'internal', 401, token, 'ERR_INVALID_TOKEN'));
-        res.status(401).json(new Response('error', '로그인이 만료되었습니다.<br>다시 로그인해 주세요.', 'ERR_INVALID_TOKEN'));
-      }
-      else if(decoded.role == '회원') {
-        util.logger(new Log('info', 'util', 'util.isAdmin', '관리자 확인', 'internal', 403, token, 'ERR_USER_NOT_ADMIN'));
-        res.status(403).json(new Response('error', '관리자가 아닙니다.', 'ERR_USER_NOT_ADMIN'));
-      }
-      else {
-        req.decoded = decoded;
-        util.logger(new Log('info', 'util', 'util.isAdmin', '관리자 확인', 'internal', 0, token, req.decoded));
-        next();
-      }
+  try {
+    const decoded = await new Promise((resolve, reject) => {
+      jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+        if (err) reject(err);
+        else resolve(decoded);
+      });
     });
+    if (decoded.role == '회원') {
+      util.logger(new Log('info', 'util', 'util.isAdmin', '관리자 확인', 'internal', 403, token, 'ERR_USER_NOT_ADMIN'));
+      reply.code(403).send(new Response('error', '관리자가 아닙니다.', 'ERR_USER_NOT_ADMIN'));
+      return reply;
+    }
+    request.decoded = decoded;
+    util.logger(new Log('info', 'util', 'util.isAdmin', '관리자 확인', 'internal', 0, token, request.decoded));
+  } catch (err) {
+    util.logger(new Log('info', 'util', 'util.isAdmin', '관리자 확인', 'internal', 401, token, 'ERR_INVALID_TOKEN'));
+    reply.code(401).send(new Response('error', '로그인이 만료되었습니다.<br>다시 로그인해 주세요.', 'ERR_INVALID_TOKEN'));
+    return reply;
   }
 };
 
-util.query = async function(query) { // make db query
+util.query = async function(query) {
   try {
     const db = await pool.getConnection();
     const result = await db.query(query);
@@ -66,12 +67,12 @@ util.query = async function(query) { // make db query
   }
   catch(e) {
     console.log(e);
-    throw e;
     util.logger(new Log('error', 'DB', 'util.query', 'DB 쿼리 오류', 'internal', -1, query, e.stack));
+    throw e;
   }
 }
 
-util.getSettings = async function(name) { // request server settings by name
+util.getSettings = async function(name) {
   const result = await util.query(`SELECT value FROM settings WHERE name='${name}';`);
   if(result.length) return result[0].value;
   else return null;
