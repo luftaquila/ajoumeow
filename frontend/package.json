@@ -1,5 +1,5 @@
 {
-  "name": "ajoumeow-timetable",
+  "name": "ajoumeow-frontend",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -13,14 +13,29 @@
     "@unocss/preset-icons": "^66.6.3",
     "@unocss/preset-wind4": "^66.6.3",
     "@unocss/transformer-directives": "^66.6.3",
+    "animsition": "^4.0.2",
+    "bootstrap": "4.6.2",
+    "bootstrap-datepicker": "^1.10.0",
+    "datatables.net": "^2.2.2",
+    "datatables.net-bs4": "^2.2.2",
+    "daterangepicker": "^3.1.0",
+    "imagesloaded": "^5.0.0",
+    "jquery": "^3.7.1",
+    "jquery-easing": "^0.0.1",
     "js-cookie": "^3.0.5",
+    "micromodal": "^0.4.10",
+    "moment": "^2.30.1",
+    "owl.carousel": "^2.3.4",
+    "popper.js": "^1.16.1",
     "primevue": "^4.5.4",
+    "select2": "^4.1.0-rc.0",
     "unocss": "^66.6.2",
     "vue": "^3.5.13"
   },
   "devDependencies": {
     "@iconify-json/lucide": "^1.2.95",
     "@vitejs/plugin-vue": "^5.2.1",
+    "sass": "^1.86.0",
     "vite": "^6.2.0"
   }
 }
