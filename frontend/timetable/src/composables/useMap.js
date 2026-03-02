@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import Cookies from 'js-cookie'
+import postscribe from 'postscribe'
 
 const mapLoaded = ref(false)
 const watchId = ref(null)
@@ -8,11 +9,11 @@ let maps = {}
 function loadTmapScript() {
   return new Promise((resolve, reject) => {
     if (window.Tmapv2) return resolve()
-    const script = document.createElement('script')
-    script.src = `https://apis.openapi.sk.com/tmap/jsv2?version=1&appKey=${import.meta.env.VITE_TMAP_API_KEY}`
-    script.onload = resolve
-    script.onerror = reject
-    document.body.appendChild(script)
+    postscribe(
+      document.body,
+      `<script src="https://apis.openapi.sk.com/tmap/jsv2?version=1&appKey=${import.meta.env.VITE_TMAP_API_KEY}"><\/script>`,
+      { done: resolve, error: reject },
+    )
   })
 }
 
@@ -33,7 +34,7 @@ export function useMap() {
   async function initMap(containerEl) {
     const Tmapv2 = window.Tmapv2
 
-    maps.map = new Tmapv2.Map(containerEl, {
+    maps.map = new Tmapv2.Map(containerEl.id, {
       center: new Tmapv2.LatLng(37.283237, 127.045953),
       height: '400px',
       zoom: 17,

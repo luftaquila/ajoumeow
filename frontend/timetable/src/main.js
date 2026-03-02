@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
 import PrimeVue from 'primevue/config'
-import Aura from '@primeuix/themes/aura'
+import SlateAura from '../../shared/theme.js'
 import ToastService from 'primevue/toastservice'
 import ConfirmationService from 'primevue/confirmationservice'
 import './assets/style.css'
@@ -11,7 +11,7 @@ const app = createApp(App)
 
 app.use(PrimeVue, {
   theme: {
-    preset: Aura,
+    preset: SlateAura,
     options: {
       darkModeSelector: '.p-dark',
     },

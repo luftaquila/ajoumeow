@@ -12,6 +12,18 @@ html, body {
   height: 100%;
 }
 
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+}
+
 /* ── Light mode (default) ── */
 :root {
   --c-surface: #FFFFFF;
@@ -133,4 +145,13 @@ h2, h3 {
 .p-dialog-close-button:hover,
 .p-drawer-close-button:hover {
   background: var(--c-surface-dim) !important;
+}
+
+/* Dialog/Drawer header — same background as content */
+.p-dialog .p-dialog-header,
+.p-dialog .p-dialog-content,
+.p-drawer .p-drawer-header,
+.p-drawer .p-drawer-content {
+  background: var(--c-surface) !important;
+  background-color: var(--c-surface) !important;
 }
