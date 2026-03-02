@@ -21,13 +21,13 @@ import fs from 'fs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Resolve web/ directory: Docker copies it into server/, local dev has it as sibling
-const webRoot = fs.existsSync(path.join(__dirname, 'web'))
-  ? path.join(__dirname, 'web')
-  : path.join(__dirname, '..', 'web');
+// Resolve dist/ directory: Docker build copies it into server/, local dev has it as sibling
+const distRoot = fs.existsSync(path.join(__dirname, 'dist'))
+  ? path.join(__dirname, 'dist')
+  : path.join(__dirname, '..', 'frontend', 'dist');
 
-// Export for other modules
-globalThis.__webRoot = webRoot;
+// Export for other modules (res/ is inside dist/)
+globalThis.__distRoot = distRoot;
 
 const fastify = Fastify({ logger: false });
 
@@ -48,16 +48,9 @@ await fastify.register(verify, { prefix: '/api/verify' });
 await fastify.register(users, { prefix: '/api/users' });
 await fastify.register(gallery, { prefix: '/api/gallery' });
 
-// Serve Vue timetable build
+// Serve built frontend files
 await fastify.register(fastifyStatic, {
-  root: path.join(__dirname, 'timetable-dist'),
-  prefix: '/timetable/',
-  decorateReply: false,
-});
-
-// Serve existing static web files
-await fastify.register(fastifyStatic, {
-  root: webRoot,
+  root: distRoot,
   prefix: '/',
   decorateReply: false,
 });
@@ -65,7 +58,7 @@ await fastify.register(fastifyStatic, {
 // SPA fallback: serve timetable index.html for unmatched /timetable routes
 fastify.setNotFoundHandler(async (request, reply) => {
   if (request.url.startsWith('/timetable')) {
-    return reply.sendFile('index.html', path.join(__dirname, 'timetable-dist'));
+    return reply.sendFile('timetable/index.html', distRoot);
   }
   reply.code(404).send({ error: 'Not Found' });
 });

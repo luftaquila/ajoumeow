@@ -9,7 +9,7 @@ import util from './util/util.js'
 import { Log } from './util/interface.js';
 
 function getWeatherPath() {
-  return path.join(globalThis.__webRoot, 'res/weather.json');
+  return path.join(globalThis.__distRoot, 'res/weather.json');
 }
 
 function weatherClient() {

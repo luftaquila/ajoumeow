@@ -39,7 +39,7 @@ function getPhotosListWithDetails(photoRows) {
 }
 
 export default async function(fastify, opts) {
-  const galleryDir = path.join(globalThis.__webRoot, 'res/image/gallery');
+  const galleryDir = path.join(globalThis.__distRoot, 'res/image/gallery');
   await fastify.register(import('@fastify/multipart'), { limits: { fileSize: 50 * 1024 * 1024 } });
 
   fastify.get('/tags', async (request, reply) => {
