@@ -32,7 +32,7 @@ export function useRecords() {
         const courseNum = Number(rec.course.replace(/\D/g, ''))
         const course = target.courses.find(o => o.course === courseNum)
         if (course) {
-          course.ppl.push({ ID: rec.ID, name: rec.name, timestamp: rec.timestamp })
+          course.ppl.push({ id: rec.id, studentId: rec.studentId, name: rec.name, createdAt: rec.createdAt })
         }
       }
 
@@ -54,7 +54,7 @@ export function useRecords() {
 
         if (user.value) {
           for (const course of date.courses) {
-            if (course.ppl.some(p => p.ID == user.value.ID)) {
+            if (course.ppl.some(p => p.studentId == user.value.studentId)) {
               cell.hasMy = true
               break
             }
@@ -62,7 +62,7 @@ export function useRecords() {
         }
       }
     } catch (e) {
-      _toast.add({ severity: 'error', summary: e.msg || '오류', life: 1500 })
+      _toast.add({ severity: 'error', summary: e.error?.message || '오류', life: 1500 })
     }
   }
 
@@ -80,12 +80,12 @@ export function useRecords() {
         await api.createRecord({
           date: target.date,
           course: target.course + '코스',
-          ID: Number(user.value.ID),
+          studentId: Number(user.value.studentId),
           name: user.value.name,
         })
         await load()
       } catch (e) {
-        _toast.add({ severity: 'error', summary: e.msg || '오류', detail: e.data || '', life: 1500 })
+        _toast.add({ severity: 'error', summary: e.error?.message || '오류', detail: e.error?.code || '', life: 1500 })
       } finally {
         pendingRequest = null
         exitAddMode()
@@ -100,15 +100,10 @@ export function useRecords() {
 
     pendingRequest = (async () => {
       try {
-        await api.deleteRecord({
-          date: target.date,
-          course: target.course,
-          ID: target.id,
-          name: target.name,
-        })
+        await api.deleteRecord(target.id)
         await load()
       } catch (e) {
-        _toast.add({ severity: 'error', summary: e.msg || '오류', detail: e.data || '', life: 1500 })
+        _toast.add({ severity: 'error', summary: e.error?.message || '오류', detail: e.error?.code || '', life: 1500 })
       } finally {
         pendingRequest = null
         exitAddMode()

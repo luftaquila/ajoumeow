@@ -46,7 +46,7 @@ export function useMap() {
 
     // Load points data
     const jwt = Cookies.get('jwt')
-    const res = await fetch('/api/record/map', { headers: { 'x-access-token': jwt } })
+    const res = await fetch('/api/records/map', { headers: { 'Authorization': 'Bearer ' + jwt } })
     const points = await res.json()
 
     for (const [course, data] of Object.entries(points)) {

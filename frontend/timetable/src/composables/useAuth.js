@@ -42,10 +42,10 @@ export function useAuth() {
   async function doLogin(id) {
     try {
       const res = await api.login(id)
-      Cookies.set('jwt', res.msg, { expires: 365 })
+      Cookies.set('jwt', res.data.token, { expires: 365 })
       loginProcess(res)
     } catch (e) {
-      _toast.add({ severity: 'error', summary: e.msg || '오류', detail: e.data || '', life: 1500 })
+      _toast.add({ severity: 'error', summary: e.error?.message || '오류', detail: e.error?.code || '', life: 1500 })
     }
   }
 
@@ -66,7 +66,7 @@ export function useAuth() {
   function loginProcess(res) {
     user.value = res.data.user
     statistics.value = res.data.statistics || []
-    Cookies.set('currentSemister', res.data.semister, { expires: 365 })
+    Cookies.set('currentSemester', res.data.semester, { expires: 365 })
   }
 
   function logout() {

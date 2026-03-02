@@ -29,9 +29,9 @@
             v-for="(ppl, pi) in courseData.ppl"
             :key="pi"
             :name="ppl.name"
-            :id="ppl.ID"
+            :id="ppl.studentId"
             :course="courseData.course"
-            :can-delete="canDelete(ppl.ID)"
+            :can-delete="canDelete(ppl.studentId)"
             @delete="onDelete(courseData.course, ppl)"
           />
           <span
@@ -90,7 +90,7 @@ const dateLabel = computed(() => {
 function canDelete(pplId) {
   if (!user.value) return false
   if (isAdmin.value) return true
-  if (isSelectedActive.value && user.value.ID == pplId) return true
+  if (isSelectedActive.value && user.value.studentId == pplId) return true
   return false
 }
 
@@ -98,7 +98,7 @@ function onDelete(course, ppl) {
   emit('delete-record', {
     date: selectedDate.value,
     course: course + '코스',
-    id: ppl.ID,
+    id: ppl.id,
     name: ppl.name,
   })
 }
