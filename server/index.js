@@ -68,10 +68,13 @@ await fastify.register(fastifyStatic, {
   decorateReply: false,
 });
 
-// SPA fallback: serve timetable index.html for unmatched /timetable routes
+// SPA fallback: serve index.html for unmatched SPA routes
 fastify.setNotFoundHandler(async (request, reply) => {
   if (request.url.startsWith('/timetable')) {
     return reply.sendFile('timetable/index.html', distRoot);
+  }
+  if (request.url.startsWith('/console')) {
+    return reply.sendFile('console/index.html', distRoot);
   }
   reply.code(404).send(error('ERR_NOT_FOUND', 'Not Found'));
 });

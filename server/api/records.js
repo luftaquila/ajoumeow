@@ -3,7 +3,7 @@ import path from 'path';
 import dateformat from 'dateformat';
 import { eq, and, between, like, asc, max } from 'drizzle-orm';
 
-import { db } from '../db/index.js';
+import { db, sqlite } from '../db/index.js';
 import { records, members, verifications } from '../db/schema.js';
 import util from '../controllers/util/util.js';
 import { Log, success, error } from '../controllers/util/interface.js';
@@ -35,7 +35,7 @@ export default async function(fastify, opts) {
         // Not logged in: mask names
         result = result.map(rec => ({
           ...rec,
-          name: rec.name[0] + rec.name.slice(1).replace(/./g, '○'),
+          name: rec.name[0] + '○○',
           studentId: null,
           mine: false,
         }));
@@ -192,6 +192,32 @@ export default async function(fastify, opts) {
             .where(between(verifications.date, request.query.startDate, request.query.endDate))
             .all();
           break;
+        }
+
+        case 'course_breakdown': {
+          const month = request.query.month || dateformat(new Date(), 'yyyy-mm');
+          const rows = sqlite.prepare(`
+            SELECT v.course, COUNT(*) as count, SUM(v.score) as totalScore
+            FROM verifications v
+            WHERE v.date LIKE ? || '%'
+            GROUP BY v.course
+            ORDER BY v.course
+          `).all(month);
+          util.logger(new Log('info', request.remoteIP, request.originalPath, '코스별 인증 분포 요청', request.method, 200, request.query, rows));
+          return reply.code(200).send(success(rows));
+        }
+
+        case 'daily_trend': {
+          const month = request.query.month || dateformat(new Date(), 'yyyy-mm');
+          const rows = sqlite.prepare(`
+            SELECT v.date, v.course, COUNT(*) as count, SUM(v.score) as totalScore
+            FROM verifications v
+            WHERE v.date LIKE ? || '%'
+            GROUP BY v.date, v.course
+            ORDER BY v.date, v.course
+          `).all(month);
+          util.logger(new Log('info', request.remoteIP, request.originalPath, '일별 인증 추이 요청', request.method, 200, request.query, rows));
+          return reply.code(200).send(success(rows));
         }
 
         default:
