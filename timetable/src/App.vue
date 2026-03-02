@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-surface-muted min-w-[320px] min-h-[568px] max-w-[414px] overflow-y-auto mx-auto md:shadow-[0_8px_40px_rgba(0,0,0,0.08)] md:my-6 md:rounded-2xl">
+  <div class="bg-surface-muted min-w-[320px] min-h-[568px] max-w-[430px] overflow-y-auto mx-auto md:shadow-elevated md:my-8 md:rounded-3xl">
     <HeaderNav
       @open-notice="openModal('notice')"
       @open-help="openModal('help')"
@@ -7,7 +7,7 @@
       @open-sidebar="sidebarOpen = true"
     />
 
-    <main class="flex flex-col gap-4 p-4">
+    <main class="flex flex-col gap-5 p-4 pt-5">
       <CalendarSection />
       <ContentArea
         @add-record="onAddRecord"
