@@ -17,7 +17,7 @@ util.isLogin = function(req, res, next) { // check if jwt is vaild
     res.status(400).json(new Response('error', '로그인 상태가 아닙니다.', 'ERR_NO_TOKEN'));
   }
   else {
-    jwt.verify(token, process.env.JWTSecret, function(err, decoded) {
+    jwt.verify(token, process.env.JWT_SECRET, function(err, decoded) {
       if(err) {
         util.logger(new Log('info', 'util', 'util.isLogin', '로그인 확인', 'internal', 401, token, 'ERR_INVALID_TOKEN'));
         res.status(401).json(new Response('error', '로그인이 만료되었습니다.<br>다시 로그인해 주세요.', 'ERR_INVALID_TOKEN'));
@@ -38,7 +38,7 @@ util.isAdmin = function(req, res, next) { // check if jwt is vaild
     res.status(400).json(new Response('error', '로그인 상태가 아닙니다.', 'ERR_NO_TOKEN'));
   }
   else {
-    jwt.verify(token, process.env.JWTSecret, function(err, decoded) {
+    jwt.verify(token, process.env.JWT_SECRET, function(err, decoded) {
       if(err) {
         util.logger(new Log('info', 'util', 'util.isAdmin', '관리자 확인', 'internal', 401, token, 'ERR_INVALID_TOKEN'));
         res.status(401).json(new Response('error', '로그인이 만료되었습니다.<br>다시 로그인해 주세요.', 'ERR_INVALID_TOKEN'));

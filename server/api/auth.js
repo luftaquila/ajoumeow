@@ -20,7 +20,7 @@ router.post('/login', async (req, res) => {
       const semister = await util.getSettings('currentSemister');
 
       if(result.length) { // if corresponding user exists
-        const token = jwt.sign(req.body, process.env.JWTSecret, { expiresIn: '365d' });
+        const token = jwt.sign(req.body, process.env.JWT_SECRET, { expiresIn: '365d' });
         const statistics = await util.query(`SELECT date, course, score FROM verify WHERE id=${req.body.id} ORDER BY date DESC;`);
         util.logger(new Log('info', req.remoteIP, req.originalPath, '로그인 요청', req.method, 200, req.body, token));
         res.status(200).json(new Response('success', token, { user: result[0], statistics: statistics, semister: semister }));

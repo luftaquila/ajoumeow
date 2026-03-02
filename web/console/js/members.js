@@ -65,33 +65,6 @@ $(function() {
          }
       });
 
-      let list = $('#namelist').val();
-
-      if (list) {
-        $('#pastMembersList').DataTable({
-          pagingType: "numbers",
-          pageLength: 100,
-          ajax: {
-            url: `${api}/users/list`,
-            beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
-            data: d => { d.semister = $('#namelist').val() },
-            dataSrc: 'data',
-            error: err => alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
-          },
-          columns: [
-            { data: "college" },
-            { data: "department" },
-            { data: "ID" },
-            { data: "name" },
-            { data: "phone" },
-            { data: "birthday" },
-            { data: "1365ID" },
-            { data: "register" },
-            { data: "role" }
-          ]
-        });
-      }
-      
       $('#namelist').change(function() {
         if($(this).val() == res.data) {
           $('#current_namelist').css('display', 'block');
@@ -100,7 +73,32 @@ $(function() {
         else {
           $('#current_namelist').css('display', 'none');
           $('#past_namelist').css('display', 'block');
-          $('#pastMembersList').DataTable().ajax.reload();
+          if ($.fn.DataTable.isDataTable('#pastMembersList')) {
+            $('#pastMembersList').DataTable().ajax.reload();
+          } else {
+            $('#pastMembersList').DataTable({
+              pagingType: "numbers",
+              pageLength: 100,
+              ajax: {
+                url: `${api}/users/list`,
+                beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
+                data: d => { d.semister = $('#namelist').val() },
+                dataSrc: 'data',
+                error: err => alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
+              },
+              columns: [
+                { data: "college" },
+                { data: "department" },
+                { data: "ID" },
+                { data: "name" },
+                { data: "phone" },
+                { data: "birthday" },
+                { data: "1365ID" },
+                { data: "register" },
+                { data: "role" }
+              ]
+            });
+          }
         }
       });      
     },

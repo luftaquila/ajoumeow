@@ -197,7 +197,7 @@ router.post('/like', async (req, res) => {
     let userID = null;
     
     if(token) {
-      jwt.verify(token, process.env.JWTSecret, function (err, decoded) {
+      jwt.verify(token, process.env.JWT_SECRET, function (err, decoded) {
         if(!err) userID = decoded.id;
       });
     }

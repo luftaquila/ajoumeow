@@ -19,7 +19,7 @@ router.get('/', async (req, res) => {
     // user role detection
     const token = req.headers['jwt'];
     if(token) {
-      await jwt.verify(token, process.env.JWTSecret, async function(err, decoded) {
+      await jwt.verify(token, process.env.JWT_SECRET, async function(err, decoded) {
         if(err) result = await maskName(result, null);
         else result = await maskName(result, decoded.id);
       });
