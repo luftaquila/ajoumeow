@@ -1,5 +1,4 @@
 import fs from 'fs'
-import dotenv from 'dotenv'
 import { parse, stringify } from 'envfile'
 import schedule from 'node-schedule'
 import dateformat from 'dateformat'
@@ -11,7 +10,6 @@ import axios from 'axios'
 import util from './util/util.js'
 import { Log } from './util/interface.js';
 
-dotenv.config();
 Date.prototype.getDayNum = function() { return this.getDay() ? this.getDay() : 7; }
 
 const client = new TalkClient({ });
