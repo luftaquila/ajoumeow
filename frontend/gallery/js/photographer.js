@@ -4,8 +4,8 @@ $(function() {
   requestPhotoList(0);
   $('input[name=sortPhoto]').change(() => requestPhotoList(0));
 
-  loadCount = 0;
-  io = new IntersectionObserver((entries, observer) => {
+  let loadCount = 0;
+  let io = new IntersectionObserver((entries, observer) => {
     entries.forEach(entry => {
       if(!entry.isIntersecting) return;
 

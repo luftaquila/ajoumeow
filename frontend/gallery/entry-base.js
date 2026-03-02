@@ -3,8 +3,9 @@ window.$ = window.jQuery = $
 
 import 'popper.js'
 import 'bootstrap'
-import 'owl.carousel'
-import 'imagesloaded'
+await import('owl.carousel')
+await import('imagesloaded')
+await import('waypoints/lib/jquery.waypoints.min.js')
 import Cookies from 'js-cookie'
 window.Cookies = Cookies
 
