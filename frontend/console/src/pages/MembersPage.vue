@@ -38,7 +38,6 @@
         sortMode="multiple"
         removableSort
         stripedRows
-        size="small"
         class="text-sm"
         filterDisplay="row"
         v-model:filters="filters"

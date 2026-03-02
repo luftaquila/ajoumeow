@@ -58,7 +58,6 @@
         sortMode="multiple"
         removableSort
         stripedRows
-        size="small"
         class="text-sm"
       >
         <Column field="createdAt" header="신청일" sortable style="width: 11rem">

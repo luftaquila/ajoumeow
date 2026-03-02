@@ -21,6 +21,10 @@ export default async function(fastify, opts) {
 
   fastify.put('/:key', { preHandler: [util.isAdmin] }, async (request, reply) => {
     try {
+      if (request.params.key === 'currentSemester') {
+        util.logger(new Log('info', request.remoteIP, request.originalPath, '학기 직접 변경 차단', request.method, 400, request.body, 'ERR_USE_TRANSITION'));
+        return reply.code(400).send(error('ERR_USE_TRANSITION', '학기 변경은 학기 전환 기능을 사용해 주세요.'));
+      }
       db.update(settings).set({ value: request.body.value }).where(eq(settings.key, request.params.key)).run();
       const result = util.getSettings(request.params.key);
       util.logger(new Log('info', request.remoteIP, request.originalPath, '설정값 수정', request.method, 200, request.body, result));

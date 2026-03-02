@@ -27,7 +27,7 @@
             optionValue="value"
             fluid
           /></div>
-          <Button label="저장" size="small" @click="saveSemester" />
+          <Button label="학기 전환" size="small" severity="warn" :loading="transitioning" @click="onTransition" />
         </div>
       </div>
 
@@ -106,6 +106,53 @@
         <Button label="저장" size="small" class="mt-3" @click="saveNotice" />
       </div>
     </div>
+
+    <!-- Semester transition dialog -->
+    <Dialog v-model:visible="showTransitionDialog" header="학기 전환" :modal="true" :closable="!executing" :style="{ width: '28rem' }">
+      <div v-if="previewLoading" class="text-center py-6">
+        <div class="i-lucide-loader-circle text-2xl text-primary animate-spin mx-auto"></div>
+      </div>
+      <div v-else-if="transitionPreview" class="flex flex-col gap-4">
+        <div class="text-sm">
+          <span class="font-semibold">{{ transitionPreview.currentSemester }}</span>
+          <span class="mx-2 text-text-muted">&rarr;</span>
+          <span class="font-semibold text-primary">{{ transitionPreview.targetSemester }}</span>
+          <span v-if="transitionPreview.targetExists" class="ml-2 text-xs text-text-muted">(기존 학기)</span>
+        </div>
+
+        <div>
+          <p class="text-sm font-medium mb-2">이전될 임원 ({{ transitionPreview.executives.length }}명)</p>
+          <div v-if="transitionPreview.executives.length" class="border border-surface rounded-lg overflow-hidden">
+            <table class="w-full text-sm">
+              <thead class="bg-surface-ground">
+                <tr>
+                  <th class="px-3 py-2 text-left font-medium">이름</th>
+                  <th class="px-3 py-2 text-left font-medium">학번</th>
+                  <th class="px-3 py-2 text-left font-medium">역할</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="exec in transitionPreview.executives" :key="exec.studentId" class="border-t border-surface">
+                  <td class="px-3 py-2">{{ exec.name }}</td>
+                  <td class="px-3 py-2 text-text-secondary">{{ exec.studentId }}</td>
+                  <td class="px-3 py-2">{{ exec.role }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p v-else class="text-sm text-text-muted">이전 학기에 임원이 없습니다.</p>
+        </div>
+
+        <p class="text-xs text-text-muted">학기 전환 후 일반 회원은 새 학기에 다시 등록해야 합니다.</p>
+      </div>
+
+      <template #footer>
+        <div class="flex justify-end gap-2">
+          <Button label="취소" severity="secondary" size="small" :disabled="executing" @click="showTransitionDialog = false" />
+          <Button label="전환" severity="warn" size="small" :loading="executing" @click="confirmTransition" />
+        </div>
+      </template>
+    </Dialog>
   </div>
 </template>
 
@@ -118,8 +165,10 @@ import Button from 'primevue/button'
 import ToggleSwitch from 'primevue/toggleswitch'
 import DatePicker from 'primevue/datepicker'
 import Textarea from 'primevue/textarea'
+import Dialog from 'primevue/dialog'
 import PageHeader from '../components/PageHeader.vue'
 import { getSetting, updateSetting } from '../api/settings.js'
+import { previewTransition, executeTransition } from '../api/semesters.js'
 import { formatDate } from '../../../shared/utils/dateFormat.js'
 
 const toast = useToast()
@@ -142,6 +191,13 @@ const registerEnd = ref(null)
 const noticeContent = ref('')
 const noticeVersion = ref(0)
 const maxCount = ref(10)
+
+// Transition state
+const transitioning = ref(false)
+const showTransitionDialog = ref(false)
+const previewLoading = ref(false)
+const transitionPreview = ref(null)
+const executing = ref(false)
 
 function fmtDate(d) {
   return formatDate(d, 'yyyy-mm-dd')
@@ -198,11 +254,44 @@ onMounted(async () => {
   }
 })
 
-async function saveSemester() {
+async function onTransition() {
+  const name = `${semesterYear.value}-${semesterTerm.value}`
+  transitioning.value = true
+  previewLoading.value = true
+  transitionPreview.value = null
+  showTransitionDialog.value = true
+
   try {
-    await updateSetting('currentSemester', `${semesterYear.value}-${semesterTerm.value}`)
-    toast.add({ severity: 'success', summary: '학기가 변경되었습니다.', life: 2000 })
-  } catch { toast.add({ severity: 'error', summary: '저장 실패', life: 2000 }) }
+    const res = await previewTransition(name)
+    transitionPreview.value = res.data
+  } catch (e) {
+    showTransitionDialog.value = false
+    const msg = e?.error?.message || '미리보기 조회 실패'
+    toast.add({ severity: 'error', summary: msg, life: 3000 })
+  } finally {
+    transitioning.value = false
+    previewLoading.value = false
+  }
+}
+
+async function confirmTransition() {
+  executing.value = true
+  try {
+    const res = await executeTransition(transitionPreview.value.targetSemester)
+    const { semester, carryOverMembers } = res.data
+    showTransitionDialog.value = false
+    toast.add({
+      severity: 'success',
+      summary: `${semester} 학기로 전환 완료`,
+      detail: carryOverMembers.length ? `임원 ${carryOverMembers.length}명 이전됨` : undefined,
+      life: 4000,
+    })
+  } catch (e) {
+    const msg = e?.error?.message || '학기 전환 실패'
+    toast.add({ severity: 'error', summary: msg, life: 3000 })
+  } finally {
+    executing.value = false
+  }
 }
 
 async function saveBool(key, val) {
