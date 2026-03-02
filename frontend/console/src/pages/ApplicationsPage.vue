@@ -97,7 +97,7 @@ import PageHeader from '../components/PageHeader.vue'
 import ActionBar from '../components/ActionBar.vue'
 import { getApplications, getApplicationSemesters, approveApplication, rejectApplication } from '../api/applications.js'
 import { useSemesters } from '../composables/useSemesters.js'
-import { formatLocal } from '../../../../shared/utils/dateFormat.js'
+import { formatLocal } from '../../../shared/utils/dateFormat.js'
 
 const toast = useToast()
 const confirm = useConfirm()

@@ -87,7 +87,7 @@ import ActionBar from '../components/ActionBar.vue'
 import { getRegistrations, getRegistrationSemesters } from '../api/registrations.js'
 import { toGoogleContactsCsv, toNaverContactsCsv } from '../utils/contactExport.js'
 import { useSemesters } from '../composables/useSemesters.js'
-import { formatLocal } from '../../../../shared/utils/dateFormat.js'
+import { formatLocal } from '../../../shared/utils/dateFormat.js'
 
 const toast = useToast()
 const { currentSemester, loadSemesters } = useSemesters()
