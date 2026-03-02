@@ -9,16 +9,18 @@
       />
     </div>
     <!-- No records -->
-    <div v-if="!hasContent" class="py-8 flex flex-col items-center justify-center gap-3">
-      <i class="far fa-cat text-[2.5rem] text-text-muted opacity-40"></i>
+    <div v-if="!hasContent" class="py-10 flex flex-col items-center justify-center gap-4">
+      <div class="w-18 h-18 rounded-2xl bg-surface-dim flex items-center justify-center">
+        <i class="far fa-cat text-3xl text-text-muted"></i>
+      </div>
       <div class="text-text-muted text-sm">급식 신청자가 없습니다!</div>
     </div>
     <!-- Has records -->
     <div v-else class="flex flex-col gap-3">
       <div v-for="courseData in displayCourses" :key="courseData.course" class="flex items-start gap-3">
         <span
-          class="shrink-0 mt-1 inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold"
-          :class="[`bg-course${courseData.course}-bg`, `text-course${courseData.course}-text`]"
+          class="shrink-0 mt-1 inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold tracking-wide"
+          :class="[`bg-course${courseData.course}-bg`, `text-course${courseData.course}-text`, `border border-course${courseData.course}/20`]"
         >
           {{ COURSES[courseData.course].label }}
         </span>
@@ -36,7 +38,7 @@
             v-if="addModeActive && courseData.ppl.length < addModeMaxCount"
             @click="$emit('add-record', courseData.course)"
           >
-            <span class="ripple inline-flex items-center justify-center w-14 h-7 rounded-lg border-2 border-dashed border-text-muted/40 text-text-muted text-sm cursor-pointer hover:border-primary/50 hover:text-primary transition-colors duration-200">+</span>
+            <span class="ripple inline-flex items-center justify-center w-14 h-8 rounded-xl border-2 border-dashed border-surface-border text-text-muted text-sm cursor-pointer hover:border-primary/50 hover:text-primary hover:bg-primary/5 transition-colors duration-200">+</span>
           </span>
         </div>
       </div>
