@@ -1,18 +1,14 @@
 <template>
-  <div class="calendar-table__body">
-    <div class="calendar-table__row" v-for="(row, ri) in rows" :key="ri">
+  <div>
+    <div class="flex justify-center" v-for="(row, ri) in rows" :key="ri">
       <template v-for="cell in row" :key="cell.index">
         <!-- Add button (last cell) -->
-        <div v-if="cell.isAddButton" id="addRecord" class="calendar-table__col" @click="onAddClick">
-          <div style="height: 100%; padding: 7px">
+        <div v-if="cell.isAddButton" class="cal-body-col" @click="onAddClick">
+          <div class="h-full p-[7px]">
             <div
-              class="ripple calendar-table__item"
-              :class="{ addRecord_active: isSelectedActive }"
-              :style="{
-                zIndex: 0, lineHeight: '50px', textAlign: 'center', fontSize: '1.2rem',
-                borderRadius: '50%', color: 'white',
-                backgroundColor: isSelectedActive ? '#2196f3' : 'darkgray'
-              }"
+              class="ripple cal-item"
+              :class="[isSelectedActive ? 'bg-primary' : 'bg-[darkgray]']"
+              :style="{ lineHeight: '50px', fontSize: '1.2rem', color: 'white' }"
             >
               <i class="fas fa-plus"></i>
             </div>
@@ -31,10 +27,11 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
-import { useToast } from 'vue-toastification'
+import { computed } from 'vue'
+import { useToast } from 'primevue/usetoast'
 import { useCalendar } from '../composables/useCalendar.js'
 import { useAuth } from '../composables/useAuth.js'
+import { useAddMode } from '../composables/useAddMode.js'
 import * as apiClient from '../api/index.js'
 import CalendarCell from './CalendarCell.vue'
 
@@ -42,9 +39,7 @@ const emit = defineEmits(['add-record'])
 const toast = useToast()
 const { cells, selectedDate, isSelectedActive, selectDate } = useCalendar()
 const { user } = useAuth()
-
-const addMode = ref(false)
-const maxCount = ref(99)
+const { enterAddMode } = useAddMode()
 
 const rows = computed(() => {
   const result = []
@@ -56,26 +51,15 @@ const rows = computed(() => {
 
 async function onAddClick() {
   if (!isSelectedActive.value) return
-  if (!user.value) return toast.error('로그인을 해 주세요!')
+  if (!user.value) return toast.add({ severity: 'error', summary: '로그인을 해 주세요!', life: 1500 })
 
   // Fetch max count
+  let max = 99
   try {
     const res = await apiClient.getSetting('maxFeedingUserCount')
-    maxCount.value = Number(res.data)
+    max = Number(res.data)
   } catch (_) {}
 
-  addMode.value = true
-
-  // Get current courses for date
-  const cell = cells.value.find(c => c.date === selectedDate.value)
-  const content = cell?.content || [
-    { course: 1, ppl: [] },
-    { course: 2, ppl: [] },
-    { course: 3, ppl: [] },
-  ]
-
-  // Emit to parent which will show add buttons
-  window.__addMode = { active: true, maxCount: maxCount.value, content }
-  window.dispatchEvent(new CustomEvent('addModeChanged'))
+  enterAddMode(max)
 }
 </script>

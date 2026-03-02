@@ -1,26 +1,21 @@
 <template>
-  <div style="font-size: 0.8rem; text-align: center; min-width: 150px">
-    <span style="font-size: 0.9rem; line-height: 1.1rem;" v-html="noticeHtml"></span>
+  <div class="text-sm text-center min-w-[150px]">
+    <span class="text-[0.9rem] leading-[1.1rem]" v-html="noticeHtml"></span>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import * as apiClient from '../../api/index.js'
+import { computed, onMounted } from 'vue'
+import { useNotice } from '../../composables/useNotice.js'
 
-const noticeHtml = ref('')
+const { noticeContent, loadNotice } = useNotice()
+
+const noticeHtml = computed(() => {
+  if (!noticeContent.value) return ''
+  return noticeContent.value.replace(/\n/g, '<br>')
+})
 
 onMounted(async () => {
-  // Check if already loaded via App.vue
-  if (window.__noticeContent) {
-    noticeHtml.value = window.__noticeContent.replace(/\n/g, '<br>')
-    return
-  }
-  try {
-    const res = await apiClient.getSetting('notice')
-    const notice = res.data.split('$')
-    noticeHtml.value = notice[1].replace(/\n/g, '<br>')
-    window.__noticeContent = notice[1]
-  } catch (e) { /* ignore */ }
+  if (!noticeContent.value) await loadNotice()
 })
 </script>
