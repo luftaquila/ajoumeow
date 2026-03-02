@@ -10,23 +10,23 @@ $(function() {
     order: [[ 0, 'desc' ]],
     search: { regex: true },
     ajax: {
-      url: `${api}/record/log`,
-      beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
+      url: `${api}/logs`,
+      beforeSend: xhr => xhr.setRequestHeader('Authorization', 'Bearer ' + Cookies.get('jwt')),
       data: d => {
         const level = Array.from($('input[name=level]:checked'), x => x.value);
         const type = Array.from($('input[name=type]:checked'), x => x.value)
         d.level = level ? level : null,
         d.type = type ? type : [];
-        d.start = $('#logStart').val() + ' 00:00:00';
-        d.end = $('#logEnd').val() + ' 23:59:59';
+        d.startDate = $('#logStart').val() + ' 00:00:00';
+        d.endDate = $('#logEnd').val() + ' 23:59:59';
       },
       dataSrc: 'data',
-      error: err => alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
+      error: err => alertify.error(`${err.responseJSON.error.message}`)
     },
     columns: [
       { data: "timestamp" },
       { data: "level" },
-      { data: "IP" },
+      { data: "ip" },
       { data: "endpoint" },
       { data: "description" },
       { data: "method" },
@@ -36,12 +36,12 @@ $(function() {
     ],
     columnDefs: [{
       targets: 0,
-      render: (data, type, row, meta) => { return new Date(data).format('yyyy-mm-dd HH:MM:ss') } 
+      render: (data, type, row, meta) => { return new Date(data).format('yyyy-mm-dd HH:MM:ss') }
     }, {
       targets: [ 7, 8 ],
       render: (data, type, row, meta) => {
         if(data && data.length > 30) return data.substr(0, 30) + '...';
-        else return data } 
+        else return data }
     }]
   });
 });

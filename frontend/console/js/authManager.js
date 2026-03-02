@@ -4,8 +4,8 @@ $(function() {
   const jwt = Cookies.get('jwt');
   if(jwt) { // if jwt exists
     $.ajax({
-      url: `${api}/auth/autologin`,
-      beforeSend: xhr => xhr.setRequestHeader('x-access-token', jwt),
+      url: `${api}/auth/refresh`,
+      beforeSend: xhr => xhr.setRequestHeader('Authorization', 'Bearer ' + jwt),
       type: "POST",
       success: res => {
         if(res.data.user.role == '회원') {

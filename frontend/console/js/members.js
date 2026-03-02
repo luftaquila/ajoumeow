@@ -1,40 +1,39 @@
 $(function() {
   $('#content').click();
   $.ajax({
-    url: `${api}/users/list`,
-    beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
-    data: { semister : 'all' },
+    url: `${api}/semesters`,
+    beforeSend: xhr => xhr.setRequestHeader('Authorization', 'Bearer ' + Cookies.get('jwt')),
     success: res => {
       let html = '';
-      for(let obj of res.data.reverse()) html += `<option value="${obj.replace('namelist_', '')}">${obj.replace('namelist_', '')}학기</option>`;
+      for(let obj of res.data.reverse()) html += `<option value="${obj}">${obj}학기</option>`;
       $('.namelist_select').html(html);
     },
-    error: err => alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
+    error: err => alertify.error(`${err.responseJSON.error.message}`)
   });
-  
+
   $.ajax({
-    url: `${api}/settings/currentSemister`,
-    beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
+    url: `${api}/settings/currentSemester`,
+    beforeSend: xhr => xhr.setRequestHeader('Authorization', 'Bearer ' + Cookies.get('jwt')),
     success: res => {
       $('#currentMembersList').DataTable({
         pagingType: "numbers",
         pageLength: 100,
         ajax: {
-          url: `${api}/users/list`,
-          beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
-          data: { semister : res.data },
+          url: `${api}/members`,
+          beforeSend: xhr => xhr.setRequestHeader('Authorization', 'Bearer ' + Cookies.get('jwt')),
+          data: { semester : res.data },
           dataSrc: 'data',
-          error: err => alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
+          error: err => alertify.error(`${err.responseJSON.error.message}`)
         },
         columns: [
           { data: "college" },
           { data: "department" },
-          { data: "ID" },
+          { data: "studentId" },
           { data: "name" },
           { data: "phone" },
           { data: "birthday" },
-          { data: "1365ID" },
-          { data: "register" },
+          { data: "volunteerId" },
+          { data: "registeredAt" },
           { data: "role" }
         ]
       });
@@ -51,16 +50,17 @@ $(function() {
           { targets : 8 }
          ],
          onEdited : (prev, changed, index, cell) => {
+           const rowData = cell.row(index.row).data();
            $.ajax({
-             url: `${api}/users/id`,
+             url: `${api}/members/${rowData.studentId}`,
              type: 'PUT',
-             beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
-             data: cell.row(index.row).data(),
+             beforeSend: xhr => xhr.setRequestHeader('Authorization', 'Bearer ' + Cookies.get('jwt')),
+             data: rowData,
              success: res => {
                alertify.success('수정되었습니다.');
                $('#dataTable').DataTable().ajax.reload();
              },
-             error: err => alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
+             error: err => alertify.error(`${err.responseJSON.error.message}`)
            });
          }
       });
@@ -80,27 +80,27 @@ $(function() {
               pagingType: "numbers",
               pageLength: 100,
               ajax: {
-                url: `${api}/users/list`,
-                beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
-                data: d => { d.semister = $('#namelist').val() },
+                url: `${api}/members`,
+                beforeSend: xhr => xhr.setRequestHeader('Authorization', 'Bearer ' + Cookies.get('jwt')),
+                data: d => { d.semester = $('#namelist').val() },
                 dataSrc: 'data',
-                error: err => alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
+                error: err => alertify.error(`${err.responseJSON.error.message}`)
               },
               columns: [
                 { data: "college" },
                 { data: "department" },
-                { data: "ID" },
+                { data: "studentId" },
                 { data: "name" },
                 { data: "phone" },
                 { data: "birthday" },
-                { data: "1365ID" },
-                { data: "register" },
+                { data: "volunteerId" },
+                { data: "registeredAt" },
                 { data: "role" }
               ]
             });
           }
         }
-      });      
+      });
     },
     error: err => alertify.error('설정값을 불러오는 중에 오류가 발생했습니다.')
   });
@@ -108,24 +108,23 @@ $(function() {
 
 $('#deleteMember').click(function() {
   $.ajax({
-    url: `${api}/users/id`,
+    url: `${api}/members/${$('#deleteMemberID').val()}`,
     type: 'DELETE',
-    beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
-    data: { ID: $('#deleteMemberID').val() },
+    beforeSend: xhr => xhr.setRequestHeader('Authorization', 'Bearer ' + Cookies.get('jwt')),
     success: res => {
       alertify.error('회원이 제명되었습니다.');
       $('#currentMembersList').DataTable().ajax.reload();
     },
-    error: err => alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
+    error: err => alertify.error(`${err.responseJSON.error.message}`)
   });
 });
 
 $('#namelistDownload').click(function() {
-  let semister = $('#namelist').val();
+  let semester = $('#namelist').val();
   $.ajax({
-    url: `${api}/users/list`,
-    beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
-    data: { semister : semister },
+    url: `${api}/members`,
+    beforeSend: xhr => xhr.setRequestHeader('Authorization', 'Bearer ' + Cookies.get('jwt')),
+    data: { semester : semester },
     success: res => {
       function s2ab(s) {
         let buf = new ArrayBuffer(s.length); //convert s to arrayBuffer
@@ -134,8 +133,8 @@ $('#namelistDownload').click(function() {
         return buf;
       }
       let excelHandler = {
-        getExcelFileName : () => { return semister + '학기 명단.xlsx'; },
-        getSheetName : () => { return semister + '학기'; },
+        getExcelFileName : () => { return semester + '학기 명단.xlsx'; },
+        getSheetName : () => { return semester + '학기'; },
         getWorksheet : () => { return XLSX.utils.json_to_sheet(res.data); }
       }
       let wb = XLSX.utils.book_new();
@@ -144,6 +143,6 @@ $('#namelistDownload').click(function() {
       let wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
       saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), excelHandler.getExcelFileName());
     },
-    error: err => alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
+    error: err => alertify.error(`${err.responseJSON.error.message}`)
   });
 });

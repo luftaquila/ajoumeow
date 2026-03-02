@@ -6,14 +6,17 @@ $(function() {
     lengthChange: false,
     order: [[ 1, 'desc' ]],
     ajax: {
-      url: `${api}/record/statistics`,
-      beforeSend: xhr => xhr.setRequestHeader('x-access-token', Cookies.get('jwt')),
+      url: `${api}/records/statistics`,
+      beforeSend: xhr => xhr.setRequestHeader('Authorization', 'Bearer ' + Cookies.get('jwt')),
       data: d => {
         d.type = $('input[name=statisticsType]:checked').val();
-        d.value = $('input[name=statisticsType]:checked').attr('data-value');
+        if (d.type === 'custom_total') {
+          d.startDate = $('#statisticsStartDate').val();
+          d.endDate = $('#statisticsEndDate').val();
+        }
       },
       dataSrc: 'data',
-      error: err => alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
+      error: err => alertify.error(`${err.responseJSON.error.message}`)
     },
     columns: [
       { data: "name" },
@@ -23,13 +26,13 @@ $(function() {
   });
 
   $.ajax({
-    url: `${api}/record/statistics`,
+    url: `${api}/records/statistics`,
     data: { type: 'summary' },
     success: res => {
-      $('#activityTime').text(res.data.time + '시간');
-      $('#activeMember').text(res.data.people + '명');
+      $('#activityTime').text(res.data.totalHours + '시간');
+      $('#activeMember').text(res.data.uniqueMembers + '명');
     },
-    error: err => alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
+    error: err => alertify.error(`${err.responseJSON.error.message}`)
   });
 });
 
@@ -37,10 +40,9 @@ $('input[name=statisticsType]').click(function() { $('#statistics').DataTable().
 $('.statisticsDate').change(function() {
   let start = $('#statisticsStartDate').val(), end = $('#statisticsEndDate').val();
   if(start && end) {
-    $('#custom_total').attr('data-value', start + '|' + end);
+    $('#custom_total').prop('checked', true);
     $('#statistics').DataTable().ajax.reload();
   }
-  else $('#custom_total').attr('data-value', '');
 });
 
 $('#pick').click(async function() {
