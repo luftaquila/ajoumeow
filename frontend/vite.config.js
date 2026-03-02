@@ -49,6 +49,7 @@ export default defineConfig({
   plugins: [serveMPA(), UnoCSS(), vue()],
   server: {
     host: true,
+    allowedHosts: true,
     proxy: {
       '/api': 'http://localhost:5710',
       '/res': 'http://localhost:5710',
