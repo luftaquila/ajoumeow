@@ -21,6 +21,7 @@ RUN npm ci --omit=dev
 COPY server/ .
 COPY web/ ./web/
 COPY --from=timetable-build /build/dist ./timetable-dist/
+RUN mkdir -p data
 
 EXPOSE 5710
 CMD ["node", "index.js"]

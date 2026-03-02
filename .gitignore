@@ -3,6 +3,8 @@ web/res/image/gallery
 web/res/weather.json
 **/node_modules
 server/timetable-dist
+server/data/ajoumeow.db
+migrated.db
 
 **/*.env
 sitemap.xml
