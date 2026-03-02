@@ -9,14 +9,14 @@
     <p class="mb-4">초기 버전은 서버도 없어 구글 스프레드시트를 DB로 사용하는 엉망진창 시스템이었습니다. 군대에서 전부 뒤집어 엎고 수정에 수정을 거쳐 지금의 모습에 이르게 되었습니다. 벌써 만 5년째 운영 중이네요.</p>
 
     <figure class="my-4">
-      <img :src="'/res/recruit/console.png'" class="w-full rounded-lg">
+      <img :src="'/res/recruit/console.png'" class="w-full rounded-xl">
       <figcaption class="mt-2 text-sm text-text-muted text-center">지금은 임원진만 접속 가능한 관리자 콘솔도 있습니다.</figcaption>
     </figure>
 
     <p class="mb-4">프론트엔드부터 서버사이드까지 대학 생활 전체에 걸쳐 전부 직접 개발하고 유지보수한 자식같은 시스템입니다만, 이제 졸업할 때가 되어 후임자를 찾고 있습니다.</p>
 
     <figure class="my-4">
-      <img :src="'/res/recruit/server.jpg'" class="w-full rounded-lg">
+      <img :src="'/res/recruit/server.jpg'" class="w-full rounded-xl">
       <figcaption class="mt-2 text-sm text-text-muted text-center">제일 작은 하얀 네모 상자가 여러분에게 지금 이 사이트를 보여주고 있는 서버의 실체랍니다. 여러분은 모두 랜선을 타고 제 집에 와본 적이 있는 셈이죠.</figcaption>
     </figure>
 

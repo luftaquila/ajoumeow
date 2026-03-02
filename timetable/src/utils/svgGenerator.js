@@ -23,7 +23,7 @@ export function generateDotSvg(courses, width) {
     if (!ppl) continue
     const dotColor = COURSES[course.course].dotColor.replace('#', '%23')
     svgString +=
-      `%3Ccircle cx='${dotPosition[courseCount[0]][courseCount[1]]}' cy='${dotPosition.CxCyRStrW[1]}' r='${dotPosition.CxCyRStrW[2]}' stroke='${dotColor}' stroke-width='${dotPosition.CxCyRStrW[3]}' fill='${ppl === 1 ? 'white' : dotColor}'%3E%3C/circle%3E`
+      `%3Ccircle cx='${dotPosition[courseCount[0]][courseCount[1]]}' cy='${dotPosition.CxCyRStrW[1]}' r='${dotPosition.CxCyRStrW[2]}' stroke='${dotColor}' stroke-width='${dotPosition.CxCyRStrW[3]}' fill='${ppl === 1 ? 'transparent' : dotColor}'%3E%3C/circle%3E`
     courseCount[1]++
   }
 

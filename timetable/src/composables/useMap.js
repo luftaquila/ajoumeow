@@ -101,7 +101,7 @@ export function useMap() {
     maps[obj] = { pos }
     maps[obj].marker = new Tmapv2.Marker({
       position: pos,
-      iconHTML: `<i class="fas fa-map-marker" style="font-size: 1.75rem; color: ${iconColor}"></i>`,
+      iconHTML: `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="${iconColor}" stroke="${iconColor}" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3" fill="white" stroke="white"/></svg>`,
       iconSize: new Tmapv2.Size(30, 30),
       map: maps.map,
     })
@@ -112,7 +112,7 @@ export function useMap() {
         position: pos,
         content: `
           <div class='infowindow' style='position: static; display: flex; flex-direction: column; font-size: 14px; box-shadow: 5px 5px 5px #00000040; border-radius: 10px; width: 250px; background: #FFFFFF 0% 0% no-repeat padding-box;'>
-            <span style="position: absolute; font-size: 1.5rem; color: white; margin: 0.5rem; height: 2rem; width: 2rem; top: 0; right: 0; cursor: pointer;" onclick="this.closest('.infowindow').style.display='none'"><i class="fal fa-times" aria-hidden="true"></i></span>
+            <span style="position: absolute; margin: 0.5rem; top: 0; right: 0; cursor: pointer;" onclick="this.closest('.infowindow').style.display='none'"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span>
             <img src='/res/image/map/${infoImage}' style='width: 100%; height: auto; border-radius: 15px; padding: 5px;'>
             <div class='info-box' style='padding: 10px;'>
               <h3>${infoTitle}</h3>
@@ -139,7 +139,7 @@ export function useMap() {
         else {
           maps.current = new Tmapv2.Marker({
             position: current,
-            iconHTML: `<i id='current' class="fas fa-map-marker-smile" style="font-size: 1.5rem; color: MediumOrchid"></i>`,
+            iconHTML: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="MediumOrchid" stroke="MediumOrchid" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3" fill="white" stroke="white"/></svg>`,
             iconSize: new Tmapv2.Size(30, 30),
             map: maps.map,
           })

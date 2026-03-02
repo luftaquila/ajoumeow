@@ -7,8 +7,8 @@
       <Column field="score" header="점수" />
     </DataTable>
     <div v-else class="py-8 flex flex-col items-center gap-3">
-      <div class="w-14 h-14 rounded-full bg-surface-muted flex items-center justify-center">
-        <i class="far fa-clipboard-list text-xl text-text-muted"></i>
+      <div class="w-16 h-16 rounded-2xl bg-surface-dim flex items-center justify-center">
+        <i class="i-lucide-clipboard-list text-2xl text-text-muted"></i>
       </div>
       <div class="text-text-muted">기록이 없습니다.</div>
     </div>

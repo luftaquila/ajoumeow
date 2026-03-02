@@ -5,20 +5,20 @@
       <div class="flex items-center gap-4">
         <a href="/" class="no-underline flex items-center"><img :src="'/res/image/headline_blue.png'" class="h-5 opacity-80" /></a>
         <span class="text-lg text-text-muted cursor-pointer hover:text-primary transition-colors duration-200" @click="$emit('open-notice')">
-          <i class="far fa-exclamation-circle"></i>
+          <i class="i-lucide-circle-alert"></i>
         </span>
         <span class="text-lg text-text-muted cursor-pointer hover:text-primary transition-colors duration-200" @click="$emit('open-help')">
-          <i class="far fa-question-circle"></i>
+          <i class="i-lucide-circle-help"></i>
         </span>
       </div>
       <div class="flex items-center gap-4">
-        <a href="/gallery" class="no-underline text-text-muted text-lg hover:text-primary transition-colors duration-200"><i class="far fa-camera-retro"></i></a>
-        <a href="/console/dashboard.html" class="no-underline text-text-muted text-lg hover:text-primary transition-colors duration-200"><i class="far fa-trophy-alt"></i></a>
+        <a href="/gallery" class="no-underline text-text-muted text-lg hover:text-primary transition-colors duration-200"><i class="i-lucide-camera"></i></a>
+        <a href="/console/dashboard.html" class="no-underline text-text-muted text-lg hover:text-primary transition-colors duration-200"><i class="i-lucide-trophy"></i></a>
         <span class="text-lg text-text-muted cursor-pointer hover:text-primary transition-colors duration-200" @click="$emit('open-map')">
-          <i class="far fa-street-view"></i>
+          <i class="i-lucide-map-pin"></i>
         </span>
         <span class="text-lg text-text-muted cursor-pointer hover:text-primary transition-colors duration-200" @click="$emit('open-sidebar')">
-          <i class="far fa-bars"></i>
+          <i class="i-lucide-menu"></i>
         </span>
       </div>
     </div>

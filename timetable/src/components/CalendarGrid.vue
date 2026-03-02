@@ -9,7 +9,7 @@
               class="ripple cal-item text-white text-base"
               :class="[isSelectedActive ? 'bg-primary shadow-[0_2px_8px_rgba(99,102,241,0.3)]' : 'bg-calendar-inactive']"
             >
-              <i class="fas fa-plus"></i>
+              <i class="i-lucide-plus"></i>
             </div>
           </div>
         </div>

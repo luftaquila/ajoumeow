@@ -12,13 +12,71 @@ html, body {
   height: 100%;
 }
 
+/* ── Light mode (default) ── */
+:root {
+  --c-surface: #FFFFFF;
+  --c-surface-muted: #F8FAFC;
+  --c-surface-dim: #F1F5F9;
+  --c-surface-border: #E2E8F0;
+  --c-text: #0F172A;
+  --c-text-secondary: #475569;
+  --c-text-muted: #94A3B8;
+  --c-calendar-bg: #F8FAFC;
+  --c-calendar-today: #EEF2FF;
+  --c-calendar-selected: #E0E7FF;
+  --c-calendar-inactive: #CBD5E1;
+  --c-calendar-text: #0F172A;
+  --c-calendar-header: #64748B;
+  --c-saturday: #818CF8;
+  --c-sunday: #F87171;
+  --c-course1-bg: #FFE4E6;
+  --c-course1-text: #E11D48;
+  --c-course2-bg: #DBEAFE;
+  --c-course2-text: #2563EB;
+  --c-course3-bg: #EDE9FE;
+  --c-course3-text: #7C3AED;
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.06);
+  --shadow-card-hover: 0 2px 6px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.1);
+  --shadow-elevated: 0 4px 12px rgba(0,0,0,0.08), 0 16px 40px rgba(0,0,0,0.12);
+  --c-ripple: #000;
+}
+
+/* ── Dark mode ── */
+.p-dark {
+  --c-surface: #1E293B;
+  --c-surface-muted: #0F172A;
+  --c-surface-dim: #334155;
+  --c-surface-border: #475569;
+  --c-text: #F1F5F9;
+  --c-text-secondary: #CBD5E1;
+  --c-text-muted: #64748B;
+  --c-calendar-bg: #1E293B;
+  --c-calendar-today: #312E81;
+  --c-calendar-selected: #3730A3;
+  --c-calendar-inactive: #475569;
+  --c-calendar-text: #F1F5F9;
+  --c-calendar-header: #94A3B8;
+  --c-saturday: #A5B4FC;
+  --c-sunday: #FCA5A5;
+  --c-course1-bg: #4C0519;
+  --c-course1-text: #FDA4AF;
+  --c-course2-bg: #172554;
+  --c-course2-text: #93C5FD;
+  --c-course3-bg: #2E1065;
+  --c-course3-text: #C4B5FD;
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.2), 0 4px 16px rgba(0,0,0,0.3);
+  --shadow-card-hover: 0 2px 6px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.4);
+  --shadow-elevated: 0 4px 12px rgba(0,0,0,0.3), 0 16px 40px rgba(0,0,0,0.5);
+  --c-ripple: #fff;
+}
+
 body {
   -webkit-tap-highlight-color: transparent;
   -webkit-font-smoothing: antialiased;
   font-family: "Inter", "Nanum Gothic", -apple-system, BlinkMacSystemFont, sans-serif !important;
   text-rendering: optimizeLegibility;
-  color: #0F172A;
-  background: #F8FAFC;
+  color: var(--c-text);
+  background: var(--c-surface-muted);
 }
 
 h2, h3 {
@@ -40,7 +98,7 @@ h2, h3 {
   top: 0;
   left: 0;
   pointer-events: none;
-  background-image: radial-gradient(circle, #000 10%, transparent 10.01%);
+  background-image: radial-gradient(circle, var(--c-ripple) 10%, transparent 10.01%);
   background-repeat: no-repeat;
   background-position: 50%;
   transform: scale(10, 10);
@@ -51,4 +109,28 @@ h2, h3 {
   transform: scale(0, 0);
   opacity: .2;
   transition: 0s;
+}
+
+/* Remove PrimeVue focus ring on all interactive elements */
+.p-button:focus,
+.p-button:focus-visible,
+.p-dialog-close-button:focus,
+.p-dialog-close-button:focus-visible,
+.p-drawer-close-button:focus,
+.p-drawer-close-button:focus-visible {
+  box-shadow: none !important;
+  outline: none !important;
+  border-color: transparent !important;
+}
+
+/* Dialog/Drawer close button — no circle, no border */
+.p-dialog-close-button,
+.p-drawer-close-button {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 6px !important;
+}
+.p-dialog-close-button:hover,
+.p-drawer-close-button:hover {
+  background: var(--c-surface-dim) !important;
 }

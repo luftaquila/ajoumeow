@@ -19,7 +19,7 @@ app.use(PrimeVue, {
   pt: {
     Dialog: {
       root: { class: 'rounded-2xl overflow-hidden shadow-elevated' },
-      header: { class: 'px-6 pt-5 pb-4 bg-surface-dim/50 border-b border-surface-border/50' },
+      header: { class: 'px-6 pt-5 pb-4 bg-surface border-b border-surface-border/50' },
       title: { class: 'text-base font-bold text-text tracking-tight' },
       content: { class: 'px-6 py-6' },
     },
