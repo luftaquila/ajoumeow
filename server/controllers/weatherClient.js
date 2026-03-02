@@ -1,16 +1,13 @@
 import https from 'https'
-import path from 'path'
 import axios from 'axios'
 import schedule from 'node-schedule'
 import dateformat from 'dateformat'
-import fs from 'fs'
+import { eq } from 'drizzle-orm'
 
+import { db } from '../db/index.js'
+import { settings } from '../db/schema.js'
 import util from './util/util.js'
 import { Log } from './util/interface.js';
-
-function getWeatherPath() {
-  return path.join(globalThis.__distRoot, 'res/weather.json');
-}
 
 function weatherClient() {
   const msg = 'Weather crawler is in startup.';
@@ -71,7 +68,7 @@ function weather() {
           icon: date.icon
         });
       }
-      fs.writeFileSync(getWeatherPath(), JSON.stringify(data));
+      db.update(settings).set({ value: JSON.stringify(data) }).where(eq(settings.key, 'weather')).run();
       util.logger(new Log('info', 'weatherClient', 'weather_schedule', '날씨 크롤링 완료', 'internal', 0, null, data));
     });
   }

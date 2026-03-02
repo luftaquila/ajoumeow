@@ -1,5 +1,3 @@
-import fs from 'fs';
-import path from 'path';
 import dateformat from 'dateformat';
 import { eq, and, between, like, asc, max } from 'drizzle-orm';
 
@@ -252,12 +250,10 @@ export default async function(fastify, opts) {
   fastify.get('/map', { preHandler: [util.isLogin] }, async(request, reply) => {
     try {
       util.logger(new Log('info', request.remoteIP, request.originalPath, '지도 파일 요청', request.method, 200, request.query, null));
-      const filePath = path.join(globalThis.__distRoot, 'res/map.json');
-      const content = await fs.promises.readFile(filePath, 'utf-8');
+      const content = util.getSettings('map');
       return reply.code(200).header('content-type', 'application/json').send(content);
     }
     catch(e) {
-      console.log(e);
       util.logger(new Log('error', request.remoteIP, request.originalPath, '지도 파일 요청 오류', request.method, 500, request.query, e.stack));
       return reply.code(500).send(error('ERR_UNKNOWN', '알 수 없는 오류입니다.'));
     }
