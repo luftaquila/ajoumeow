@@ -3,8 +3,4 @@
 **/node_modules
 **/.env
 
-web/res/videos
-web/res/image/gallery
-web/res/weather.json
-
-server/timetable-dist
+server/dist

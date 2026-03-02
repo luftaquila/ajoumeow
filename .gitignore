@@ -1,8 +1,5 @@
-web/res/videos
-web/res/image/gallery
-web/res/weather.json
 **/node_modules
-server/timetable-dist
+server/dist
 server/data/
 migrated.db
 

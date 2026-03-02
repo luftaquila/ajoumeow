@@ -1,0 +1,12 @@
+{
+  "name": "ajoumeow",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -n server,frontend -c blue,green \"npm run dev --prefix server\" \"npm run dev --prefix frontend\"",
+    "build": "npm run build --prefix frontend",
+    "start": "npm start --prefix server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

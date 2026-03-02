@@ -1,10 +1,10 @@
-# Stage 1: Vue timetable build
-FROM node:22-alpine AS timetable-build
+# Stage 1: Frontend build
+FROM node:22-alpine AS frontend-build
 WORKDIR /build
-COPY timetable/package*.json ./
+COPY frontend/package*.json ./
 RUN npm ci
-COPY timetable/ ./
-RUN npx vite build --outDir dist --emptyOutDir
+COPY frontend/ ./
+RUN npx vite build --outDir /build/dist --emptyOutDir
 
 # Stage 2: Server
 FROM node:22-alpine
@@ -19,8 +19,7 @@ WORKDIR /home/node/ajoumeow
 COPY server/package*.json ./
 RUN npm ci --omit=dev
 COPY server/ .
-COPY web/ ./web/
-COPY --from=timetable-build /build/dist ./timetable-dist/
+COPY --from=frontend-build /build/dist ./dist/
 RUN mkdir -p data
 
 EXPOSE 5710
