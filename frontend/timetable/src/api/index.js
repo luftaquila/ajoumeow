@@ -62,3 +62,31 @@ export function getSetting(name) {
 export function getWeather() {
   return fetch('/api/data/weather').then(r => r.json())
 }
+
+export function googleLogin(credential) {
+  return request(`${API_BASE}/auth/google`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ credential }),
+  })
+}
+
+export function submitApplication(data) {
+  return request(`${API_BASE}/applications`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  })
+}
+
+export function lookupMember(studentId) {
+  return request(`${API_BASE}/members/lookup/${studentId}`)
+}
+
+export function linkGoogleAccount(credential, studentId) {
+  return request(`${API_BASE}/auth/link`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ credential, studentId }),
+  })
+}

@@ -5,21 +5,8 @@
     </template>
     <div class="text-sm flex flex-col h-full">
       <!-- Login form -->
-      <div v-if="!isLoggedIn" class="text-center">
-        <div class="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-3">
-          <i class="i-lucide-id-card text-2xl text-primary"></i>
-        </div>
-        <p class="text-text-secondary text-sm mb-4">학번으로 로그인하세요</p>
-        <div class="flex flex-col items-center gap-3">
-          <InputText
-            v-model="loginId"
-            placeholder="학번"
-            class="h-11 text-center text-lg w-full max-w-[200px] border-surface-border focus:border-primary transition-colors duration-200"
-            @keyup.enter="onLogin"
-          />
-          <Button label="로그인" severity="info" class="w-full max-w-[200px]" @click="onLogin" />
-          <a href="/apply"><Button label="회원 등록" severity="success" class="w-full max-w-[200px]" /></a>
-        </div>
+      <div v-if="!isLoggedIn" class="flex items-center justify-center">
+        <div ref="googleBtnRef"></div>
       </div>
 
       <!-- User info -->
@@ -118,15 +105,15 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import Drawer from 'primevue/drawer'
 import Popover from 'primevue/popover'
 import Button from 'primevue/button'
-import InputText from 'primevue/inputtext'
 import { useAuth } from '../composables/useAuth.js'
 import { useRecords } from '../composables/useRecords.js'
 import { useTheme } from '../composables/useTheme.js'
 import { useModal } from '../composables/useModal.js'
+import { useGoogleAuth } from '../composables/useGoogleAuth.js'
 import { formatDate } from '../utils/dateFormat.js'
 
 const props = defineProps({ visible: Boolean })
@@ -137,13 +124,15 @@ const drawerVisible = computed({
   set: (val) => { if (!val) emit('close') },
 })
 
-const { user, isLoggedIn, isAdmin, doLogin, logout, statistics, mileageTotal, mileageThis, timeTotal, timeThis } = useAuth()
+const { user, isLoggedIn, isAdmin, doGoogleLogin, logout, statistics, mileageTotal, mileageThis, timeTotal, timeThis } = useAuth()
 const { load } = useRecords()
 const { isDark, toggleTheme } = useTheme()
 const { openModal } = useModal()
+const { authResult, googleCredential, gisReady, init: initGoogle, renderButton } = useGoogleAuth()
 
 const historyBtn = ref(null)
 const historyPopover = ref(null)
+const googleBtnRef = ref(null)
 
 const feedingTotal = computed(() => statistics.value.length)
 const feedingThis = computed(() => {
@@ -164,12 +153,28 @@ function toggleHistory(event) {
   historyPopover.value.toggle(event)
 }
 
-const loginId = ref('')
+onMounted(() => {
+  initGoogle()
+})
 
-async function onLogin() {
-  if (!loginId.value) return
-  await doLogin(loginId.value)
-  if (isLoggedIn.value) await load()
+watch([() => props.visible, gisReady, isLoggedIn], () => {
+  if (props.visible && gisReady.value && !isLoggedIn.value) {
+    requestAnimationFrame(() => {
+      if (googleBtnRef.value) {
+        renderButton(googleBtnRef.value, handleGoogleResult)
+      }
+    })
+  }
+}, { flush: 'post' })
+
+async function handleGoogleResult(result) {
+  if (result.status === 'authenticated') {
+    doGoogleLogin(result)
+    await load()
+  } else {
+    drawerVisible.value = false
+    openModal('apply')
+  }
 }
 
 function onLogout() {

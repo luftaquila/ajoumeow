@@ -75,6 +75,11 @@ export function useAuth() {
     statistics.value = []
   }
 
+  function doGoogleLogin(authData) {
+    Cookies.set('jwt', authData.token, { expires: 365 })
+    loginProcess({ data: authData })
+  }
+
   return {
     user,
     statistics,
@@ -87,6 +92,7 @@ export function useAuth() {
     getJwt,
     doLogin,
     doAutoLogin,
+    doGoogleLogin,
     loginProcess,
     logout,
   }

@@ -4,8 +4,9 @@ const notice = ref(false)
 const help = ref(false)
 const map = ref(false)
 const recruit = ref(false)
+const apply = ref(false)
 
-const modals = { notice, help, map, recruit }
+const modals = { notice, help, map, recruit, apply }
 
 export function useModal() {
   function openModal(name) {
