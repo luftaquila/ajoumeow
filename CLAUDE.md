@@ -7,7 +7,7 @@
 ## 아키텍처
 
 - **백엔드**: Fastify 5 (Node.js, native ESM)
-- **프론트엔드**: Vite MPA — Vue 3 SPA (timetable, console, apply, register) + 레거시 페이지 (gallery)
+- **프론트엔드**: Vite MPA — Vue 3 SPA (timetable, dashboard, console, apply, register) + 레거시 페이지 (gallery)
 - **DB**: SQLite (better-sqlite3 + Drizzle ORM)
 - **배포**: Docker multi-stage build, Traefik 리버스 프록시
 
@@ -16,22 +16,26 @@
 ```
 frontend/                   # 통합 Vite MPA 프로젝트
   package.json              # Vue + jQuery/Bootstrap 등 통합 의존성
-  vite.config.js            # MPA 설정 (13개 HTML entry)
+  vite.config.js            # MPA 설정 (14개 HTML entry)
   uno.config.js             # UnoCSS (Vue SPA들 공용)
   shared/                   # 앱 간 공유 코드
-    api.js                  # fetch wrapper (request, get, post, put, del, authHeader)
+    api.js                  # fetch wrapper (request, get, post, put, del, postJSON, putJSON, authHeader)
+    theme.js                # PrimeVue SlateAura 테마 프리셋
     composables/useTheme.js # 다크/라이트 모드
     utils/dateFormat.js     # 한국어 날짜 포맷
   timetable/                # Vue 3 SPA (급식 캘린더)
     index.html
-    src/                    # main.js, App.vue, components/, composables/, api/, utils/
+    src/                    # main.js, App.vue, components/, composables/ (useGoogleAuth), api/, utils/
+  dashboard/                # Vue 3 SPA (급식 통계 차트)
+    index.html
+    src/                    # main.js, App.vue, components/ (CourseBreakdownChart, DailyTrendChart, TopMembersChart)
   console/                  # Vue 3 SPA + vue-router (관리자 콘솔)
     index.html              # 단일 진입점
     src/                    # main.js, App.vue, router.js
-      api/                  # auth, settings, members, verifications, records, semesters, registrations, logs
+      api/                  # auth, settings, data, members, verifications, records, semesters, registrations, applications
       composables/          # useAuth, useSemesters
       components/layout/    # AppLayout, AppSidebar, AppTopbar, SidebarItem
-      pages/                # Dashboard, Verify, Settings, Members, Export1365, Recruit, ServerLog
+      pages/                # Verify, Settings, Members, Export1365, Applications, Recruit
       utils/                # scoreCalculator, contactExport
   apply/                    # Vue 3 SPA (회원 등록)
     index.html
@@ -53,9 +57,9 @@ frontend/                   # 통합 Vite MPA 프로젝트
 server/                     # Fastify 백엔드
   index.js                  # 서버 진입점 (포트 5710), dist/ 서빙
   api/                      # 라우트 핸들러 (Fastify 플러그인)
-  controllers/              # 비즈니스 로직 (weatherClient, dbClient, util)
+  controllers/              # 비즈니스 로직 (weatherClient, util)
   db/                       # DB 레이어
-    schema.js               # Drizzle ORM 스키마 (12개 테이블)
+    schema.js               # Drizzle ORM 스키마 (12개 테이블, applications 포함)
     index.js                # DB 초기화 (WAL, foreign_keys)
   data/                     # SQLite DB 파일 (gitignored)
   dist/                     # 프론트엔드 빌드 출력 (gitignored)
@@ -91,17 +95,17 @@ npm run build              # = cd frontend && vite build → server/dist/
 ## 프론트엔드 구조
 
 ### Vite MPA 설정
-- `vite.config.js`에 13개 HTML entry point 정의 (rollupOptions.input)
+- `vite.config.js`에 14개 HTML entry point 정의 (rollupOptions.input)
 - `build.target: 'esnext'` — 레거시 entry 파일의 top-level await 지원
 - `rollupOptions.external: /res/` — `/res/` 절대경로는 번들링하지 않음
 - `public/` 파일은 빌드 시 그대로 `dist/`로 복사
 
-### Vue 3 SPA 패턴 (timetable, console, apply, register)
+### Vue 3 SPA 패턴 (timetable, dashboard, console, apply, register)
 - 각 SPA는 `index.html` + `src/main.js` + `src/App.vue` 구조
 - `main.js`에서 Vue + PrimeVue(Aura 테마) + UnoCSS + ToastService 부트스트랩
-- `shared/api.js`의 `get()/post()/put()/del()` 헬퍼 사용 (JWT 자동 첨부)
+- `shared/api.js`의 `get()/post()/put()/del()/postJSON()/putJSON()` 헬퍼 사용 (JWT 자동 첨부)
 - `shared/composables/useTheme.js`로 다크/라이트 모드 관리
-- console은 `vue-router`를 사용하는 SPA (7개 라우트)
+- console은 `vue-router`를 사용하는 SPA (6개 라우트)
 
 ### 레거시 페이지 패턴 (gallery만 해당)
 - 각 페이지 그룹에 `entry-base.js` (공통 vendor) + `entry-{page}.js` (페이지별)
@@ -133,13 +137,13 @@ npm run build              # = cd frontend && vite build → server/dist/
 ### 스키마 (`server/db/schema.js`)
 
 12개 테이블:
-- `members` — 회원 정보 (student_id, name, college, department, phone, birthday, volunteer_id)
+- `members` — 회원 정보 (student_id, name, college, department, phone, birthday, volunteer_id, google_id, google_email)
 - `semesters` — 학기 목록 (name, is_current)
 - `semester_members` — 학기-회원 연결 (semester_id, member_id, role)
 - `records` — 급식 신청 (member_id, date, course)
 - `verifications` — 급식 인증 (member_id, date, course, score)
 - `settings` — 설정 키-값 (key, value)
-- `logs` — 로그 (timestamp, level, ip, endpoint, method, status, description, query, result)
+- `applications` — 가입 신청 (google_id, google_email, google_name, student_id, name, college, department, phone, birthday, volunteer_id, is_new, status, semester_id, reviewed_at)
 - `photos` — 갤러리 사진 (filename, size, uploader_id, likes_count)
 - `tags` — 사진 태그 (name)
 - `photo_tags` — 사진-태그 연결 (photo_id, tag_id)
@@ -175,7 +179,7 @@ tx();
 - `util.getSettings(name)` — settings 테이블에서 값 조회 (동기)
 - `util.getCurrentSemester()` — 현재 학기 semesters 행 반환 (동기)
 - `util.getMemberByStudentId(studentId)` — 학번으로 members 행 조회 (동기)
-- `util.logger(log)` — logs 테이블에 prepared statement로 삽입 (동기)
+- `util.logger(log)` — 콘솔에 컬러 로그 출력 (동기, DB 저장 없음)
 - `util.extractToken(request)` — `Authorization: Bearer` 헤더에서 토큰 추출
 - `util.resolveMemberId(decoded)` — 디코드된 토큰에서 memberId 추출 (없으면 학번으로 조회)
 - `util.isLogin` / `util.isAdmin` — JWT 인증 preHandler (비동기)
@@ -186,21 +190,23 @@ tx();
 ```
 JWT_SECRET=...
 PORT=5710
-ADMIN_STUDENT_IDS=...
+GOOGLE_CLIENT_ID=...
+ADMIN_EMAILS=...              # 쉼표 구분, Google 로그인 시 자동 관리자 승인
 ```
 
 ## API 라우트
 
 | Prefix | 파일 | 설명 |
 |--------|------|------|
-| /api/auth | auth.js | 로그인 (`POST /login`), 토큰 갱신 (`POST /refresh`) |
+| /api/auth | auth.js | 로그인 (`POST /login`), 토큰 갱신 (`POST /refresh`), Google OAuth (`POST /google`, `POST /link`) |
 | /api/settings | settings.js | 설정값 조회/수정 (`GET/PUT /:key`) |
+| /api/data | data.js | 데이터 조회/수정 (`GET/PUT /:key` — college, map, weather) |
 | /api/records | records.js | 급식 신청 CRUD, 통계, 지도 |
 | /api/verifications | verifications.js | 급식 인증 CRUD, 1365 내보내기 |
 | /api/members | members.js | 회원 조회/등록/수정/삭제, 학번 조회 |
 | /api/semesters | semesters.js | 학기 목록 조회 |
 | /api/registrations | registrations.js | 가입 신청 CRUD, 학기 목록 |
-| /api/logs | logs.js | 서버 로그 조회 |
+| /api/applications | applications.js | 가입 신청 관리 (Google 기반 — 제출, 목록, 승인/거절) |
 | /api/gallery | gallery.js | 갤러리 (사진/태그/작가/좋아요/랭킹, multipart 업로드) |
 
 ### 응답 포맷
@@ -216,13 +222,21 @@ ADMIN_STUDENT_IDS=...
 
 헬퍼: `success(data, meta)`, `error(code, message)` — `server/controllers/util/interface.js`
 
-## JWT 인증
+## 인증
 
+### JWT
 - **헤더**: `Authorization: Bearer <token>` (모든 인증 요청)
 - 토큰 페이로드: `{ id: 학번, memberId: N, role: '회원'|'회장'|... }` (구 토큰은 `memberId` 없음 — 폴백으로 학번 조회)
 - 토큰 유효기간: 365일
 - 쿠키 이름: `jwt` (프론트엔드에서 js-cookie로 관리)
 - 미들웨어: `util.isLogin` (필수 인증), `util.isAdmin` (관리자), `util.optionalAuth` (선택적 인증)
+
+### Google OAuth
+- Google Identity Services (GIS) 사용 — 프론트엔드에서 credential 발급 후 서버로 전달
+- `POST /api/auth/google` — Google credential 검증 후 상태 반환 (authenticated, pending, rejected, inactive, admin, new)
+- `POST /api/auth/link` — 기존 회원 계정에 Google 계정 연동
+- `ADMIN_EMAILS` 환경변수에 포함된 Google 이메일은 자동 관리자 승인
+- `GOOGLE_CLIENT_ID`는 서버 시작 시 settings DB에 `googleClientId`로 동기화
 
 ## gallery.js 특이사항
 

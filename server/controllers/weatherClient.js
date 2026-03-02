@@ -17,7 +17,7 @@ function weatherClient() {
   weather();
 }
 
-function weather() {
+async function weather() {
   try {
     const agent = new https.Agent({ rejectUnauthorized: false });
     const currentWeather = axios.get('https://weather.kweather.co.kr/weather/kweather/get_current_weather/119', { httpsAgent: agent });
@@ -25,7 +25,8 @@ function weather() {
     const threeDayWeather = axios.get('https://weather.kweather.co.kr/weather/kweather/get_forecast_halfd/41117550', { httpsAgent: agent });
     const weekWeather = axios.get('https://weather.kweather.co.kr/weather/kweather/get_forecast_week/41117550', { httpsAgent: agent });
 
-    Promise.all([currentWeather, currentDust, threeDayWeather, weekWeather]).then(responses => {
+    const responses = await Promise.all([currentWeather, currentDust, threeDayWeather, weekWeather]);
+    {
       let data = { current: {}, forecast: [], update: dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss') };
       const year = new Date().getFullYear(), current = new Date();
       
@@ -70,10 +71,11 @@ function weather() {
       }
       db.update(settings).set({ value: JSON.stringify(data) }).where(eq(settings.key, 'weather')).run();
       util.logger(new Log('info', 'weatherClient', 'weather_schedule', '날씨 크롤링 완료', 'internal', 0, null, data));
-    });
+    }
   }
   catch(e) {
-    util.logger(new Log('error', 'weatherClient', 'weather_schedule', '날씨 크롤링 오류', 'internal', -1, null, e.stack));
+    const message = e.response ? `${e.response.status} ${e.response.statusText}` : e.message;
+    util.logger(new Log('error', 'weatherClient', 'weather_schedule', '날씨 크롤링 오류', 'internal', -1, null, message));
   }
 }
 
