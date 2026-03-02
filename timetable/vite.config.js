@@ -5,6 +5,7 @@ export default defineConfig({
   plugins: [vue()],
   base: '/timetable/',
   server: {
+    host: true,
     proxy: {
       '/api': 'http://localhost:5710',
       '/res': 'http://localhost:5710',

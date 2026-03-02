@@ -8,7 +8,9 @@ import fs from 'fs'
 import util from './util/util.js'
 import { Log } from './util/interface.js';
 
-const weatherPath = path.join(globalThis.__webRoot, 'res/weather.json');
+function getWeatherPath() {
+  return path.join(globalThis.__webRoot, 'res/weather.json');
+}
 
 function weatherClient() {
   const msg = 'Weather crawler is in startup.';
@@ -69,7 +71,7 @@ function weather() {
           icon: date.icon
         });
       }
-      fs.writeFileSync(weatherPath, JSON.stringify(data));
+      fs.writeFileSync(getWeatherPath(), JSON.stringify(data));
       util.logger(new Log('info', 'weatherClient', 'weather_schedule', '날씨 크롤링 완료', 'internal', 0, null, data));
     });
   }
