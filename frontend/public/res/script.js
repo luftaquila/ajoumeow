@@ -1,4 +1,4 @@
-const api = 'https://ajoumeow.luftaquila.io/api';
+const api = '/api';
 $(function() {
   init();
   eventListener();
