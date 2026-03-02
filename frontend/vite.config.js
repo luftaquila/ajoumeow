@@ -1,15 +1,49 @@
-import { resolve } from 'path'
+import { resolve, extname } from 'path'
+import { existsSync } from 'fs'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import UnoCSS from 'unocss/vite'
 
+// Handle MPA directory routing in dev server:
+// - Rewrite / to /index.html (serves public/index.html)
+// - Redirect /path to /path/ when path/index.html exists
+function serveMPA() {
+  return {
+    name: 'serve-mpa',
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        const url = req.url?.split('?')[0] ?? ''
+        if (url === '/') {
+          req.url = '/index.html'
+        } else if (!url.endsWith('/') && !extname(url)) {
+          if (existsSync(resolve(__dirname, url.slice(1), 'index.html'))) {
+            const qs = req.url?.includes('?') ? req.url.slice(req.url.indexOf('?')) : ''
+            res.writeHead(301, { Location: url + '/' + qs })
+            res.end()
+            return
+          }
+        }
+        next()
+      })
+    },
+  }
+}
+
 export default defineConfig({
-  plugins: [UnoCSS(), vue()],
+  appType: 'mpa',
+  plugins: [serveMPA(), UnoCSS(), vue()],
   server: {
     host: true,
     proxy: {
       '/api': 'http://localhost:5710',
       '/res': 'http://localhost:5710',
+    },
+  },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        silenceDeprecations: ['import', 'global-builtin', 'color-functions', 'if-function', 'slash-div', 'abs-percent'],
+      },
     },
   },
   build: {

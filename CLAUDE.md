@@ -158,7 +158,10 @@ tx();
 - `util.getCurrentSemester()` — 현재 학기 semesters 행 반환 (동기)
 - `util.getMemberByStudentId(studentId)` — 학번으로 members 행 조회 (동기)
 - `util.logger(log)` — logs 테이블에 prepared statement로 삽입 (동기)
+- `util.extractToken(request)` — `Authorization: Bearer` 헤더에서 토큰 추출
+- `util.resolveMemberId(decoded)` — 디코드된 토큰에서 memberId 추출 (없으면 학번으로 조회)
 - `util.isLogin` / `util.isAdmin` — JWT 인증 preHandler (비동기)
+- `util.optionalAuth` — 선택적 인증 (토큰 있으면 디코드, 없으면 `request.decoded = null`)
 
 ## 환경 변수 (server/.env)
 
@@ -172,20 +175,36 @@ ADMIN_STUDENT_IDS=...
 
 | Prefix | 파일 | 설명 |
 |--------|------|------|
-| /api/auth | auth.js | 로그인, 자동로그인 |
-| /api/settings | settings.js | 설정값 조회/수정 (와일드카드 `/*`) |
-| /api/record | record.js | 급식 신청 CRUD, 통계, 로그, 지도 |
-| /api/verify | verify.js | 급식 인증 CRUD, 1365 연동 |
-| /api/users | users.js | 회원 관리, 가입 신청 |
-| /api/gallery | gallery.js | 갤러리 (multipart 업로드, 좋아요, 랭킹) |
+| /api/auth | auth.js | 로그인 (`POST /login`), 토큰 갱신 (`POST /refresh`) |
+| /api/settings | settings.js | 설정값 조회/수정 (`GET/PUT /:key`) |
+| /api/records | records.js | 급식 신청 CRUD, 통계, 지도 |
+| /api/verifications | verifications.js | 급식 인증 CRUD, 1365 내보내기 |
+| /api/members | members.js | 회원 조회/등록/수정/삭제, 학번 조회 |
+| /api/semesters | semesters.js | 학기 목록 조회 |
+| /api/registrations | registrations.js | 가입 신청 CRUD, 학기 목록 |
+| /api/logs | logs.js | 서버 로그 조회 |
+| /api/gallery | gallery.js | 갤러리 (사진/태그/작가/좋아요/랭킹, multipart 업로드) |
+
+### 응답 포맷
+
+```js
+// 성공 (200, 201)
+{ "data": ... }
+// 메타 포함
+{ "data": [...], "meta": { "lastUpdatedAt": "..." } }
+// 에러 (4xx, 5xx)
+{ "error": { "code": "ERR_NOT_FOUND", "message": "..." } }
+```
+
+헬퍼: `success(data, meta)`, `error(code, message)` — `server/controllers/util/interface.js`
 
 ## JWT 인증
 
-- 헤더명 `x-access-token`: POST/DELETE/PUT 요청
-- 헤더명 `jwt`: GET /api/record (읽기 전용, 이름 마스킹 여부 판단)
+- **헤더**: `Authorization: Bearer <token>` (모든 인증 요청)
 - 토큰 페이로드: `{ id: 학번, memberId: N, role: '회원'|'회장'|... }` (구 토큰은 `memberId` 없음 — 폴백으로 학번 조회)
 - 토큰 유효기간: 365일
 - 쿠키 이름: `jwt` (프론트엔드에서 js-cookie로 관리)
+- 미들웨어: `util.isLogin` (필수 인증), `util.isAdmin` (관리자), `util.optionalAuth` (선택적 인증)
 
 ## gallery.js 특이사항
 
@@ -193,5 +212,6 @@ ADMIN_STUDENT_IDS=...
 - 파일 업로드: `request.parts()` 스트림 API + `pipeline()` 사용
 - 에러 시 업로드된 파일 cleanup 수행
 - 비정규화 카운터 없음 — tag/uploader 통계는 집계 쿼리로 계산
-- `photo_id` 응답 필드는 `photos.filename` (타임스탬프 기반 파일명)
+- `photoId` 응답 필드는 `photos.filename` (타임스탬프 기반 파일명)
 - 트랜잭션: `sqlite.transaction()` 사용 (업로드, 삭제, 좋아요)
+- RESTful 엔드포인트: `/photos`, `/uploaders`, `/cats`, `/tags/:name/photos`, `/photos/:photoId/likes` 등
