@@ -88,7 +88,7 @@ export default async function(fastify, opts) {
 
           sqlite.prepare(`
             INSERT INTO applications (google_id, google_email, google_name, student_id, name, college, department, phone, birthday, volunteer_id, is_new, semester_id, status, reviewed_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'approved', datetime('now', 'localtime'))
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'approved', datetime('now'))
           `).run(googleId, googleEmail, googleName, String(studentId), name, college, department, phone, birthday || null, volunteerId || null, isNewBool ? 1 : 0, semester.id);
         });
         tx();
@@ -232,7 +232,7 @@ export default async function(fastify, opts) {
         }
 
         // Update application status
-        sqlite.prepare(`UPDATE applications SET status = 'approved', reviewed_at = datetime('now', 'localtime') WHERE id = ?`)
+        sqlite.prepare(`UPDATE applications SET status = 'approved', reviewed_at = datetime('now') WHERE id = ?`)
           .run(app.id);
       });
       tx();

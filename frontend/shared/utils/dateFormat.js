@@ -21,6 +21,11 @@ const i18n = {
   ],
 }
 
+export function formatLocal(utcStr, mask = 'yyyy-mm-dd HH:MM:ss') {
+  if (!utcStr) return ''
+  return formatDate(new Date(utcStr.replace(' ', 'T') + 'Z'), mask)
+}
+
 export function formatDate(date, mask, utc) {
   if (arguments.length === 1 && typeof date === 'string' && !/\d/.test(date)) {
     mask = date

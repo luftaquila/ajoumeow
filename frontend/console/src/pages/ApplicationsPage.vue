@@ -41,11 +41,11 @@
         sortMode="multiple"
         removableSort
         stripedRows
-        class="text-sm"
+        class="text-sm row-normal"
       >
         <Column field="createdAt" header="신청일" sortable style="width: 11rem">
           <template #body="{ data }">
-            <span class="text-xs">{{ data.createdAt }}</span>
+            <span class="text-xs">{{ formatLocal(data.createdAt) }}</span>
           </template>
         </Column>
         <Column field="isNew" header="유형" sortable style="width: 5rem">
@@ -97,6 +97,7 @@ import PageHeader from '../components/PageHeader.vue'
 import ActionBar from '../components/ActionBar.vue'
 import { getApplications, getApplicationSemesters, approveApplication, rejectApplication } from '../api/applications.js'
 import { useSemesters } from '../composables/useSemesters.js'
+import { formatLocal } from '../../../../shared/utils/dateFormat.js'
 
 const toast = useToast()
 const confirm = useConfirm()
@@ -206,3 +207,10 @@ async function doReject(app) {
   }
 }
 </script>
+
+<style scoped>
+:deep(.row-normal .p-datatable-tbody > tr > td) {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+</style>

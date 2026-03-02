@@ -16,7 +16,7 @@ $(function() {
       $('.likes span').text(image.likes);
 
       if(EXIF.getTag(this, "DateTimeOriginal")) $('#time').text(EXIF.getTag(this, "DateTimeOriginal").replace(':', '-').replace(':', '-'));
-      else $('#time').text(new Date(image.createdAt).format('yyyy-mm-dd HH:MM:ss'));
+      else $('#time').text(new Date(image.createdAt.replace(' ', 'T') + 'Z').format('yyyy-mm-dd HH:MM:ss'));
 
       if(EXIF.getTag(this, "Model")) $('#camera').text(EXIF.getTag(this, "Model"));
       if(EXIF.getTag(this, "LensModel")) $('#lens').text(EXIF.getTag(this, "LensModel"));

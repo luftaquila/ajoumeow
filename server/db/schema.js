@@ -35,7 +35,7 @@ export const applications = sqliteTable('applications', {
   status: text('status').notNull().default('pending'),
   semesterId: integer('semester_id').notNull().references(() => semesters.id),
   reviewedAt: text('reviewed_at'),
-  createdAt: text('created_at').notNull().default(sql`(datetime('now', 'localtime'))`),
+  createdAt: text('created_at').notNull().default(sql`(datetime('now'))`),
 });
 
 // ── semesters ───────────────────────────────────────────────────────

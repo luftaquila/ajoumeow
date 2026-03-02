@@ -62,7 +62,7 @@
       >
         <Column field="createdAt" header="신청일" sortable style="width: 11rem">
           <template #body="{ data }">
-            <span class="text-xs">{{ data.createdAt }}</span>
+            <span class="text-xs">{{ formatLocal(data.createdAt) }}</span>
           </template>
         </Column>
         <Column field="studentId" header="학번" sortable style="width: 7rem" />
@@ -87,6 +87,7 @@ import ActionBar from '../components/ActionBar.vue'
 import { getRegistrations, getRegistrationSemesters } from '../api/registrations.js'
 import { toGoogleContactsCsv, toNaverContactsCsv } from '../utils/contactExport.js'
 import { useSemesters } from '../composables/useSemesters.js'
+import { formatLocal } from '../../../../shared/utils/dateFormat.js'
 
 const toast = useToast()
 const { currentSemester, loadSemesters } = useSemesters()
@@ -136,7 +137,7 @@ async function loadRegistrations() {
 function downloadExcel() {
   import('xlsx').then(XLSX => {
     const data = registrations.value.map(r => ({
-      '신청일': r.createdAt,
+      '신청일': formatLocal(r.createdAt),
       '학번': r.studentId,
       '이름': r.name,
       '단과대학': r.college,
