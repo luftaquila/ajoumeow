@@ -15,10 +15,10 @@ html, body {
 body {
   -webkit-tap-highlight-color: transparent;
   -webkit-font-smoothing: antialiased;
-  font-family: "Nanum Gothic", "Montserrat", sans-serif !important;
+  font-family: "Inter", "Nanum Gothic", -apple-system, BlinkMacSystemFont, sans-serif !important;
   text-rendering: optimizeLegibility;
-  color: #333;
-  background: #fcfcfc;
+  color: #0F172A;
+  background: #F8FAFC;
 }
 
 h2, h3 {
