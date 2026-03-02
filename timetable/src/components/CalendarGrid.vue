@@ -6,9 +6,8 @@
         <div v-if="cell.isAddButton" class="cal-body-col" @click="onAddClick">
           <div class="h-full p-[7px]">
             <div
-              class="ripple cal-item"
-              :class="[isSelectedActive ? 'bg-primary' : 'bg-[darkgray]']"
-              :style="{ lineHeight: '50px', fontSize: '1.2rem', color: 'white' }"
+              class="ripple cal-item text-white text-base"
+              :class="[isSelectedActive ? 'bg-primary shadow-[0_2px_8px_rgba(33,150,243,0.3)]' : 'bg-[#CBD5E1]']"
             >
               <i class="fas fa-plus"></i>
             </div>
@@ -28,17 +27,11 @@
 
 <script setup>
 import { computed } from 'vue'
-import { useToast } from 'primevue/usetoast'
 import { useCalendar } from '../composables/useCalendar.js'
-import { useAuth } from '../composables/useAuth.js'
 import { useAddMode } from '../composables/useAddMode.js'
-import * as apiClient from '../api/index.js'
 import CalendarCell from './CalendarCell.vue'
 
-const emit = defineEmits(['add-record'])
-const toast = useToast()
 const { cells, selectedDate, isSelectedActive, selectDate } = useCalendar()
-const { user } = useAuth()
 const { enterAddMode } = useAddMode()
 
 const rows = computed(() => {
@@ -51,15 +44,6 @@ const rows = computed(() => {
 
 async function onAddClick() {
   if (!isSelectedActive.value) return
-  if (!user.value) return toast.add({ severity: 'error', summary: '로그인을 해 주세요!', life: 1500 })
-
-  // Fetch max count
-  let max = 99
-  try {
-    const res = await apiClient.getSetting('maxFeedingUserCount')
-    max = Number(res.data)
-  } catch (_) {}
-
-  enterAddMode(max)
+  await enterAddMode()
 }
 </script>
