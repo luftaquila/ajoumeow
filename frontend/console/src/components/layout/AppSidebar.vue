@@ -11,6 +11,7 @@
       <SidebarItem to="/console/settings" icon="i-lucide-wrench" label="설정" @click="$emit('navigate')" />
       <SidebarItem to="/console/members" icon="i-lucide-user-pen" label="회원 관리" @click="$emit('navigate')" />
       <SidebarItem to="/console/1365" icon="i-lucide-hand-helping" label="1365" @click="$emit('navigate')" />
+      <SidebarItem to="/console/applications" icon="i-lucide-user-round-check" label="가입 신청" @click="$emit('navigate')" />
       <SidebarItem to="/console/recruit" icon="i-lucide-user-plus" label="신입 모집" @click="$emit('navigate')" />
     </div>
 

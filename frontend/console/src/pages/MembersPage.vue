@@ -80,6 +80,12 @@
             <InputText v-model="data[field]" size="small" class="w-full" />
           </template>
         </Column>
+        <Column field="googleEmail" header="Google" sortable style="width: 7rem">
+          <template #body="{ data }">
+            <span v-if="data.googleEmail" class="text-xs" :title="data.googleEmail">{{ data.googleEmail.split('@')[0] }}</span>
+            <span v-else class="text-xs text-text-muted">미연동</span>
+          </template>
+        </Column>
         <Column field="enrolledSemester" header="가입학기" sortable style="width: 6rem" />
         <Column field="role" header="직책" sortable style="width: 5rem">
           <template #editor="{ data, field }">
