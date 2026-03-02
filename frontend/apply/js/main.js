@@ -2,11 +2,11 @@ const api = '/api';
 
 $(function () {
   $.when(
-    $.ajax(`${api}/settings/currentSemister`),
+    $.ajax(`${api}/settings/currentSemester`),
     $.ajax(`${api}/settings/isApply`),
     $.ajax(`${api}/settings/isApplyRestricted`),
     $.ajax(`${api}/settings/applyTerm`)
-  ).done((currentSemister, isApply, isApplyRestricted, applyTerm) => {
+  ).done((currentSemester, isApply, isApplyRestricted, applyTerm) => {
     let flag = false;
 
     if(isApply[0].data == 'TRUE') {
@@ -20,7 +20,7 @@ $(function () {
     else flag = false;
 
     if(flag) {
-      $('.semister').text(currentSemister[0].data);
+      $('.semester').text(currentSemester[0].data);
       $('.loading').css('display', 'none');
       $('#asktype').css('display', 'block');
 
@@ -66,25 +66,24 @@ $('.validate-form').on('submit', function (event) {
   }
 
   if(check) {
-    let payload = {};
-    payload = {
-      단과대학: isNew ? $('#college').val() : $('#o_college').val(),
-      학과: isNew ? $('#department').val() : $('#o_department').val(),
-      학번: isNew ? $('#number').val() : $('#o_ID').val(),
-      이름: isNew ? $.trim($('#name').val()) : $.trim($('#o_name').val()),
-      전화번호: isNew ? $('#tel').val() : $('#o_phone').val(),
-      생년월일: isNew ? $('#birth').val() : $('#o_birthday').val(),
-      '1365 아이디': isNew ? $.trim($('#1365').val()) : $.trim($('#o_1365ID').val()),
-      '가입 학기': isNew ? (`20${$('.semister').first().text()}학기`) : $('#o_register').val(),
-      직책: isNew ? '회원' : $('#o_role').val(),
-      'new': isNew
-    }
+    let payload = {
+      college: isNew ? $('#college').val() : $('#o_college').val(),
+      department: isNew ? $('#department').val() : $('#o_department').val(),
+      studentId: isNew ? $('#number').val() : $('#o_studentId').val(),
+      name: isNew ? $.trim($('#name').val()) : $.trim($('#o_name').val()),
+      phone: isNew ? $('#tel').val() : $('#o_phone').val(),
+      birthday: isNew ? $('#birth').val() : $('#o_birthday').val(),
+      volunteerId: isNew ? $.trim($('#1365').val()) : $.trim($('#o_volunteerId').val()),
+      registeredAt: isNew ? (`20${$('.semester').first().text()}학기`) : $('#o_registeredAt').val(),
+      role: isNew ? '회원' : $('#o_role').val(),
+      isNew: isNew
+    };
     $.ajax({
-      url: `${api}/users/id`,
+      url: `${api}/members`,
       type: "POST",
       data: payload,
       success: res => { location.href = 'success.html' },
-      error: err => alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
+      error: err => alertify.error(`${err.responseJSON.error.message}`)
     });
   }
 });
@@ -152,9 +151,8 @@ $('.ask').click(function() {
 
 $('#find').click(function() {
   $.ajax({
-    url: `${api}/users/id`,
-    type: "POST",
-    data: { 학번: $('#findID').val(), lookup: true },
+    url: `${api}/members/lookup/${$('#findID').val()}`,
+    type: "GET",
     success: res => {
       if(res.data) {
         $('#finddiv').css('display', 'none');
@@ -163,6 +161,6 @@ $('#find').click(function() {
       }
       else alertify.error('데이터가 없습니다!');
     },
-    error: err => alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
+    error: err => alertify.error(`${err.responseJSON.error.message}`)
   });
 });

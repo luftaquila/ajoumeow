@@ -2,11 +2,11 @@ const api = '/api';
 
 $(function () {
   $.when(
-    $.ajax(`${api}/settings/currentSemister`),
+    $.ajax(`${api}/settings/currentSemester`),
     $.ajax(`${api}/settings/isRegister`),
     $.ajax(`${api}/settings/isRegisterRestricted`),
     $.ajax(`${api}/settings/registerTerm`)
-  ).done((currentSemister, isRegister, isRegisterRestricted, registerTerm) => {
+  ).done((currentSemester, isRegister, isRegisterRestricted, registerTerm) => {
     let flag = false;
 
     if(isRegister[0].data == 'TRUE') {
@@ -20,7 +20,7 @@ $(function () {
     else flag = false;
 
     if(flag) {
-      $('#semister').text(currentSemister[0].data);
+      $('#semester').text(currentSemester[0].data);
       $('.loading').css('display', 'none');
       $('.container-contact100').css('display', 'block');
 
@@ -53,20 +53,19 @@ $('.validate-form').on('submit', function (event) {
 
   if(check) {
     const payload = {
-      이름: $('#name').val(),
-      단과대학: $('#college').val(),
-      학과: $('#department').val(),
-      학번: $('#number').val(),
-      연락처: $('#tel').val(),
-      학기: $('#semister').text(),
+      name: $('#name').val(),
+      college: $('#college').val(),
+      department: $('#department').val(),
+      studentId: $('#number').val(),
+      phone: $('#tel').val(),
     }
 
     $.ajax({
-      url: `${api}/users/register`,
+      url: `${api}/registrations`,
       type: 'POST',
       data: payload,
       success: res => { location.href = 'success.html' },
-      error: err => alertify.error(`${err.responseJSON.msg}<br>${err.responseJSON.data}`)
+      error: err => alertify.error(`${err.responseJSON.error.message}`)
     });
   }
 });
