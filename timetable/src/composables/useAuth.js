@@ -1,11 +1,11 @@
 import { ref, computed } from 'vue'
 import Cookies from 'js-cookie'
+import { useToast } from 'primevue/usetoast'
 import * as api from '../api/index.js'
 import { formatDate } from '../utils/dateFormat.js'
 
 const user = ref(null)
 const statistics = ref([])
-let _toast = null
 
 const isLoggedIn = computed(() => !!user.value)
 const isAdmin = computed(() => user.value && user.value.role !== '회원')
@@ -32,8 +32,8 @@ const timeThis = computed(() => {
     .length
 })
 
-export function useAuth(toast) {
-  if (toast) _toast = toast
+export function useAuth() {
+  const _toast = useToast()
 
   function getJwt() {
     return Cookies.get('jwt')
@@ -45,7 +45,7 @@ export function useAuth(toast) {
       Cookies.set('jwt', res.msg, { expires: 365 })
       loginProcess(res)
     } catch (e) {
-      _toast?.add({ severity: 'error', summary: e.msg || '오류', detail: e.data || '', life: 1500 })
+      _toast.add({ severity: 'error', summary: e.msg || '오류', detail: e.data || '', life: 1500 })
     }
   }
 

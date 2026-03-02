@@ -1,4 +1,5 @@
 import { ref } from 'vue'
+import { useToast } from 'primevue/usetoast'
 import * as api from '../api/index.js'
 import { formatDate, getDateFromCalendarStart } from '../utils/dateFormat.js'
 import { generateDotSvg } from '../utils/svgGenerator.js'
@@ -8,10 +9,9 @@ import { useAddMode } from './useAddMode.js'
 
 const recArr = ref([])
 let pendingRequest = null
-let _toast = null
 
-export function useRecords(toast) {
-  if (toast) _toast = toast
+export function useRecords() {
+  const _toast = useToast()
 
   const { cells, selectedDate } = useCalendar()
   const { user } = useAuth()
@@ -62,7 +62,7 @@ export function useRecords(toast) {
         }
       }
     } catch (e) {
-      _toast?.add({ severity: 'error', summary: e.msg || '오류', life: 1500 })
+      _toast.add({ severity: 'error', summary: e.msg || '오류', life: 1500 })
     }
   }
 
@@ -72,8 +72,8 @@ export function useRecords(toast) {
   }
 
   async function addRecord(target) {
-    if (!user.value) return _toast?.add({ severity: 'error', summary: '로그인을 해 주세요!', life: 1500 })
-    if (pendingRequest) return _toast?.add({ severity: 'error', summary: '요청이 진행 중입니다.', life: 1500 })
+    if (!user.value) return _toast.add({ severity: 'error', summary: '로그인을 해 주세요!', life: 1500 })
+    if (pendingRequest) return _toast.add({ severity: 'error', summary: '요청이 진행 중입니다.', life: 1500 })
 
     pendingRequest = (async () => {
       try {
@@ -85,7 +85,7 @@ export function useRecords(toast) {
         })
         await load()
       } catch (e) {
-        _toast?.add({ severity: 'error', summary: e.msg || '오류', detail: e.data || '', life: 1500 })
+        _toast.add({ severity: 'error', summary: e.msg || '오류', detail: e.data || '', life: 1500 })
       } finally {
         pendingRequest = null
         exitAddMode()
@@ -95,8 +95,8 @@ export function useRecords(toast) {
   }
 
   async function deleteRecord(target) {
-    if (!user.value) return _toast?.add({ severity: 'error', summary: '로그인을 해 주세요!', life: 1500 })
-    if (pendingRequest) return _toast?.add({ severity: 'error', summary: '요청이 진행 중입니다.', life: 1500 })
+    if (!user.value) return _toast.add({ severity: 'error', summary: '로그인을 해 주세요!', life: 1500 })
+    if (pendingRequest) return _toast.add({ severity: 'error', summary: '요청이 진행 중입니다.', life: 1500 })
 
     pendingRequest = (async () => {
       try {
@@ -108,7 +108,7 @@ export function useRecords(toast) {
         })
         await load()
       } catch (e) {
-        _toast?.add({ severity: 'error', summary: e.msg || '오류', detail: e.data || '', life: 1500 })
+        _toast.add({ severity: 'error', summary: e.msg || '오류', detail: e.data || '', life: 1500 })
       } finally {
         pendingRequest = null
         exitAddMode()
