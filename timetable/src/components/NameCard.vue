@@ -1,29 +1,15 @@
 <template>
   <span
-    class="ripple namecard"
-    :class="{ deleteActive: deleteConfirm }"
-    :style="{
-      display: 'inline-block',
-      width: deleteConfirm ? '5rem' : '4rem',
-      height: '2rem',
-      lineHeight: '1.5rem',
-      textAlign: 'center',
-      borderRadius: '3px',
-      border: `solid 1px ${bgColor}`,
-      backgroundColor: bgColor,
-      color: 'white',
-      padding: '0.2rem',
-      margin: '0 .3rem',
-      cursor: canDelete ? 'pointer' : 'default',
-    }"
-    @click="onClick"
+    class="ripple inline-block w-16 h-8 leading-6 text-center rounded border border-solid text-white p-0.5 mx-1"
+    :style="{ borderColor: bgColor, backgroundColor: bgColor, cursor: canDelete ? 'pointer' : 'default' }"
+    @click="onClick($event)"
   >
     {{ name }}
   </span>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { useConfirm } from 'primevue/useconfirm'
 
 const props = defineProps({
   name: String,
@@ -34,16 +20,16 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['delete'])
-const deleteConfirm = ref(false)
+const confirm = useConfirm()
 
-function onClick() {
+function onClick(event) {
   if (!props.canDelete) return
-  if (deleteConfirm.value) {
-    emit('delete')
-    deleteConfirm.value = false
-  } else {
-    deleteConfirm.value = true
-    setTimeout(() => { deleteConfirm.value = false }, 3000)
-  }
+  confirm.require({
+    target: event.currentTarget,
+    message: `${props.name} 삭제`,
+    acceptLabel: '삭제',
+    rejectLabel: '취소',
+    accept: () => emit('delete'),
+  })
 }
 </script>

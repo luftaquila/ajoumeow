@@ -1,24 +1,25 @@
-import { reactive } from 'vue'
+import { ref } from 'vue'
 
-const activeModals = reactive({})
+const notice = ref(false)
+const help = ref(false)
+const map = ref(false)
+const recordHistory = ref(false)
+const recruit = ref(false)
+
+const modals = { notice, help, map, recordHistory, recruit }
 
 export function useModal() {
   function openModal(name) {
-    activeModals[name] = true
+    if (modals[name]) modals[name].value = true
   }
 
   function closeModal(name) {
-    activeModals[name] = false
-  }
-
-  function isOpen(name) {
-    return !!activeModals[name]
+    if (modals[name]) modals[name].value = false
   }
 
   return {
-    activeModals,
+    modals,
     openModal,
     closeModal,
-    isOpen,
   }
 }

@@ -1,18 +1,21 @@
 import { ref } from 'vue'
-import { useToast } from 'vue-toastification'
 import * as api from '../api/index.js'
 import { formatDate, getDateFromCalendarStart } from '../utils/dateFormat.js'
 import { generateDotSvg } from '../utils/svgGenerator.js'
 import { useCalendar } from './useCalendar.js'
 import { useAuth } from './useAuth.js'
+import { useAddMode } from './useAddMode.js'
 
 const recArr = ref([])
-const transmitFlag = ref(false)
-const toast = useToast()
+let pendingRequest = null
+let _toast = null
 
-export function useRecords() {
+export function useRecords(toast) {
+  if (toast) _toast = toast
+
   const { cells, selectedDate } = useCalendar()
   const { user } = useAuth()
+  const { exitAddMode } = useAddMode()
 
   async function load() {
     try {
@@ -59,7 +62,7 @@ export function useRecords() {
         }
       }
     } catch (e) {
-      toast.error(`${e.msg || '오류'}`, { dangerouslyHTMLString: true })
+      _toast?.add({ severity: 'error', summary: e.msg || '오류', life: 1500 })
     }
   }
 
@@ -69,48 +72,53 @@ export function useRecords() {
   }
 
   async function addRecord(target) {
-    if (!user.value) return toast.error('로그인을 해 주세요!')
-    if (transmitFlag.value) return toast.error('요청이 진행 중입니다.')
+    if (!user.value) return _toast?.add({ severity: 'error', summary: '로그인을 해 주세요!', life: 1500 })
+    if (pendingRequest) return _toast?.add({ severity: 'error', summary: '요청이 진행 중입니다.', life: 1500 })
 
-    transmitFlag.value = true
-    try {
-      await api.createRecord({
-        date: target.date,
-        course: target.course + '코스',
-        ID: Number(user.value.ID),
-        name: user.value.name,
-      })
-      await load()
-    } catch (e) {
-      toast.error(`${e.msg || '오류'}<br>${e.data || ''}`, { dangerouslyHTMLString: true })
-    } finally {
-      transmitFlag.value = false
-    }
+    pendingRequest = (async () => {
+      try {
+        await api.createRecord({
+          date: target.date,
+          course: target.course + '코스',
+          ID: Number(user.value.ID),
+          name: user.value.name,
+        })
+        await load()
+      } catch (e) {
+        _toast?.add({ severity: 'error', summary: e.msg || '오류', detail: e.data || '', life: 1500 })
+      } finally {
+        pendingRequest = null
+        exitAddMode()
+      }
+    })()
+    return pendingRequest
   }
 
   async function deleteRecord(target) {
-    if (!user.value) return toast.error('로그인을 해 주세요!')
-    if (transmitFlag.value) return toast.error('요청이 진행 중입니다.')
+    if (!user.value) return _toast?.add({ severity: 'error', summary: '로그인을 해 주세요!', life: 1500 })
+    if (pendingRequest) return _toast?.add({ severity: 'error', summary: '요청이 진행 중입니다.', life: 1500 })
 
-    transmitFlag.value = true
-    try {
-      await api.deleteRecord({
-        date: target.date,
-        course: target.course,
-        ID: target.id,
-        name: target.name,
-      })
-      await load()
-    } catch (e) {
-      toast.error(`${e.msg || '오류'}<br>${e.data || ''}`, { dangerouslyHTMLString: true })
-    } finally {
-      transmitFlag.value = false
-    }
+    pendingRequest = (async () => {
+      try {
+        await api.deleteRecord({
+          date: target.date,
+          course: target.course,
+          ID: target.id,
+          name: target.name,
+        })
+        await load()
+      } catch (e) {
+        _toast?.add({ severity: 'error', summary: e.msg || '오류', detail: e.data || '', life: 1500 })
+      } finally {
+        pendingRequest = null
+        exitAddMode()
+      }
+    })()
+    return pendingRequest
   }
 
   return {
     recArr,
-    transmitFlag,
     load,
     getCoursesForDate,
     addRecord,
