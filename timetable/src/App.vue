@@ -10,7 +10,7 @@
     <main>
       <div class="calendar-container">
         <div class="calendar-container__header" style="display: block; text-align: center; padding: .5rem 0 .25rem;">
-          <img src="/res/image/headline_blue.png" style="width: 8rem" />
+          <img :src="'/res/image/headline_blue.png'" style="width: 8rem" />
         </div>
         <div class="calendar-container__body">
           <div class="calendar-table">

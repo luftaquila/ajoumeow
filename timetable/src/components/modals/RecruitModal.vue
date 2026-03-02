@@ -8,12 +8,12 @@
 
     초기 버전은 서버도 없어 구글 스프레드시트를 DB로 사용하는 엉망진창 시스템이었습니다. 군대에서 전부 뒤집어 엎고 수정에 수정을 거쳐 지금의 모습에 이르게 되었습니다. 벌써 만 5년째 운영 중이네요.<br><br>
 
-    <img src="/res/recruit/console.png" style="width: 100%"><br>
+    <img :src="'/res/recruit/console.png'" style="width: 100%"><br>
     <span style="margin-top: .5rem; font-size: .8rem;">지금은 임원진만 접속 가능한 관리자 콘솔도 있습니다.</span><br><br>
 
     프론트엔드부터 서버사이드까지 대학 생활 전체에 걸쳐 전부 직접 개발하고 유지보수한 자식같은 시스템입니다만, 이제 졸업할 때가 되어 후임자를 찾고 있습니다.<br><br>
 
-    <img src="/res/recruit/server.jpg" style="width: 100%"><br>
+    <img :src="'/res/recruit/server.jpg'" style="width: 100%"><br>
     <span style="margin-top: .5rem; font-size: .8rem;">제일 작은 하얀 네모 상자가 여러분에게 지금 이 사이트를 보여주고 있는 서버의 실체랍니다. 여러분은 모두 랜선을 타고 제 집에 와본 적이 있는 셈이죠.</span><br><br>
 
     <span style="font-size: 1rem; font-weight: bold">이 시스템을 운영해 보고 싶으신 분이나 프론트/백엔드 웹 개발, 리눅스 서버에 관심이 있으신 분은 연락 주세요. 학년, 학과, 경험 상관 없습니다.</span><br><br>
