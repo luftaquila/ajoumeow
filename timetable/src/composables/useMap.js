@@ -9,7 +9,7 @@ function loadTmapScript() {
   return new Promise((resolve, reject) => {
     if (window.Tmapv2) return resolve()
     const script = document.createElement('script')
-    script.src = 'https://apis.openapi.sk.com/tmap/jsv2?version=1&appKey=l7xx9c8a71eb1e3a4889a6352ddce00ab62c'
+    script.src = `https://apis.openapi.sk.com/tmap/jsv2?version=1&appKey=${import.meta.env.VITE_TMAP_API_KEY}`
     script.onload = resolve
     script.onerror = reject
     document.body.appendChild(script)
@@ -65,7 +65,7 @@ export function useMap() {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: new URLSearchParams({
-              appKey: 'l7xx9c8a71eb1e3a4889a6352ddce00ab62c',
+              appKey: import.meta.env.VITE_TMAP_API_KEY,
               startX: maps.home.pos.lng(),
               startY: maps.home.pos.lat(),
               endX: course_coords[course_coords.length - 1].lng(),
