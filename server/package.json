@@ -27,7 +27,7 @@
     "dateformat": "^4.5.1",
     "drizzle-orm": "^0.38.0",
     "fastify": "^5.2.1",
-    "imghash": "^0.0.8",
+
     "jsonwebtoken": "^9.0.0",
     "node-schedule": "^2.0.0",
     "pretty-format": "^26.6.2",

@@ -3,10 +3,10 @@ import path from 'path';
 import { pipeline } from 'stream/promises';
 import sharp from 'sharp';
 import dateformat from 'dateformat';
-import { eq, and, desc, asc, sql, gte, count } from 'drizzle-orm';
+import { eq, and, desc, asc, sql, count } from 'drizzle-orm';
 
 import { db, sqlite } from '../db/index.js';
-import { members, photos, tags, photoTags, photoLikes } from '../db/schema.js';
+import { members, photos, tags, photoTags } from '../db/schema.js';
 import util from '../controllers/util/util.js';
 import { Log, success, error } from '../controllers/util/interface.js';
 

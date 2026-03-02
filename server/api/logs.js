@@ -1,4 +1,4 @@
-import { eq, and, or, like, between, sql } from 'drizzle-orm';
+import { eq, and, or, like, between } from 'drizzle-orm';
 
 import { db } from '../db/index.js';
 import { logs } from '../db/schema.js';

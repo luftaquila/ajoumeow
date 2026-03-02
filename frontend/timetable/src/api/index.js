@@ -59,16 +59,6 @@ export function getSetting(name) {
   return request(`${API_BASE}/settings/${name}`)
 }
 
-export function getStatistics(type) {
-  return request(`${API_BASE}/records/statistics?type=${type}`)
-}
-
-export function getMapData() {
-  return request(`${API_BASE}/records/map`, {
-    headers: authHeader(),
-  })
-}
-
 export function getWeather() {
   return fetch('/api/data/weather').then(r => r.json())
 }

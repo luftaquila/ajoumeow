@@ -1,14 +1,3 @@
-class Response {
-  constructor(stat, msg, data) {
-    this.stat = stat;
-    this.msg = msg;
-    this.data = data;
-  }
-  toJson() {
-    return JSON.stringify(this);
-  }
-}
-
 class Log {
   constructor(level, IP, endpoint, description, method, status, query, result) {
     this.level = level;
@@ -32,4 +21,4 @@ function error(code, message) {
   return { error: { code, message } };
 }
 
-export { Response, Log, success, error }
+export { Log, success, error }

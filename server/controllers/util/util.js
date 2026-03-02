@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import prettify from 'pretty-format';
 import { eq, and } from 'drizzle-orm';
 
-import { Response, Log, error } from './interface.js';
+import { Log, error } from './interface.js';
 import { db, sqlite } from '../../db/index.js';
 import { members, semesters, semesterMembers, settings, logs } from '../../db/schema.js';
 

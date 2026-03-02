@@ -3,10 +3,9 @@ import { ref } from 'vue'
 const notice = ref(false)
 const help = ref(false)
 const map = ref(false)
-const recordHistory = ref(false)
 const recruit = ref(false)
 
-const modals = { notice, help, map, recordHistory, recruit }
+const modals = { notice, help, map, recruit }
 
 export function useModal() {
   function openModal(name) {
