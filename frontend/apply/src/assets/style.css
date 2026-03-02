@@ -1,0 +1,108 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+*:focus {
+  outline: none;
+}
+
+html, body {
+  height: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+}
+
+:root {
+  --c-surface: #FFFFFF;
+  --c-surface-muted: #F8FAFC;
+  --c-surface-dim: #F1F5F9;
+  --c-surface-border: #E2E8F0;
+  --c-text: #0F172A;
+  --c-text-secondary: #475569;
+  --c-text-muted: #94A3B8;
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.06);
+  --shadow-card-hover: 0 2px 6px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.1);
+  --shadow-elevated: 0 4px 12px rgba(0,0,0,0.08), 0 16px 40px rgba(0,0,0,0.12);
+}
+
+.p-dark {
+  --c-surface: #1E293B;
+  --c-surface-muted: #0F172A;
+  --c-surface-dim: #334155;
+  --c-surface-border: #475569;
+  --c-text: #F1F5F9;
+  --c-text-secondary: #CBD5E1;
+  --c-text-muted: #64748B;
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.2), 0 4px 16px rgba(0,0,0,0.3);
+  --shadow-card-hover: 0 2px 6px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.4);
+  --shadow-elevated: 0 4px 12px rgba(0,0,0,0.3), 0 16px 40px rgba(0,0,0,0.5);
+}
+
+body {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  font-family: "Inter", "Nanum Gothic", -apple-system, BlinkMacSystemFont, sans-serif !important;
+  text-rendering: optimizeLegibility;
+  color: var(--c-text);
+  background: var(--c-surface-muted);
+}
+
+.p-button:focus,
+.p-button:focus-visible {
+  box-shadow: none !important;
+  outline: none !important;
+  border-color: transparent !important;
+}
+
+@keyframes checkmark-stroke {
+  100% { stroke-dashoffset: 0; }
+}
+@keyframes checkmark-scale {
+  0%, 100% { transform: none; }
+  50% { transform: scale3d(1.1, 1.1, 1); }
+}
+@keyframes checkmark-fill {
+  100% { box-shadow: inset 0 0 0 100px #22C55E; }
+}
+
+.checkmark-circle {
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  stroke-width: 2;
+  stroke-miterlimit: 10;
+  stroke: #22C55E;
+  fill: none;
+  animation: checkmark-stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.checkmark {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: block;
+  stroke-width: 2;
+  stroke: #fff;
+  stroke-miterlimit: 10;
+  margin: 0 auto;
+  box-shadow: inset 0 0 0 #22C55E;
+  animation: checkmark-fill 0.4s ease-in-out 0.4s forwards, checkmark-scale 0.3s ease-in-out 0.9s both;
+}
+
+.checkmark-check {
+  transform-origin: 50% 50%;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: checkmark-stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+}

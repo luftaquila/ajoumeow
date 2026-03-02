@@ -14,7 +14,7 @@
       <div v-if="!found" class="flex flex-col gap-4">
         <div class="flex flex-col gap-1">
           <label class="text-sm font-medium text-text-secondary">학번</label>
-          <InputText v-model="lookupId" placeholder="학번 9자리를 알려주세요!" maxlength="9" />
+          <InputText v-model="lookupId" placeholder="학번 9자리를 알려주세요!" maxlength="9" inputmode="numeric" />
         </div>
         <Button
           label="조회"
@@ -52,6 +52,7 @@
             v-model="form.phone"
             placeholder="010-0000-0000"
             maxlength="13"
+            inputmode="tel"
             @input="formatPhone"
           />
         </div>

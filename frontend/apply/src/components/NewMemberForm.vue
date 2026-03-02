@@ -18,7 +18,7 @@
 
         <div class="flex flex-col gap-1">
           <label class="text-sm font-medium text-text-secondary">학번</label>
-          <InputText v-model="form.studentId" placeholder="학번 9자리를 알려주세요!" maxlength="9" />
+          <InputText v-model="form.studentId" placeholder="학번 9자리를 알려주세요!" maxlength="9" inputmode="numeric" />
         </div>
 
         <div class="flex flex-col gap-1">
@@ -51,6 +51,7 @@
             v-model="form.phone"
             placeholder="010-0000-0000"
             maxlength="13"
+            inputmode="tel"
             @input="formatPhone"
           />
         </div>
@@ -68,11 +69,11 @@
         <div class="flex flex-col gap-2 mt-2">
           <label class="text-sm font-medium text-text-secondary">동아리 회칙</label>
           <div class="flex gap-2 text-xs text-primary mb-1">
-            <a href="https://docs.google.com/document/d/1e-uCWwqVILTvVV75Q7DXrNPCna7QiCi6AjC2aykG0VE/" target="_blank" class="hover:underline">새 창에서 열기</a>
-            <a href="https://docs.google.com/document/d/1e-uCWwqVILTvVV75Q7DXrNPCna7QiCi6AjC2aykG0VE/export?format=pdf" target="_blank" class="hover:underline">PDF 다운로드</a>
+            <a href="https://docs.google.com/document/d/1okrj78s9Dn_IVk_rmyhryiPzL1hnazxIN-8KW-1MUJo/" target="_blank" class="hover:underline">새 창에서 열기</a>
+            <a href="https://docs.google.com/document/d/1okrj78s9Dn_IVk_rmyhryiPzL1hnazxIN-8KW-1MUJo/export?format=pdf" target="_blank" class="hover:underline">PDF 다운로드</a>
           </div>
           <iframe
-            src="https://docs.google.com/document/d/e/2PACX-1vS0-meI5O8H6hWSHpsS5j3f4dch7ZfqtbaTBsMXxa9oaVJLh6dGixJnRYv5uyuQmR-2wnFkcWDN9ws8/pub?embedded=true"
+            src="https://docs.google.com/document/d/1okrj78s9Dn_IVk_rmyhryiPzL1hnazxIN-8KW-1MUJo/preview"
             class="w-full h-60 border border-surface-border rounded-lg"
           ></iframe>
           <div class="flex items-center gap-2">
