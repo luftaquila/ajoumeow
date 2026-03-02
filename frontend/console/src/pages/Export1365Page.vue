@@ -36,29 +36,12 @@
           <label for="mask" class="text-sm cursor-pointer">개인정보 숨기기 (이름 마스킹)</label>
         </div>
 
-        <div class="flex flex-col sm:flex-row gap-2">
-          <Button
-            label="인증서 문서 생성"
-            icon="i-lucide-file-text"
-            @click="generateCertificate"
-            :loading="generating"
-          />
-          <Button
-            label="Google Sheets 생성"
-            icon="i-lucide-file-spreadsheet"
-            severity="secondary"
-            @click="doExport"
-            :loading="exporting"
-          />
-        </div>
-
-        <!-- Result URL panel -->
-        <div v-if="resultUrl" class="flex items-center gap-2 p-3 rounded-lg bg-[#22C55E]/10 border border-[#22C55E]/20">
-          <span class="i-lucide-check-circle text-lg text-[#22C55E]"></span>
-          <a :href="resultUrl" target="_blank" rel="noopener" class="text-sm text-primary hover:underline break-all">
-            {{ resultUrl }}
-          </a>
-        </div>
+        <Button
+          label="인증서 문서 생성"
+          icon="i-lucide-file-text"
+          @click="generateCertificate"
+          :loading="generating"
+        />
       </div>
     </div>
   </div>
@@ -72,7 +55,7 @@ import Select from 'primevue/select'
 import Checkbox from 'primevue/checkbox'
 import Button from 'primevue/button'
 import PageHeader from '../components/PageHeader.vue'
-import { export1365, getCertificateData } from '../api/verifications.js'
+import { getCertificateData } from '../api/verifications.js'
 import { useSemesters } from '../composables/useSemesters.js'
 import { formatDate } from '../../../shared/utils/dateFormat.js'
 
@@ -83,9 +66,7 @@ const startDate = ref(new Date(new Date().getFullYear(), new Date().getMonth(), 
 const endDate = ref(new Date())
 const selectedSemester = ref('')
 const maskPrivacy = ref(false)
-const exporting = ref(false)
 const generating = ref(false)
-const resultUrl = ref('')
 
 const semesterOptions = ref([])
 
@@ -105,31 +86,6 @@ function getParams() {
     endDate: formatDate(endDate.value, 'yyyy-mm-dd'),
     semester: selectedSemester.value,
     mask: String(maskPrivacy.value),
-  }
-}
-
-async function doExport() {
-  const params = getParams()
-  if (!params) return
-
-  exporting.value = true
-  resultUrl.value = ''
-  try {
-    const res = await export1365(params)
-
-    if (res.result === 'error') {
-      throw { error: { message: res.error || '인증서 생성 중 오류가 발생했습니다.' } }
-    }
-
-    if (res.url) {
-      resultUrl.value = res.url
-      window.open(res.url, '_blank')
-    }
-    toast.add({ severity: 'success', summary: '인증서가 생성되었습니다.', life: 3000 })
-  } catch (e) {
-    toast.add({ severity: 'error', summary: e.error?.message || '생성 실패', life: 3000 })
-  } finally {
-    exporting.value = false
   }
 }
 
