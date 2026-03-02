@@ -11,9 +11,31 @@ export const members = sqliteTable('members', {
   phone: text('phone').notNull(),
   birthday: text('birthday'),
   volunteerId: text('volunteer_id'),
+  googleId: text('google_id').unique(),
+  googleEmail: text('google_email'),
   createdAt: text('created_at')
     .notNull()
     .default(sql`(datetime('now'))`),
+});
+
+// ── applications ──────────────────────────────────────────────────
+export const applications = sqliteTable('applications', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  googleId: text('google_id').notNull(),
+  googleEmail: text('google_email').notNull(),
+  googleName: text('google_name'),
+  studentId: text('student_id').notNull(),
+  name: text('name').notNull(),
+  college: text('college').notNull(),
+  department: text('department').notNull(),
+  phone: text('phone').notNull(),
+  birthday: text('birthday'),
+  volunteerId: text('volunteer_id'),
+  isNew: integer('is_new', { mode: 'boolean' }).notNull(),
+  status: text('status').notNull().default('pending'),
+  semesterId: integer('semester_id').notNull().references(() => semesters.id),
+  reviewedAt: text('reviewed_at'),
+  createdAt: text('created_at').notNull().default(sql`(datetime('now', 'localtime'))`),
 });
 
 // ── semesters ───────────────────────────────────────────────────────

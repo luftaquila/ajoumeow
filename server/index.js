@@ -11,11 +11,13 @@ import verifications from './api/verifications.js';
 import members from './api/members.js';
 import semestersRoute from './api/semesters.js';
 import registrations from './api/registrations.js';
+import applicationsRoute from './api/applications.js';
 import gallery from './api/gallery.js';
 import data from './api/data.js';
 
 import util from './controllers/util/util.js';
 import { Log, error } from './controllers/util/interface.js';
+import { eq } from 'drizzle-orm';
 import { db } from './db/index.js';
 import { settings as settingsTable } from './db/schema.js';
 
@@ -59,6 +61,7 @@ await fastify.register(verifications, { prefix: '/api/verifications' });
 await fastify.register(members, { prefix: '/api/members' });
 await fastify.register(semestersRoute, { prefix: '/api/semesters' });
 await fastify.register(registrations, { prefix: '/api/registrations' });
+await fastify.register(applicationsRoute, { prefix: '/api/applications' });
 await fastify.register(gallery, { prefix: '/api/gallery' });
 await fastify.register(data, { prefix: '/api/data' });
 
@@ -96,6 +99,50 @@ try {
   const { sqlite } = await import('./db/index.js');
   sqlite.prepare(`UPDATE settings SET key = 'currentSemester' WHERE key = 'currentSemister'`).run();
 } catch (_) {}
+
+// Migrate: add google_id, google_email columns to members
+try {
+  const { sqlite } = await import('./db/index.js');
+  sqlite.prepare(`ALTER TABLE members ADD COLUMN google_id TEXT`).run();
+  sqlite.prepare(`CREATE UNIQUE INDEX IF NOT EXISTS members_google_id_unique ON members(google_id)`).run();
+} catch (_) {}
+try {
+  const { sqlite } = await import('./db/index.js');
+  sqlite.prepare(`ALTER TABLE members ADD COLUMN google_email TEXT`).run();
+} catch (_) {}
+
+// Migrate: create applications table
+{
+  const { sqlite } = await import('./db/index.js');
+  sqlite.prepare(`CREATE TABLE IF NOT EXISTS applications (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    google_id TEXT NOT NULL,
+    google_email TEXT NOT NULL,
+    google_name TEXT,
+    student_id TEXT NOT NULL,
+    name TEXT NOT NULL,
+    college TEXT NOT NULL,
+    department TEXT NOT NULL,
+    phone TEXT NOT NULL,
+    birthday TEXT,
+    volunteer_id TEXT,
+    is_new INTEGER NOT NULL,
+    status TEXT NOT NULL DEFAULT 'pending',
+    semester_id INTEGER NOT NULL REFERENCES semesters(id),
+    reviewed_at TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime'))
+  )`).run();
+}
+
+// Sync googleClientId setting from env
+if (process.env.GOOGLE_CLIENT_ID) {
+  const current = util.getSettings('googleClientId');
+  if (!current) {
+    db.insert(settingsTable).values({ key: 'googleClientId', value: process.env.GOOGLE_CLIENT_ID }).run();
+  } else if (current !== process.env.GOOGLE_CLIENT_ID) {
+    db.update(settingsTable).set({ value: process.env.GOOGLE_CLIENT_ID }).where(eq(settingsTable.key, 'googleClientId')).run();
+  }
+}
 
 // Start server
 try {
