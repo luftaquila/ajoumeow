@@ -1,6 +1,6 @@
 import { eq, and, like } from 'drizzle-orm';
 
-import { db } from '../db/index.js';
+import { db, sqlite } from '../db/index.js';
 import { members, semesters, semesterMembers } from '../db/schema.js';
 import util from '../controllers/util/util.js';
 import { Log, success, error } from '../controllers/util/interface.js';
@@ -14,21 +14,24 @@ export default async function(fastify, opts) {
       if (!semester) {
         return reply.code(400).send(error('ERR_SEMESTER_NOT_FOUND', '해당 학기를 찾을 수 없습니다.'));
       }
-      const result = db.select({
-        college: members.college,
-        department: members.department,
-        studentId: members.studentId,
-        name: members.name,
-        phone: members.phone,
-        birthday: members.birthday,
-        volunteerId: members.volunteerId,
-        registeredAt: semesterMembers.registeredAt,
-        role: semesterMembers.role,
-      })
-        .from(semesterMembers)
-        .innerJoin(members, eq(semesterMembers.memberId, members.id))
-        .where(eq(semesterMembers.semesterId, semester.id))
-        .all();
+      const result = sqlite.prepare(`
+        SELECT
+          m.college,
+          m.department,
+          m.student_id AS studentId,
+          m.name,
+          m.phone,
+          m.birthday,
+          m.volunteer_id AS volunteerId,
+          sm.role,
+          (SELECT s2.name FROM semester_members sm2
+           JOIN semesters s2 ON sm2.semester_id = s2.id
+           WHERE sm2.member_id = m.id
+           ORDER BY sm2.id ASC LIMIT 1) AS enrolledSemester
+        FROM semester_members sm
+        JOIN members m ON sm.member_id = m.id
+        WHERE sm.semester_id = ?
+      `).all(semester.id);
 
       util.logger(new Log('info', request.remoteIP, request.originalPath, '명단 요청', request.method, 200, request.query, result));
       return reply.code(200).send(success(result));
@@ -87,10 +90,13 @@ export default async function(fastify, opts) {
       util.logger(new Log('info', request.remoteIP, request.originalPath, '기존 회원 등록여부 조회', request.method, 200, request.params, previousMember));
 
       if (previousMember) {
-        const smInfo = db.select({
-          role: semesterMembers.role,
-          registeredAt: semesterMembers.registeredAt,
-        }).from(semesterMembers).where(eq(semesterMembers.memberId, previousMember.id)).limit(1).get();
+        const smInfo = sqlite.prepare(`
+          SELECT sm.role, s.name AS enrolledSemester
+          FROM semester_members sm
+          JOIN semesters s ON sm.semester_id = s.id
+          WHERE sm.member_id = ?
+          ORDER BY sm.id ASC LIMIT 1
+        `).get(previousMember.id);
 
         return reply.code(200).send(success({
           college: previousMember.college,
@@ -100,7 +106,7 @@ export default async function(fastify, opts) {
           phone: previousMember.phone,
           birthday: previousMember.birthday,
           volunteerId: previousMember.volunteerId,
-          registeredAt: smInfo ? smInfo.registeredAt : null,
+          enrolledSemester: smInfo ? smInfo.enrolledSemester : null,
           role: smInfo ? smInfo.role : '회원',
         }));
       }
@@ -187,7 +193,6 @@ export default async function(fastify, opts) {
         semesterId: semesterId,
         memberId: memberId,
         role: request.body.role || '회원',
-        registeredAt: request.body.registeredAt || new Date().toISOString(),
       }).run();
 
       util.logger(new Log('info', request.remoteIP, request.originalPath, '회원 등록', request.method, 201, request.body, 'success'));
@@ -223,7 +228,6 @@ export default async function(fastify, opts) {
 
       db.update(semesterMembers).set({
         role: request.body.role,
-        registeredAt: request.body.registeredAt,
       }).where(and(eq(semesterMembers.memberId, member.id), eq(semesterMembers.semesterId, semester.id))).run();
 
       util.logger(new Log('info', request.remoteIP, request.originalPath, '회원 정보 수정', request.method, 200, request.body, 'success'));
