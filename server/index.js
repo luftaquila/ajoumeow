@@ -6,13 +6,16 @@ import fastifyFormbody from '@fastify/formbody';
 
 import auth from './api/auth.js';
 import settings from './api/settings.js';
-import record from './api/record.js';
-import verify from './api/verify.js';
-import users from './api/users.js';
+import records from './api/records.js';
+import verifications from './api/verifications.js';
+import members from './api/members.js';
+import semestersRoute from './api/semesters.js';
+import registrations from './api/registrations.js';
+import logs from './api/logs.js';
 import gallery from './api/gallery.js';
 
 import util from './controllers/util/util.js';
-import { Log } from './controllers/util/interface.js';
+import { Log, error } from './controllers/util/interface.js';
 
 import weatherClient from './controllers/weatherClient.js';
 import dbClient from './controllers/dbClient.js';
@@ -40,12 +43,22 @@ fastify.addHook('onRequest', async (request, reply) => {
   request.remoteIP = request.headers['x-forwarded-for'] || request.ip;
 });
 
+// Global error handler
+fastify.setErrorHandler((err, request, reply) => {
+  const status = err.statusCode || 500;
+  util.logger(new Log('error', request.remoteIP, request.originalPath, err.message, request.method, status, null, err.stack));
+  reply.code(status).send(error(err.code || 'ERR_UNKNOWN', err.message || '알 수 없는 오류'));
+});
+
 // Register route plugins
 await fastify.register(auth, { prefix: '/api/auth' });
 await fastify.register(settings, { prefix: '/api/settings' });
-await fastify.register(record, { prefix: '/api/record' });
-await fastify.register(verify, { prefix: '/api/verify' });
-await fastify.register(users, { prefix: '/api/users' });
+await fastify.register(records, { prefix: '/api/records' });
+await fastify.register(verifications, { prefix: '/api/verifications' });
+await fastify.register(members, { prefix: '/api/members' });
+await fastify.register(semestersRoute, { prefix: '/api/semesters' });
+await fastify.register(registrations, { prefix: '/api/registrations' });
+await fastify.register(logs, { prefix: '/api/logs' });
 await fastify.register(gallery, { prefix: '/api/gallery' });
 
 // Serve built frontend files
@@ -60,8 +73,14 @@ fastify.setNotFoundHandler(async (request, reply) => {
   if (request.url.startsWith('/timetable')) {
     return reply.sendFile('timetable/index.html', distRoot);
   }
-  reply.code(404).send({ error: 'Not Found' });
+  reply.code(404).send(error('ERR_NOT_FOUND', 'Not Found'));
 });
+
+// Migrate settings key: currentSemister → currentSemester
+try {
+  const { sqlite } = await import('./db/index.js');
+  sqlite.prepare(`UPDATE settings SET key = 'currentSemester' WHERE key = 'currentSemister'`).run();
+} catch (_) {}
 
 // Start server
 try {

@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "npx nodemon --exec 'node --env-file=.env' index.js"
+    "dev": "npx nodemon --ignore dist/ --exec 'node --env-file=.env' index.js"
   },
   "repository": {
     "type": "git",
