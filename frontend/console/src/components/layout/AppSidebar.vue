@@ -1,7 +1,7 @@
 <template>
   <nav class="flex flex-col h-full">
     <!-- Brand (desktop only, drawer has its own header) -->
-    <a href="/" class="hidden lg:flex items-center gap-3 px-5 py-4 border-b border-surface-border">
+    <a href="/timetable" class="hidden lg:flex items-center gap-3 px-5 py-4 border-b border-surface-border no-underline">
       <img :src="'/res/image/logo-blue-square-without-desc.png'" class="w-8 h-8 rounded-lg" alt="logo">
       <div class="font-bold text-text leading-tight">미유미유<br><span class="text-xs text-text-muted font-normal">관리자 콘솔</span></div>
     </a>

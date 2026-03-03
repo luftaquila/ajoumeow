@@ -8,10 +8,10 @@
     <!-- Mobile drawer -->
     <Drawer v-model:visible="drawerVisible" class="w-72!">
       <template #header>
-        <div class="flex items-center gap-3">
+        <a href="/timetable" class="flex items-center gap-3 no-underline">
           <img :src="'/res/image/logo-blue-square-without-desc.png'" class="w-8 h-8 rounded-lg" alt="logo">
           <span class="font-bold text-text">미유미유 콘솔</span>
-        </div>
+        </a>
       </template>
       <AppSidebar @navigate="drawerVisible = false" />
     </Drawer>
