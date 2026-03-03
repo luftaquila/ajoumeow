@@ -1,7 +1,7 @@
 **/node_modules
+data/
 server/dist
 server/data/
-migrated.db
 
 **/*.env
 sitemap.xml

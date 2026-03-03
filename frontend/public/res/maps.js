@@ -16,7 +16,11 @@ async function loadMap() {
     await new Promise((resolve, reject) => {
       const s = document.createElement('script');
       s.src = `https://apis.openapi.sk.com/tmap/jsv2?version=1&appKey=${tmapApiKey}`;
-      s.onload = resolve;
+      s.onload = () => {
+        const wait = setInterval(() => {
+          if (window.Tmapv2 && window.Tmapv2.LatLng) { clearInterval(wait); resolve(); }
+        }, 50);
+      };
       s.onerror = reject;
       document.body.appendChild(s);
     });
