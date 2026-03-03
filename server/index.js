@@ -134,13 +134,15 @@ try {
   )`).run();
 }
 
-// Sync googleClientId setting from env
-if (process.env.GOOGLE_CLIENT_ID) {
-  const current = util.getSettings('googleClientId');
-  if (!current) {
-    db.insert(settingsTable).values({ key: 'googleClientId', value: process.env.GOOGLE_CLIENT_ID }).run();
-  } else if (current !== process.env.GOOGLE_CLIENT_ID) {
-    db.update(settingsTable).set({ value: process.env.GOOGLE_CLIENT_ID }).where(eq(settingsTable.key, 'googleClientId')).run();
+// Sync settings from env
+for (const [envKey, settingKey] of [['GOOGLE_CLIENT_ID', 'googleClientId'], ['TMAP_API_KEY', 'tmapApiKey']]) {
+  if (process.env[envKey]) {
+    const current = util.getSettings(settingKey);
+    if (!current) {
+      db.insert(settingsTable).values({ key: settingKey, value: process.env[envKey] }).run();
+    } else if (current !== process.env[envKey]) {
+      db.update(settingsTable).set({ value: process.env[envKey] }).where(eq(settingsTable.key, settingKey)).run();
+    }
   }
 }
 

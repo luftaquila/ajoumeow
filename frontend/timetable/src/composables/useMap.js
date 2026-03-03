@@ -5,13 +5,22 @@ import postscribe from 'postscribe'
 const mapLoaded = ref(false)
 const watchId = ref(null)
 let maps = {}
+let tmapApiKey = null
+
+async function fetchApiKey() {
+  if (tmapApiKey) return tmapApiKey
+  const res = await fetch('/api/settings/tmapApiKey')
+  const json = await res.json()
+  tmapApiKey = json.data
+  return tmapApiKey
+}
 
 function loadTmapScript() {
   return new Promise((resolve, reject) => {
     if (window.Tmapv2) return resolve()
     postscribe(
       document.body,
-      `<script src="https://apis.openapi.sk.com/tmap/jsv2?version=1&appKey=${import.meta.env.VITE_TMAP_API_KEY}"><\/script>`,
+      `<script src="https://apis.openapi.sk.com/tmap/jsv2?version=1&appKey=${tmapApiKey}"><\/script>`,
       { done: resolve, error: reject },
     )
   })
@@ -22,6 +31,7 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 export function useMap() {
   async function loadMap(containerEl) {
     if (!mapLoaded.value) {
+      await fetchApiKey()
       await loadTmapScript()
       maps = {}
       await initMap(containerEl)
@@ -66,7 +76,7 @@ export function useMap() {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: new URLSearchParams({
-              appKey: import.meta.env.VITE_TMAP_API_KEY,
+              appKey: tmapApiKey,
               startX: maps.home.pos.lng(),
               startY: maps.home.pos.lat(),
               endX: course_coords[course_coords.length - 1].lng(),

@@ -2,15 +2,27 @@ first = true;
 if (screen.width > screen.height) defaultOrientation = "landscape";
 else defaultOrientation = "portrait";
 
+var tmapApiKey = null;
 
 function resetGPS() { navigator.geolocation.clearWatch(maps.watchId); }
 
 async function loadMap() {
   if(first) {
+    // fetch API key
+    const res = await fetch('/api/settings/tmapApiKey');
+    const json = await res.json();
+    tmapApiKey = json.data;
     // load TMAP
-    postscribe('#body', `<script src="https://apis.openapi.sk.com/tmap/jsv2?version=1&appKey=l7xx9c8a71eb1e3a4889a6352ddce00ab62c"></script>`, { done: initMap });
+    await new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = `https://apis.openapi.sk.com/tmap/jsv2?version=1&appKey=${tmapApiKey}`;
+      s.onload = resolve;
+      s.onerror = reject;
+      document.body.appendChild(s);
+    });
     first = false;
     maps = {};
+    initMap();
   }
   else trackDevice();
 }
@@ -48,7 +60,7 @@ async function initMap() {
       const route = await $.ajax('https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1&format=json&callback=result', {
         method: 'POST',
         data: {
-          appKey: 'l7xx9c8a71eb1e3a4889a6352ddce00ab62c',
+          appKey: tmapApiKey,
           startX: maps.home.pos.lng(),
           startY: maps.home.pos.lat(),
           endX: course_coords[course_coords.length - 1].lng(),
