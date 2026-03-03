@@ -12,17 +12,14 @@ async function loadMap() {
     const res = await fetch('/api/settings/tmapApiKey');
     const json = await res.json();
     tmapApiKey = json.data;
-    // load TMAP
+    // load TMAP (postscribe handles document.write used internally by Tmap SDK)
     await new Promise((resolve, reject) => {
-      const s = document.createElement('script');
-      s.src = `https://apis.openapi.sk.com/tmap/jsv2?version=1&appKey=${tmapApiKey}`;
-      s.onload = () => {
-        const wait = setInterval(() => {
-          if (window.Tmapv2 && window.Tmapv2.LatLng) { clearInterval(wait); resolve(); }
-        }, 50);
-      };
-      s.onerror = reject;
-      document.body.appendChild(s);
+      if (window.Tmapv2) return resolve();
+      postscribe(
+        document.body,
+        `<script src="https://apis.openapi.sk.com/tmap/jsv2?version=1&appKey=${tmapApiKey}"><\/script>`,
+        { done: resolve, error: reject }
+      );
     });
     first = false;
     maps = {};
@@ -35,6 +32,7 @@ async function initMap() {
   // init map
   maps.map = new Tmapv2.Map("map", {
     center: new Tmapv2.LatLng(37.283237, 127.045953),
+    width: "100%",
     height: "400px",
     zoom: 17,
     httpsMode: true,
@@ -45,8 +43,13 @@ async function initMap() {
 
   trackDevice();
 
-  // load points data
-  const points = await $.ajax('/api/records/map', { beforeSend: xhr => xhr.setRequestHeader('Authorization', 'Bearer ' + Cookies.get('jwt')) });
+  // load points data (requires auth — skip silently if not logged in)
+  let points;
+  try {
+    points = await $.ajax('/api/records/map', { beforeSend: xhr => xhr.setRequestHeader('Authorization', 'Bearer ' + Cookies.get('jwt')) });
+  } catch (e) {
+    return;
+  }
 
   for(const [course, data] of Object.entries(points)) {
     // draw home marker

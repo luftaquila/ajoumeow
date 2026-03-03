@@ -42,7 +42,7 @@
         filterDisplay="row"
         v-model:filters="filters"
       >
-        <Column field="college" header="단과대학" sortable :showFilterMenu="false" style="min-width: 9rem">
+        <Column field="college" header="단과대학" sortable :showFilterMenu="false" style="min-width: 10rem">
           <template #filter="{ filterModel, filterCallback }">
             <InputText v-model="filterModel.value" @input="filterCallback()" placeholder="검색" size="small" class="w-full" />
           </template>
