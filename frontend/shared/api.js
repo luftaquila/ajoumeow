@@ -34,7 +34,7 @@ export function post(path, data) {
   })
 }
 
-export function postJSON(path, data) {
+export function postJSON(path, data = {}) {
   return request(`${API_BASE}${path}`, {
     method: 'POST',
     headers: {
@@ -56,7 +56,7 @@ export function put(path, data) {
   })
 }
 
-export function putJSON(path, data) {
+export function putJSON(path, data = {}) {
   return request(`${API_BASE}${path}`, {
     method: 'PUT',
     headers: {
