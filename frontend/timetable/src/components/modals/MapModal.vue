@@ -29,5 +29,5 @@ watch(() => props.visible, async (val) => {
       loadMap(mapContainer.value)
     }
   }
-})
+}, { immediate: true })
 </script>
