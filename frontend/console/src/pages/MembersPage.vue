@@ -42,14 +42,20 @@
         filterDisplay="row"
         v-model:filters="filters"
       >
-        <Column field="college" header="단과대학" sortable :showFilterMenu="false" style="min-width: 7rem">
+        <Column field="college" header="단과대학" sortable :showFilterMenu="false" style="min-width: 9rem">
           <template #filter="{ filterModel, filterCallback }">
             <InputText v-model="filterModel.value" @input="filterCallback()" placeholder="검색" size="small" class="w-full" />
           </template>
+          <template #editor="{ data, field }">
+            <InputText v-model="data[field]" size="small" class="w-full" />
+          </template>
         </Column>
-        <Column field="department" header="학과" sortable :showFilterMenu="false" style="min-width: 8rem">
+        <Column field="department" header="학과" sortable :showFilterMenu="false" style="min-width: 10rem">
           <template #filter="{ filterModel, filterCallback }">
             <InputText v-model="filterModel.value" @input="filterCallback()" placeholder="검색" size="small" class="w-full" />
+          </template>
+          <template #editor="{ data, field }">
+            <InputText v-model="data[field]" size="small" class="w-full" />
           </template>
         </Column>
         <Column field="studentId" header="학번" sortable :showFilterMenu="false" style="min-width: 7rem">
@@ -57,7 +63,7 @@
             <InputText v-model="filterModel.value" @input="filterCallback()" placeholder="검색" size="small" class="w-full" />
           </template>
         </Column>
-        <Column field="name" header="이름" sortable :showFilterMenu="false" style="min-width: 5rem">
+        <Column field="name" header="이름" sortable :showFilterMenu="false" style="min-width: 6rem">
           <template #filter="{ filterModel, filterCallback }">
             <InputText v-model="filterModel.value" @input="filterCallback()" placeholder="검색" size="small" class="w-full" />
           </template>
@@ -86,8 +92,8 @@
             <span v-else class="text-xs text-text-muted">미연동</span>
           </template>
         </Column>
-        <Column field="enrolledSemester" header="가입학기" sortable style="min-width: 6rem" />
-        <Column field="role" header="직책" sortable style="min-width: 5rem">
+        <Column field="enrolledSemester" header="가입학기" sortable style="min-width: 7rem" />
+        <Column field="role" header="직책" sortable style="min-width: 6rem">
           <template #editor="{ data, field }">
             <InputText v-model="data[field]" size="small" class="w-full" />
           </template>
