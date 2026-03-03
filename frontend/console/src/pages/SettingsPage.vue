@@ -18,7 +18,7 @@
           현재 학기
         </h2>
         <div class="flex items-center gap-3 flex-wrap">
-          <div class="w-28"><InputNumber v-model="semesterYear" :min="2020" :max="2099" :useGrouping="false" fluid /></div>
+          <div class="w-22"><InputNumber v-model="semesterYear" :useGrouping="false" :allowEmpty="false" fluid /></div>
           <span class="text-text-secondary">년</span>
           <div class="w-28"><Select
             v-model="semesterTerm"
@@ -38,7 +38,7 @@
           최대 급식 인원
         </h2>
         <div class="flex items-center gap-3 flex-wrap">
-          <div class="w-28"><InputNumber v-model="maxCount" :min="1" :max="100" fluid /></div>
+          <div class="w-20"><InputNumber v-model="maxCount" :min="1" :max="100" :allowEmpty="false" fluid /></div>
           <span class="text-text-secondary">명</span>
           <Button label="저장" size="small" @click="saveMaxCount" />
         </div>
@@ -138,10 +138,10 @@
             </AccordionPanel>
           </Accordion>
           <div class="flex items-center gap-2 mt-4">
-            <InputText v-model="newCollegeName" placeholder="새 단과대 이름" size="small" />
-            <Button label="단과대 추가" icon="i-lucide-plus" size="small" severity="secondary" @click="addCollege" />
+            <InputText v-model="newCollegeName" placeholder="새 단과대 이름" size="small" class="w-2/3" />
+            <Button label="추가" icon="i-lucide-plus" size="small" severity="secondary" @click="addCollege" />
+            <Button label="저장" size="small" :loading="dataSaving.college" @click="saveCollege" />
           </div>
-          <Button label="저장" size="small" class="mt-3" :loading="dataSaving.college" @click="saveCollege" />
         </div>
       </div>
 
