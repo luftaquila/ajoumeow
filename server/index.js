@@ -69,6 +69,7 @@ await fastify.register(data, { prefix: '/api/data' });
 await fastify.register(fastifyStatic, {
   root: distRoot,
   prefix: '/',
+  redirect: true,
 });
 
 // SPA fallback: serve index.html for unmatched SPA routes
