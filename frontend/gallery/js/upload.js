@@ -34,6 +34,7 @@ $('#upload').click(function() {
   if(tagFlag) uppy.upload();
 });
 
+window.generateFileManager = generateFileManager;
 async function generateFileManager() {
   $('#fileManager').html('');
   $('#fileManagerContainer').css('display', uppy.getFiles().length ? 'block' : 'none');

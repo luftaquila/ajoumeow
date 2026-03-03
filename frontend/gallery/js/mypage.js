@@ -1,4 +1,7 @@
 const api = '/api';
+let userID;
+let loadCount = 0;
+let io;
 
 $(function() {
   const jwt = Cookies.get('jwt');
@@ -23,8 +26,7 @@ function init(user) {
   requestPhotoList(0);
   $('input[name=sortPhoto]').change(() => requestPhotoList(0));
 
-  let loadCount = 0;
-  let io = new IntersectionObserver((entries, observer) => {
+  io = new IntersectionObserver((entries, observer) => {
     entries.forEach(entry => {
       if(!entry.isIntersecting) return;
 
@@ -125,6 +127,7 @@ function renderPhoto(photoList, offset) {
   loadCount += photoList.length;
 }
 
+window.deletePhoto = deletePhoto;
 function deletePhoto(pid) {
   const jwt = Cookies.get('jwt');
   $.ajax({

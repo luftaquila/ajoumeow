@@ -1,4 +1,6 @@
 const api = '/api';
+let loadCount = 0;
+let io;
 
 $(function() {
   requestPhotoList(0);
@@ -18,8 +20,7 @@ $(function() {
     e.preventDefault();
   });
 
-  let loadCount = 0;
-  let io = new IntersectionObserver((entries, observer) => {
+  io = new IntersectionObserver((entries, observer) => {
     entries.forEach(entry => {
       if(!entry.isIntersecting) return;
 
