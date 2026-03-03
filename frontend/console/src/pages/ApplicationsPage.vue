@@ -172,6 +172,7 @@ function confirmApprove(app) {
     header: '가입 승인',
     acceptLabel: '승인',
     rejectLabel: '취소',
+    rejectProps: { severity: 'secondary' },
     accept: () => doApprove(app),
   })
 }
