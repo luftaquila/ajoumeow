@@ -123,7 +123,7 @@ export function useMap() {
         position: pos,
         content: `
           <div class='infowindow' style='position: static; display: flex; flex-direction: column; font-size: 14px; box-shadow: 5px 5px 5px #00000040; border-radius: 10px; width: 250px; background: #FFFFFF 0% 0% no-repeat padding-box;'>
-            <span style="position: absolute; margin: 0.5rem; top: 0; right: 0; cursor: pointer;" onclick="this.closest('.infowindow').style.display='none'"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span>
+            <span style="position: absolute; margin: 0.5rem; top: 0; right: 0; cursor: pointer; padding: 0.25rem;" onclick="event.stopPropagation();this.closest('.infowindow').style.display='none'" ontouchend="event.preventDefault();event.stopPropagation();this.closest('.infowindow').style.display='none'"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events: none;"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span>
             <img src='/res/image/map/${infoImage}' style='width: 100%; height: auto; border-radius: 15px; padding: 5px;'>
             <div class='info-box' style='padding: 10px;'>
               <h3>${infoTitle}</h3>
