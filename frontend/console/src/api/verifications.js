@@ -16,10 +16,6 @@ export function getLatestVerification() {
   return get('/verifications/latest')
 }
 
-export function export1365(params) {
-  return get('/verifications/1365-export', params)
-}
-
 export function getCertificateData(params) {
   return get('/verifications/1365-data', params)
 }

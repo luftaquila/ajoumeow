@@ -1,4 +1,3 @@
-import axios from 'axios';
 import dateformat from 'dateformat';
 import { eq, and, between, desc } from 'drizzle-orm';
 
@@ -197,37 +196,8 @@ export default async function(fastify, opts) {
       }
     }
 
-    return { rows, chief, mask, maskName, maskBirthday, maskPhone };
+    return { rows, chief, maskName, maskBirthday, maskPhone };
   }
-
-  fastify.get('/1365-export', async (request, reply) => {
-    try {
-      const result = build1365Payload(request.query);
-      if (!result) {
-        return reply.code(400).send(error('ERR_SEMESTER_NOT_FOUND', '해당 학기를 찾을 수 없습니다.'));
-      }
-
-      const { rows, chief, mask } = result;
-      const payload = rows.map(r => ({ ...r, name: mask ? result.maskName(r.name) : r.name }));
-
-      const response = await axios.post('https://script.google.com/macros/s/AKfycbwFchf0CScKD_2A7sTyzRfwODJYYE7Rl9cvc2thvx0Yc2qYKJL7pKZWaEMZ6IWUrlxnnA/exec', {
-        data: payload,
-        cheif: {
-          name: chief ? chief.name : '',
-          phone: chief ? chief.phone : ''
-        },
-        mask: mask
-      });
-
-      util.logger(new Log('info', request.remoteIP, request.originalPath, '1365 인증서 생성 요청', request.method, 200, request.query, null));
-      return reply.send(response.data);
-    }
-    catch(e) {
-      console.error(e);
-      util.logger(new Log('error', request.remoteIP, request.originalPath, '1365 인증서 생성 오류', request.method, 500, request.query, e.stack));
-      return reply.code(500).send(error('ERR_UNKNOWN', '알 수 없는 오류입니다.'));
-    }
-  });
 
   fastify.get('/1365-data', { preHandler: [util.isAdmin] }, async (request, reply) => {
     try {
