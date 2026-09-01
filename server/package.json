@@ -33,6 +33,6 @@
     "sharp": "^0.32.6"
   },
   "devDependencies": {
-    "drizzle-kit": "^0.30.0"
+    "drizzle-kit": "^0.31.9"
   }
 }
