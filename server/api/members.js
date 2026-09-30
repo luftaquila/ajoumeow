@@ -69,56 +69,6 @@ export default async function(fastify, opts) {
     }
   });
 
-  // Lookup existing member by studentId
-  fastify.get('/lookup/:studentId', async (request, reply) => {
-    try {
-      const studentId = String(request.params.studentId);
-      const currentSemester = util.getCurrentSemester();
-
-      const previousMember = db.select().from(members).where(eq(members.studentId, studentId)).get();
-      util.logger(new Log('info', request.remoteIP, request.originalPath, '기존 회원 등록여부 조회', request.method, 200, request.params, previousMember));
-
-      if (previousMember) {
-        const smInfo = sqlite.prepare(`
-          SELECT sm.role, s.name AS enrolledSemester
-          FROM semester_members sm
-          JOIN semesters s ON sm.semester_id = s.id
-          WHERE sm.member_id = ?
-          ORDER BY sm.id ASC LIMIT 1
-        `).get(previousMember.id);
-
-        // Check if already registered in current semester
-        let alreadyRegistered = false;
-        if (currentSemester) {
-          const existing = db.select().from(semesterMembers)
-            .where(and(eq(semesterMembers.memberId, previousMember.id), eq(semesterMembers.semesterId, currentSemester.id)))
-            .get();
-          alreadyRegistered = !!existing;
-        }
-
-        return reply.code(200).send(success({
-          college: previousMember.college,
-          department: previousMember.department,
-          studentId: previousMember.studentId,
-          name: previousMember.name,
-          phone: previousMember.phone,
-          birthday: previousMember.birthday,
-          volunteerId: previousMember.volunteerId,
-          enrolledSemester: smInfo ? smInfo.enrolledSemester : null,
-          role: smInfo ? smInfo.role : '회원',
-          alreadyRegistered,
-        }));
-      }
-      else {
-        return reply.code(400).send(error('ERR_NEVER_REGISTERED', '기존 회원이 아닙니다.<br>신입 회원으로 등록해 주세요.'));
-      }
-    }
-    catch(e) {
-      util.logger(new Log('error', request.remoteIP, request.originalPath, '회원 조회 오류', request.method, 500, request.params, e.stack));
-      return reply.code(500).send(error('ERR_UNKNOWN', '알 수 없는 오류입니다.'));
-    }
-  });
-
   // Update member info
   fastify.put('/:studentId', { preHandler: [util.isAdmin] }, async (request, reply) => {
     try {

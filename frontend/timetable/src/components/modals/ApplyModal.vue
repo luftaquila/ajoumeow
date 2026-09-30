@@ -54,7 +54,7 @@
       <p class="text-text-secondary mb-6">회원 유형을 선택해 주세요.</p>
       <div class="flex flex-col items-center gap-3">
         <Button label="신규 회원" icon="i-lucide-user-plus" severity="info" class="w-full max-w-[240px]" @click="startNew" />
-        <Button label="기존 회원 (재등록)" icon="i-lucide-user-check" severity="secondary" class="w-full max-w-[240px]" @click="step = 'lookup'" />
+        <Button label="기존 회원 (재등록)" icon="i-lucide-user-check" severity="secondary" class="w-full max-w-[240px]" @click="startExisting()" />
       </div>
     </div>
 
@@ -63,7 +63,7 @@
       <p class="text-text-secondary mb-4">이전에 가입한 적이 있다면, 학번을 입력해 주세요.</p>
       <div class="flex gap-2 mb-2">
         <InputText v-model="lookupStudentId" placeholder="학번" class="flex-1" @keyup.enter="doLookup" />
-        <Button label="조회" severity="info" :loading="lookupLoading" @click="doLookup" />
+        <Button label="연동" severity="info" :loading="lookupLoading" @click="doLookup" />
       </div>
       <p v-if="lookupError" class="text-red-500 text-xs mt-1" v-html="lookupError"></p>
       <div class="mt-3">
@@ -127,23 +127,23 @@
     <div v-else-if="step === 'existing-form'" class="py-2">
       <div class="flex flex-col gap-3">
         <div>
-          <label class="block text-xs text-text-muted mb-1">학번</label>
-          <InputText :modelValue="form.studentId" disabled class="w-full" />
+          <label class="block text-xs text-text-muted mb-1">학번 <span class="text-red-500">*</span></label>
+          <InputText v-model="form.studentId" placeholder="학번" :disabled="authStatus === 'inactive'" class="w-full" />
         </div>
         <div>
-          <label class="block text-xs text-text-muted mb-1">이름</label>
-          <InputText :modelValue="form.name" disabled class="w-full" />
+          <label class="block text-xs text-text-muted mb-1">이름 <span class="text-red-500">*</span></label>
+          <InputText v-model="form.name" placeholder="이름" class="w-full" />
         </div>
         <div>
-          <label class="block text-xs text-text-muted mb-1">단과대학</label>
-          <InputText :modelValue="form.college" disabled class="w-full" />
+          <label class="block text-xs text-text-muted mb-1">단과대학 <span class="text-red-500">*</span></label>
+          <Select v-model="form.college" :options="collegeOptions" optionLabel="label" optionValue="value" placeholder="단과대학 선택" class="w-full" @change="form.department = ''" />
         </div>
         <div>
-          <label class="block text-xs text-text-muted mb-1">학과</label>
-          <InputText :modelValue="form.department" disabled class="w-full" />
+          <label class="block text-xs text-text-muted mb-1">학과 <span class="text-red-500">*</span></label>
+          <Select v-model="form.department" :options="departmentOptions" optionLabel="label" optionValue="value" placeholder="학과 선택" class="w-full" :disabled="!form.college" />
         </div>
         <div>
-          <label class="block text-xs text-text-muted mb-1">연락처</label>
+          <label class="block text-xs text-text-muted mb-1">연락처 <span class="text-red-500">*</span></label>
           <InputText v-model="form.phone" placeholder="010-0000-0000" class="w-full" />
         </div>
         <div>
@@ -220,13 +220,18 @@ const lookupError = ref('')
 const collegeMap = ref({})
 const collegeLoaded = ref(false)
 
+// An existing member's current college/department stays selectable even if the list no longer has it
+function withCurrent(names, current) {
+  return current && !names.includes(current) ? [current, ...names] : names
+}
+
 const collegeOptions = computed(() =>
-  Object.keys(collegeMap.value).map(name => ({ label: name, value: name }))
+  withCurrent(Object.keys(collegeMap.value), form.value.college).map(name => ({ label: name, value: name }))
 )
 
 const departmentOptions = computed(() => {
-  if (!form.value.college || !collegeMap.value[form.value.college]) return []
-  return collegeMap.value[form.value.college].map(name => ({ label: name, value: name }))
+  if (!form.value.college) return []
+  return withCurrent(collegeMap.value[form.value.college] || [], form.value.department).map(name => ({ label: name, value: name }))
 })
 
 async function loadColleges() {
@@ -291,48 +296,34 @@ function loginAsAdmin() {
   }
 }
 
+function startExisting(studentId = '') {
+  form.value = { studentId, name: '', college: '', department: '', phone: '', birthday: '', volunteerId: '' }
+  step.value = 'existing-form'
+}
+
 function startNew() {
   form.value = { studentId: '', name: '', college: '', department: '', phone: '', birthday: '', volunteerId: '' }
   step.value = 'new-form'
 }
 
+// Admins linking their member account: link directly by student ID (ADMIN_EMAILS are trusted)
 async function doLookup() {
   if (!lookupStudentId.value) return
   lookupLoading.value = true
   lookupError.value = ''
   try {
-    const res = await api.lookupMember(lookupStudentId.value)
-    const m = res.data
-
-    if (m.alreadyRegistered) {
-      // Already registered this semester — the server links directly only when it can trust the
-      // Google account; otherwise continue to the existing-member application for officer approval
-      try {
-        const linkRes = await api.linkGoogleAccount(googleCredential.value, m.studentId)
-        if (linkRes.data.status === 'authenticated') {
-          doGoogleLogin(linkRes.data)
-          await loadRecords()
-          closeModal('apply')
-          toast.add({ severity: 'success', summary: 'Google 계정이 연동되었습니다.', life: 3000 })
-          return
-        }
-      } catch (e) {
-        if (e.error?.code !== 'ERR_LINK_NEEDS_APPROVAL') throw e
-      }
+    const linkRes = await api.linkGoogleAccount(googleCredential.value, lookupStudentId.value)
+    if (linkRes.data.status === 'authenticated') {
+      doGoogleLogin(linkRes.data)
+      await loadRecords()
+      closeModal('apply')
+      toast.add({ severity: 'success', summary: 'Google 계정이 연동되었습니다.', life: 3000 })
+      return
     }
-
-    form.value = {
-      studentId: m.studentId,
-      name: m.name,
-      college: m.college,
-      department: m.department,
-      phone: m.phone,
-      birthday: m.birthday || '',
-      volunteerId: m.volunteerId || '',
-    }
-    step.value = 'existing-form'
+    // Linked, but not on this semester's roster yet: continue with the re-registration form
+    startExisting(lookupStudentId.value)
   } catch (e) {
-    lookupError.value = e.error?.message || '조회에 실패했습니다.'
+    lookupError.value = e.error?.message || '연동에 실패했습니다.'
   } finally {
     lookupLoading.value = false
   }
@@ -366,8 +357,8 @@ async function submitNew() {
 
 async function submitExisting() {
   submitError.value = ''
-  if (!form.value.phone) {
-    submitError.value = '연락처를 입력해 주세요.'
+  if (!form.value.studentId || !form.value.name || !form.value.college || !form.value.department || !form.value.phone) {
+    submitError.value = '필수 항목을 모두 입력해 주세요.'
     return
   }
   submitting.value = true

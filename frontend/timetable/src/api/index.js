@@ -71,10 +71,6 @@ export function submitApplication(data) {
   })
 }
 
-export function lookupMember(studentId) {
-  return request(`${API_BASE}/members/lookup/${studentId}`)
-}
-
 export function linkGoogleAccount(credential, studentId) {
   return request(`${API_BASE}/auth/link`, {
     method: 'POST',

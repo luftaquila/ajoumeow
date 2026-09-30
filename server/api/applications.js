@@ -94,8 +94,8 @@ export default async function(fastify, opts) {
           } else {
             const existingMember = sqlite.prepare(`SELECT id FROM members WHERE student_id = ?`).get(String(studentId));
             if (!existingMember) throw new Error('기존 회원을 찾을 수 없습니다.');
-            sqlite.prepare(`UPDATE members SET phone = ?, birthday = ?, volunteer_id = ?, google_id = ?, google_email = ? WHERE id = ?`)
-              .run(phone, birthday || null, volunteerId || null, googleId, googleEmail, existingMember.id);
+            sqlite.prepare(`UPDATE members SET name = ?, college = ?, department = ?, phone = ?, birthday = ?, volunteer_id = ?, google_id = ?, google_email = ? WHERE id = ?`)
+              .run(name, college, department, phone, birthday || null, volunteerId || null, googleId, googleEmail, existingMember.id);
             sqlite.prepare(`INSERT INTO semester_members (semester_id, member_id, role) VALUES (?, ?, '관리자')`)
               .run(semester.id, existingMember.id);
           }
@@ -237,8 +237,8 @@ export default async function(fastify, opts) {
             throw new Error('기존 회원을 찾을 수 없습니다.');
           }
 
-          sqlite.prepare(`UPDATE members SET phone = ?, birthday = ?, volunteer_id = ?, google_id = ?, google_email = ? WHERE id = ?`)
-            .run(app.phone, app.birthday, app.volunteerId, app.googleId, app.googleEmail, member.id);
+          sqlite.prepare(`UPDATE members SET name = ?, college = ?, department = ?, phone = ?, birthday = ?, volunteer_id = ?, google_id = ?, google_email = ? WHERE id = ?`)
+            .run(app.name, app.college, app.department, app.phone, app.birthday, app.volunteerId, app.googleId, app.googleEmail, member.id);
 
           // Add semester membership unless already on the roster (e.g. linking a new Google account)
           const onRoster = sqlite.prepare(`SELECT 1 FROM semester_members WHERE semester_id = ? AND member_id = ?`)
