@@ -95,6 +95,17 @@ util.getSettings = function(name) {
   return row ? row.value : null;
 };
 
+// 1365 봉사시간 표: hours[n - 1] = 하루에 급식 코스 n개를 돌았을 때 인정 시간
+util.DEFAULT_VOLUNTEER_HOURS = [1, 2, 3];
+
+util.parseVolunteerHours = function(value) {
+  try {
+    const hours = JSON.parse(value);
+    if (Array.isArray(hours) && hours.length && hours.every(h => typeof h === 'number' && h > 0 && h <= 8)) return hours;
+  } catch (_) {}
+  return null;
+};
+
 util.getCurrentSemester = function() {
   const semesterName = util.getSettings('currentSemester');
   if (!semesterName) return null;

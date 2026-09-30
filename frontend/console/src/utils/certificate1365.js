@@ -42,6 +42,18 @@ function pad4(n) {
   return String(n).padStart(4, '0')
 }
 
+// Minutes since midnight -> HHMM.
+function hhmm(minutes) {
+  return pad4(Math.floor(minutes / 60) * 100 + (minutes % 60))
+}
+
+// Duration in the form's style: 3시간, 3시간30분.
+function formatDuration(minutes) {
+  const h = Math.floor(minutes / 60)
+  const m = minutes % 60
+  return `${h ? `${h}시간` : ''}${m ? `${m}분` : ''}`
+}
+
 // Image anchor. ExcelJS converts fractional col/row anchors with a wrong EMU factor,
 // so give it native offsets instead. x is pixels from the left edge of the sheet,
 // row is 1-based and y is the pixel offset within that row.
@@ -146,8 +158,8 @@ export function buildCertificateWorkbook(rows, chief, { ExcelJS, seal, logo }) {
 
   // Data rows
   rows.forEach((row, i) => {
-    const startH = Math.floor(row.startTime / 100)
-    const startM = row.startTime % 100
+    const start = Math.floor(row.startTime / 100) * 60 + (row.startTime % 100)
+    const duration = Math.round(row.hour * 60)
     const line = ws.getRow(8 + i)
     line.height = 22.5
     const values = [
@@ -157,9 +169,9 @@ export function buildCertificateWorkbook(rows, chief, { ExcelJS, seal, logo }) {
       row.birthday || '',
       row.phone || '',
       row.date,
-      pad4(startH * 100 + startM),
-      pad4((startH + row.hour) * 100 + startM),
-      `${row.hour}시간`,
+      hhmm(start),
+      hhmm(start + duration),
+      formatDuration(duration),
     ]
     values.forEach((v, c) => {
       Object.assign(line.getCell(c + 1), {

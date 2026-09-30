@@ -94,6 +94,12 @@ for (const key of dataKeys) {
   }
 }
 
+// Seed 1365 volunteer hours table (default keeps the previous rule: 1 hour per course)
+db.insert(settingsTable)
+  .values({ key: 'volunteerHours', value: JSON.stringify(util.DEFAULT_VOLUNTEER_HOURS) })
+  .onConflictDoNothing()
+  .run();
+
 // Migrate settings key: currentSemister → currentSemester
 try {
   const { sqlite } = await import('./db/index.js');
