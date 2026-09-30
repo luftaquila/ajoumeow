@@ -15,9 +15,11 @@
 
       <!-- Verification -->
       <router-link to="/console/verify" class="home-card">
-        <div class="home-card-label"><span class="i-lucide-calendar-check"></span>마지막 급식 인증</div>
-        <div class="home-card-value">{{ latestDate || '없음' }}</div>
-        <p class="home-card-sub">{{ latestDate ? ago(latestDate) : '인증 기록이 없습니다' }}</p>
+        <div class="home-card-label"><span class="i-lucide-calendar-check"></span>인증하지 않은 급식일 (최근 {{ UNVERIFIED_DAYS }}일)</div>
+        <div class="home-card-value" :class="{ 'text-red-500': unverifiedDates.length }">{{ unverifiedDates.length }}<span class="unit">일</span></div>
+        <p class="home-card-sub">
+          마지막 인증 {{ latestDate ? `${latestDate} (${ago(latestDate)})` : '없음' }}
+        </p>
       </router-link>
 
       <!-- Members -->
@@ -50,9 +52,9 @@ import PageHeader from '../components/PageHeader.vue'
 import { getApplications } from '../api/applications.js'
 import { getLatestVerification } from '../api/verifications.js'
 import { getMembers } from '../api/members.js'
-import { useStatus } from '../composables/useStatus.js'
+import { useStatus, UNVERIFIED_DAYS } from '../composables/useStatus.js'
 
-const { semester, apply, register, refreshStatus } = useStatus()
+const { semester, apply, register, unverifiedDates, refreshStatus } = useStatus()
 
 const pending = ref([])
 const latestDate = ref('')

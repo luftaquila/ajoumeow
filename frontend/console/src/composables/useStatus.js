@@ -6,6 +6,9 @@ const semester = ref('')
 const apply = ref({ enabled: false, restricted: false, term: '', open: false })
 const register = ref({ enabled: false, restricted: false, term: '', open: false })
 const pendingApplications = ref(0)
+const unverifiedDates = ref([])
+// Window for "dates with applications but no verification yet"
+export const UNVERIFIED_DAYS = 30
 
 // Same rule as the apply/register pages (useRegistrationGuard)
 function isOpen(enabled, restricted, term) {
@@ -32,18 +35,20 @@ async function loadWindow(prefix, termKey) {
 }
 
 async function refreshStatus() {
-  const [sem, applyState, registerState, pending] = await Promise.allSettled([
+  const [sem, applyState, registerState, pending, unverified] = await Promise.allSettled([
     get('/settings/currentSemester'),
     loadWindow('isApply', 'applyTerm'),
     loadWindow('isRegister', 'registerTerm'),
     get('/applications', { status: 'pending' }),
+    get('/verifications/unverified-dates', { days: UNVERIFIED_DAYS }),
   ])
   if (sem.status === 'fulfilled') semester.value = sem.value.data
   if (applyState.status === 'fulfilled') apply.value = applyState.value
   if (registerState.status === 'fulfilled') register.value = registerState.value
   if (pending.status === 'fulfilled') pendingApplications.value = pending.value.data.length
+  if (unverified.status === 'fulfilled') unverifiedDates.value = unverified.value.data.dates
 }
 
 export function useStatus() {
-  return { semester, apply, register, pendingApplications, refreshStatus }
+  return { semester, apply, register, pendingApplications, unverifiedDates, refreshStatus }
 }
