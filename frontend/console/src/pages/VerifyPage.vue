@@ -105,7 +105,7 @@
               </div>
               <label v-else :for="`row-${row.key}`" class="flex-1 min-w-0 truncate" :class="{ 'cursor-pointer': !row.verified }">
                 <span class="font-medium">{{ row.name }}</span>
-                <span class="text-text-muted text-xs ml-2 hidden sm:inline">{{ row.studentId }}</span>
+                <span class="text-text-muted text-xs ml-2">{{ row.studentId }}</span>
               </label>
 
               <span v-if="row.verified" class="text-sm font-semibold text-emerald-600 tabular-nums">{{ row.score }}점</span>

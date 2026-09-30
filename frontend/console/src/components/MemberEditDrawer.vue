@@ -65,19 +65,6 @@
         <Button type="submit" label="저장" :loading="saving" :disabled="!dirty || hasErrors" class="flex-1" />
         <Button type="button" label="닫기" severity="secondary" outlined @click="$emit('update:visible', false)" />
       </div>
-
-      <div class="border-t border-surface-border pt-4 mt-2">
-        <Button
-          type="button"
-          :label="`${semester} 명단에서 제외`"
-          icon="i-lucide-user-minus"
-          severity="danger"
-          text
-          size="small"
-          @click="$emit('remove', member)"
-        />
-        <p class="hint">계정과 급식 기록은 남고, 이 학기 명단에서만 빠집니다.</p>
-      </div>
     </form>
   </Drawer>
 </template>
@@ -98,7 +85,7 @@ const props = defineProps({
   roles: { type: Array, default: () => [] },
   colleges: { type: Object, default: () => ({}) },
 })
-const emit = defineEmits(['update:visible', 'saved', 'remove'])
+const emit = defineEmits(['update:visible', 'saved'])
 
 const CUSTOM = '__custom__'
 // Same formats as the apply form (apply/src/components/*MemberForm.vue)

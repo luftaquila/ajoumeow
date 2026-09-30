@@ -12,24 +12,25 @@
           v-model="selectedSemester"
           :options="semesterOptions"
           placeholder="학기 선택"
-          class="w-36"
+          class="w-40"
           @change="loadApplications"
         />
-        <SelectButton
+        <Select
           v-model="selectedStatus"
           :options="statusOptions"
           optionLabel="label"
           optionValue="value"
-          :allowEmpty="false"
-          size="small"
+          class="w-28"
           @change="loadApplications"
         />
-        <span class="text-xs text-text-muted">{{ applications.length }}건</span>
+        <span v-if="applications.length" class="text-xs text-text-muted bg-surface-dim px-2 py-1 rounded-full">
+          {{ applications.length }}건
+        </span>
       </template>
       <template #right>
         <template v-if="selected.length">
           <Button :label="`선택 ${selected.length}건 승인`" icon="i-lucide-check" severity="success" size="small" :loading="busy" @click="confirmBulk('approve')" />
-          <Button :label="`거절`" severity="danger" size="small" outlined :disabled="busy" @click="confirmBulk('reject')" />
+          <Button label="선택 거절" severity="danger" size="small" outlined :disabled="busy" @click="confirmBulk('reject')" />
         </template>
       </template>
     </ActionBar>
@@ -42,49 +43,41 @@
         dataKey="id"
         paginator
         :rows="20"
-        :rowsPerPageOptions="[20, 50, 100]"
-        :alwaysShowPaginator="false"
+        :rowsPerPageOptions="[10, 20, 50, 100]"
+        sortMode="multiple"
         removableSort
-        class="text-sm"
+        stripedRows
+        class="text-sm row-normal"
       >
-        <template #empty>
-          <p class="text-center text-text-muted py-6">
-            {{ selectedStatus === 'pending' ? '승인을 기다리는 신청이 없습니다.' : '신청이 없습니다.' }}
-          </p>
-        </template>
-
         <Column v-if="selectedStatus === 'pending'" selectionMode="multiple" style="width: 3rem" />
-        <Column field="createdAt" header="신청일" sortable style="min-width: 6rem">
+        <Column field="createdAt" header="신청일" sortable style="min-width: 11rem">
           <template #body="{ data }">
-            <span class="text-xs whitespace-nowrap" :title="formatLocal(data.createdAt)">{{ formatLocal(data.createdAt, 'mm-dd HH:MM') }}</span>
+            <span class="text-xs">{{ formatLocal(data.createdAt) }}</span>
           </template>
         </Column>
-        <Column field="name" header="신청자" sortable style="min-width: 9rem">
+        <Column field="isNew" header="유형" sortable style="min-width: 5rem">
           <template #body="{ data }">
-            <div class="flex items-center gap-2">
-              <span class="font-medium">{{ data.name }}</span>
-              <Tag :value="data.isNew ? '신규' : '기존'" :severity="data.isNew ? 'info' : 'secondary'" class="text-[11px]!" />
-            </div>
-            <div class="text-xs text-text-muted">{{ data.studentId }}</div>
+            <Tag :value="data.isNew ? '신규' : '기존'" :severity="data.isNew ? 'info' : 'secondary'" />
           </template>
         </Column>
-        <Column field="department" header="소속" sortable style="min-width: 9rem">
+        <Column field="studentId" header="학번" sortable style="min-width: 7rem" />
+        <Column field="name" header="이름" sortable style="min-width: 5rem" />
+        <Column field="college" header="단과대학" sortable style="min-width: 7rem" />
+        <Column field="department" header="학과" sortable style="min-width: 8rem" />
+        <Column field="phone" header="연락처" sortable style="min-width: 9rem" />
+        <Column field="birthday" header="생년월일" sortable style="min-width: 7rem" />
+        <Column field="volunteerId" header="1365 ID" sortable style="min-width: 7rem">
           <template #body="{ data }">
-            <div>{{ data.department }}</div>
-            <div class="text-xs text-text-muted">{{ data.college }}</div>
+            <span v-if="data.volunteerId">{{ data.volunteerId }}</span>
+            <span v-else class="text-xs text-amber-600" title="1365 ID가 없으면 활동확인서에서 빠집니다">없음</span>
           </template>
         </Column>
-        <Column header="연락처" style="min-width: 9rem">
+        <Column field="googleEmail" header="Google" sortable style="min-width: 10rem">
           <template #body="{ data }">
-            <div class="whitespace-nowrap">{{ data.phone }}</div>
-            <div class="text-xs text-text-muted whitespace-nowrap">
-              {{ data.birthday || '생년월일 없음' }} ·
-              <span v-if="data.volunteerId">{{ data.volunteerId }}</span>
-              <span v-else class="text-amber-600" title="1365 ID가 없으면 활동확인서에서 빠집니다">1365 없음</span>
-            </div>
+            <span class="text-xs text-text-muted">{{ data.googleEmail }}</span>
           </template>
         </Column>
-        <Column header="승인하면" style="min-width: 12rem">
+        <Column header="승인하면" style="min-width: 13rem">
           <template #body="{ data }">
             <span v-if="data.isNew" class="text-xs text-text-muted">새 회원으로 등록</span>
             <span v-else-if="!data.current" class="text-xs text-red-500">기존 회원 기록 없음 (승인 불가)</span>
@@ -98,16 +91,16 @@
             <span v-else class="text-xs text-text-muted">정보 변경 없음</span>
           </template>
         </Column>
-        <Column v-if="selectedStatus !== 'pending'" field="status" header="상태" sortable style="min-width: 5rem">
+        <Column field="status" header="상태" sortable style="min-width: 6rem">
           <template #body="{ data }">
             <Tag :value="statusLabel(data.status)" :severity="statusSeverity(data.status)" />
           </template>
         </Column>
-        <Column header="" style="width: 7rem">
+        <Column header="" style="min-width: 10rem">
           <template #body="{ data }">
-            <div v-if="data.status === 'pending'" class="flex gap-0.5 justify-end whitespace-nowrap">
+            <div v-if="data.status === 'pending'" class="flex gap-1">
               <Button label="승인" severity="success" size="small" :disabled="busy" @click="confirmOne(data, 'approve')" />
-              <Button label="거절" severity="secondary" size="small" text :disabled="busy" @click="confirmOne(data, 'reject')" />
+              <Button label="거절" severity="danger" size="small" outlined :disabled="busy" @click="confirmOne(data, 'reject')" />
             </div>
           </template>
         </Column>
@@ -124,7 +117,6 @@ import { useConfirm } from 'primevue/useconfirm'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Select from 'primevue/select'
-import SelectButton from 'primevue/selectbutton'
 import Button from 'primevue/button'
 import Tag from 'primevue/tag'
 import ConfirmDialog from 'primevue/confirmdialog'
@@ -150,10 +142,10 @@ const loading = ref(false)
 const busy = ref(false)
 
 const statusOptions = [
+  { label: '전체', value: 'all' },
   { label: '대기', value: 'pending' },
   { label: '승인', value: 'approved' },
   { label: '거절', value: 'rejected' },
-  { label: '전체', value: 'all' },
 ]
 
 const STATUS = {
@@ -260,3 +252,10 @@ async function run(action, list) {
   refreshStatus()
 }
 </script>
+
+<style scoped>
+:deep(.row-normal .p-datatable-tbody > tr > td) {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+</style>

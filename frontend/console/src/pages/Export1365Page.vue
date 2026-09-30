@@ -7,25 +7,28 @@
     />
 
     <div class="card-section flex flex-col gap-5">
-      <div class="flex flex-col gap-2">
-        <label class="field-label">기간</label>
-        <SelectButton v-model="preset" :options="PRESETS" optionLabel="label" optionValue="value" :allowEmpty="false" size="small" @change="applyPreset" />
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <DatePicker v-model="startDate" dateFormat="yy-mm-dd" showIcon fluid placeholder="시작일" @update:modelValue="preset = 'custom'" />
-          <DatePicker v-model="endDate" dateFormat="yy-mm-dd" showIcon fluid placeholder="종료일" @update:modelValue="preset = 'custom'" />
+      <SelectButton v-model="preset" :options="PRESETS" optionLabel="label" optionValue="value" :allowEmpty="false" size="small" @change="applyPreset" />
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="flex flex-col gap-1">
+          <label class="field-label">시작일</label>
+          <DatePicker v-model="startDate" dateFormat="yy-mm-dd" class="w-full" @update:modelValue="preset = 'custom'" />
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="field-label">종료일</label>
+          <DatePicker v-model="endDate" dateFormat="yy-mm-dd" class="w-full" @update:modelValue="preset = 'custom'" />
         </div>
       </div>
 
       <div class="flex flex-col gap-1">
-        <label class="field-label" for="cert-semester">명단 기준 학기</label>
-        <Select inputId="cert-semester" v-model="selectedSemester" :options="semesters" placeholder="학기 선택" class="w-full sm:w-48" />
-        <p class="text-xs text-text-muted">이 학기 명단의 1365 아이디와 회장(담당자) 정보로 작성합니다.</p>
+        <label class="field-label">학기</label>
+        <Select v-model="selectedSemester" :options="semesters" placeholder="학기 선택" />
       </div>
 
-      <label class="flex items-center gap-2 text-sm cursor-pointer select-none">
-        <Checkbox v-model="maskPrivacy" :binary="true" />
-        개인정보 가리기 (이름·생년월일·연락처 마스킹)
-      </label>
+      <div class="flex items-center gap-2">
+        <Checkbox v-model="maskPrivacy" :binary="true" inputId="mask" />
+        <label for="mask" class="text-sm cursor-pointer">개인정보 보호 (이름, 생년월일, 연락처 마스킹)</label>
+      </div>
 
       <!-- Preview -->
       <div class="rounded-xl bg-surface-muted border border-surface-border px-4 py-3">
