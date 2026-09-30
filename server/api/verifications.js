@@ -1,7 +1,7 @@
 import dateformat from 'dateformat';
 import { eq, and, between, desc, like } from 'drizzle-orm';
 
-import { db } from '../db/index.js';
+import { db, sqlite } from '../db/index.js';
 import { members, semesters, semesterMembers, records, verifications } from '../db/schema.js';
 import util from '../controllers/util/util.js';
 import { Log, success, error } from '../controllers/util/interface.js';
@@ -41,7 +41,7 @@ function getRecordsWithMember(date) {
 
 export default async function(fastify, opts) {
 
-  fastify.get('/', { preHandler: [util.isLogin] }, async (request, reply) => {
+  fastify.get('/', { preHandler: [util.isAdmin] }, async (request, reply) => {
     try {
       const recordList = getRecordsWithMember(request.query.date);
       const verifyList = getVerificationsWithMember(eq(verifications.date, request.query.date));
@@ -54,21 +54,35 @@ export default async function(fastify, opts) {
     }
   });
 
-  fastify.post('/', { preHandler: [util.isLogin] }, async (request, reply) => {
+  fastify.post('/', { preHandler: [util.isAdmin] }, async (request, reply) => {
     try {
       const payload = request.body.items;
-      let result = [];
-      for(let obj of payload) {
-        const member = util.getMemberByStudentId(obj.studentId);
-        if (!member) continue;
-        const att = db.insert(verifications).values({
-          memberId: member.id,
-          date: obj.date,
-          course: obj.course,
-          score: obj.score,
-        }).run();
-        result.push(att);
-      }
+      let inserted = 0;
+      const skipped = [];
+      // 같은 회원·날짜·코스(사유) 인증이 이미 있으면 다시 지급하지 않는다
+      const insert = sqlite.transaction(() => {
+        for(let obj of payload) {
+          const member = util.getMemberByStudentId(obj.studentId);
+          if (!member) continue;
+          const dup = db.select({ id: verifications.id })
+            .from(verifications)
+            .where(and(eq(verifications.memberId, member.id), eq(verifications.date, obj.date), eq(verifications.course, obj.course)))
+            .get();
+          if (dup) {
+            skipped.push({ studentId: member.studentId, name: member.name, course: obj.course });
+            continue;
+          }
+          db.insert(verifications).values({
+            memberId: member.id,
+            date: obj.date,
+            course: obj.course,
+            score: obj.score,
+          }).run();
+          inserted++;
+        }
+      });
+      insert();
+      const result = { inserted, skipped };
       util.logger(new Log('info', request.remoteIP, request.originalPath, '급식 인증', request.method, 201, request.body, result));
       return reply.code(201).send(success(result));
     }
@@ -78,7 +92,7 @@ export default async function(fastify, opts) {
     }
   });
 
-  fastify.delete('/', { preHandler: [util.isLogin] }, async (request, reply) => {
+  fastify.delete('/', { preHandler: [util.isAdmin] }, async (request, reply) => {
     try {
       const payload = request.body.items;
       let result = [];
@@ -99,7 +113,7 @@ export default async function(fastify, opts) {
     }
   });
 
-  fastify.get('/latest', { preHandler: [util.isLogin] }, async (request, reply) => {
+  fastify.get('/latest', { preHandler: [util.isAdmin] }, async (request, reply) => {
     try {
       const row = db.select({
         studentId: members.studentId,
