@@ -96,13 +96,16 @@ export default async function(fastify, opts) {
           alreadyRegistered = !!existing;
         }
 
-        // Public endpoint: contact details stay out, the applicant types them again
         return reply.code(200).send(success({
           college: previousMember.college,
           department: previousMember.department,
           studentId: previousMember.studentId,
           name: previousMember.name,
+          phone: previousMember.phone,
+          birthday: previousMember.birthday,
+          volunteerId: previousMember.volunteerId,
           enrolledSemester: smInfo ? smInfo.enrolledSemester : null,
+          role: smInfo ? smInfo.role : '회원',
           alreadyRegistered,
         }));
       }
@@ -114,13 +117,6 @@ export default async function(fastify, opts) {
       util.logger(new Log('error', request.remoteIP, request.originalPath, '회원 조회 오류', request.method, 500, request.params, e.stack));
       return reply.code(500).send(error('ERR_UNKNOWN', '알 수 없는 오류입니다.'));
     }
-  });
-
-  // Registration used to happen here without any check (old /apply page); it now goes through
-  // a website application from the timetable, approved in the console
-  fastify.post('/', async (request, reply) => {
-    util.logger(new Log('info', request.remoteIP, request.originalPath, '회원 등록 (폐지된 경로)', request.method, 410, null, 'ERR_GONE'));
-    return reply.code(410).send(error('ERR_GONE', '회원 등록은 급식표에서 구글 계정으로 로그인한 뒤 가입 신청으로 받습니다.'));
   });
 
   // Update member info

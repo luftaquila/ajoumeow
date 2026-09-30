@@ -70,7 +70,6 @@ export default defineConfig({
       input: {
         timetable: resolve(__dirname, 'timetable/index.html'),
         dashboard: resolve(__dirname, 'dashboard/index.html'),
-        apply: resolve(__dirname, 'apply/index.html'),
         register: resolve(__dirname, 'register/index.html'),
         'console': resolve(__dirname, 'console/index.html'),
         gallery: resolve(__dirname, 'gallery/index.html'),
