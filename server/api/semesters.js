@@ -36,8 +36,8 @@ export default async function(fastify, opts) {
       // 대상 학기가 이미 존재하는지 확인
       const targetExists = db.select().from(semesters).where(eq(semesters.name, name)).get();
 
-      // 현재 학기 임원 조회
-      const executives = db.select({
+      // 현재 학기 명단 (임원만 새 학기로 넘어간다)
+      const roster = db.select({
         name: members.name,
         studentId: members.studentId,
         role: semesterMembers.role,
@@ -45,14 +45,15 @@ export default async function(fastify, opts) {
         .from(semesterMembers)
         .innerJoin(members, eq(semesterMembers.memberId, members.id))
         .where(eq(semesterMembers.semesterId, current.id))
-        .all()
-        .filter(r => r.role !== '회원');
+        .all();
+      const executives = roster.filter(r => r.role !== '회원');
 
       const result = {
         currentSemester: current.name,
         targetSemester: name,
         targetExists: !!targetExists,
         executives,
+        regularCount: roster.length - executives.length,
       };
 
       util.logger(new Log('info', request.remoteIP, request.originalPath, '학기 전환 미리보기', request.method, 200, request.query, result));

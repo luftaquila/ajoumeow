@@ -13,9 +13,9 @@
     <!-- Most console actions act on the current semester, so keep it in view -->
     <router-link
       v-if="semester"
-      to="/console/settings"
+      to="/console/semester"
       class="text-xs font-semibold px-2.5 py-1 rounded-full bg-surface-dim text-text-secondary hover:text-text"
-      title="현재 학기 (설정에서 전환)"
+      title="현재 학기 (눌러서 학기 전환)"
     >{{ semester }}학기</router-link>
     <span v-if="apply.open" class="status-pill" title="가입 신청을 받는 중">
       <span class="dot"></span>가입 신청

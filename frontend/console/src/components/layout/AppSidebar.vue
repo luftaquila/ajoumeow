@@ -29,6 +29,7 @@
       <SidebarItem to="/console/1365" icon="i-lucide-hand-helping" label="1365 활동확인서" @click="$emit('navigate')" />
 
       <p class="group-label">관리</p>
+      <SidebarItem to="/console/semester" icon="i-lucide-calendar-range" label="학기 전환" @click="$emit('navigate')" />
       <SidebarItem to="/console/settings" icon="i-lucide-settings" label="설정" @click="$emit('navigate')" />
     </div>
 

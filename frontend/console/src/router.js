@@ -7,6 +7,7 @@ import MembersPage from './pages/MembersPage.vue'
 import Export1365Page from './pages/Export1365Page.vue'
 import ApplicationsPage from './pages/ApplicationsPage.vue'
 import RecruitPage from './pages/RecruitPage.vue'
+import SemesterPage from './pages/SemesterPage.vue'
 
 const routes = [
   { path: '/console', redirect: '/console/home' },
@@ -16,6 +17,7 @@ const routes = [
   { path: '/console/members', component: MembersPage, meta: { title: '회원 명단' } },
   { path: '/console/recruit', component: RecruitPage, meta: { title: '신입 모집 설문' } },
   { path: '/console/1365', component: Export1365Page, meta: { title: '1365 활동확인서' } },
+  { path: '/console/semester', component: SemesterPage, meta: { title: '학기 전환' } },
   { path: '/console/settings', component: SettingsPage, meta: { title: '설정' } },
   { path: '/console/:pathMatch(.*)*', redirect: '/console/home' },
 ]
