@@ -20,8 +20,8 @@
     <span v-if="apply.open" class="status-pill" title="웹사이트 가입 신청을 받는 중">
       <span class="dot"></span>웹사이트 가입
     </span>
-    <span v-if="register.open" class="status-pill" title="동아리 가입 신청을 받는 중">
-      <span class="dot"></span>동아리 가입
+    <span v-if="register.open" class="status-pill" title="신입 모집 설문을 받는 중">
+      <span class="dot"></span>신입 모집
     </span>
 
     <button

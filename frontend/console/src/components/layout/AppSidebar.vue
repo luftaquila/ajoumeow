@@ -23,7 +23,7 @@
 
       <p class="group-label">회원</p>
       <SidebarItem to="/console/members" icon="i-lucide-users" label="회원 명단" @click="$emit('navigate')" />
-      <SidebarItem to="/console/recruit" icon="i-lucide-clipboard-list" label="동아리 가입 신청" @click="$emit('navigate')" />
+      <SidebarItem to="/console/recruit" icon="i-lucide-clipboard-list" label="신입 모집 설문" @click="$emit('navigate')" />
 
       <p class="group-label">문서</p>
       <SidebarItem to="/console/1365" icon="i-lucide-hand-helping" label="1365 활동확인서" @click="$emit('navigate')" />

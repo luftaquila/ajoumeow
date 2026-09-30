@@ -65,7 +65,7 @@ const memberCount = computed(() => members.value.length)
 const officerCount = computed(() => members.value.filter(m => m.role !== '회원').length)
 const windows = computed(() => [
   { label: '웹사이트 가입 신청', state: apply.value },
-  { label: '동아리 가입 신청', state: register.value },
+  { label: '신입 모집 설문', state: register.value },
 ])
 
 function ago(dateStr) {

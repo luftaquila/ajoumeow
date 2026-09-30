@@ -126,7 +126,7 @@ const nextSteps = computed(() => [
     to: apply.value.open ? '/console/applications' : '/console/settings',
   },
   {
-    label: '동아리 가입 신청',
+    label: '신입 모집 설문',
     detail: register.value.open ? '지금 받는 중' : '닫혀 있음 — 모집할 때 켜세요',
     ok: register.value.open,
     to: '/console/recruit',
