@@ -7,7 +7,8 @@
       <!-- Login form -->
       <div v-if="!isLoggedIn" class="flex flex-col items-center justify-center gap-3">
         <p class="text-xs text-text-muted">학교 Google 계정(@ajou.ac.kr)으로 로그인하세요.</p>
-        <div ref="googleBtnRef"></div>
+        <!-- GIS iframe document is light; a mismatched dark color-scheme makes the browser paint it an opaque white canvas -->
+        <div ref="googleBtnRef" style="color-scheme: light"></div>
       </div>
 
       <!-- User info -->
@@ -158,11 +159,11 @@ onMounted(() => {
   initGoogle()
 })
 
-watch([() => props.visible, gisReady, isLoggedIn], () => {
+watch([() => props.visible, gisReady, isLoggedIn, isDark], () => {
   if (props.visible && gisReady.value && !isLoggedIn.value) {
     requestAnimationFrame(() => {
       if (googleBtnRef.value) {
-        renderButton(googleBtnRef.value, handleGoogleResult)
+        renderButton(googleBtnRef.value, handleGoogleResult, isDark.value)
       }
     })
   }
