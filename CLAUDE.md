@@ -201,7 +201,7 @@ ADMIN_EMAILS=...              # 쉼표 구분, Google 로그인 시 자동 관�
 | /api/data | data.js | 데이터 조회/수정 (`GET/PUT /:key` — college, map, weather) |
 | /api/records | records.js | 급식 신청 CRUD, 통계, 지도 |
 | /api/verifications | verifications.js | 급식 인증 CRUD (관리자), 월별 요약 (`/summary`), 미인증 날짜 (`/unverified-dates`), 1365 데이터 |
-| /api/members | members.js | 회원 조회/수정/삭제 (수정·삭제는 `semester` 지정 가능), 직책 목록 (`/roles`), 학번 조회 |
+| /api/members | members.js | 회원 조회/수정/삭제 (수정·삭제는 `semester` 지정 가능), 직책 목록 (`/roles`) |
 | /api/semesters | semesters.js | 학기 목록 조회 |
 | /api/registrations | registrations.js | 신입 모집 설문 (제출, 목록 + 웹사이트 가입 여부), 학기 목록 |
 | /api/applications | applications.js | 웹사이트 가입 신청 (Google 기반 — 제출은 `isApply` 기간만, 목록, 승인/거절) |

@@ -79,6 +79,8 @@
         </Column>
         <Column header="승인하면" style="min-width: 13rem">
           <template #body="{ data }">
+            <!-- min-width on a table cell is ignored, so size the content itself -->
+            <div class="min-w-52">
             <span v-if="data.isNew" class="text-xs text-text-muted">새 회원으로 등록</span>
             <span v-else-if="!data.current" class="text-xs text-red-500">기존 회원 기록 없음 (승인 불가)</span>
             <div v-else-if="changes(data).length" class="text-xs flex flex-col gap-0.5">
@@ -89,6 +91,7 @@
               </p>
             </div>
             <span v-else class="text-xs text-text-muted">정보 변경 없음</span>
+            </div>
           </template>
         </Column>
         <Column field="status" header="상태" sortable style="min-width: 6rem">
@@ -158,6 +161,9 @@ const statusSeverity = s => STATUS[s]?.[1] || 'secondary'
 
 // Approving an existing member's application overwrites these fields (server: PUT /applications/:id/approve)
 const OVERWRITTEN = [
+  ['name', '이름'],
+  ['college', '단과대학'],
+  ['department', '학과'],
   ['phone', '연락처'],
   ['birthday', '생년월일'],
   ['volunteerId', '1365 ID'],

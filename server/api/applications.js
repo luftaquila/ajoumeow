@@ -160,7 +160,7 @@ export default async function(fastify, opts) {
 
       // 기존 회원 신청은 승인 시 덮어쓸 현재 값을 같이 내려준다
       let query = `SELECT a.*, s.name AS semesterName,
-          m.name AS m_name, m.phone AS m_phone, m.birthday AS m_birthday, m.volunteer_id AS m_volunteer_id, m.google_email AS m_google_email
+          m.name AS m_name, m.college AS m_college, m.department AS m_department, m.phone AS m_phone, m.birthday AS m_birthday, m.volunteer_id AS m_volunteer_id, m.google_email AS m_google_email
         FROM applications a
         JOIN semesters s ON a.semester_id = s.id
         LEFT JOIN members m ON m.student_id = a.student_id
@@ -195,6 +195,8 @@ export default async function(fastify, opts) {
         createdAt: r.created_at,
         current: r.is_new || !r.m_name ? null : {
           name: r.m_name,
+          college: r.m_college,
+          department: r.m_department,
           phone: r.m_phone,
           birthday: r.m_birthday,
           volunteerId: r.m_volunteer_id,
