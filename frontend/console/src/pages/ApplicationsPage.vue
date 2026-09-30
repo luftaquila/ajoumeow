@@ -77,7 +77,7 @@
             <span class="text-xs text-text-muted">{{ data.googleEmail }}</span>
           </template>
         </Column>
-        <Column header="승인하면" style="min-width: 13rem">
+        <Column header="변경 사항" style="min-width: 13rem">
           <template #body="{ data }">
             <!-- min-width on a table cell is ignored, so size the content itself -->
             <div class="min-w-52">
