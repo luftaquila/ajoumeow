@@ -33,10 +33,11 @@ frontend/                   # 통합 Vite MPA 프로젝트
     index.html              # 단일 진입점
     src/                    # main.js, App.vue, router.js
       api/                  # auth, settings, data, members, verifications, records, semesters, registrations, applications
-      composables/          # useAuth, useSemesters
+      composables/          # useAuth, useSemesters, useStatus (현재 학기·신청 기간·사이드바 배지), useNotify (토스트)
+      components/           # PageHeader, ActionBar, ExtraGrantDialog, MemberEditDrawer, LocationRow
       components/layout/    # AppLayout, AppSidebar, AppTopbar, SidebarItem
-      pages/                # Verify, Settings, Members, Export1365, Applications, Recruit
-      utils/                # scoreCalculator, contactExport
+      pages/                # Home, Verify, Applications, Members, Recruit, Export1365, Semester, Settings
+      utils/                # scoreCalculator, contactExport, certificate1365
   register/                 # Vue 3 SPA (신입 모집)
     index.html
     src/                    # main.js, App.vue, components/, composables/
@@ -102,7 +103,7 @@ npm run build              # = cd frontend && vite build → server/dist/
 - `main.js`에서 Vue + PrimeVue(Aura 테마) + UnoCSS + ToastService 부트스트랩
 - `shared/api.js`의 `get()/post()/put()/del()/postJSON()/putJSON()` 헬퍼 사용 (JWT 자동 첨부)
 - `shared/composables/useTheme.js`로 다크/라이트 모드 관리
-- console은 `vue-router`를 사용하는 SPA (6개 라우트)
+- console은 `vue-router`를 사용하는 SPA (8개 라우트, `/console` → `/console/home`)
 
 ### 레거시 페이지 패턴 (gallery만 해당)
 - 각 페이지 그룹에 `entry-base.js` (공통 vendor) + `entry-{page}.js` (페이지별)
@@ -199,8 +200,8 @@ ADMIN_EMAILS=...              # 쉼표 구분, Google 로그인 시 자동 관�
 | /api/settings | settings.js | 설정값 조회/수정 (`GET/PUT /:key`) |
 | /api/data | data.js | 데이터 조회/수정 (`GET/PUT /:key` — college, map, weather) |
 | /api/records | records.js | 급식 신청 CRUD, 통계, 지도 |
-| /api/verifications | verifications.js | 급식 인증 CRUD, 1365 내보내기 |
-| /api/members | members.js | 회원 조회/등록/수정/삭제, 학번 조회 |
+| /api/verifications | verifications.js | 급식 인증 CRUD (관리자), 월별 요약 (`/summary`), 미인증 날짜 (`/unverified-dates`), 1365 데이터 |
+| /api/members | members.js | 회원 조회/등록/수정/삭제 (수정·삭제는 `semester` 지정 가능), 직책 목록 (`/roles`), 학번 조회 |
 | /api/semesters | semesters.js | 학기 목록 조회 |
 | /api/registrations | registrations.js | 가입 신청 CRUD, 학기 목록 |
 | /api/applications | applications.js | 가입 신청 관리 (Google 기반 — 제출, 목록, 승인/거절) |
@@ -227,6 +228,8 @@ ADMIN_EMAILS=...              # 쉼표 구분, Google 로그인 시 자동 관�
 - 토큰 유효기간: 365일
 - 쿠키 이름: `jwt` (프론트엔드에서 js-cookie로 관리)
 - 미들웨어: `util.isLogin` (필수 인증), `util.isAdmin` (관리자), `util.optionalAuth` (선택적 인증)
+- `util.isAdmin`은 토큰의 role이 아니라 현재 학기 명단의 직책(`util.currentRole`)으로 판단한다. 토큰은 1년 유효라 강등된 임원이 권한을 유지하지 않게 하기 위함. 회원 기록이 없는 `ADMIN_EMAILS` 토큰만 토큰 role을 쓴다.
+- '회원'이 아닌 직책은 모두 관리자 권한이다.
 
 ### Google OAuth
 - Google Identity Services (GIS) 사용 — 프론트엔드에서 credential 발급 후 서버로 전달
