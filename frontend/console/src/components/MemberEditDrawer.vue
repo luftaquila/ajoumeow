@@ -39,8 +39,8 @@
       </div>
 
       <div class="field">
-        <label for="m-vol">1365 아이디</label>
-        <InputText id="m-vol" v-model="form.volunteerId" placeholder="없으면 활동확인서에서 빠집니다" />
+        <label for="m-vol">1365 ID</label>
+        <InputText id="m-vol" v-model="form.volunteerId" />
       </div>
 
       <div class="field">
@@ -57,8 +57,8 @@
       </div>
 
       <div class="field">
-        <label>Google 계정</label>
-        <p class="text-sm">{{ member.googleEmail || '연동 안 됨' }}</p>
+        <label>Google</label>
+        <p class="text-sm">{{ member.googleEmail || '미연동' }}</p>
       </div>
 
       <div class="flex gap-2 pt-2">
@@ -169,11 +169,11 @@ async function save() {
   }
   try {
     await updateMember(props.member.studentId, data)
-    notify.success(`${data.name} 정보를 저장했습니다.`)
+    notify.success('수정되었습니다.')
     emit('saved', data)
     emit('update:visible', false)
   } catch (e) {
-    notify.error(e, '저장 실패')
+    notify.error(e, '수정 실패')
   } finally {
     saving.value = false
   }

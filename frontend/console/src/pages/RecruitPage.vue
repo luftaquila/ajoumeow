@@ -1,20 +1,20 @@
 <template>
   <div>
     <PageHeader
-      title="신입 모집 설문"
-      description="/register 설문으로 받은 신입 연락처입니다. 웹사이트 계정은 만들어지지 않으며, 회원 등록은 급식표의 웹사이트 가입 신청으로 따로 받습니다."
+      title="신입 모집"
+      description="/register 설문으로 받은 신입 연락처입니다. 계정은 만들어지지 않으며, 회원가입은 급식표의 가입 신청으로 따로 받습니다."
       icon="i-lucide-clipboard-list"
     />
 
     <!-- Survey state and link -->
     <div class="card p-4 mb-5 flex flex-col sm:flex-row sm:items-center gap-3">
       <div class="flex items-center gap-3">
-        <ToggleSwitch :modelValue="register.enabled" :disabled="toggling" aria-label="신입 모집 설문 받기" @update:modelValue="toggleSurvey" />
+        <ToggleSwitch :modelValue="register.enabled" :disabled="toggling" aria-label="모집 활성화" @update:modelValue="toggleSurvey" />
         <div>
-          <p class="font-medium">{{ register.open ? '설문 받는 중' : '설문 닫힘' }}</p>
+          <p class="font-medium">{{ register.open ? '모집 중' : '모집 닫힘' }}</p>
           <p class="text-xs text-text-muted">
             {{ !register.enabled ? '꺼져 있음' : register.restricted ? `기간 ${register.term.replace('~', ' ~ ')}` : '기간 제한 없음' }}
-            · <router-link to="/console/settings" class="text-primary hover:underline">기간은 설정에서</router-link>
+            · <router-link to="/console/settings" class="text-primary hover:underline">기간 설정</router-link>
           </p>
         </div>
       </div>
@@ -30,9 +30,6 @@
         <img v-if="qrSmall" :src="qrSmall" alt="모집 설문지 QR" class="w-20 h-20 rounded-md border border-surface-border bg-white flex-shrink-0" />
       </div>
     </div>
-    <p v-if="register.enabled && semester" class="-mt-3 mb-5 text-xs text-text-muted">
-      신청은 현재 학기({{ semester }})로 모입니다. 새 학기 모집 전에는 설정에서 학기를 먼저 전환하세요.
-    </p>
 
     <ActionBar>
       <template #left>
@@ -47,7 +44,7 @@
           {{ shown.length }}명
         </span>
         <button class="filter-chip" :class="{ active: onlyNotJoined }" @click="onlyNotJoined = !onlyNotJoined">
-          웹사이트 미가입 <span class="opacity-60">{{ notJoinedCount }}</span>
+          미가입 <span class="opacity-60">{{ notJoinedCount }}</span>
         </button>
       </template>
       <template #right>
@@ -78,11 +75,11 @@
         <Column field="college" header="단과대학" sortable style="min-width: 7rem" />
         <Column field="department" header="학과" sortable style="min-width: 8rem" />
         <Column field="phone" header="연락처" sortable style="min-width: 9rem" />
-        <Column field="joinStatus" header="웹사이트 가입" sortable style="min-width: 7rem">
+        <Column field="joinStatus" header="회원가입" sortable style="min-width: 7rem">
           <template #body="{ data }">
-            <Tag v-if="data.joinStatus === 'member'" value="회원" severity="success" />
+            <Tag v-if="data.joinStatus === 'member'" value="가입 완료" severity="success" />
             <Tag v-else-if="data.joinStatus === 'applied'" value="승인 대기" severity="warn" />
-            <span v-else class="text-xs text-text-muted">아직</span>
+            <span v-else class="text-xs text-text-muted">미가입</span>
           </template>
         </Column>
       </DataTable>
@@ -112,7 +109,7 @@ import { formatLocal } from '../../../shared/utils/dateFormat.js'
 
 const notify = useNotify()
 const { currentSemester, loadSemesters } = useSemesters()
-const { semester, register, refreshStatus } = useStatus()
+const { register, refreshStatus } = useStatus()
 
 const selectedSemester = ref('')
 const semesterOptions = ref([])
@@ -147,7 +144,7 @@ async function toggleSurvey(value) {
   try {
     await updateSetting('isRegister', value ? 'TRUE' : 'FALSE')
     await refreshStatus()
-    notify.success(value ? '신입 모집 설문을 켰습니다.' : '신입 모집 설문을 껐습니다.')
+    notify.success(value ? '신입 모집을 켰습니다.' : '신입 모집을 껐습니다.')
   } catch (e) {
     notify.error(e, '설정 변경 실패')
   } finally {

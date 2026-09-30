@@ -2,7 +2,7 @@
   <div>
     <PageHeader
       title="급식 인증"
-      description="급식 신청자 중 실제로 급식한 회원을 인증해 마일리지를 지급합니다. 인증한 급식만 마일리지와 1365 활동확인서에 반영됩니다."
+      description="급식 신청자 중 실제로 급식한 회원을 인증해 마일리지를 지급합니다. 인증한 급식만 마일리지와 1365 봉사활동 인증서에 반영됩니다."
       icon="i-lucide-calendar-check"
     />
 
@@ -25,12 +25,12 @@
         </DatePicker>
         <div class="flex items-center gap-3 text-[11px] text-text-muted px-1">
           <span class="flex items-center gap-1"><span class="legend-dot cal-dot-none"></span>미인증</span>
-          <span class="flex items-center gap-1"><span class="legend-dot cal-dot-partial"></span>일부 인증</span>
+          <span class="flex items-center gap-1"><span class="legend-dot cal-dot-partial"></span>일부만 인증</span>
           <span class="flex items-center gap-1"><span class="legend-dot cal-dot-done"></span>완료</span>
         </div>
 
         <div v-if="unverifiedDates.length" class="card p-4">
-          <p class="text-xs font-semibold text-text-secondary mb-2">최근 {{ UNVERIFIED_DAYS }}일 중 인증하지 않은 날</p>
+          <p class="text-xs font-semibold text-text-secondary mb-2">미인증 급식일 (최근 {{ UNVERIFIED_DAYS }}일)</p>
           <div class="flex flex-wrap gap-1.5">
             <button
               v-for="d in unverifiedDates"
@@ -51,11 +51,10 @@
             신청 {{ rows.length }}건 · 인증 {{ verifiedCount }}건
           </span>
           <div class="flex-1"></div>
-          <label class="flex items-center gap-2 text-sm cursor-pointer select-none">
-            <ToggleSwitch v-model="boost" />
-            상향 지급
-            <span class="text-xs text-text-muted">(시험기간·연휴·악천후)</span>
-          </label>
+          <div class="flex items-center gap-2" title="시험기간/연휴/악천후 등">
+            <Checkbox v-model="boost" :binary="true" inputId="boost" />
+            <label for="boost" class="text-sm cursor-pointer">상향 지급</label>
+          </div>
         </div>
 
         <div v-if="loading" class="text-center py-10">
@@ -67,18 +66,15 @@
         </div>
 
         <div v-else class="flex flex-col gap-4">
+          <button v-if="pendingRows.length" class="text-xs text-text-muted hover:text-text cursor-pointer self-start -mb-2" @click="toggleAll">
+            {{ selectedRows.length }}/{{ pendingRows.length }}명 선택
+          </button>
           <!-- One card per course -->
           <div v-for="g in groups" :key="g.course" class="card overflow-hidden">
             <div class="flex items-center gap-2 px-4 py-2.5 border-b border-surface-border bg-surface-muted/60">
               <span class="w-2.5 h-2.5 rounded-full" :style="{ background: courseColor(g.course) }"></span>
               <span class="font-semibold text-sm">{{ g.course }}</span>
               <span class="text-xs text-text-muted">{{ g.summary }}</span>
-              <div class="flex-1"></div>
-              <button
-                v-if="g.pending.length > 1"
-                class="text-xs text-text-muted hover:text-text cursor-pointer"
-                @click="toggleGroup(g)"
-              >{{ g.pending.every(r => r.checked) ? '모두 해제' : '모두 선택' }}</button>
             </div>
 
             <div
@@ -115,14 +111,14 @@
               <button
                 v-if="row.recordId"
                 class="row-action hover:text-primary"
-                :title="row.editing ? '변경 취소' : '실제 급식자로 변경'"
+                :title="row.editing ? '취소' : '급식자 변경'"
                 :disabled="row.saving"
                 @click="toggleFeederEdit(row)"
               ><span :class="row.editing ? 'i-lucide-x' : 'i-lucide-user-pen'"></span></button>
               <button
                 v-if="row.verified && !row.editing"
                 class="row-action hover:text-red-500"
-                title="인증 취소"
+                title="인증 삭제"
                 :disabled="row.saving"
                 @click="cancelVerification(row)"
               ><span class="i-lucide-undo-2"></span></button>
@@ -133,7 +129,7 @@
           <div v-if="extras.length" class="card overflow-hidden">
             <div class="flex items-center gap-2 px-4 py-2.5 border-b border-surface-border bg-surface-muted/60">
               <span class="i-lucide-sparkles text-sm text-text-muted"></span>
-              <span class="font-semibold text-sm">기타 활동</span>
+              <span class="font-semibold text-sm">기타 인증</span>
             </div>
             <div
               v-for="ex in extras"
@@ -145,25 +141,22 @@
                 <span class="text-text-muted text-xs ml-2">{{ ex.course }}</span>
               </span>
               <span class="text-sm font-semibold text-emerald-600 tabular-nums">{{ ex.score }}점</span>
-              <button class="row-action hover:text-red-500" title="지급 취소" :disabled="ex.saving" @click="cancelVerification(ex)">
+              <button class="row-action hover:text-red-500" title="인증 삭제" :disabled="ex.saving" @click="cancelVerification(ex)">
                 <span class="i-lucide-undo-2"></span>
               </button>
             </div>
           </div>
 
-          <p class="text-[11px] text-text-muted leading-relaxed">
-            점수: 평일 1.5 (2인 이상 1) · 주말 2 (2인 이상 1.5) · 상향 지급 시 평일 2 (1.5) · 주말 3 (2).
-            인원은 같은 날 같은 코스에서 인증된 사람을 모두 셉니다.
-          </p>
         </div>
 
         <!-- Action bar -->
         <div class="action-bar sticky bottom-0 mt-4 -mx-1 px-1 pb-1 pt-3">
           <div class="card flex items-center gap-3 px-4 py-3 flex-wrap">
-            <Button label="기타 활동 지급" icon="i-lucide-plus" severity="secondary" size="small" text @click="showExtra = true" />
+            <Button label="기타 인증" icon="i-lucide-plus" severity="secondary" size="small" text @click="showExtra = true" />
             <div class="flex-1"></div>
+            <span v-if="selectedRows.length" class="text-sm text-text-secondary tabular-nums">{{ selectedRows.length }}명 · 합계 {{ selectedTotal }}점</span>
             <Button
-              :label="selectedRows.length ? `${selectedRows.length}명 인증 · ${selectedTotal}점` : '인증'"
+              label="인증"
               icon="i-lucide-check"
               :loading="submitting"
               :disabled="!selectedRows.length || loading"
@@ -182,7 +175,6 @@
 import { ref, computed, onMounted, nextTick } from 'vue'
 import DatePicker from 'primevue/datepicker'
 import Checkbox from 'primevue/checkbox'
-import ToggleSwitch from 'primevue/toggleswitch'
 import AutoComplete from 'primevue/autocomplete'
 import Button from 'primevue/button'
 import PageHeader from '../components/PageHeader.vue'
@@ -252,11 +244,12 @@ const groups = computed(() => {
       const verified = list.filter(r => r.verified).length
       const parts = [`신청 ${list.length}명`]
       if (verified) parts.push(`인증 ${verified}명`)
-      return { course, rows: list, pending: list.filter(r => !r.verified), summary: parts.join(' · ') }
+      return { course, rows: list, summary: parts.join(' · ') }
     })
 })
 
-const selectedRows = computed(() => rows.value.filter(r => !r.verified && r.checked))
+const pendingRows = computed(() => rows.value.filter(r => !r.verified))
+const selectedRows = computed(() => pendingRows.value.filter(r => r.checked))
 const selectedTotal = computed(() => selectedRows.value.reduce((sum, r) => sum + previewScore(r), 0))
 
 function marker(date) {
@@ -339,9 +332,9 @@ async function refreshAll() {
 
 onMounted(refreshAll)
 
-function toggleGroup(g) {
-  const all = g.pending.every(r => r.checked)
-  g.pending.forEach(r => { r.checked = !all })
+function toggleAll() {
+  const all = pendingRows.value.every(r => r.checked)
+  pendingRows.value.forEach(r => { r.checked = !all })
 }
 
 async function submit() {
@@ -366,7 +359,7 @@ async function submit() {
 }
 
 function notifyCreated({ inserted, skipped }) {
-  notify.success(`${inserted}건 인증했습니다.`)
+  notify.success(`${inserted}건 인증 완료`)
   if (skipped.length) {
     notify.warn(`${skipped.length}건은 이미 인증되어 건너뜀`, skipped.map(s => `${s.name} ${s.course}`).join(', '))
   }
@@ -381,11 +374,11 @@ async function cancelVerification(row) {
   row.saving = true
   try {
     await deleteVerifications([{ studentId: row.studentId, date: loadedDate.value, course: row.course }])
-    notify.success(`${row.name} ${row.course} 인증을 취소했습니다.`)
+    notify.success(`${row.name} ${row.course} 인증을 삭제했습니다.`)
     await refreshAll()
   } catch (e) {
     row.saving = false
-    notify.error(e, '취소 실패')
+    notify.error(e, '삭제 실패')
   }
 }
 
@@ -423,7 +416,7 @@ async function changeFeeder(row, member) {
     row.name = res.data.name
     row.studentId = res.data.studentId
     row.editing = false
-    notify.success(`급식자 변경: ${prev} → ${row.name}`, res.data.verifications ? '기존 인증 기록도 함께 옮겼습니다.' : undefined)
+    notify.success(`급식자 변경: ${prev} → ${row.name}`, res.data.verifications ? '기존 인증 기록도 함께 변경되었습니다.' : undefined)
     if (res.data.verifications) await loadDate()
   } catch (e) {
     row.replacement = null

@@ -2,7 +2,7 @@
   <div class="max-w-2xl">
     <PageHeader
       title="학기 전환"
-      description="새 학기를 시작합니다. 임원은 새 학기 명단으로 넘어가고, 일반 회원은 새 학기에 웹사이트 가입 신청을 다시 해야 합니다."
+      description="새 학기를 시작합니다. 임원은 새 학기 명단으로 넘어가고, 일반 회원은 새 학기에 가입 신청을 다시 해야 합니다."
       icon="i-lucide-calendar-range"
     />
 
@@ -67,12 +67,12 @@
 
           <div class="rounded-xl px-4 py-3 bg-amber-500/10 text-sm flex gap-2">
             <span class="i-lucide-triangle-alert text-amber-600 text-lg flex-shrink-0"></span>
-            <span>일반 회원 <b>{{ preview.regularCount }}명</b>은 {{ preview.targetSemester }} 명단에 없습니다. 웹사이트 가입 신청을 다시 받아 승인해야 급식을 신청할 수 있습니다.</span>
+            <span>일반 회원 <b>{{ preview.regularCount }}명</b>은 {{ preview.targetSemester }} 명단에 없습니다. 가입 신청을 다시 받아 승인해야 급식을 신청할 수 있습니다.</span>
           </div>
 
           <label class="flex items-center gap-2 text-sm cursor-pointer select-none">
             <Checkbox v-model="acknowledged" :binary="true" />
-            확인했습니다
+            위 내용을 확인했습니다
           </label>
           <div>
             <Button
@@ -120,13 +120,13 @@ const target = computed(() => `${year.value}-${term.value}`)
 
 const nextSteps = computed(() => [
   {
-    label: '웹사이트 가입 신청',
-    detail: apply.value.open ? '받는 중 — 들어온 신청은 웹사이트 가입 승인에서 승인하세요' : '닫혀 있음 — 설정에서 켜세요',
+    label: '회원 등록',
+    detail: apply.value.open ? '받는 중 — 들어온 신청은 가입 신청에서 승인하세요' : '닫혀 있음 — 설정에서 켜세요',
     ok: apply.value.open,
     to: apply.value.open ? '/console/applications' : '/console/settings',
   },
   {
-    label: '신입 모집 설문',
+    label: '신입 모집',
     detail: register.value.open ? '지금 받는 중' : '닫혀 있음 — 모집할 때 켜세요',
     ok: register.value.open,
     to: '/console/recruit',

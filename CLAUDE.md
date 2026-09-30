@@ -38,7 +38,7 @@ frontend/                   # 통합 Vite MPA 프로젝트
       components/layout/    # AppLayout, AppSidebar, AppTopbar, SidebarItem
       pages/                # Home, Verify, Applications, Members, Recruit, Export1365, Semester, Settings
       utils/                # scoreCalculator, contactExport, certificate1365
-  register/                 # Vue 3 SPA (신입 모집 설문 — 계정 없음)
+  register/                 # Vue 3 SPA (신입 모집 — 계정 없음)
     index.html
     src/                    # main.js, App.vue, components/, composables/
   gallery/                  # 레거시 MPA — 갤러리 (9 HTML)
@@ -141,12 +141,12 @@ npm run build              # = cd frontend && vite build → server/dist/
 - `records` — 급식 신청 (member_id, date, course)
 - `verifications` — 급식 인증 (member_id, date, course, score)
 - `settings` — 설정 키-값 (key, value)
-- `applications` — 웹사이트 가입 신청 (급식표 구글 로그인 → 콘솔 승인) (google_id, google_email, google_name, student_id, name, college, department, phone, birthday, volunteer_id, is_new, status, semester_id, reviewed_at)
+- `applications` — 가입 신청 (급식표 구글 로그인 → 콘솔 승인) (google_id, google_email, google_name, student_id, name, college, department, phone, birthday, volunteer_id, is_new, status, semester_id, reviewed_at)
 - `photos` — 갤러리 사진 (filename, size, uploader_id, likes_count)
 - `tags` — 사진 태그 (name)
 - `photo_tags` — 사진-태그 연결 (photo_id, tag_id)
 - `photo_likes` — 좋아요 (photo_id, ip, user_id)
-- `registrations` — 신입 모집 설문 응답 (/register, 계정과 무관) (student_id, name, college, department, phone, semester_id)
+- `registrations` — 신입 모집 응답 (/register, 계정과 무관) (student_id, name, college, department, phone, semester_id)
 
 ### DB 사용 패턴
 
@@ -203,8 +203,8 @@ ADMIN_EMAILS=...              # 쉼표 구분, Google 로그인 시 자동 관�
 | /api/verifications | verifications.js | 급식 인증 CRUD (관리자), 월별 요약 (`/summary`), 미인증 날짜 (`/unverified-dates`), 1365 데이터 |
 | /api/members | members.js | 회원 조회/수정/삭제 (수정·삭제는 `semester` 지정 가능), 직책 목록 (`/roles`) |
 | /api/semesters | semesters.js | 학기 목록 조회 |
-| /api/registrations | registrations.js | 신입 모집 설문 (제출, 목록 + 웹사이트 가입 여부), 학기 목록 |
-| /api/applications | applications.js | 웹사이트 가입 신청 (Google 기반 — 제출은 `isApply` 기간만, 목록, 승인/거절) |
+| /api/registrations | registrations.js | 신입 모집 (제출, 목록 + 회원가입 여부), 학기 목록 |
+| /api/applications | applications.js | 가입 신청 (Google 기반 — 제출은 회원 등록(`isApply`) 기간만, 목록, 승인/거절) |
 | /api/gallery | gallery.js | 갤러리 (사진/태그/작가/좋아요/랭킹, multipart 업로드) |
 
 ### 응답 포맷

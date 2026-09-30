@@ -1,7 +1,7 @@
 <template>
   <div>
     <PageHeader
-      title="회원 명단"
+      title="회원 관리"
       description="학기별 회원 명단입니다. 회원을 누르면 정보와 직책을 고칠 수 있고, '회원' 외의 직책은 모두 관리자 권한입니다."
       icon="i-lucide-users"
     />
@@ -130,7 +130,7 @@ const editorVisible = ref(false)
 const FILTERS = [
   { key: 'officer', label: '임원', test: m => m.role !== '회원' },
   { key: 'noVolunteerId', label: '1365 ID 없음', test: m => !m.volunteerId },
-  { key: 'noGoogle', label: '구글 미연동', test: m => !m.googleEmail },
+  { key: 'noGoogle', label: 'Google 미연동', test: m => !m.googleEmail },
 ]
 
 const counts = computed(() => Object.fromEntries(FILTERS.map(f => [f.key, members.value.filter(f.test).length])))

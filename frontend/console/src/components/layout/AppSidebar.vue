@@ -12,19 +12,19 @@
       <p class="group-label">운영</p>
       <SidebarItem
         to="/console/verify" icon="i-lucide-calendar-check" label="급식 인증"
-        :badge="unverifiedDates.length" :badge-title="`최근 ${UNVERIFIED_DAYS}일 중 인증하지 않은 날`"
+        :badge="unverifiedDates.length" :badge-title="`미인증 급식일 (최근 ${UNVERIFIED_DAYS}일)`"
         @click="$emit('navigate')"
       />
-      <SidebarItem to="/console/1365" icon="i-lucide-hand-helping" label="1365 활동확인서" @click="$emit('navigate')" />
+      <SidebarItem to="/console/1365" icon="i-lucide-hand-helping" label="1365" @click="$emit('navigate')" />
 
       <p class="group-label">회원</p>
-      <SidebarItem to="/console/members" icon="i-lucide-users" label="회원 명단" @click="$emit('navigate')" />
+      <SidebarItem to="/console/members" icon="i-lucide-users" label="회원 관리" @click="$emit('navigate')" />
       <SidebarItem
-        to="/console/applications" icon="i-lucide-user-round-check" label="웹사이트 가입 승인"
+        to="/console/applications" icon="i-lucide-user-round-check" label="가입 신청"
         :badge="pendingApplications" badge-title="승인 대기"
         @click="$emit('navigate')"
       />
-      <SidebarItem to="/console/recruit" icon="i-lucide-clipboard-list" label="신입 모집 설문" @click="$emit('navigate')" />
+      <SidebarItem to="/console/recruit" icon="i-lucide-clipboard-list" label="신입 모집" @click="$emit('navigate')" />
 
       <p class="group-label">관리</p>
       <SidebarItem to="/console/semester" icon="i-lucide-calendar-range" label="학기 전환" @click="$emit('navigate')" />

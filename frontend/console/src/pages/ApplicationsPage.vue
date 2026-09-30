@@ -1,8 +1,8 @@
 <template>
   <div>
     <PageHeader
-      title="웹사이트 가입 승인"
-      description="구글 계정으로 들어온 회원 등록 신청입니다. 승인하면 해당 학기 회원 명단에 추가됩니다."
+      title="가입 신청"
+      description="급식표에서 구글 계정으로 들어온 가입 신청입니다. 승인하면 해당 학기 회원 명단에 추가됩니다."
       icon="i-lucide-user-round-check"
     />
 
@@ -69,7 +69,7 @@
         <Column field="volunteerId" header="1365 ID" sortable style="min-width: 7rem">
           <template #body="{ data }">
             <span v-if="data.volunteerId">{{ data.volunteerId }}</span>
-            <span v-else class="text-xs text-amber-600" title="1365 ID가 없으면 활동확인서에서 빠집니다">없음</span>
+            <span v-else class="text-xs text-amber-600" title="1365 ID가 없으면 인증서에서 빠집니다">없음</span>
           </template>
         </Column>
         <Column field="googleEmail" header="Google" sortable style="min-width: 10rem">
@@ -212,14 +212,14 @@ const ACTIONS = {
 function confirmOne(app, action) {
   const { label } = ACTIONS[action]
   const diff = action === 'approve' ? changes(app) : []
+  // Same wording and buttons as before; approving also lists the fields it will overwrite
   confirm.require({
-    header: `웹사이트 가입 ${label}`,
-    message: `${app.name} (${app.studentId})의 신청을 ${label}할까요?`
+    header: `가입 ${label}`,
+    message: `${app.name} (${app.studentId})의 가입 신청을 ${label}하시겠습니까?`
       + (diff.length ? `\n승인하면 ${diff.map(c => c.label).join(', ')}이(가) 신청서 내용으로 바뀝니다.` : ''),
     acceptLabel: label,
     rejectLabel: '취소',
-    acceptProps: { severity: action === 'approve' ? 'success' : 'danger' },
-    rejectProps: { severity: 'secondary', outlined: true },
+    ...(action === 'approve' ? { rejectProps: { severity: 'secondary' } } : { acceptClass: 'p-button-danger' }),
     accept: () => run(action, [app]),
   })
 }
@@ -246,14 +246,24 @@ async function run(action, list) {
     try {
       await call(app.id)
     } catch (e) {
-      failed.push(`${app.name}: ${e.error?.message || '실패'}`)
+      failed.push({ app, message: e.error?.message })
     }
   }
   busy.value = false
 
   const done = list.length - failed.length
-  if (done) notify.success(`${done}건 ${label}했습니다.`)
-  if (failed.length) notify.error({ error: { message: `${failed.length}건 ${label} 실패 — ${failed.join(', ')}` } })
+  if (list.length === 1) {
+    // Single approve/reject keeps the original messages
+    const [app] = list
+    if (failed.length) notify.error({ error: { message: failed[0].message } }, `${label} 실패`)
+    else if (action === 'approve') notify.success(`${app.name}의 가입을 승인했습니다.`)
+    else notify.warn(`${app.name}의 가입을 거절했습니다.`)
+  } else {
+    if (done) notify.success(`${done}건 ${label}했습니다.`)
+    if (failed.length) {
+      notify.error({ error: { message: `${failed.length}건 ${label} 실패 — ${failed.map(f => `${f.app.name}: ${f.message || '실패'}`).join(', ')}` } })
+    }
+  }
   await loadApplications()
   refreshStatus()
 }

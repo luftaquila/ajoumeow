@@ -2,7 +2,7 @@
   <div class="max-w-3xl">
     <PageHeader
       title="설정"
-      description="웹사이트 가입 신청·신입 모집 설문 기간, 공지, 급식 관련 값을 바꿉니다. 바꾼 내용은 아래 저장 버튼을 눌러야 반영됩니다."
+      description="회원 등록·신입 모집 기간, 공지, 급식 관련 값을 바꿉니다. 바꾼 내용은 아래 저장 버튼을 눌러야 반영됩니다."
       icon="i-lucide-settings"
     />
 
@@ -20,13 +20,7 @@
         <!-- 운영 -->
         <TabPanel value="ops" class="flex flex-col gap-5">
           <section v-for="w in WINDOWS" :key="w.key" class="card-section">
-            <div class="flex items-center justify-between gap-3 mb-1">
-              <h2 class="section-title"><span :class="w.icon"></span>{{ w.title }}</h2>
-              <span class="text-xs" :class="windowOpen(w) ? 'text-green-600 font-medium' : 'text-text-muted'">
-                {{ windowDirty(w) ? '저장하면 ' : '지금 ' }}{{ windowOpen(w) ? '받는 중' : '닫힘' }}
-              </span>
-            </div>
-            <p class="section-hint">{{ w.hint }}</p>
+            <h2 class="section-title mb-4"><span :class="w.icon"></span>{{ w.title }}</h2>
             <div class="flex flex-col gap-3">
               <label class="row-toggle">
                 <span>{{ w.enableLabel }}</span>
@@ -53,11 +47,10 @@
           </section>
 
           <section class="card-section">
-            <h2 class="section-title"><span class="i-lucide-megaphone"></span>공지사항</h2>
-            <p class="section-hint">급식표를 연 회원에게 한 번 뜨는 안내입니다. HTML을 쓸 수 있고 줄바꿈은 그대로 반영됩니다.</p>
+            <h2 class="section-title mb-4"><span class="i-lucide-megaphone"></span>공지사항</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div class="flex flex-col gap-1">
-                <Textarea v-model="draft.notice.content" rows="7" class="w-full font-mono text-sm" :invalid="!!errors.notice" />
+                <Textarea v-model="draft.notice.content" rows="7" class="w-full font-mono text-sm" placeholder="공지사항 내용 (HTML 가능)" :invalid="!!errors.notice" />
                 <small v-if="errors.notice" class="field-error">{{ errors.notice }}</small>
               </div>
               <div class="rounded-xl border border-dashed border-surface-border p-4 flex items-center justify-center">
@@ -67,7 +60,7 @@
             </div>
             <label class="flex items-center gap-2 mt-3 text-sm cursor-pointer select-none">
               <Checkbox v-model="noticeRepost" :binary="true" />
-              저장하면 이미 본 회원에게도 다시 띄우기
+              이미 본 회원에게도 다시 표시
             </label>
           </section>
         </TabPanel>
@@ -75,7 +68,7 @@
         <!-- 급식 -->
         <TabPanel value="feeding" class="flex flex-col gap-5">
           <section class="card-section">
-            <h2 class="section-title"><span class="i-lucide-utensils"></span>코스당 최대 신청 인원</h2>
+            <h2 class="section-title"><span class="i-lucide-utensils"></span>최대 급식 인원</h2>
             <p class="section-hint">하루 한 코스에 신청할 수 있는 인원입니다.</p>
             <div class="flex items-center gap-2">
               <div class="w-24"><InputNumber v-model="draft.maxFeedingUserCount" :min="1" :max="100" :allowEmpty="false" fluid /></div>
@@ -84,8 +77,7 @@
           </section>
 
           <section class="card-section">
-            <h2 class="section-title"><span class="i-lucide-hand-helping"></span>1365 봉사시간</h2>
-            <p class="section-hint">하루에 돈 코스 수에 따라 활동확인서에 적히는 시간입니다. 0시간 초과 8시간 이하.</p>
+            <h2 class="section-title mb-4"><span class="i-lucide-hand-helping"></span>1365 봉사시간</h2>
             <div class="flex flex-col gap-2">
               <div v-for="(_, i) in draft.volunteerHours" :key="i" class="flex items-center gap-3">
                 <label class="w-24 text-sm text-text-secondary">하루 {{ i + 1 }}개 코스</label>
@@ -96,8 +88,7 @@
           </section>
 
           <section class="card-section">
-            <h2 class="section-title"><span class="i-lucide-map-pin"></span>급식소 위치</h2>
-            <p class="section-hint">급식표 지도에 표시되는 위치입니다. 좌표는 지도 링크로 맞는지 확인할 수 있습니다.</p>
+            <h2 class="section-title mb-4"><span class="i-lucide-map-pin"></span>급식소 위치</h2>
             <div v-if="draft.map" class="flex flex-col gap-4">
               <div>
                 <h3 class="text-sm font-medium mb-2 text-text-secondary">동아리방</h3>
@@ -135,8 +126,7 @@
         <!-- 데이터 -->
         <TabPanel value="data" class="flex flex-col gap-5">
           <section class="card-section">
-            <h2 class="section-title"><span class="i-lucide-school"></span>단과대 / 학과</h2>
-            <p class="section-hint">웹사이트 가입 신청서와 신입 모집 설문의 소속 선택지입니다. 이미 가입한 회원의 소속은 바뀌지 않습니다.</p>
+            <h2 class="section-title mb-4"><span class="i-lucide-school"></span>단과대 / 학과</h2>
             <Accordion multiple>
               <AccordionPanel v-for="(depts, college) in draft.college" :key="college" :value="college">
                 <AccordionHeader>
@@ -172,7 +162,7 @@
       <div class="card flex items-center gap-3 px-4 py-3 flex-wrap">
         <span class="text-sm">
           저장하지 않은 변경 {{ dirtyKeys.length }}건
-          <span v-if="errorCount" class="text-red-500 ml-1">· 고칠 항목 {{ errorCount }}개</span>
+          <span v-if="errorCount" class="text-red-500 ml-1">· 오류 {{ errorCount }}개</span>
         </span>
         <div class="flex-1"></div>
         <Button label="되돌리기" severity="secondary" text size="small" :disabled="saving" @click="revert" />
@@ -221,19 +211,17 @@ const { refreshStatus } = useStatus()
 const TABS = [
   { value: 'ops', label: '운영' },
   { value: 'feeding', label: '급식' },
-  { value: 'data', label: '데이터' },
+  { value: 'data', label: '단과대/학과' },
 ]
 
 const WINDOWS = [
   {
     key: 'isApply', restrictKey: 'isApplyRestricted', termKey: 'applyTerm',
-    title: '웹사이트 가입 신청', icon: 'i-lucide-user-round-check', enableLabel: '신청 받기',
-    hint: '급식표에서 구글 계정으로 내는 신청입니다. 들어온 신청은 웹사이트 가입 승인에서 처리합니다.',
+    title: '회원 등록', icon: 'i-lucide-user-round-check', enableLabel: '등록 활성화',
   },
   {
     key: 'isRegister', restrictKey: 'isRegisterRestricted', termKey: 'registerTerm',
-    title: '신입 모집 설문', icon: 'i-lucide-clipboard-list', enableLabel: '설문 받기',
-    hint: '/register 에서 신입 연락처를 받습니다. 웹사이트 계정과는 별개입니다.',
+    title: '신입 모집', icon: 'i-lucide-clipboard-list', enableLabel: '모집 활성화',
   },
 ]
 
@@ -369,22 +357,6 @@ const errorCount = computed(() => Object.keys(errors.value).length)
 const mapCourseKeys = computed(() => (draft.value?.map ? Object.keys(draft.value.map).filter(k => k !== 'home') : []))
 
 const noticePreview = computed(() => draft.value.notice.content.replace(/\n/g, '<br>'))
-
-function windowOpen(w) {
-  const d = draft.value
-  if (!d[w.key]) return false
-  if (!d[w.restrictKey]) return true
-  const [s, t] = d[w.termKey] || []
-  if (!s || !t) return false
-  const now = new Date()
-  const end = new Date(t)
-  end.setHours(23, 59, 59)
-  return now >= s && now <= end
-}
-
-function windowDirty(w) {
-  return [w.key, w.restrictKey, w.termKey].some(k => dirtyKeys.value.includes(k))
-}
 
 function courseColor(courseKey) {
   return COURSES[courseKey.match(/\d+/)?.[0]]?.color || '#888'

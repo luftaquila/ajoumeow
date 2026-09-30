@@ -240,7 +240,7 @@ export default async function(fastify, opts) {
     }
 
     let rows = [];
-    // 확인서에서 빠지는 회원: 해당 학기 명단에 없거나 1365 아이디가 없음
+    // 확인서에서 빠지는 회원: 해당 학기 명단에 없거나 1365 ID가 없음
     const excluded = new Map();
     for (const activity of verifyRows) {
       const member = namelist.find(o => o.studentId == activity.studentId);

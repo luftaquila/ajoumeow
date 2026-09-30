@@ -1,8 +1,8 @@
 <template>
   <div class="max-w-2xl">
     <PageHeader
-      title="1365 활동확인서"
-      description="급식 인증 기록으로 수원시자원봉사센터 양식의 자원봉사 활동확인서(xlsx)를 만듭니다. 기타 인증은 들어가지 않습니다."
+      title="1365 봉사활동 인증서"
+      description="급식 인증 기록으로 수원시자원봉사센터 양식의 1365 봉사활동 인증서(xlsx)를 만듭니다. 기타 인증은 들어가지 않습니다."
       icon="i-lucide-hand-helping"
     />
 
@@ -41,24 +41,23 @@
             <b>{{ summary.people }}명</b> · {{ data.rows.length }}건 · 총 {{ summary.hours }}시간
             <span class="text-text-muted">· 담당자 {{ data.chief.name || '없음' }}</span>
           </p>
-          <p v-else class="text-sm text-text-muted">이 기간에는 활동확인서에 넣을 급식 인증이 없습니다.</p>
-          <p v-if="!data.chief.name && data.rows.length" class="text-xs text-amber-600 mt-1">{{ selectedSemester }} 명단에 회장이 없어 담당자 칸이 비게 됩니다.</p>
+          <p v-else class="text-sm text-text-muted">이 기간에는 인증서에 넣을 급식 인증이 없습니다.</p>
 
           <div v-if="data.excluded.length" class="mt-3 text-xs flex flex-col gap-1">
             <p class="font-medium text-amber-600">
               <span class="i-lucide-triangle-alert align-text-bottom mr-0.5"></span>
-              빠지는 회원 {{ data.excluded.length }}명
+              제외되는 회원 {{ data.excluded.length }}명
             </p>
             <p v-for="e in data.excluded" :key="e.studentId" class="text-text-secondary">
-              {{ e.name }} ({{ e.studentId }}) · {{ e.reason === 'noVolunteerId' ? '1365 아이디 없음' : `${selectedSemester} 명단에 없음` }} · 인증 {{ e.count }}건
+              {{ e.name }} ({{ e.studentId }}) · {{ e.reason === 'noVolunteerId' ? '1365 ID 없음' : `${selectedSemester} 명단에 없음` }} · 인증 {{ e.count }}건
             </p>
-            <router-link to="/console/members" class="text-primary hover:underline self-start">회원 명단에서 1365 아이디 채우기</router-link>
+            <router-link to="/console/members" class="text-primary hover:underline self-start">회원 관리에서 1365 ID 채우기</router-link>
           </div>
         </template>
       </div>
 
       <Button
-        label="활동확인서 만들기"
+        label="인증서 문서 생성"
         icon="i-lucide-file-spreadsheet"
         class="self-start"
         :loading="generating"
@@ -88,7 +87,7 @@ const XLSX_MIME = 'application/vnd.openxmlformats-officedocument.spreadsheetml.s
 const PRESETS = [
   { label: '이번 달', value: 'thisMonth' },
   { label: '지난 달', value: 'lastMonth' },
-  { label: '직접 선택', value: 'custom' },
+  { label: '직접 입력', value: 'custom' },
 ]
 
 const notify = useNotify()
@@ -183,7 +182,7 @@ async function generateCertificate() {
     const buffer = await wb.xlsx.writeBuffer()
     saveAs(new Blob([buffer], { type: XLSX_MIME }), `자원봉사활동확인서_${p.startDate}_${p.endDate}.xlsx`)
   } catch (e) {
-    notify.error(e, e.message || '활동확인서 생성 실패')
+    notify.error(e, e.message || '인증서 생성 실패')
   } finally {
     generating.value = false
   }
