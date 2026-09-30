@@ -84,3 +84,26 @@ body {
 .p-datatable .p-datatable-tbody > tr > td.p-cell-editing {
   padding: 0.25rem;
 }
+
+/* Confirm messages may carry a second line */
+.p-confirmdialog-message {
+  white-space: pre-line;
+}
+
+/* Toggleable filter pill used above tables */
+.filter-chip {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  border: 1px solid var(--c-surface-border);
+  color: var(--c-text-secondary);
+  cursor: pointer;
+}
+.filter-chip:hover {
+  background: var(--c-surface-dim);
+}
+.filter-chip.active {
+  border-color: #6366f1;
+  background: rgba(99, 102, 241, 0.1);
+  color: #6366f1;
+}

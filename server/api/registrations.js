@@ -1,6 +1,6 @@
-import { eq, and, desc } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 
-import { db } from '../db/index.js';
+import { db, sqlite } from '../db/index.js';
 import { semesters, registrations } from '../db/schema.js';
 import util from '../controllers/util/util.js';
 import { Log, success, error } from '../controllers/util/interface.js';
@@ -28,18 +28,20 @@ export default async function(fastify, opts) {
       if (!semester) {
         return reply.code(400).send(error('ERR_SEMESTER_NOT_FOUND', '해당 학기를 찾을 수 없습니다.'));
       }
-      const result = db.select({
-        createdAt: registrations.createdAt,
-        studentId: registrations.studentId,
-        name: registrations.name,
-        college: registrations.college,
-        department: registrations.department,
-        phone: registrations.phone,
-      })
-        .from(registrations)
-        .where(eq(registrations.semesterId, semester.id))
-        .orderBy(desc(registrations.createdAt))
-        .all();
+      // 응답자가 이후 같은 학기에 회원이 됐는지 / 가입 신청을 넣었는지 함께 표시
+      const result = sqlite.prepare(`
+        SELECT r.created_at AS createdAt, r.student_id AS studentId, r.name, r.college, r.department, r.phone,
+          CASE
+            WHEN EXISTS (SELECT 1 FROM semester_members sm JOIN members m ON m.id = sm.member_id
+                         WHERE m.student_id = r.student_id AND sm.semester_id = r.semester_id) THEN 'member'
+            WHEN EXISTS (SELECT 1 FROM applications a
+                         WHERE a.student_id = r.student_id AND a.semester_id = r.semester_id AND a.status = 'pending') THEN 'applied'
+            ELSE NULL
+          END AS joinStatus
+        FROM registrations r
+        WHERE r.semester_id = ?
+        ORDER BY r.created_at DESC
+      `).all(semester.id);
 
       util.logger(new Log('info', request.remoteIP, request.originalPath, '가입 신청자 명단 요청', request.method, 200, request.query, result));
       return reply.code(200).send(success(result));
