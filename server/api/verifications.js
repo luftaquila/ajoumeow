@@ -137,6 +137,57 @@ export default async function(fastify, opts) {
     }
   });
 
+  // 달력 표시용 월별 요약: 날짜마다 신청 수와 그중 인증된 수
+  fastify.get('/summary', { preHandler: [util.isAdmin] }, async (request, reply) => {
+    try {
+      const month = String(request.query.month || '');
+      if (!/^\d{4}-\d{2}$/.test(month)) {
+        return reply.code(400).send(error('ERR_BAD_REQUEST', '월(month)은 YYYY-MM 형식이어야 합니다.'));
+      }
+      const rows = sqlite.prepare(`
+        SELECT r.date,
+          COUNT(*) AS records,
+          SUM(EXISTS (SELECT 1 FROM verifications v WHERE v.member_id = r.member_id AND v.date = r.date AND v.course = r.course)) AS verified,
+          EXISTS (SELECT 1 FROM verifications v WHERE v.date = r.date AND v.course LIKE '%코스') AS processed
+        FROM records r
+        WHERE r.date LIKE ?
+        GROUP BY r.date
+        ORDER BY r.date
+      `).all(`${month}-%`);
+      const result = rows.map(r => ({ date: r.date, records: r.records, verified: r.verified, processed: !!r.processed }));
+      util.logger(new Log('info', request.remoteIP, request.originalPath, '월별 인증 요약 요청', request.method, 200, request.query, null));
+      return reply.code(200).send(success(result));
+    }
+    catch(e) {
+      util.logger(new Log('error', request.remoteIP, request.originalPath, '월별 인증 요약 요청 오류', request.method, 500, request.query, e.stack));
+      return reply.code(500).send(error('ERR_UNKNOWN', '알 수 없는 오류입니다.'));
+    }
+  });
+
+  // 최근 N일(어제까지) 중 신청은 있는데 급식 인증을 한 건도 하지 않은 날
+  fastify.get('/unverified-dates', { preHandler: [util.isAdmin] }, async (request, reply) => {
+    try {
+      const days = Math.min(Math.max(parseInt(request.query.days) || 30, 1), 365);
+      const today = new Date();
+      const from = dateformat(new Date(today.getFullYear(), today.getMonth(), today.getDate() - days), 'yyyy-mm-dd');
+      const to = dateformat(new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1), 'yyyy-mm-dd');
+      const rows = sqlite.prepare(`
+        SELECT r.date, COUNT(*) AS records
+        FROM records r
+        WHERE r.date BETWEEN ? AND ?
+          AND NOT EXISTS (SELECT 1 FROM verifications v WHERE v.date = r.date AND v.course LIKE '%코스')
+        GROUP BY r.date
+        ORDER BY r.date DESC
+      `).all(from, to);
+      util.logger(new Log('info', request.remoteIP, request.originalPath, '미인증 날짜 요청', request.method, 200, request.query, rows));
+      return reply.code(200).send(success({ days, dates: rows }));
+    }
+    catch(e) {
+      util.logger(new Log('error', request.remoteIP, request.originalPath, '미인증 날짜 요청 오류', request.method, 500, request.query, e.stack));
+      return reply.code(500).send(error('ERR_UNKNOWN', '알 수 없는 오류입니다.'));
+    }
+  });
+
   function build1365Payload(query) {
     const semester = db.select().from(semesters).where(eq(semesters.name, query.semester)).get();
     if (!semester) return null;

@@ -1,4 +1,4 @@
-import { eq, and, like } from 'drizzle-orm';
+import { eq, and, or, like } from 'drizzle-orm';
 
 import { db, sqlite } from '../db/index.js';
 import { members, semesters, semesterMembers } from '../db/schema.js';
@@ -50,7 +50,7 @@ export default async function(fastify, opts) {
     }
   });
 
-  // Search members by name
+  // Search current-semester members by name or student ID
   fastify.get('/search', { preHandler: [util.isAdmin] }, async (request, reply) => {
     try {
       const semester = util.getCurrentSemester();
@@ -63,7 +63,10 @@ export default async function(fastify, opts) {
       })
         .from(members)
         .innerJoin(semesterMembers, eq(semesterMembers.memberId, members.id))
-        .where(and(eq(semesterMembers.semesterId, semester.id), like(members.name, `%${request.query.query}%`)))
+        .where(and(
+          eq(semesterMembers.semesterId, semester.id),
+          or(like(members.name, `%${request.query.query}%`), like(members.studentId, `%${request.query.query}%`)),
+        ))
         .all();
 
       util.logger(new Log('info', request.remoteIP, request.originalPath, '사용자 정보 요청', request.method, 200, request.query, result));
