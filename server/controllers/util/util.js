@@ -50,7 +50,7 @@ util.isAdmin = async function(request, reply) {
         else resolve(decoded);
       });
     });
-    if (decoded.role == '회원') {
+    if (util.currentRole(decoded) == '회원') {
       util.logger(new Log('info', 'util', 'util.isAdmin', '관리자 확인', 'internal', 403, token, 'ERR_USER_NOT_ADMIN'));
       reply.code(403).send(error('ERR_USER_NOT_ADMIN', '관리자가 아닙니다.'));
       return reply;
@@ -78,6 +78,21 @@ util.isWindowOpen = function(prefix, termKey) {
 
 util.adminEmails = function() {
   return (process.env.ADMIN_EMAILS || '').split(',').map(s => s.trim()).filter(Boolean);
+};
+
+// The token keeps the role it was issued with for a year, so a demoted officer would stay an admin.
+// Members are checked against the current semester roster instead; tokens without a member
+// (ADMIN_EMAILS logins) keep their token role.
+util.currentRole = function(decoded) {
+  const memberId = util.resolveMemberId(decoded);
+  if (!memberId) return decoded.role;
+  const semester = util.getCurrentSemester();
+  if (!semester) return '회원';
+  const row = db.select({ role: semesterMembers.role })
+    .from(semesterMembers)
+    .where(and(eq(semesterMembers.memberId, memberId), eq(semesterMembers.semesterId, semester.id)))
+    .get();
+  return row ? row.role : '회원';
 };
 
 util.optionalAuth = async function(request, reply) {
