@@ -64,6 +64,18 @@ util.isAdmin = async function(request, reply) {
   }
 };
 
+// Intake window stored as settings `${prefix}`, `${prefix}Restricted` and a 'YYYY-MM-DD~YYYY-MM-DD' term;
+// same rule as the frontend guard
+util.isWindowOpen = function(prefix, termKey) {
+  if (util.getSettings(prefix) !== 'TRUE') return false;
+  if (util.getSettings(`${prefix}Restricted`) !== 'TRUE') return true;
+  const term = util.getSettings(termKey);
+  if (!term || !term.includes('~')) return false;
+  const [start, end] = term.split('~');
+  const now = new Date();
+  return now >= new Date(start + 'T00:00:00') && now <= new Date(end + 'T23:59:59');
+};
+
 util.adminEmails = function() {
   return (process.env.ADMIN_EMAILS || '').split(',').map(s => s.trim()).filter(Boolean);
 };

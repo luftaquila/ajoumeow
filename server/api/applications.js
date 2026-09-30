@@ -65,9 +65,23 @@ export default async function(fastify, opts) {
       }
 
       const isNewBool = isNew === true || isNew === 'true';
+      const adminEmails = util.adminEmails();
+
+      // 설정의 '웹사이트 가입 신청' 기간 (관리자 이메일은 언제든 가능)
+      if (!adminEmails.includes(googleEmail) && !util.isWindowOpen('isApply', 'applyTerm')) {
+        return reply.code(400).send(error('ERR_APPLY_CLOSED', '지금은 웹사이트 가입 신청 기간이 아닙니다.'));
+      }
+
+      // 승인 단계에서 실패하지 않도록 신규/기존 여부를 학번과 맞춰 본다
+      const sameStudent = db.select({ id: members.id }).from(members).where(eq(members.studentId, String(studentId))).get();
+      if (isNewBool && sameStudent) {
+        return reply.code(400).send(error('ERR_REGISTERED_BEFORE', '이미 가입한 적이 있는 학번입니다. 기존 회원으로 신청해 주세요.'));
+      }
+      if (!isNewBool && !sameStudent) {
+        return reply.code(400).send(error('ERR_NEVER_REGISTERED', '기존 회원 기록이 없는 학번입니다. 신규 회원으로 신청해 주세요.'));
+      }
 
       // Auto-approve for admin emails
-      const adminEmails = (process.env.ADMIN_EMAILS || '').split(',').map(s => s.trim()).filter(Boolean);
       if (adminEmails.includes(googleEmail)) {
         const tx = sqlite.transaction(() => {
           if (isNewBool) {
