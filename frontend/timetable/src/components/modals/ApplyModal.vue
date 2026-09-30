@@ -258,7 +258,7 @@ watch(() => modals.apply.value, (visible) => {
         name: m.name,
         college: m.college,
         department: m.department,
-        phone: m.phone,
+        phone: m.phone || '',
         birthday: m.birthday || '',
         volunteerId: m.volunteerId || '',
       }
@@ -326,7 +326,7 @@ async function doLookup() {
       name: m.name,
       college: m.college,
       department: m.department,
-      phone: m.phone,
+      phone: m.phone || '',
       birthday: m.birthday || '',
       volunteerId: m.volunteerId || '',
     }

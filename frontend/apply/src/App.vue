@@ -1,62 +1,26 @@
 <template>
   <div class="min-h-screen flex items-center justify-center p-4">
-    <div v-if="loading" class="text-center">
-      <div class="i-lucide-loader-circle text-4xl text-primary animate-spin mx-auto mb-4"></div>
-      <p class="text-text-secondary">불러오는 중...</p>
+    <div class="w-full max-w-lg mx-auto text-center">
+      <div class="card-section py-12">
+        <div class="i-lucide-user-check text-5xl text-primary mx-auto mb-4"></div>
+        <h2 class="text-xl font-bold mb-2">웹사이트 가입은 급식표에서 받아요</h2>
+        <p class="text-text-secondary text-sm mb-6">
+          급식표에서 구글 계정으로 로그인하면 신규·기존 회원 모두 가입 신청을 할 수 있습니다.<br>
+          임원진이 승인하면 바로 급식을 신청할 수 있어요.
+        </p>
+        <a href="/timetable" class="btn-blue">급식표로 가기</a>
+      </div>
     </div>
-
-    <ClosedView v-else-if="!isOpen" />
-
-    <TypeSelector
-      v-else-if="state === 'select'"
-      @select="onTypeSelect"
-    />
-
-    <NewMemberForm
-      v-else-if="state === 'new-form'"
-      :semester="semester"
-      @success="state = 'success'"
-      @back="state = 'select'"
-    />
-
-    <ExistingMemberForm
-      v-else-if="state === 'existing-form'"
-      :semester="semester"
-      @success="state = 'success'"
-      @back="state = 'select'"
-    />
-
-    <SuccessView v-else-if="state === 'success'" />
   </div>
-
-  <Toast position="bottom-right" />
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import Toast from 'primevue/toast'
+import { onMounted } from 'vue'
 import { useTheme } from '../../shared/composables/useTheme.js'
-import { useRegistrationGuard } from './composables/useRegistrationGuard.js'
-import { useCollegeDepartment } from './composables/useCollegeDepartment.js'
 
-import TypeSelector from './components/TypeSelector.vue'
-import NewMemberForm from './components/NewMemberForm.vue'
-import ExistingMemberForm from './components/ExistingMemberForm.vue'
-import SuccessView from './components/SuccessView.vue'
-import ClosedView from './components/ClosedView.vue'
-
+// This page used to register members directly, without Google login or approval.
+// Old links still land here, so point them to the timetable's sign-up.
 const { initTheme } = useTheme()
-const { isOpen, semester, loading, checkOpen } = useRegistrationGuard('apply')
-const { loadColleges } = useCollegeDepartment()
 
-const state = ref('select')
-
-function onTypeSelect(type) {
-  state.value = type === 'new' ? 'new-form' : 'existing-form'
-}
-
-onMounted(async () => {
-  initTheme()
-  await Promise.all([checkOpen(), loadColleges()])
-})
+onMounted(initTheme)
 </script>

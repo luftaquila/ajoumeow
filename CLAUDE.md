@@ -37,9 +37,9 @@ frontend/                   # 통합 Vite MPA 프로젝트
       components/layout/    # AppLayout, AppSidebar, AppTopbar, SidebarItem
       pages/                # Verify, Settings, Members, Export1365, Applications, Recruit
       utils/                # scoreCalculator, contactExport
-  apply/                    # Vue 3 SPA (회원 등록)
+  apply/                    # 옛 회원 등록 주소 — 급식표의 웹사이트 가입 신청으로 안내만 한다
     index.html
-    src/                    # main.js, App.vue, components/, composables/
+    src/                    # main.js, App.vue
   register/                 # Vue 3 SPA (신입 모집)
     index.html
     src/                    # main.js, App.vue, components/, composables/

@@ -96,16 +96,13 @@ export default async function(fastify, opts) {
           alreadyRegistered = !!existing;
         }
 
+        // Public endpoint: contact details stay out, the applicant types them again
         return reply.code(200).send(success({
           college: previousMember.college,
           department: previousMember.department,
           studentId: previousMember.studentId,
           name: previousMember.name,
-          phone: previousMember.phone,
-          birthday: previousMember.birthday,
-          volunteerId: previousMember.volunteerId,
           enrolledSemester: smInfo ? smInfo.enrolledSemester : null,
-          role: smInfo ? smInfo.role : '회원',
           alreadyRegistered,
         }));
       }
@@ -119,88 +116,11 @@ export default async function(fastify, opts) {
     }
   });
 
-  // Register new or returning member
+  // Registration used to happen here without any check (old /apply page); it now goes through
+  // a website application from the timetable, approved in the console
   fastify.post('/', async (request, reply) => {
-    try {
-      const currentSemester = util.getCurrentSemester();
-      const studentId = String(request.body.studentId);
-
-      // Check if already registered in current semester
-      if (currentSemester) {
-        const existing = db.select().from(semesterMembers)
-          .innerJoin(members, eq(semesterMembers.memberId, members.id))
-          .where(and(eq(members.studentId, studentId), eq(semesterMembers.semesterId, currentSemester.id)))
-          .get();
-
-        if (existing) {
-          util.logger(new Log('info', request.remoteIP, request.originalPath, '회원 등록', request.method, 400, request.body, 'ERR_ALREADY_REGISTERED'));
-          return reply.code(400).send(error('ERR_ALREADY_REGISTERED', '이미 이번 학기 회원으로 등록되셨습니다.'));
-        }
-      }
-
-      const previousMember = db.select().from(members).where(eq(members.studentId, studentId)).get();
-
-      if(request.body.isNew === true || request.body.isNew === 'true') {
-        if (previousMember) {
-          util.logger(new Log('info', request.remoteIP, request.originalPath, '회원 등록', request.method, 400, request.body, 'ERR_REGISTERED_BEFORE'));
-          return reply.code(400).send(error('ERR_REGISTERED_BEFORE', '지난 학기에 가입한 적이 있습니다.<br>기존 회원으로 등록해 주세요.'));
-        }
-      } else {
-        if (!previousMember) {
-          util.logger(new Log('info', request.remoteIP, request.originalPath, '회원 등록', request.method, 400, request.body, 'ERR_NEVER_REGISTERED'));
-          return reply.code(400).send(error('ERR_NEVER_REGISTERED', '기존 회원이 아닙니다.<br>신입 회원으로 등록해 주세요.'));
-        }
-      }
-
-      // Ensure current semester exists
-      let semesterId;
-      if (currentSemester) {
-        semesterId = currentSemester.id;
-      } else {
-        const semesterName = util.getSettings('currentSemester');
-        const result = db.insert(semesters).values({ name: semesterName }).run();
-        semesterId = result.lastInsertRowid;
-      }
-
-      // Insert or update member
-      let memberId;
-      if (previousMember) {
-        db.update(members).set({
-          college: request.body.college,
-          department: request.body.department,
-          name: request.body.name,
-          phone: request.body.phone,
-          birthday: request.body.birthday,
-          volunteerId: request.body.volunteerId,
-        }).where(eq(members.id, previousMember.id)).run();
-        memberId = previousMember.id;
-      } else {
-        const result = db.insert(members).values({
-          studentId: studentId,
-          name: request.body.name,
-          college: request.body.college,
-          department: request.body.department,
-          phone: request.body.phone,
-          birthday: request.body.birthday,
-          volunteerId: request.body.volunteerId,
-        }).run();
-        memberId = result.lastInsertRowid;
-      }
-
-      // Add semester membership
-      db.insert(semesterMembers).values({
-        semesterId: semesterId,
-        memberId: memberId,
-        role: request.body.role || '회원',
-      }).run();
-
-      util.logger(new Log('info', request.remoteIP, request.originalPath, '회원 등록', request.method, 201, request.body, 'success'));
-      return reply.code(201).send(success({ affectedRows: 1 }));
-    }
-    catch(e) {
-      util.logger(new Log('error', request.remoteIP, request.originalPath, '회원 등록 오류', request.method, 500, request.body, e.stack));
-      return reply.code(500).send(error('ERR_UNKNOWN', '알 수 없는 오류입니다.'));
-    }
+    util.logger(new Log('info', request.remoteIP, request.originalPath, '회원 등록 (폐지된 경로)', request.method, 410, null, 'ERR_GONE'));
+    return reply.code(410).send(error('ERR_GONE', '회원 등록은 급식표에서 구글 계정으로 로그인한 뒤 가입 신청으로 받습니다.'));
   });
 
   // Update member info
