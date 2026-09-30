@@ -1,101 +1,124 @@
 <template>
-  <div>
+  <div class="max-w-2xl">
     <PageHeader
       title="1365 활동확인서"
       description="급식 인증 기록으로 수원시자원봉사센터 양식의 자원봉사 활동확인서(xlsx)를 만듭니다. 기타 인증은 들어가지 않습니다."
       icon="i-lucide-hand-helping"
     />
 
-    <div class="card-section max-w-lg">
-      <div class="flex flex-col gap-4">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div class="flex flex-col gap-1">
-            <label class="text-sm font-medium text-text-secondary">시작일</label>
-            <DatePicker v-model="startDate" dateFormat="yy-mm-dd" class="w-full" />
-          </div>
-
-          <div class="flex flex-col gap-1">
-            <label class="text-sm font-medium text-text-secondary">종료일</label>
-            <DatePicker v-model="endDate" dateFormat="yy-mm-dd" class="w-full" />
-          </div>
-        </div>
-
-        <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-text-secondary">학기</label>
-          <Select
-            v-model="selectedSemester"
-            :options="semesterOptions"
-            optionLabel="label"
-            optionValue="value"
-            placeholder="학기 선택"
-          />
-        </div>
-
-        <div class="flex items-center gap-2">
-          <Checkbox v-model="maskPrivacy" :binary="true" inputId="mask" />
-          <label for="mask" class="text-sm cursor-pointer">개인정보 보호 (이름, 생년월일, 연락처 마스킹)</label>
-        </div>
-
-        <Button
-          label="활동확인서 만들기"
-          icon="i-lucide-file-spreadsheet"
-          @click="generateCertificate"
-          :loading="generating"
-        />
-
-        <div v-if="excluded.length" class="text-xs text-yellow-600 flex flex-col gap-1">
-          <p class="font-medium">
-            <span class="i-lucide-triangle-alert align-text-bottom mr-0.5"></span>
-            확인서에서 빠진 회원 {{ excluded.length }}명
-          </p>
-          <p v-for="e in excluded" :key="e.studentId">
-            {{ e.name }} ({{ e.studentId }}) · {{ e.reason === 'noVolunteerId' ? '1365 아이디 없음' : `${selectedSemester} 명단에 없음` }} · 인증 {{ e.count }}건
-          </p>
+    <div class="card-section flex flex-col gap-5">
+      <div class="flex flex-col gap-2">
+        <label class="field-label">기간</label>
+        <SelectButton v-model="preset" :options="PRESETS" optionLabel="label" optionValue="value" :allowEmpty="false" size="small" @change="applyPreset" />
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <DatePicker v-model="startDate" dateFormat="yy-mm-dd" showIcon fluid placeholder="시작일" @update:modelValue="preset = 'custom'" />
+          <DatePicker v-model="endDate" dateFormat="yy-mm-dd" showIcon fluid placeholder="종료일" @update:modelValue="preset = 'custom'" />
         </div>
       </div>
+
+      <div class="flex flex-col gap-1">
+        <label class="field-label" for="cert-semester">명단 기준 학기</label>
+        <Select inputId="cert-semester" v-model="selectedSemester" :options="semesters" placeholder="학기 선택" class="w-full sm:w-48" />
+        <p class="text-xs text-text-muted">이 학기 명단의 1365 아이디와 회장(담당자) 정보로 작성합니다.</p>
+      </div>
+
+      <label class="flex items-center gap-2 text-sm cursor-pointer select-none">
+        <Checkbox v-model="maskPrivacy" :binary="true" />
+        개인정보 가리기 (이름·생년월일·연락처 마스킹)
+      </label>
+
+      <!-- Preview -->
+      <div class="rounded-xl bg-surface-muted border border-surface-border px-4 py-3">
+        <div v-if="previewLoading" class="text-sm text-text-muted flex items-center gap-2">
+          <span class="i-lucide-loader-circle animate-spin"></span> 확인 중...
+        </div>
+        <p v-else-if="previewError" class="text-sm text-red-500">{{ previewError }}</p>
+        <template v-else-if="data">
+          <p v-if="data.rows.length" class="text-sm">
+            <b>{{ summary.people }}명</b> · {{ data.rows.length }}건 · 총 {{ summary.hours }}시간
+            <span class="text-text-muted">· 담당자 {{ data.chief.name || '없음' }}</span>
+          </p>
+          <p v-else class="text-sm text-text-muted">이 기간에는 활동확인서에 넣을 급식 인증이 없습니다.</p>
+          <p v-if="!data.chief.name && data.rows.length" class="text-xs text-amber-600 mt-1">{{ selectedSemester }} 명단에 회장이 없어 담당자 칸이 비게 됩니다.</p>
+
+          <div v-if="data.excluded.length" class="mt-3 text-xs flex flex-col gap-1">
+            <p class="font-medium text-amber-600">
+              <span class="i-lucide-triangle-alert align-text-bottom mr-0.5"></span>
+              빠지는 회원 {{ data.excluded.length }}명
+            </p>
+            <p v-for="e in data.excluded" :key="e.studentId" class="text-text-secondary">
+              {{ e.name }} ({{ e.studentId }}) · {{ e.reason === 'noVolunteerId' ? '1365 아이디 없음' : `${selectedSemester} 명단에 없음` }} · 인증 {{ e.count }}건
+            </p>
+            <router-link to="/console/members" class="text-primary hover:underline self-start">회원 명단에서 1365 아이디 채우기</router-link>
+          </div>
+        </template>
+      </div>
+
+      <Button
+        label="활동확인서 만들기"
+        icon="i-lucide-file-spreadsheet"
+        class="self-start"
+        :loading="generating"
+        :disabled="!data?.rows.length || previewLoading"
+        @click="generateCertificate"
+      />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useNotify } from '../composables/useNotify.js'
+import { ref, computed, watch, onMounted } from 'vue'
 import DatePicker from 'primevue/datepicker'
 import Select from 'primevue/select'
+import SelectButton from 'primevue/selectbutton'
 import Checkbox from 'primevue/checkbox'
 import Button from 'primevue/button'
 import { saveAs } from 'file-saver'
 import PageHeader from '../components/PageHeader.vue'
 import { getCertificateData } from '../api/verifications.js'
 import { useSemesters } from '../composables/useSemesters.js'
+import { useNotify } from '../composables/useNotify.js'
 import { buildCertificateWorkbook } from '../utils/certificate1365.js'
 import { formatDate } from '../../../shared/utils/dateFormat.js'
 
 const XLSX_MIME = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+const PRESETS = [
+  { label: '이번 달', value: 'thisMonth' },
+  { label: '지난 달', value: 'lastMonth' },
+  { label: '직접 선택', value: 'custom' },
+]
 
 const notify = useNotify()
 const { semesters, currentSemester, loadSemesters } = useSemesters()
 
-const startDate = ref(new Date(new Date().getFullYear(), new Date().getMonth(), 1))
-const endDate = ref(new Date())
+const preset = ref('thisMonth')
+const startDate = ref(null)
+const endDate = ref(null)
 const selectedSemester = ref('')
 const maskPrivacy = ref(false)
 const generating = ref(false)
-const excluded = ref([])
+const data = ref(null)
+const previewLoading = ref(false)
+const previewError = ref('')
 
-const semesterOptions = ref([])
+const summary = computed(() => ({
+  people: new Set(data.value.rows.map(r => r.volID)).size,
+  hours: data.value.rows.reduce((sum, r) => sum + r.hour, 0),
+}))
 
-onMounted(async () => {
-  await loadSemesters()
-  semesterOptions.value = semesters.value.map(s => ({ label: s, value: s }))
-  selectedSemester.value = currentSemester.value
-})
-
-function getParams() {
-  if (!startDate.value || !endDate.value || !selectedSemester.value) {
-    notify.warn('모든 항목을 입력해주세요.')
-    return null
+function applyPreset() {
+  const now = new Date()
+  if (preset.value === 'thisMonth') {
+    startDate.value = new Date(now.getFullYear(), now.getMonth(), 1)
+    endDate.value = now
+  } else if (preset.value === 'lastMonth') {
+    startDate.value = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+    endDate.value = new Date(now.getFullYear(), now.getMonth(), 0)
   }
+}
+
+function params() {
+  if (!startDate.value || !endDate.value || !selectedSemester.value) return null
   return {
     startDate: formatDate(startDate.value, 'yyyy-mm-dd'),
     endDate: formatDate(endDate.value, 'yyyy-mm-dd'),
@@ -104,6 +127,36 @@ function getParams() {
   }
 }
 
+let seq = 0
+async function loadPreview() {
+  const p = params()
+  data.value = null
+  previewError.value = ''
+  if (!p) return
+  if (p.startDate > p.endDate) {
+    previewError.value = '시작일이 종료일보다 늦습니다.'
+    return
+  }
+  const mine = ++seq
+  previewLoading.value = true
+  try {
+    const res = await getCertificateData(p)
+    if (mine === seq) data.value = res.data
+  } catch (e) {
+    if (mine === seq) previewError.value = e.error?.message || '확인서 데이터를 불러오지 못했습니다.'
+  } finally {
+    if (mine === seq) previewLoading.value = false
+  }
+}
+
+watch([startDate, endDate, selectedSemester, maskPrivacy], loadPreview)
+
+onMounted(async () => {
+  applyPreset()
+  await loadSemesters()
+  selectedSemester.value = currentSemester.value
+})
+
 async function fetchBinary(url) {
   const res = await fetch(url)
   if (!res.ok) throw new Error(`${url} 로드 실패`)
@@ -111,30 +164,19 @@ async function fetchBinary(url) {
 }
 
 async function generateCertificate() {
-  const params = getParams()
-  if (!params) return
+  const p = params()
+  if (!p || !data.value?.rows.length) return
 
   generating.value = true
-  excluded.value = []
   try {
-    const res = await getCertificateData(params)
-    const { rows, chief } = res.data
-    excluded.value = res.data.excluded || []
-
-    if (!rows.length) {
-      notify.warn('확인서에 넣을 인증 기록이 없습니다.')
-      return
-    }
-
     const [module, seal, logo] = await Promise.all([
       import('exceljs'),
       fetchBinary('/cert/seal.jpg'),
       fetchBinary('/cert/logo.jpg'),
     ])
-
-    const wb = buildCertificateWorkbook(rows, chief, { ExcelJS: module.default ?? module, seal, logo })
+    const wb = buildCertificateWorkbook(data.value.rows, data.value.chief, { ExcelJS: module.default ?? module, seal, logo })
     const buffer = await wb.xlsx.writeBuffer()
-    saveAs(new Blob([buffer], { type: XLSX_MIME }), `자원봉사활동확인서_${params.startDate}_${params.endDate}.xlsx`)
+    saveAs(new Blob([buffer], { type: XLSX_MIME }), `자원봉사활동확인서_${p.startDate}_${p.endDate}.xlsx`)
   } catch (e) {
     notify.error(e, e.message || '활동확인서 생성 실패')
   } finally {
@@ -142,3 +184,11 @@ async function generateCertificate() {
   }
 }
 </script>
+
+<style scoped>
+.field-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--c-text-secondary);
+}
+</style>
