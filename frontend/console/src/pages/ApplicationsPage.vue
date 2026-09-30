@@ -107,7 +107,7 @@
           <template #body="{ data }">
             <div v-if="data.status === 'pending'" class="flex gap-0.5 justify-end whitespace-nowrap">
               <Button label="승인" severity="success" size="small" :disabled="busy" @click="confirmOne(data, 'approve')" />
-              <Button label="거절" severity="danger" size="small" text :disabled="busy" @click="confirmOne(data, 'reject')" />
+              <Button label="거절" severity="secondary" size="small" text :disabled="busy" @click="confirmOne(data, 'reject')" />
             </div>
           </template>
         </Column>
