@@ -158,11 +158,11 @@ onMounted(() => {
   initGoogle()
 })
 
-watch([() => props.visible, gisReady, isLoggedIn], () => {
+watch([() => props.visible, gisReady, isLoggedIn, isDark], () => {
   if (props.visible && gisReady.value && !isLoggedIn.value) {
     requestAnimationFrame(() => {
       if (googleBtnRef.value) {
-        renderButton(googleBtnRef.value, handleGoogleResult)
+        renderButton(googleBtnRef.value, handleGoogleResult, isDark.value)
       }
     })
   }

@@ -36,7 +36,7 @@ export function useGoogleAuth() {
     return clientId.value
   }
 
-  function renderButton(element, callback) {
+  function renderButton(element, callback, dark = false) {
     if (!clientId.value || !window.google?.accounts?.id) return
 
     google.accounts.id.initialize({
@@ -54,8 +54,10 @@ export function useGoogleAuth() {
       },
     })
 
+    // Re-rendered on theme change, so drop the previous button first
+    element.replaceChildren()
     google.accounts.id.renderButton(element, {
-      theme: 'outline',
+      theme: dark ? 'outline_dark' : 'outline',
       size: 'large',
       width: 200,
       text: 'signin_with',
