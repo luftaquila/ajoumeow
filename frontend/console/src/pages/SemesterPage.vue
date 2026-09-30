@@ -104,7 +104,7 @@ import { useNotify } from '../composables/useNotify.js'
 const TERMS = [{ label: '1학기', value: '1' }, { label: '2학기', value: '2' }]
 
 const notify = useNotify()
-const { apply, register, refreshStatus } = useStatus()
+const { register, refreshStatus } = useStatus()
 
 const current = ref('')
 const year = ref(new Date().getFullYear())
@@ -119,10 +119,10 @@ const target = computed(() => `${year.value}-${term.value}`)
 
 const nextSteps = computed(() => [
   {
-    label: '가입 신청 열기',
-    detail: apply.value.open ? '지금 받는 중' : '닫혀 있음 — 설정에서 켜고 기간을 정하세요',
-    ok: apply.value.open,
-    to: '/console/settings',
+    label: '가입 신청 승인',
+    detail: '일반 회원은 급식표에서 구글로 로그인해 다시 신청합니다. 들어온 신청을 승인하세요.',
+    ok: false,
+    to: '/console/applications',
   },
   {
     label: '신입 모집 설문',

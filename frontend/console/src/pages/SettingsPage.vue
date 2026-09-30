@@ -2,7 +2,7 @@
   <div class="max-w-3xl">
     <PageHeader
       title="설정"
-      description="가입 신청·신입 모집 기간, 공지, 급식 관련 값을 바꿉니다. 바꾼 내용은 아래 저장 버튼을 눌러야 반영됩니다."
+      description="/apply 등록 페이지와 신입 모집 설문 기간, 공지, 급식 관련 값을 바꿉니다. 바꾼 내용은 아래 저장 버튼을 눌러야 반영됩니다."
       icon="i-lucide-settings"
     />
 
@@ -227,8 +227,8 @@ const TABS = [
 const WINDOWS = [
   {
     key: 'isApply', restrictKey: 'isApplyRestricted', termKey: 'applyTerm',
-    title: '가입 신청', icon: 'i-lucide-user-round-check', enableLabel: '신청 받기',
-    hint: '/apply 에서 구글 계정으로 이번 학기 회원 등록을 받습니다.',
+    title: '/apply 등록 페이지', icon: 'i-lucide-user-round-check', enableLabel: '페이지 열기',
+    hint: '승인 없이 바로 이번 학기 명단에 올리는 등록 페이지입니다. 급식표의 구글 가입 신청은 이 설정과 상관없이 늘 받습니다.',
   },
   {
     key: 'isRegister', restrictKey: 'isRegisterRestricted', termKey: 'registerTerm',

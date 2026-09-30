@@ -64,7 +64,7 @@ const oldestPending = computed(() => pending.value.map(a => a.createdAt).sort()[
 const memberCount = computed(() => members.value.length)
 const officerCount = computed(() => members.value.filter(m => m.role !== '회원').length)
 const windows = computed(() => [
-  { label: '가입 신청', state: apply.value },
+  { label: '/apply 등록 페이지', state: apply.value },
   { label: '신입 모집 설문', state: register.value },
 ])
 
