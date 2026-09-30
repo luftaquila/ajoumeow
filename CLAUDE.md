@@ -228,7 +228,7 @@ ADMIN_EMAILS=...              # 쉼표 구분, Google 로그인 시 자동 관�
 - 토큰 유효기간: 365일
 - 쿠키 이름: `jwt` (프론트엔드에서 js-cookie로 관리)
 - 미들웨어: `util.isLogin` (필수 인증), `util.isAdmin` (관리자), `util.optionalAuth` (선택적 인증)
-- `util.isAdmin`은 토큰의 role이 아니라 현재 학기 명단의 직책(`util.currentRole`)으로 판단한다. 토큰은 1년 유효라 강등된 임원이 권한을 유지하지 않게 하기 위함. 회원 기록이 없는 `ADMIN_EMAILS` 토큰만 토큰 role을 쓴다.
+- `util.isAdmin`은 토큰의 role이 아니라 현재 학기 명단의 직책(`util.currentRole`)으로 판단한다. 토큰은 1년 유효라 강등된 임원이 권한을 유지하지 않게 하기 위함. 회원 기록이 없는 토큰(`ADMIN_EMAILS` 로그인)은 이메일이 지금도 `ADMIN_EMAILS`에 있을 때만 관리자다.
 - '회원'이 아닌 직책은 모두 관리자 권한이다.
 
 ### Google OAuth

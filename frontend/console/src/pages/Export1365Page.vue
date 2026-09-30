@@ -129,15 +129,17 @@ function params() {
 
 let seq = 0
 async function loadPreview() {
+  // Bump first so a response for older inputs never lands, even after an early return
+  const mine = ++seq
   const p = params()
   data.value = null
   previewError.value = ''
+  previewLoading.value = false
   if (!p) return
   if (p.startDate > p.endDate) {
     previewError.value = '시작일이 종료일보다 늦습니다.'
     return
   }
-  const mine = ++seq
   previewLoading.value = true
   try {
     const res = await getCertificateData(p)

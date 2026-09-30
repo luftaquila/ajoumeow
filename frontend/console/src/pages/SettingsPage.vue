@@ -265,15 +265,19 @@ function clone(v) {
   return JSON.parse(JSON.stringify(v))
 }
 // Dates don't survive a JSON round trip
+function cloneTerm(v) {
+  return v ? v.map(d => (d ? new Date(d) : null)) : null
+}
 function cloneState(s) {
   const c = clone(s)
-  c.applyTerm = s.applyTerm.map(d => (d ? new Date(d) : null))
-  c.registerTerm = s.registerTerm.map(d => (d ? new Date(d) : null))
+  c.applyTerm = cloneTerm(s.applyTerm)
+  c.registerTerm = cloneTerm(s.registerTerm)
   return c
 }
 
+// No stored range must be null: the range picker reads [null, null] as a started range and throws
 function parseTerm(value) {
-  if (!value || !value.includes('~')) return [null, null]
+  if (!value || !value.includes('~')) return null
   const [s, e] = value.split('~')
   return [new Date(s + 'T00:00:00'), new Date(e + 'T00:00:00')]
 }
@@ -386,20 +390,26 @@ function courseColor(courseKey) {
   return COURSES[courseKey.match(/\d+/)?.[0]]?.color || '#888'
 }
 
-async function saveKey(key) {
+// Save a copy so edits made while a request is in flight stay marked as unsaved
+function snapshot(key) {
   const d = draft.value
-  if (key === 'notice') {
-    const version = original.value.notice.version + (noticeRepost.value ? 1 : 0)
-    await updateSetting('notice', `${version}$${d.notice.content}`)
-    d.notice.version = version
-    return
-  }
   if (key === 'map') {
     // Course colors follow the timetable constants
     for (const k of mapCourseKeys.value) d.map[k].color = courseColor(k)
   }
-  if (KEYS[key].data) await updateData(key, d[key])
-  else await updateSetting(key, KEYS[key].serialize(d[key]))
+  return key === 'applyTerm' || key === 'registerTerm' ? cloneTerm(d[key]) : clone(d[key])
+}
+
+async function saveKey(key, value) {
+  if (key === 'notice') {
+    value.version = original.value.notice.version + (noticeRepost.value ? 1 : 0)
+    await updateSetting('notice', `${value.version}$${value.content}`)
+    draft.value.notice.version = value.version
+  } else if (KEYS[key].data) {
+    await updateData(key, value)
+  } else {
+    await updateSetting(key, KEYS[key].serialize(value))
+  }
 }
 
 async function save() {
@@ -409,10 +419,9 @@ async function save() {
   let saved = 0
   try {
     for (const key of keys) {
-      await saveKey(key)
-      original.value[key] = key === 'applyTerm' || key === 'registerTerm'
-        ? draft.value[key].map(x => (x ? new Date(x) : null))
-        : clone(draft.value[key])
+      const value = snapshot(key)
+      await saveKey(key, value)
+      original.value[key] = value
       saved++
     }
     notify.success(`${saved}건 저장했습니다.`)
