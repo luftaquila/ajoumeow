@@ -30,7 +30,7 @@
       </router-link>
 
       <!-- Intake windows -->
-      <router-link to="/console/settings" class="home-card">
+      <router-link to="/console/settings" class="home-card" title="설정에서 바꾸기">
         <div class="home-card-label"><span class="i-lucide-calendar-clock"></span>신청 받기</div>
         <div class="flex flex-col gap-2 mt-1">
           <div v-for="w in windows" :key="w.label" class="flex items-center justify-between gap-3 text-sm">

@@ -1,541 +1,519 @@
 <template>
-  <div>
+  <div class="max-w-3xl">
     <PageHeader
       title="설정"
-      description="학기 전환, 가입 신청·신입 모집 기간, 공지, 급식 관련 값을 바꿉니다."
-      icon="i-lucide-wrench"
+      description="가입 신청·신입 모집 기간, 공지, 급식 관련 값을 바꿉니다. 바꾼 내용은 아래 저장 버튼을 눌러야 반영됩니다."
+      icon="i-lucide-settings"
     />
 
-    <div v-if="loading" class="text-center py-12">
+    <div v-if="!draft" class="text-center py-12">
       <div class="i-lucide-loader-circle text-3xl text-primary animate-spin mx-auto"></div>
     </div>
 
-    <div v-else class="flex flex-col gap-6 max-w-2xl">
-      <!-- Current Semester -->
-      <div class="card-section">
-        <h2 class="text-base font-semibold mb-4 flex items-center gap-2">
-          <span class="i-lucide-graduation-cap text-lg text-text-secondary"></span>
-          현재 학기
-        </h2>
-        <div class="flex items-center gap-3 flex-wrap">
-          <div class="w-22"><InputNumber v-model="semesterYear" :useGrouping="false" :allowEmpty="false" fluid /></div>
-          <span class="text-text-secondary">년</span>
-          <div class="w-28"><Select
-            v-model="semesterTerm"
-            :options="[{ label: '1학기', value: '1' }, { label: '2학기', value: '2' }]"
-            optionLabel="label"
-            optionValue="value"
-            fluid
-          /></div>
-          <Button label="학기 전환" size="small" severity="warn" :loading="transitioning" @click="onTransition" />
-        </div>
-      </div>
-
-      <!-- Max feeding -->
-      <div class="card-section">
-        <h2 class="text-base font-semibold mb-4 flex items-center gap-2">
-          <span class="i-lucide-utensils text-lg text-text-secondary"></span>
-          코스당 최대 신청 인원
-        </h2>
-        <p class="text-xs text-text-muted -mt-2 mb-4">하루 한 코스에 신청할 수 있는 인원입니다.</p>
-        <div class="flex items-center gap-3 flex-wrap">
-          <div class="w-20"><InputNumber v-model="maxCount" :min="1" :max="100" :allowEmpty="false" fluid /></div>
-          <span class="text-text-secondary">명</span>
-          <Button label="저장" size="small" @click="saveMaxCount" />
-        </div>
-      </div>
-
-      <!-- Volunteer hours -->
-      <div class="card-section">
-        <h2 class="text-base font-semibold mb-4 flex items-center gap-2">
-          <span class="i-lucide-hand-helping text-lg text-text-secondary"></span>
-          1365 봉사시간
-        </h2>
-        <p class="text-xs text-text-muted -mt-2 mb-4">하루에 돈 코스 수에 따라 활동확인서에 적히는 시간입니다.</p>
-        <div class="flex flex-col gap-3">
-          <div v-for="(_, i) in volunteerHours" :key="i" class="flex items-center gap-3">
-            <label class="w-24 text-sm text-text-secondary">하루 {{ i + 1 }}개 코스</label>
-            <div class="w-20"><InputNumber v-model="volunteerHours[i]" :min="0.5" :max="8" :step="0.5" :maxFractionDigits="2" :allowEmpty="false" fluid /></div>
-            <span class="text-text-secondary">시간</span>
-          </div>
-        </div>
-        <Button label="저장" size="small" class="mt-3" @click="saveVolunteerHours" />
-      </div>
-
-      <!-- Apply settings -->
-      <div class="card-section">
-        <h2 class="text-base font-semibold mb-4 flex items-center gap-2">
-          <span class="i-lucide-user-check text-lg text-text-secondary"></span>
-          가입 신청
-        </h2>
-        <div class="flex flex-col gap-4">
-          <div class="flex items-center justify-between">
-            <label class="text-sm text-text-secondary">신청 받기</label>
-            <ToggleSwitch v-model="settings.isApply" @change="saveBool('isApply', settings.isApply)" />
-          </div>
-          <div class="flex items-center justify-between">
-            <label class="text-sm text-text-secondary">기간 제한</label>
-            <ToggleSwitch v-model="settings.isApplyRestricted" @change="saveBool('isApplyRestricted', settings.isApplyRestricted)" />
-          </div>
-          <div v-if="settings.isApplyRestricted" class="border-l-2 border-primary/30 pl-4">
-            <div class="flex items-center gap-3 flex-wrap">
-              <div class="w-40"><DatePicker v-model="applyStart" dateFormat="yy-mm-dd" fluid /></div>
-              <span class="text-text-muted">~</span>
-              <div class="w-40"><DatePicker v-model="applyEnd" dateFormat="yy-mm-dd" fluid /></div>
-              <Button label="저장" size="small" @click="saveApplyTerm" />
+    <Tabs v-else v-model:value="tab">
+      <TabList>
+        <Tab v-for="t in TABS" :key="t.value" :value="t.value">
+          {{ t.label }}<span v-if="dirtyTabs.has(t.value)" class="dirty-dot" title="저장하지 않은 변경"></span>
+        </Tab>
+      </TabList>
+      <TabPanels class="px-0!">
+        <!-- 운영 -->
+        <TabPanel value="ops" class="flex flex-col gap-5">
+          <section v-for="w in WINDOWS" :key="w.key" class="card-section">
+            <div class="flex items-center justify-between gap-3 mb-1">
+              <h2 class="section-title"><span :class="w.icon"></span>{{ w.title }}</h2>
+              <span class="text-xs" :class="windowOpen(w) ? 'text-green-600 font-medium' : 'text-text-muted'">
+                {{ windowDirty(w) ? '저장하면 ' : '지금 ' }}{{ windowOpen(w) ? '받는 중' : '닫힘' }}
+              </span>
             </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Register settings -->
-      <div class="card-section">
-        <h2 class="text-base font-semibold mb-4 flex items-center gap-2">
-          <span class="i-lucide-user-plus text-lg text-text-secondary"></span>
-          신입 모집 설문
-        </h2>
-        <div class="flex flex-col gap-4">
-          <div class="flex items-center justify-between">
-            <label class="text-sm text-text-secondary">설문 받기</label>
-            <ToggleSwitch v-model="settings.isRegister" @change="saveBool('isRegister', settings.isRegister)" />
-          </div>
-          <div class="flex items-center justify-between">
-            <label class="text-sm text-text-secondary">기간 제한</label>
-            <ToggleSwitch v-model="settings.isRegisterRestricted" @change="saveBool('isRegisterRestricted', settings.isRegisterRestricted)" />
-          </div>
-          <div v-if="settings.isRegisterRestricted" class="border-l-2 border-primary/30 pl-4">
-            <div class="flex items-center gap-3 flex-wrap">
-              <div class="w-40"><DatePicker v-model="registerStart" dateFormat="yy-mm-dd" fluid /></div>
-              <span class="text-text-muted">~</span>
-              <div class="w-40"><DatePicker v-model="registerEnd" dateFormat="yy-mm-dd" fluid /></div>
-              <Button label="저장" size="small" @click="saveRegisterTerm" />
+            <p class="section-hint">{{ w.hint }}</p>
+            <div class="flex flex-col gap-3">
+              <label class="row-toggle">
+                <span>{{ w.enableLabel }}</span>
+                <ToggleSwitch v-model="draft[w.key]" />
+              </label>
+              <label class="row-toggle" :class="{ 'opacity-50': !draft[w.key] }">
+                <span>기간 제한</span>
+                <ToggleSwitch v-model="draft[w.restrictKey]" :disabled="!draft[w.key]" />
+              </label>
+              <div v-if="draft[w.key] && draft[w.restrictKey]" class="flex flex-col gap-1">
+                <DatePicker
+                  v-model="draft[w.termKey]"
+                  selectionMode="range"
+                  :manualInput="false"
+                  dateFormat="yy-mm-dd"
+                  placeholder="시작일 - 종료일"
+                  showIcon
+                  class="w-full sm:w-72"
+                  :invalid="!!errors[w.termKey]"
+                />
+                <small v-if="errors[w.termKey]" class="field-error">{{ errors[w.termKey] }}</small>
+              </div>
             </div>
-          </div>
-        </div>
-      </div>
+          </section>
 
-      <!-- Notice -->
-      <div class="card-section">
-        <h2 class="text-base font-semibold mb-4 flex items-center gap-2">
-          <span class="i-lucide-megaphone text-lg text-text-secondary"></span>
-          공지사항
-        </h2>
-        <Textarea v-model="noticeContent" rows="5" class="w-full" placeholder="공지사항 내용 (HTML 가능)" />
-        <Button label="저장" size="small" class="mt-3" @click="saveNotice" />
-      </div>
-
-      <!-- College / Department Editor -->
-      <div class="card-section">
-        <h2 class="text-base font-semibold mb-4 flex items-center gap-2">
-          <span class="i-lucide-school text-lg text-text-secondary"></span>
-          단과대 / 학과
-        </h2>
-        <div v-if="dataLoading.college" class="text-center py-4">
-          <div class="i-lucide-loader-circle text-xl text-primary animate-spin mx-auto"></div>
-        </div>
-        <div v-else>
-          <Accordion :multiple="true">
-            <AccordionPanel v-for="(depts, college) in collegeData" :key="college" :value="college">
-              <AccordionHeader>
-                <div class="flex items-center justify-between w-full pr-2">
-                  <span>{{ college }} ({{ depts.length }})</span>
-                </div>
-              </AccordionHeader>
-              <AccordionContent>
-                <div class="flex flex-col gap-2">
-                  <div v-for="(dept, di) in depts" :key="di" class="flex items-center gap-2">
-                    <InputText v-model="depts[di]" class="flex-1" size="small" />
-                    <Button icon="i-lucide-x" severity="danger" text size="small" @click="depts.splice(di, 1)" />
-                  </div>
-                  <Button label="학과 추가" icon="i-lucide-plus" severity="secondary" text size="small" @click="depts.push('')" />
-                  <div class="border-t border-surface-border mt-2 pt-2">
-                    <Button label="단과대 삭제" icon="i-lucide-trash-2" severity="danger" text size="small" @click="deleteCollege(college)" />
-                  </div>
-                </div>
-              </AccordionContent>
-            </AccordionPanel>
-          </Accordion>
-          <div class="flex items-center gap-2 mt-4">
-            <InputText v-model="newCollegeName" placeholder="새 단과대 이름" size="small" class="w-2/3" />
-            <Button label="추가" icon="i-lucide-plus" size="small" severity="secondary" @click="addCollege" />
-            <Button label="저장" size="small" :loading="dataSaving.college" @click="saveCollege" />
-          </div>
-        </div>
-      </div>
-
-      <!-- Map Location Editor -->
-      <div class="card-section">
-        <h2 class="text-base font-semibold mb-4 flex items-center gap-2">
-          <span class="i-lucide-map-pin text-lg text-text-secondary"></span>
-          급식소 위치
-        </h2>
-        <div v-if="dataLoading.map" class="text-center py-4">
-          <div class="i-lucide-loader-circle text-xl text-primary animate-spin mx-auto"></div>
-        </div>
-        <div v-else-if="mapData">
-          <!-- Home -->
-          <div class="mb-4">
-            <h3 class="text-sm font-medium mb-2 text-text-secondary">동아리방</h3>
-            <div class="grid grid-cols-2 gap-2">
-              <InputText v-model="mapData.home.name" placeholder="이름" size="small" />
-              <InputText v-model="mapData.home.detail" placeholder="상세" size="small" />
-              <InputText v-model="mapData.home.lat" placeholder="위도" size="small" />
-              <InputText v-model="mapData.home.lon" placeholder="경도" size="small" />
+          <section class="card-section">
+            <h2 class="section-title"><span class="i-lucide-megaphone"></span>공지사항</h2>
+            <p class="section-hint">급식표를 연 회원에게 한 번 뜨는 안내입니다. HTML을 쓸 수 있고 줄바꿈은 그대로 반영됩니다.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div class="flex flex-col gap-1">
+                <Textarea v-model="draft.notice.content" rows="7" class="w-full font-mono text-sm" :invalid="!!errors.notice" />
+                <small v-if="errors.notice" class="field-error">{{ errors.notice }}</small>
+              </div>
+              <div class="rounded-xl border border-dashed border-surface-border p-4 flex items-center justify-center">
+                <span v-if="draft.notice.content" class="text-sm text-center leading-[1.1rem]" v-html="noticePreview"></span>
+                <span v-else class="text-xs text-text-muted">미리보기</span>
+              </div>
             </div>
-          </div>
-          <!-- Courses -->
-          <Accordion :multiple="true">
-            <AccordionPanel v-for="courseKey in mapCourseKeys" :key="courseKey" :value="courseKey">
-              <AccordionHeader>
-                <div class="flex items-center gap-2">
-                  <span class="w-3 h-3 rounded-full inline-block" :style="{ backgroundColor: courseColor(courseKey) }"></span>
-                  <span>{{ courseKey }} ({{ mapData[courseKey].data.length }})</span>
-                </div>
-              </AccordionHeader>
-              <AccordionContent>
-                <div class="flex flex-col gap-2">
-                  <div v-for="(loc, li) in mapData[courseKey].data" :key="li" class="flex items-center gap-2 flex-wrap">
-                    <InputText v-model="loc.name" placeholder="이름" size="small" class="flex-1 min-w-24" />
-                    <InputText v-model="loc.detail" placeholder="상세" size="small" class="flex-1 min-w-24" />
-                    <InputText v-model="loc.lat" placeholder="위도" size="small" class="w-28" />
-                    <InputText v-model="loc.lon" placeholder="경도" size="small" class="w-28" />
-                    <Button icon="i-lucide-x" severity="danger" text size="small" @click="mapData[courseKey].data.splice(li, 1)" />
-                  </div>
-                  <Button label="위치 추가" icon="i-lucide-plus" severity="secondary" text size="small"
-                    @click="mapData[courseKey].data.push({ name: '', detail: '', lat: '', lon: '' })" />
-                </div>
-              </AccordionContent>
-            </AccordionPanel>
-          </Accordion>
-          <Button label="저장" size="small" class="mt-3" :loading="dataSaving.map" @click="saveMap" />
-        </div>
-      </div>
+            <label class="flex items-center gap-2 mt-3 text-sm cursor-pointer select-none">
+              <Checkbox v-model="noticeRepost" :binary="true" />
+              저장하면 이미 본 회원에게도 다시 띄우기
+            </label>
+          </section>
+        </TabPanel>
 
+        <!-- 급식 -->
+        <TabPanel value="feeding" class="flex flex-col gap-5">
+          <section class="card-section">
+            <h2 class="section-title"><span class="i-lucide-utensils"></span>코스당 최대 신청 인원</h2>
+            <p class="section-hint">하루 한 코스에 신청할 수 있는 인원입니다.</p>
+            <div class="flex items-center gap-2">
+              <div class="w-24"><InputNumber v-model="draft.maxFeedingUserCount" :min="1" :max="100" :allowEmpty="false" fluid /></div>
+              <span class="text-text-secondary">명</span>
+            </div>
+          </section>
+
+          <section class="card-section">
+            <h2 class="section-title"><span class="i-lucide-hand-helping"></span>1365 봉사시간</h2>
+            <p class="section-hint">하루에 돈 코스 수에 따라 활동확인서에 적히는 시간입니다. 0시간 초과 8시간 이하.</p>
+            <div class="flex flex-col gap-2">
+              <div v-for="(_, i) in draft.volunteerHours" :key="i" class="flex items-center gap-3">
+                <label class="w-24 text-sm text-text-secondary">하루 {{ i + 1 }}개 코스</label>
+                <div class="w-24"><InputNumber v-model="draft.volunteerHours[i]" :min="0.5" :max="8" :step="0.5" :maxFractionDigits="2" :allowEmpty="false" fluid /></div>
+                <span class="text-text-secondary">시간</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="card-section">
+            <h2 class="section-title"><span class="i-lucide-map-pin"></span>급식소 위치</h2>
+            <p class="section-hint">급식표 지도에 표시되는 위치입니다. 좌표는 지도 링크로 맞는지 확인할 수 있습니다.</p>
+            <div v-if="draft.map" class="flex flex-col gap-4">
+              <div>
+                <h3 class="text-sm font-medium mb-2 text-text-secondary">동아리방</h3>
+                <LocationRow :loc="draft.map.home" :error="errors['map.home']" />
+              </div>
+              <Accordion multiple>
+                <AccordionPanel v-for="courseKey in mapCourseKeys" :key="courseKey" :value="courseKey">
+                  <AccordionHeader>
+                    <div class="flex items-center gap-2">
+                      <span class="w-3 h-3 rounded-full inline-block" :style="{ backgroundColor: courseColor(courseKey) }"></span>
+                      <span>{{ courseKey }} ({{ draft.map[courseKey].data.length }}곳)</span>
+                      <span v-if="Object.keys(errors).some(k => k.startsWith(`map.${courseKey}.`))" class="i-lucide-circle-alert text-red-500"></span>
+                    </div>
+                  </AccordionHeader>
+                  <AccordionContent>
+                    <div class="flex flex-col gap-3">
+                      <LocationRow
+                        v-for="(loc, li) in draft.map[courseKey].data"
+                        :key="li"
+                        :loc="loc"
+                        :error="errors[`map.${courseKey}.${li}`]"
+                        removable
+                        @remove="draft.map[courseKey].data.splice(li, 1)"
+                      />
+                      <Button label="위치 추가" icon="i-lucide-plus" severity="secondary" text size="small" class="self-start"
+                        @click="draft.map[courseKey].data.push({ name: '', detail: '', lat: '', lon: '' })" />
+                    </div>
+                  </AccordionContent>
+                </AccordionPanel>
+              </Accordion>
+            </div>
+          </section>
+        </TabPanel>
+
+        <!-- 데이터 -->
+        <TabPanel value="data" class="flex flex-col gap-5">
+          <section class="card-section">
+            <h2 class="section-title"><span class="i-lucide-school"></span>단과대 / 학과</h2>
+            <p class="section-hint">가입 신청서와 신입 모집 설문의 소속 선택지입니다. 이미 가입한 회원의 소속은 바뀌지 않습니다.</p>
+            <Accordion multiple>
+              <AccordionPanel v-for="(depts, college) in draft.college" :key="college" :value="college">
+                <AccordionHeader>
+                  <span>{{ college }} <span class="text-text-muted text-sm">({{ depts.length }})</span></span>
+                  <span v-if="errors[`college.${college}`]" class="i-lucide-circle-alert text-red-500 ml-2"></span>
+                </AccordionHeader>
+                <AccordionContent>
+                  <div class="flex flex-col gap-2">
+                    <div v-for="(dept, di) in depts" :key="di" class="flex items-center gap-2">
+                      <InputText v-model="depts[di]" class="flex-1" size="small" placeholder="학과 이름" />
+                      <Button icon="i-lucide-x" severity="danger" text size="small" title="학과 삭제" @click="depts.splice(di, 1)" />
+                    </div>
+                    <small v-if="errors[`college.${college}`]" class="field-error">{{ errors[`college.${college}`] }}</small>
+                    <div class="flex items-center justify-between">
+                      <Button label="학과 추가" icon="i-lucide-plus" severity="secondary" text size="small" @click="depts.push('')" />
+                      <Button label="단과대 삭제" icon="i-lucide-trash-2" severity="danger" text size="small" @click="confirmDeleteCollege(college)" />
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionPanel>
+            </Accordion>
+            <div class="flex items-center gap-2 mt-4">
+              <InputText v-model="newCollegeName" placeholder="새 단과대 이름" size="small" class="w-2/3" @keydown.enter.prevent="addCollege" />
+              <Button label="추가" icon="i-lucide-plus" size="small" severity="secondary" @click="addCollege" />
+            </div>
+          </section>
+        </TabPanel>
+      </TabPanels>
+    </Tabs>
+
+    <!-- Save bar -->
+    <div v-if="dirtyKeys.length" class="save-bar sticky bottom-0 mt-4 pt-3 pb-1">
+      <div class="card flex items-center gap-3 px-4 py-3 flex-wrap">
+        <span class="text-sm">
+          저장하지 않은 변경 {{ dirtyKeys.length }}건
+          <span v-if="errorCount" class="text-red-500 ml-1">· 고칠 항목 {{ errorCount }}개</span>
+        </span>
+        <div class="flex-1"></div>
+        <Button label="되돌리기" severity="secondary" text size="small" :disabled="saving" @click="revert" />
+        <Button label="저장" icon="i-lucide-save" size="small" :loading="saving" :disabled="errorCount > 0" @click="save" />
+      </div>
     </div>
 
-    <!-- Semester transition dialog -->
-    <Dialog v-model:visible="showTransitionDialog" header="학기 전환" :modal="true" :closable="!executing" :style="{ width: '28rem' }">
-      <div v-if="previewLoading" class="text-center py-6">
-        <div class="i-lucide-loader-circle text-2xl text-primary animate-spin mx-auto"></div>
-      </div>
-      <div v-else-if="transitionPreview" class="flex flex-col gap-4">
-        <div class="text-sm">
-          <span class="font-semibold">{{ transitionPreview.currentSemester }}</span>
-          <span class="mx-2 text-text-muted">&rarr;</span>
-          <span class="font-semibold text-primary">{{ transitionPreview.targetSemester }}</span>
-          <span v-if="transitionPreview.targetExists" class="ml-2 text-xs text-text-muted">(기존 학기)</span>
-        </div>
-
-        <div>
-          <p class="text-sm font-medium mb-2">이전될 임원 ({{ transitionPreview.executives.length }}명)</p>
-          <div v-if="transitionPreview.executives.length" class="border border-surface rounded-lg overflow-hidden">
-            <table class="w-full text-sm">
-              <thead class="bg-surface-ground">
-                <tr>
-                  <th class="px-3 py-2 text-left font-medium">이름</th>
-                  <th class="px-3 py-2 text-left font-medium">학번</th>
-                  <th class="px-3 py-2 text-left font-medium">역할</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="exec in transitionPreview.executives" :key="exec.studentId" class="border-t border-surface">
-                  <td class="px-3 py-2">{{ exec.name }}</td>
-                  <td class="px-3 py-2 text-text-secondary">{{ exec.studentId }}</td>
-                  <td class="px-3 py-2">{{ exec.role }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <p v-else class="text-sm text-text-muted">이전 학기에 임원이 없습니다.</p>
-        </div>
-
-        <p class="text-xs text-text-muted">학기 전환 후 일반 회원은 새 학기에 다시 등록해야 합니다.</p>
-      </div>
-
-      <template #footer>
-        <div class="flex justify-end gap-2">
-          <Button label="취소" severity="secondary" size="small" :disabled="executing" @click="showTransitionDialog = false" />
-          <Button label="전환" severity="warn" size="small" :loading="executing" @click="confirmTransition" />
-        </div>
-      </template>
-    </Dialog>
+    <ConfirmDialog />
   </div>
 </template>
 
 <script setup>
-import { ref, computed, reactive, onMounted } from 'vue'
-import { useNotify } from '../composables/useNotify.js'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { onBeforeRouteLeave } from 'vue-router'
+import { useConfirm } from 'primevue/useconfirm'
 import InputNumber from 'primevue/inputnumber'
 import InputText from 'primevue/inputtext'
-import Select from 'primevue/select'
 import Button from 'primevue/button'
 import ToggleSwitch from 'primevue/toggleswitch'
 import DatePicker from 'primevue/datepicker'
 import Textarea from 'primevue/textarea'
-import Dialog from 'primevue/dialog'
+import Checkbox from 'primevue/checkbox'
+import Tabs from 'primevue/tabs'
+import TabList from 'primevue/tablist'
+import Tab from 'primevue/tab'
+import TabPanels from 'primevue/tabpanels'
+import TabPanel from 'primevue/tabpanel'
 import Accordion from 'primevue/accordion'
 import AccordionPanel from 'primevue/accordionpanel'
 import AccordionHeader from 'primevue/accordionheader'
 import AccordionContent from 'primevue/accordioncontent'
+import ConfirmDialog from 'primevue/confirmdialog'
 import PageHeader from '../components/PageHeader.vue'
+import LocationRow from '../components/LocationRow.vue'
 import { getSetting, updateSetting } from '../api/settings.js'
-import { previewTransition, executeTransition } from '../api/semesters.js'
 import { getData, updateData } from '../api/data.js'
 import { COURSES } from '../../../timetable/src/constants.js'
 import { formatDate } from '../../../shared/utils/dateFormat.js'
+import { useNotify } from '../composables/useNotify.js'
 import { useStatus } from '../composables/useStatus.js'
 
 const notify = useNotify()
+const confirm = useConfirm()
 const { refreshStatus } = useStatus()
-const loading = ref(true)
 
-const semesterYear = ref(2025)
-const semesterTerm = ref('1')
+const TABS = [
+  { value: 'ops', label: '운영' },
+  { value: 'feeding', label: '급식' },
+  { value: 'data', label: '데이터' },
+]
 
-const settings = ref({
-  isApply: false,
-  isApplyRestricted: false,
-  isRegister: false,
-  isRegisterRestricted: false,
-})
+const WINDOWS = [
+  {
+    key: 'isApply', restrictKey: 'isApplyRestricted', termKey: 'applyTerm',
+    title: '가입 신청', icon: 'i-lucide-user-round-check', enableLabel: '신청 받기',
+    hint: '/apply 에서 구글 계정으로 이번 학기 회원 등록을 받습니다.',
+  },
+  {
+    key: 'isRegister', restrictKey: 'isRegisterRestricted', termKey: 'registerTerm',
+    title: '신입 모집 설문', icon: 'i-lucide-clipboard-list', enableLabel: '설문 받기',
+    hint: '/register 에서 신입 연락처를 받습니다.',
+  },
+]
 
-const applyStart = ref(null)
-const applyEnd = ref(null)
-const registerStart = ref(null)
-const registerEnd = ref(null)
-const noticeContent = ref('')
-const noticeVersion = ref(0)
-const maxCount = ref(10)
-// volunteerHours[n - 1] = 하루에 n개 코스를 돌았을 때 부여할 1365 봉사시간
-const volunteerHours = ref(Object.keys(COURSES).map((_, i) => i + 1))
-
-// Transition state
-const transitioning = ref(false)
-const showTransitionDialog = ref(false)
-const previewLoading = ref(false)
-const transitionPreview = ref(null)
-const executing = ref(false)
-
-// Data editor state
-const dataLoading = reactive({ college: true, map: true })
-const dataSaving = reactive({ college: false, map: false })
-const collegeData = ref({})
-const newCollegeName = ref('')
-const mapData = ref(null)
-
-const mapCourseKeys = computed(() => {
-  if (!mapData.value) return []
-  return Object.keys(mapData.value).filter(k => k !== 'home')
-})
-
-function courseColor(courseKey) {
-  const num = courseKey.match(/\d+/)?.[0]
-  return COURSES[num]?.color || '#888'
+// Where each saved key lives and how it's stored
+const bool = v => (v ? 'TRUE' : 'FALSE')
+const term = v => (v?.[0] && v?.[1] ? `${formatDate(v[0], 'yyyy-mm-dd')}~${formatDate(v[1], 'yyyy-mm-dd')}` : '')
+const KEYS = {
+  isApply: { tab: 'ops', serialize: bool },
+  isApplyRestricted: { tab: 'ops', serialize: bool },
+  applyTerm: { tab: 'ops', serialize: term },
+  isRegister: { tab: 'ops', serialize: bool },
+  isRegisterRestricted: { tab: 'ops', serialize: bool },
+  registerTerm: { tab: 'ops', serialize: term },
+  notice: { tab: 'ops', serialize: v => v.content },
+  maxFeedingUserCount: { tab: 'feeding', serialize: v => String(v) },
+  volunteerHours: { tab: 'feeding', serialize: v => JSON.stringify(v) },
+  map: { tab: 'feeding', serialize: v => JSON.stringify(v), data: true },
+  college: { tab: 'data', serialize: v => JSON.stringify(v), data: true },
 }
 
-function fmtDate(d) {
-  return formatDate(d, 'yyyy-mm-dd')
+const tab = ref('ops')
+const original = ref(null)
+const draft = ref(null)
+const noticeRepost = ref(true)
+const newCollegeName = ref('')
+const saving = ref(false)
+
+function clone(v) {
+  return JSON.parse(JSON.stringify(v))
+}
+// Dates don't survive a JSON round trip
+function cloneState(s) {
+  const c = clone(s)
+  c.applyTerm = s.applyTerm.map(d => (d ? new Date(d) : null))
+  c.registerTerm = s.registerTerm.map(d => (d ? new Date(d) : null))
+  return c
+}
+
+function parseTerm(value) {
+  if (!value || !value.includes('~')) return [null, null]
+  const [s, e] = value.split('~')
+  return [new Date(s + 'T00:00:00'), new Date(e + 'T00:00:00')]
 }
 
 function parseVolunteerHours(value) {
   try {
     const hours = JSON.parse(value)
     if (Array.isArray(hours) && hours.length && hours.every(h => typeof h === 'number')) return hours
-  } catch (e) {}
+  } catch {}
   return null
 }
 
-function parseTermDates(term) {
-  if (!term || !term.includes('~')) return [null, null]
-  const [s, e] = term.split('~')
-  return [new Date(s), new Date(e)]
-}
-
 onMounted(async () => {
+  window.addEventListener('beforeunload', onBeforeUnload)
   try {
-    const keys = ['currentSemester', 'isApply', 'isApplyRestricted', 'applyTerm',
-                   'isRegister', 'isRegisterRestricted', 'registerTerm', 'notice', 'maxFeedingUserCount', 'volunteerHours']
-    const results = await Promise.all(keys.map(k => getSetting(k)))
-    const vals = {}
-    keys.forEach((k, i) => { vals[k] = results[i].data })
+    const keys = ['isApply', 'isApplyRestricted', 'applyTerm', 'isRegister', 'isRegisterRestricted', 'registerTerm',
+      'notice', 'maxFeedingUserCount', 'volunteerHours']
+    const [values, college, map] = await Promise.all([
+      Promise.all(keys.map(k => getSetting(k).then(r => r.data))),
+      getData('college'),
+      getData('map'),
+    ])
+    const v = Object.fromEntries(keys.map((k, i) => [k, values[i]]))
 
-    // semester
-    const [y, t] = vals.currentSemester.split('-')
-    semesterYear.value = parseInt(y)
-    semesterTerm.value = t
-
-    // toggles
-    settings.value.isApply = vals.isApply === 'TRUE'
-    settings.value.isApplyRestricted = vals.isApplyRestricted === 'TRUE'
-    settings.value.isRegister = vals.isRegister === 'TRUE'
-    settings.value.isRegisterRestricted = vals.isRegisterRestricted === 'TRUE'
-
-    // terms
-    const [as, ae] = parseTermDates(vals.applyTerm)
-    applyStart.value = as
-    applyEnd.value = ae
-    const [rs, re] = parseTermDates(vals.registerTerm)
-    registerStart.value = rs
-    registerEnd.value = re
-
-    // notice
-    if (vals.notice && vals.notice.includes('$')) {
-      const idx = vals.notice.indexOf('$')
-      noticeVersion.value = parseInt(vals.notice.slice(0, idx)) || 0
-      noticeContent.value = vals.notice.slice(idx + 1)
-    } else {
-      noticeContent.value = vals.notice || ''
+    const [version, ...rest] = (v.notice || '').includes('$') ? v.notice.split('$') : ['0', v.notice || '']
+    // volunteerHours[n - 1] = hours for n courses in a day; one entry per course
+    const hours = parseVolunteerHours(v.volunteerHours) || [1, 2, 3]
+    const state = {
+      isApply: v.isApply === 'TRUE',
+      isApplyRestricted: v.isApplyRestricted === 'TRUE',
+      applyTerm: parseTerm(v.applyTerm),
+      isRegister: v.isRegister === 'TRUE',
+      isRegisterRestricted: v.isRegisterRestricted === 'TRUE',
+      registerTerm: parseTerm(v.registerTerm),
+      notice: { version: parseInt(version) || 0, content: rest.join('$') },
+      maxFeedingUserCount: parseInt(v.maxFeedingUserCount) || 10,
+      volunteerHours: Object.keys(COURSES).map((_, i) => hours[Math.min(i, hours.length - 1)]),
+      map,
+      college,
     }
-
-    // max
-    maxCount.value = parseInt(vals.maxFeedingUserCount) || 10
-
-    // volunteer hours, one entry per possible course count
-    const hours = parseVolunteerHours(vals.volunteerHours)
-    if (hours) volunteerHours.value = volunteerHours.value.map((_, i) => hours[Math.min(i, hours.length - 1)])
+    original.value = state
+    draft.value = cloneState(state)
   } catch (e) {
-    notify.error(e, '설정 로드 실패')
-  } finally {
-    loading.value = false
+    notify.error(e, '설정을 불러오지 못했습니다.')
   }
-
-  // Load data editors in parallel
-  loadData('college', d => { collegeData.value = d })
-  loadData('map', d => { mapData.value = d })
 })
 
-async function loadData(key, setter) {
+onBeforeUnmount(() => window.removeEventListener('beforeunload', onBeforeUnload))
+
+const dirtyKeys = computed(() => {
+  if (!draft.value) return []
+  return Object.entries(KEYS)
+    .filter(([k, { serialize }]) => serialize(draft.value[k]) !== serialize(original.value[k]))
+    .map(([k]) => k)
+})
+const dirtyTabs = computed(() => new Set(dirtyKeys.value.map(k => KEYS[k].tab)))
+
+const LATLNG_RE = /^-?\d{1,3}(\.\d+)?$/
+
+const errors = computed(() => {
+  const e = {}
+  const d = draft.value
+  if (!d) return e
+  for (const w of WINDOWS) {
+    if (d[w.key] && d[w.restrictKey]) {
+      const [s, t] = d[w.termKey] || []
+      if (!s || !t) e[w.termKey] = '시작일과 종료일을 모두 고르세요.'
+    }
+  }
+  // The timetable splits the stored value on '$' (version$content)
+  if (d.notice.content.includes('$')) e.notice = "'$' 문자는 쓸 수 없습니다. 급식표에서 공지가 그 앞까지만 보입니다."
+  const checkLoc = (loc, key) => {
+    if (!loc.name?.trim()) e[key] = '이름을 입력하세요.'
+    else if (!LATLNG_RE.test(String(loc.lat).trim()) || !LATLNG_RE.test(String(loc.lon).trim())) e[key] = '위도·경도는 숫자로 입력하세요.'
+  }
+  if (d.map) {
+    checkLoc(d.map.home, 'map.home')
+    for (const key of mapCourseKeys.value) d.map[key].data.forEach((loc, i) => checkLoc(loc, `map.${key}.${i}`))
+  }
+  for (const [college, depts] of Object.entries(d.college || {})) {
+    const names = depts.map(x => x.trim())
+    if (names.some(n => !n)) e[`college.${college}`] = '빈 학과 이름이 있습니다.'
+    else if (new Set(names).size !== names.length) e[`college.${college}`] = '같은 학과가 두 번 있습니다.'
+  }
+  return e
+})
+const errorCount = computed(() => Object.keys(errors.value).length)
+
+const mapCourseKeys = computed(() => (draft.value?.map ? Object.keys(draft.value.map).filter(k => k !== 'home') : []))
+
+const noticePreview = computed(() => draft.value.notice.content.replace(/\n/g, '<br>'))
+
+function windowOpen(w) {
+  const d = draft.value
+  if (!d[w.key]) return false
+  if (!d[w.restrictKey]) return true
+  const [s, t] = d[w.termKey] || []
+  if (!s || !t) return false
+  const now = new Date()
+  const end = new Date(t)
+  end.setHours(23, 59, 59)
+  return now >= s && now <= end
+}
+
+function windowDirty(w) {
+  return [w.key, w.restrictKey, w.termKey].some(k => dirtyKeys.value.includes(k))
+}
+
+function courseColor(courseKey) {
+  return COURSES[courseKey.match(/\d+/)?.[0]]?.color || '#888'
+}
+
+async function saveKey(key) {
+  const d = draft.value
+  if (key === 'notice') {
+    const version = original.value.notice.version + (noticeRepost.value ? 1 : 0)
+    await updateSetting('notice', `${version}$${d.notice.content}`)
+    d.notice.version = version
+    return
+  }
+  if (key === 'map') {
+    // Course colors follow the timetable constants
+    for (const k of mapCourseKeys.value) d.map[k].color = courseColor(k)
+  }
+  if (KEYS[key].data) await updateData(key, d[key])
+  else await updateSetting(key, KEYS[key].serialize(d[key]))
+}
+
+async function save() {
+  if (errorCount.value) return
+  saving.value = true
+  const keys = [...dirtyKeys.value]
+  let saved = 0
   try {
-    const d = await getData(key)
-    setter(d)
+    for (const key of keys) {
+      await saveKey(key)
+      original.value[key] = key === 'applyTerm' || key === 'registerTerm'
+        ? draft.value[key].map(x => (x ? new Date(x) : null))
+        : clone(draft.value[key])
+      saved++
+    }
+    notify.success(`${saved}건 저장했습니다.`)
   } catch (e) {
-    notify.error(e, `${key} 데이터 로드 실패`)
+    notify.error(e, `저장 실패 (${saved}/${keys.length}건 저장됨)`)
   } finally {
-    dataLoading[key] = false
+    saving.value = false
+    refreshStatus()
   }
 }
 
-// --- Existing settings save functions ---
-
-async function onTransition() {
-  const name = `${semesterYear.value}-${semesterTerm.value}`
-  transitioning.value = true
-  previewLoading.value = true
-  transitionPreview.value = null
-  showTransitionDialog.value = true
-
-  try {
-    const res = await previewTransition(name)
-    transitionPreview.value = res.data
-  } catch (e) {
-    showTransitionDialog.value = false
-    notify.error(e, '미리보기 조회 실패')
-  } finally {
-    transitioning.value = false
-    previewLoading.value = false
-  }
+function revert() {
+  draft.value = cloneState(original.value)
 }
-
-async function confirmTransition() {
-  executing.value = true
-  try {
-    const res = await executeTransition(transitionPreview.value.targetSemester)
-    const { semester, carryOverMembers } = res.data
-    showTransitionDialog.value = false
-    refreshStatus()
-    notify.success(`${semester} 학기로 전환 완료`, carryOverMembers.length ? `임원 ${carryOverMembers.length}명 이전됨` : undefined)
-  } catch (e) {
-    notify.error(e, '학기 전환 실패')
-  } finally {
-    executing.value = false
-  }
-}
-
-async function saveBool(key, val) {
-  try {
-    await updateSetting(key, val ? 'TRUE' : 'FALSE')
-    notify.success('설정이 변경되었습니다.')
-    refreshStatus()
-  } catch (e) { notify.error(e, '저장 실패') }
-}
-
-async function saveApplyTerm() {
-  if (!applyStart.value || !applyEnd.value) return
-  try {
-    await updateSetting('applyTerm', `${fmtDate(applyStart.value)}~${fmtDate(applyEnd.value)}`)
-    notify.success('가입 신청 기간을 바꿨습니다.')
-    refreshStatus()
-  } catch (e) { notify.error(e, '저장 실패') }
-}
-
-async function saveRegisterTerm() {
-  if (!registerStart.value || !registerEnd.value) return
-  try {
-    await updateSetting('registerTerm', `${fmtDate(registerStart.value)}~${fmtDate(registerEnd.value)}`)
-    notify.success('신입 모집 기간을 바꿨습니다.')
-    refreshStatus()
-  } catch (e) { notify.error(e, '저장 실패') }
-}
-
-async function saveNotice() {
-  try {
-    const newVersion = noticeVersion.value + 1
-    await updateSetting('notice', `${newVersion}$${noticeContent.value}`)
-    noticeVersion.value = newVersion
-    notify.success('공지사항이 변경되었습니다.')
-  } catch (e) { notify.error(e, '저장 실패') }
-}
-
-async function saveMaxCount() {
-  try {
-    await updateSetting('maxFeedingUserCount', String(maxCount.value))
-    notify.success('최대 신청 인원을 바꿨습니다.')
-  } catch (e) { notify.error(e, '저장 실패') }
-}
-
-async function saveVolunteerHours() {
-  try {
-    await updateSetting('volunteerHours', JSON.stringify(volunteerHours.value))
-    notify.success('봉사시간이 변경되었습니다.')
-  } catch (e) { notify.error(e, '저장 실패') }
-}
-
-// --- Data editor functions ---
 
 function addCollege() {
   const name = newCollegeName.value.trim()
   if (!name) return
-  if (collegeData.value[name]) {
-    notify.warn('이미 존재하는 단과대입니다.')
+  if (draft.value.college[name]) {
+    notify.warn('이미 있는 단과대입니다.')
     return
   }
-  collegeData.value[name] = []
+  draft.value.college[name] = []
   newCollegeName.value = ''
 }
 
-function deleteCollege(college) {
-  delete collegeData.value[college]
+function confirmDeleteCollege(college) {
+  confirm.require({
+    header: '단과대 삭제',
+    message: `${college}와(과) 학과 ${draft.value.college[college].length}개를 선택지에서 뺄까요?\n저장해야 반영됩니다.`,
+    acceptLabel: '삭제',
+    rejectLabel: '취소',
+    acceptProps: { severity: 'danger' },
+    rejectProps: { severity: 'secondary', outlined: true },
+    accept: () => { delete draft.value.college[college] },
+  })
 }
 
-async function saveCollege() {
-  dataSaving.college = true
-  try {
-    await updateData('college', collegeData.value)
-    notify.success('단과대/학과가 저장되었습니다.')
-  } catch (e) { notify.error(e, '저장 실패') }
-  finally { dataSaving.college = false }
+function onBeforeUnload(e) {
+  if (!dirtyKeys.value.length) return
+  e.preventDefault()
+  e.returnValue = ''
 }
 
-async function saveMap() {
-  dataSaving.map = true
-  try {
-    // Sync course colors from timetable constants
-    for (const key of mapCourseKeys.value) {
-      mapData.value[key].color = courseColor(key)
-    }
-    await updateData('map', mapData.value)
-    notify.success('급식소 위치가 저장되었습니다.')
-  } catch (e) { notify.error(e, '저장 실패') }
-  finally { dataSaving.map = false }
-}
+onBeforeRouteLeave(() => {
+  if (!dirtyKeys.value.length) return true
+  return new Promise(resolve => {
+    confirm.require({
+      header: '저장하지 않은 변경',
+      message: `저장하지 않은 변경 ${dirtyKeys.value.length}건이 있습니다. 버리고 나갈까요?`,
+      acceptLabel: '버리고 나가기',
+      rejectLabel: '머무르기',
+      acceptProps: { severity: 'danger' },
+      rejectProps: { severity: 'secondary', outlined: true },
+      accept: () => resolve(true),
+      reject: () => resolve(false),
+      onHide: () => resolve(false),
+    })
+  })
+})
 </script>
+
+<style scoped>
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+.section-title > span {
+  font-size: 1.125rem;
+  color: var(--c-text-secondary);
+}
+.section-hint {
+  font-size: 0.75rem;
+  color: var(--c-text-muted);
+  margin: 0.25rem 0 1rem;
+}
+.row-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: var(--c-text-secondary);
+  cursor: pointer;
+}
+.field-error {
+  font-size: 0.75rem;
+  color: #ef4444;
+}
+.dirty-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-left: 0.375rem;
+  border-radius: 9999px;
+  background: #f59e0b;
+  vertical-align: middle;
+}
+.save-bar {
+  background: linear-gradient(to top, var(--c-surface-muted) 75%, transparent);
+}
+</style>
