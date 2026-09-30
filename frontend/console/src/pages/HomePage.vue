@@ -5,7 +5,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <!-- Pending applications -->
       <router-link to="/console/applications" class="home-card">
-        <div class="home-card-label"><span class="i-lucide-user-round-check"></span>가입 승인 대기</div>
+        <div class="home-card-label"><span class="i-lucide-user-round-check"></span>웹사이트 가입 승인 대기</div>
         <div class="home-card-value" :class="{ 'text-red-500': pending.length }">{{ pending.length }}<span class="unit">건</span></div>
         <p class="home-card-sub">
           <template v-if="pending.length">가장 오래된 신청 {{ ago(oldestPending) }}</template>
@@ -64,8 +64,8 @@ const oldestPending = computed(() => pending.value.map(a => a.createdAt).sort()[
 const memberCount = computed(() => members.value.length)
 const officerCount = computed(() => members.value.filter(m => m.role !== '회원').length)
 const windows = computed(() => [
-  { label: '/apply 등록 페이지', state: apply.value },
-  { label: '신입 모집 설문', state: register.value },
+  { label: '웹사이트 가입 신청', state: apply.value },
+  { label: '동아리 가입 신청', state: register.value },
 ])
 
 function ago(dateStr) {

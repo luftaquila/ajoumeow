@@ -2,7 +2,7 @@
   <div class="max-w-3xl">
     <PageHeader
       title="설정"
-      description="/apply 등록 페이지와 신입 모집 설문 기간, 공지, 급식 관련 값을 바꿉니다. 바꾼 내용은 아래 저장 버튼을 눌러야 반영됩니다."
+      description="웹사이트·동아리 가입 신청 기간, 공지, 급식 관련 값을 바꿉니다. 바꾼 내용은 아래 저장 버튼을 눌러야 반영됩니다."
       icon="i-lucide-settings"
     />
 
@@ -136,7 +136,7 @@
         <TabPanel value="data" class="flex flex-col gap-5">
           <section class="card-section">
             <h2 class="section-title"><span class="i-lucide-school"></span>단과대 / 학과</h2>
-            <p class="section-hint">가입 신청서와 신입 모집 설문의 소속 선택지입니다. 이미 가입한 회원의 소속은 바뀌지 않습니다.</p>
+            <p class="section-hint">웹사이트·동아리 가입 신청서의 소속 선택지입니다. 이미 가입한 회원의 소속은 바뀌지 않습니다.</p>
             <Accordion multiple>
               <AccordionPanel v-for="(depts, college) in draft.college" :key="college" :value="college">
                 <AccordionHeader>
@@ -227,13 +227,13 @@ const TABS = [
 const WINDOWS = [
   {
     key: 'isApply', restrictKey: 'isApplyRestricted', termKey: 'applyTerm',
-    title: '/apply 등록 페이지', icon: 'i-lucide-user-round-check', enableLabel: '페이지 열기',
-    hint: '승인 없이 바로 이번 학기 명단에 올리는 등록 페이지입니다. 급식표의 구글 가입 신청은 이 설정과 상관없이 늘 받습니다.',
+    title: '웹사이트 가입 신청', icon: 'i-lucide-user-round-check', enableLabel: '신청 받기',
+    hint: '급식표에서 구글 계정으로 내는 신청입니다. 들어온 신청은 웹사이트 가입 승인에서 처리합니다.',
   },
   {
     key: 'isRegister', restrictKey: 'isRegisterRestricted', termKey: 'registerTerm',
-    title: '신입 모집 설문', icon: 'i-lucide-clipboard-list', enableLabel: '설문 받기',
-    hint: '/register 에서 신입 연락처를 받습니다.',
+    title: '동아리 가입 신청', icon: 'i-lucide-clipboard-list', enableLabel: '신청 받기',
+    hint: '/register 신입집사 모집 폼입니다. 웹사이트 계정과는 별개입니다.',
   },
 ]
 

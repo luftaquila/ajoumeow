@@ -1,17 +1,17 @@
 <template>
   <div>
     <PageHeader
-      title="신입 모집 설문"
-      description="/register 설문으로 받은 신입 연락처입니다. 계정은 만들어지지 않으며, 회원 등록은 가입 신청으로 따로 받습니다."
+      title="동아리 가입 신청"
+      description="/register 신입집사 모집 폼으로 받은 동아리 가입 신청입니다. 웹사이트 계정은 만들어지지 않고, 동아리에 들어온 뒤 급식표에서 웹사이트 가입 신청을 따로 합니다."
       icon="i-lucide-clipboard-list"
     />
 
     <!-- Survey state and link -->
     <div class="card p-4 mb-5 flex flex-col sm:flex-row sm:items-center gap-3">
       <div class="flex items-center gap-3">
-        <ToggleSwitch :modelValue="register.enabled" :disabled="toggling" aria-label="신입 모집 설문 받기" @update:modelValue="toggleSurvey" />
+        <ToggleSwitch :modelValue="register.enabled" :disabled="toggling" aria-label="동아리 가입 신청 받기" @update:modelValue="toggleSurvey" />
         <div>
-          <p class="font-medium">{{ register.open ? '설문 받는 중' : '설문 닫힘' }}</p>
+          <p class="font-medium">{{ register.open ? '신청 받는 중' : '신청 닫힘' }}</p>
           <p class="text-xs text-text-muted">
             {{ !register.enabled ? '꺼져 있음' : register.restricted ? `기간 ${register.term.replace('~', ' ~ ')}` : '기간 제한 없음' }}
             · <router-link to="/console/settings" class="text-primary hover:underline">기간은 설정에서</router-link>
@@ -25,7 +25,7 @@
       </div>
     </div>
     <p v-if="register.enabled && semester" class="-mt-3 mb-5 text-xs text-text-muted">
-      응답은 현재 학기({{ semester }})로 모입니다. 새 학기 모집 전에는 설정에서 학기를 먼저 전환하세요.
+      신청은 현재 학기({{ semester }})로 모입니다. 새 학기 모집 전에는 설정에서 학기를 먼저 전환하세요.
     </p>
 
     <ActionBar>
@@ -38,7 +38,7 @@
           @change="loadRegistrations"
         />
         <button class="filter-chip" :class="{ active: onlyNotJoined }" @click="onlyNotJoined = !onlyNotJoined">
-          아직 가입 안 함 <span class="opacity-60">{{ notJoinedCount }}</span>
+          웹사이트 미가입 <span class="opacity-60">{{ notJoinedCount }}</span>
         </button>
         <span class="text-xs text-text-muted">{{ shown.length }}명</span>
       </template>
@@ -60,9 +60,9 @@
         class="text-sm"
       >
         <template #empty>
-          <p class="text-center text-text-muted py-6">응답이 없습니다.</p>
+          <p class="text-center text-text-muted py-6">신청이 없습니다.</p>
         </template>
-        <Column field="createdAt" header="응답일" sortable style="min-width: 8rem">
+        <Column field="createdAt" header="신청일" sortable style="min-width: 8rem">
           <template #body="{ data }">
             <span class="text-xs whitespace-nowrap">{{ formatLocal(data.createdAt, 'yyyy-mm-dd HH:MM') }}</span>
           </template>
@@ -80,7 +80,7 @@
           </template>
         </Column>
         <Column field="phone" header="연락처" style="min-width: 8.5rem" />
-        <Column field="joinStatus" header="가입" sortable style="min-width: 6rem">
+        <Column field="joinStatus" header="웹사이트 가입" sortable style="min-width: 6rem">
           <template #body="{ data }">
             <Tag v-if="data.joinStatus === 'member'" value="회원" severity="success" />
             <Tag v-else-if="data.joinStatus === 'applied'" value="승인 대기" severity="warn" />
@@ -143,7 +143,7 @@ async function toggleSurvey(value) {
   try {
     await updateSetting('isRegister', value ? 'TRUE' : 'FALSE')
     await refreshStatus()
-    notify.success(value ? '신입 모집 설문을 켰습니다.' : '신입 모집 설문을 껐습니다.')
+    notify.success(value ? '동아리 가입 신청을 받습니다.' : '동아리 가입 신청을 닫았습니다.')
   } catch (e) {
     notify.error(e, '설정 변경 실패')
   } finally {
@@ -172,7 +172,7 @@ async function loadRegistrations() {
     const res = await getRegistrations(selectedSemester.value)
     registrations.value = res.data
   } catch (e) {
-    notify.error(e, '응답 목록 로드 실패')
+    notify.error(e, '신청 목록 로드 실패')
   } finally {
     loading.value = false
   }
@@ -181,13 +181,13 @@ async function loadRegistrations() {
 function downloadExcel() {
   import('xlsx').then(XLSX => {
     const data = shown.value.map(r => ({
-      '응답일': formatLocal(r.createdAt),
+      '신청일': formatLocal(r.createdAt),
       '학번': r.studentId,
       '이름': r.name,
       '단과대학': r.college,
       '학과': r.department,
       '연락처': r.phone,
-      '가입': r.joinStatus === 'member' ? '회원' : r.joinStatus === 'applied' ? '승인 대기' : '',
+      '웹사이트 가입': r.joinStatus === 'member' ? '회원' : r.joinStatus === 'applied' ? '승인 대기' : '',
     }))
     const ws = XLSX.utils.json_to_sheet(data)
     const wb = XLSX.utils.book_new()

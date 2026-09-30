@@ -1,7 +1,7 @@
 <template>
   <div>
     <PageHeader
-      title="가입 승인"
+      title="웹사이트 가입 승인"
       description="구글 계정으로 들어온 회원 등록 신청입니다. 승인하면 해당 학기 회원 명단에 추가됩니다."
       icon="i-lucide-user-round-check"
     />
@@ -215,7 +215,7 @@ function confirmOne(app, action) {
   const { label } = ACTIONS[action]
   const diff = action === 'approve' ? changes(app) : []
   confirm.require({
-    header: `가입 ${label}`,
+    header: `웹사이트 가입 ${label}`,
     message: `${app.name} (${app.studentId})의 신청을 ${label}할까요?`
       + (diff.length ? `\n승인하면 ${diff.map(c => c.label).join(', ')}이(가) 신청서 내용으로 바뀝니다.` : ''),
     acceptLabel: label,
