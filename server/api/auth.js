@@ -256,7 +256,7 @@ export default async function(fastify, opts) {
         // Admin-only JWT (no member record)
         if (request.decoded.role === '관리자' && !request.decoded.memberId) {
           const semester = util.getSettings('currentSemester');
-          const user = { name: request.decoded.id, studentId: '', role: '관리자' };
+          const user = { name: request.decoded.id, studentId: '', role: util.currentRole(request.decoded) };
           util.logger(new Log('info', request.remoteIP, request.originalPath, '관리자 자동 로그인', request.method, 200, request.decoded, user));
           return reply.code(200).send(success({ user, statistics: [], semester }));
         }

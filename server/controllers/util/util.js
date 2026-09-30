@@ -81,11 +81,11 @@ util.adminEmails = function() {
 };
 
 // The token keeps the role it was issued with for a year, so a demoted officer would stay an admin.
-// Members are checked against the current semester roster instead; tokens without a member
-// (ADMIN_EMAILS logins) keep their token role.
+// Members are checked against the current semester roster instead, and tokens without a member
+// record (ADMIN_EMAILS logins) only while the email is still listed.
 util.currentRole = function(decoded) {
   const memberId = util.resolveMemberId(decoded);
-  if (!memberId) return decoded.role;
+  if (!memberId) return util.adminEmails().includes(decoded.id) ? '관리자' : '회원';
   const semester = util.getCurrentSemester();
   if (!semester) return '회원';
   const row = db.select({ role: semesterMembers.role })
