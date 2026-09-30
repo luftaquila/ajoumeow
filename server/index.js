@@ -121,6 +121,13 @@ try {
   sqlite.prepare(`ALTER TABLE members ADD COLUMN google_email TEXT`).run();
 } catch (_) {}
 
+// Migrate: the console used to save empty birthday/1365 ID as the string 'null' (form-encoded null)
+{
+  const { sqlite } = await import('./db/index.js');
+  sqlite.prepare(`UPDATE members SET birthday = NULL WHERE birthday IN ('null', 'undefined')`).run();
+  sqlite.prepare(`UPDATE members SET volunteer_id = NULL WHERE volunteer_id IN ('null', 'undefined')`).run();
+}
+
 // Migrate: create applications table
 {
   const { sqlite } = await import('./db/index.js');

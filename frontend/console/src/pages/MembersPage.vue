@@ -95,7 +95,12 @@
         <Column field="enrolledSemester" header="가입학기" sortable style="min-width: 7rem" />
         <Column field="role" header="직책" sortable style="min-width: 6rem">
           <template #editor="{ data, field }">
-            <InputText v-model="data[field]" size="small" class="w-full" />
+            <Select v-model="data[field]" :options="roleOptions" size="small" class="w-full">
+              <template #option="{ option }">
+                <span>{{ option }}</span>
+                <span v-if="option !== '회원'" class="ml-2 text-xs text-text-muted">관리자 권한</span>
+              </template>
+            </Select>
           </template>
         </Column>
         <Column header="" style="min-width: 3rem">
@@ -113,7 +118,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useToast } from 'primevue/usetoast'
 import { useConfirm } from 'primevue/useconfirm'
 import { FilterMatchMode } from '@primevue/core/api'
@@ -125,7 +130,7 @@ import Button from 'primevue/button'
 import ConfirmDialog from 'primevue/confirmdialog'
 import PageHeader from '../components/PageHeader.vue'
 import ActionBar from '../components/ActionBar.vue'
-import { getMembers, updateMember, deleteMember } from '../api/members.js'
+import { getMembers, getRoles, updateMember, deleteMember } from '../api/members.js'
 import { useSemesters } from '../composables/useSemesters.js'
 
 const toast = useToast()
@@ -137,6 +142,9 @@ const members = ref([])
 const loading = ref(false)
 
 const semesterOptions = ref([])
+const roles = ref([])
+// '회원' 이외의 직책은 모두 관리자 권한이라 새 직책을 자유 입력으로 만들지 않는다
+const roleOptions = computed(() => ['회원', ...roles.value.filter(r => r !== '회원')])
 
 const filters = ref({
   college: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -146,6 +154,7 @@ const filters = ref({
 })
 
 onMounted(async () => {
+  getRoles().then(res => { roles.value = res.data || [] }).catch(() => {})
   await loadSemesters()
   semesterOptions.value = semesters.value.map(s => ({ label: s, value: s }))
   selectedSemester.value = currentSemester.value
@@ -166,12 +175,15 @@ async function loadMembers() {
 }
 
 async function onCellEditComplete(event) {
-  const { data, newValue, field } = event
+  const { data, field } = event
+  const newValue = typeof event.newValue === 'string' ? event.newValue.trim() : event.newValue
   if (data[field] === newValue) return
 
+  const prev = data[field]
   data[field] = newValue
   try {
     await updateMember(data.studentId, {
+      semester: selectedSemester.value,
       college: data.college,
       department: data.department,
       name: data.name,
@@ -181,14 +193,15 @@ async function onCellEditComplete(event) {
       role: data.role,
     })
     toast.add({ severity: 'success', summary: '수정되었습니다.', life: 1500 })
-  } catch {
-    toast.add({ severity: 'error', summary: '수정 실패', life: 2000 })
+  } catch (e) {
+    data[field] = prev
+    toast.add({ severity: 'error', summary: e.error?.message || '수정 실패', life: 3000 })
   }
 }
 
 async function confirmDelete(row) {
   confirm.require({
-    message: `${row.name} (${row.studentId}) 회원을 이번 학기에서 제명하시겠습니까?`,
+    message: `${row.name} (${row.studentId}) 회원을 ${selectedSemester.value} 학기에서 제명하시겠습니까?`,
     header: '회원 제명',
     icon: 'i-lucide-triangle-alert',
     acceptClass: 'p-button-danger',
@@ -196,11 +209,11 @@ async function confirmDelete(row) {
     rejectLabel: '취소',
     accept: async () => {
       try {
-        await deleteMember(row.studentId)
+        await deleteMember(row.studentId, selectedSemester.value)
         members.value = members.value.filter(m => m.studentId !== row.studentId)
         toast.add({ severity: 'success', summary: '제명되었습니다.', life: 2000 })
-      } catch {
-        toast.add({ severity: 'error', summary: '제명 실패', life: 2000 })
+      } catch (e) {
+        toast.add({ severity: 'error', summary: e.error?.message || '제명 실패', life: 3000 })
       }
     },
   })
