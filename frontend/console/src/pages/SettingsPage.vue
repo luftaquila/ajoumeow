@@ -44,6 +44,22 @@
         </div>
       </div>
 
+      <!-- Volunteer hours -->
+      <div class="card-section">
+        <h2 class="text-base font-semibold mb-4 flex items-center gap-2">
+          <span class="i-lucide-hand-helping text-lg text-text-secondary"></span>
+          1365 봉사시간
+        </h2>
+        <div class="flex flex-col gap-3">
+          <div v-for="(_, i) in volunteerHours" :key="i" class="flex items-center gap-3">
+            <label class="w-24 text-sm text-text-secondary">하루 {{ i + 1 }}개 코스</label>
+            <div class="w-20"><InputNumber v-model="volunteerHours[i]" :min="0.5" :max="8" :step="0.5" :maxFractionDigits="2" :allowEmpty="false" fluid /></div>
+            <span class="text-text-secondary">시간</span>
+          </div>
+        </div>
+        <Button label="저장" size="small" class="mt-3" @click="saveVolunteerHours" />
+      </div>
+
       <!-- Apply settings -->
       <div class="card-section">
         <h2 class="text-base font-semibold mb-4 flex items-center gap-2">
@@ -286,6 +302,8 @@ const registerEnd = ref(null)
 const noticeContent = ref('')
 const noticeVersion = ref(0)
 const maxCount = ref(10)
+// volunteerHours[n - 1] = 하루에 n개 코스를 돌았을 때 부여할 1365 봉사시간
+const volunteerHours = ref(Object.keys(COURSES).map((_, i) => i + 1))
 
 // Transition state
 const transitioning = ref(false)
@@ -315,6 +333,14 @@ function fmtDate(d) {
   return formatDate(d, 'yyyy-mm-dd')
 }
 
+function parseVolunteerHours(value) {
+  try {
+    const hours = JSON.parse(value)
+    if (Array.isArray(hours) && hours.length && hours.every(h => typeof h === 'number')) return hours
+  } catch {}
+  return null
+}
+
 function parseTermDates(term) {
   if (!term || !term.includes('~')) return [null, null]
   const [s, e] = term.split('~')
@@ -324,7 +350,7 @@ function parseTermDates(term) {
 onMounted(async () => {
   try {
     const keys = ['currentSemester', 'isApply', 'isApplyRestricted', 'applyTerm',
-                   'isRegister', 'isRegisterRestricted', 'registerTerm', 'notice', 'maxFeedingUserCount']
+                   'isRegister', 'isRegisterRestricted', 'registerTerm', 'notice', 'maxFeedingUserCount', 'volunteerHours']
     const results = await Promise.all(keys.map(k => getSetting(k)))
     const vals = {}
     keys.forEach((k, i) => { vals[k] = results[i].data })
@@ -359,6 +385,10 @@ onMounted(async () => {
 
     // max
     maxCount.value = parseInt(vals.maxFeedingUserCount) || 10
+
+    // volunteer hours, one entry per possible course count
+    const hours = parseVolunteerHours(vals.volunteerHours)
+    if (hours) volunteerHours.value = volunteerHours.value.map((_, i) => hours[Math.min(i, hours.length - 1)])
   } catch (e) {
     toast.add({ severity: 'error', summary: '설정 로드 실패', life: 3000 })
   } finally {
@@ -460,6 +490,13 @@ async function saveMaxCount() {
     await updateSetting('maxFeedingUserCount', String(maxCount.value))
     toast.add({ severity: 'success', summary: '최대 인원이 변경되었습니다.', life: 2000 })
   } catch { toast.add({ severity: 'error', summary: '저장 실패', life: 2000 }) }
+}
+
+async function saveVolunteerHours() {
+  try {
+    await updateSetting('volunteerHours', JSON.stringify(volunteerHours.value))
+    toast.add({ severity: 'success', summary: '봉사시간이 변경되었습니다.', life: 2000 })
+  } catch (e) { toast.add({ severity: 'error', summary: e?.error?.message || '저장 실패', life: 2000 }) }
 }
 
 // --- Data editor functions ---

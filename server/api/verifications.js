@@ -1,5 +1,5 @@
 import dateformat from 'dateformat';
-import { eq, and, between, desc } from 'drizzle-orm';
+import { eq, and, between, desc, like } from 'drizzle-orm';
 
 import { db } from '../db/index.js';
 import { members, semesters, semesterMembers, records, verifications } from '../db/schema.js';
@@ -137,7 +137,7 @@ export default async function(fastify, opts) {
     })
       .from(verifications)
       .innerJoin(members, eq(verifications.memberId, members.id))
-      .where(between(verifications.date, query.startDate, query.endDate))
+      .where(and(between(verifications.date, query.startDate, query.endDate), like(verifications.course, '%코스')))
       .orderBy(verifications.date)
       .all();
 
@@ -181,7 +181,7 @@ export default async function(fastify, opts) {
 
       const fmtDate = dateformat(activity.date, 'yyyy.mm.dd');
       const prev = rows.find(data => data.ID == member.studentId && data.date == fmtDate);
-      if (prev) prev.hour++;
+      if (prev) prev.courses.add(activity.course);
       else {
         rows.push({
           ID: member.studentId,
@@ -190,10 +190,16 @@ export default async function(fastify, opts) {
           birthday: member.birthday,
           phone: member.phone,
           date: fmtDate,
-          hour: 1,
+          courses: new Set([activity.course]),
           timestamp: (fmtDate === dateformat(activity.createdAt, 'yyyy.mm.dd')) ? Number(dateformat(activity.createdAt, 'HHMM')) : 1900,
         });
       }
+    }
+
+    // 하루에 돈 코스 수만큼 설정된 봉사시간을 부여 (표보다 많이 돌면 마지막 값)
+    const hourTable = util.parseVolunteerHours(util.getSettings('volunteerHours')) || util.DEFAULT_VOLUNTEER_HOURS;
+    for (const row of rows) {
+      row.hour = hourTable[Math.min(row.courses.size, hourTable.length) - 1];
     }
 
     return { rows, chief, maskName, maskBirthday, maskPhone };
