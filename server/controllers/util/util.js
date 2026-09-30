@@ -64,6 +64,10 @@ util.isAdmin = async function(request, reply) {
   }
 };
 
+util.adminEmails = function() {
+  return (process.env.ADMIN_EMAILS || '').split(',').map(s => s.trim()).filter(Boolean);
+};
+
 util.optionalAuth = async function(request, reply) {
   const token = util.extractToken(request);
   if (!token) {

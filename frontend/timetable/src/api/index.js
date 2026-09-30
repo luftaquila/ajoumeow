@@ -40,14 +40,6 @@ export function deleteRecord(id) {
   })
 }
 
-export function login(studentId) {
-  return request(`${API_BASE}/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({ studentId }),
-  })
-}
-
 export function autoLogin() {
   return request(`${API_BASE}/auth/refresh`, {
     method: 'POST',

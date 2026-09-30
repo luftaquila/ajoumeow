@@ -1,6 +1,5 @@
 import { ref, computed } from 'vue'
 import Cookies from 'js-cookie'
-import { useToast } from 'primevue/usetoast'
 import * as api from '../api/index.js'
 import { formatDate } from '../utils/dateFormat.js'
 
@@ -33,20 +32,8 @@ const timeThis = computed(() => {
 })
 
 export function useAuth() {
-  const _toast = useToast()
-
   function getJwt() {
     return Cookies.get('jwt')
-  }
-
-  async function doLogin(id) {
-    try {
-      const res = await api.login(id)
-      Cookies.set('jwt', res.data.token, { expires: 365 })
-      loginProcess(res)
-    } catch (e) {
-      _toast.add({ severity: 'error', summary: e.error?.message || '오류', detail: e.error?.code || '', life: 1500 })
-    }
   }
 
   async function doAutoLogin() {
@@ -90,7 +77,6 @@ export function useAuth() {
     timeTotal,
     timeThis,
     getJwt,
-    doLogin,
     doAutoLogin,
     doGoogleLogin,
     loginProcess,

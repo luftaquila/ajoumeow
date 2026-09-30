@@ -305,14 +305,19 @@ async function doLookup() {
     const m = res.data
 
     if (m.alreadyRegistered) {
-      // Already registered this semester — link Google account and login directly
-      const linkRes = await api.linkGoogleAccount(googleCredential.value, m.studentId)
-      if (linkRes.data.status === 'authenticated') {
-        doGoogleLogin(linkRes.data)
-        await loadRecords()
-        closeModal('apply')
-        toast.add({ severity: 'success', summary: 'Google 계정이 연동되었습니다.', life: 3000 })
-        return
+      // Already registered this semester — the server links directly only when it can trust the
+      // Google account; otherwise continue to the existing-member application for officer approval
+      try {
+        const linkRes = await api.linkGoogleAccount(googleCredential.value, m.studentId)
+        if (linkRes.data.status === 'authenticated') {
+          doGoogleLogin(linkRes.data)
+          await loadRecords()
+          closeModal('apply')
+          toast.add({ severity: 'success', summary: 'Google 계정이 연동되었습니다.', life: 3000 })
+          return
+        }
+      } catch (e) {
+        if (e.error?.code !== 'ERR_LINK_NEEDS_APPROVAL') throw e
       }
     }
 
