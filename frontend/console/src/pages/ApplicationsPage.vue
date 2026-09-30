@@ -1,8 +1,8 @@
 <template>
   <div>
     <PageHeader
-      title="가입 신청"
-      description="회원 가입 신청을 관리합니다."
+      title="가입 승인"
+      description="구글 계정으로 들어온 회원 등록 신청입니다. 승인하면 해당 학기 회원 명단에 추가됩니다."
       icon="i-lucide-user-round-check"
     />
 
@@ -85,7 +85,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useToast } from 'primevue/usetoast'
+import { useNotify } from '../composables/useNotify.js'
 import { useConfirm } from 'primevue/useconfirm'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
@@ -97,11 +97,13 @@ import PageHeader from '../components/PageHeader.vue'
 import ActionBar from '../components/ActionBar.vue'
 import { getApplications, getApplicationSemesters, approveApplication, rejectApplication } from '../api/applications.js'
 import { useSemesters } from '../composables/useSemesters.js'
+import { useStatus } from '../composables/useStatus.js'
 import { formatLocal } from '../../../shared/utils/dateFormat.js'
 
-const toast = useToast()
+const notify = useNotify()
 const confirm = useConfirm()
 const { currentSemester, loadSemesters } = useSemesters()
+const { refreshStatus } = useStatus()
 
 const selectedSemester = ref('')
 const selectedStatus = ref('all')
@@ -148,8 +150,8 @@ onMounted(async () => {
       selectedSemester.value = currentSemester.value || semesterOptions.value[0].value
       await loadApplications()
     }
-  } catch {
-    toast.add({ severity: 'error', summary: '학기 목록 로드 실패', life: 3000 })
+  } catch (e) {
+    notify.error(e, '학기 목록 로드 실패')
   }
 })
 
@@ -159,8 +161,8 @@ async function loadApplications() {
   try {
     const res = await getApplications(selectedSemester.value, selectedStatus.value)
     applications.value = res.data
-  } catch {
-    toast.add({ severity: 'error', summary: '신청 목록 로드 실패', life: 3000 })
+  } catch (e) {
+    notify.error(e, '신청 목록 로드 실패')
   } finally {
     loading.value = false
   }
@@ -191,20 +193,22 @@ function confirmReject(app) {
 async function doApprove(app) {
   try {
     await approveApplication(app.id)
-    toast.add({ severity: 'success', summary: `${app.name}의 가입을 승인했습니다.`, life: 3000 })
+    notify.success(`${app.name}의 가입을 승인했습니다.`)
     await loadApplications()
+    refreshStatus()
   } catch (e) {
-    toast.add({ severity: 'error', summary: e.error?.message || '승인 실패', life: 3000 })
+    notify.error(e, '승인 실패')
   }
 }
 
 async function doReject(app) {
   try {
     await rejectApplication(app.id)
-    toast.add({ severity: 'warn', summary: `${app.name}의 가입을 거절했습니다.`, life: 3000 })
+    notify.warn(`${app.name}의 가입을 거절했습니다.`)
     await loadApplications()
+    refreshStatus()
   } catch (e) {
-    toast.add({ severity: 'error', summary: e.error?.message || '거절 실패', life: 3000 })
+    notify.error(e, '거절 실패')
   }
 }
 </script>

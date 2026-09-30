@@ -1,8 +1,8 @@
 <template>
   <div>
     <PageHeader
-      title="1365 봉사활동 인증서"
-      description="봉사활동 인증서를 생성합니다."
+      title="1365 활동확인서"
+      description="급식 인증 기록으로 수원시자원봉사센터 양식의 자원봉사 활동확인서(xlsx)를 만듭니다. 기타 인증은 들어가지 않습니다."
       icon="i-lucide-hand-helping"
     />
 
@@ -37,7 +37,7 @@
         </div>
 
         <Button
-          label="인증서 문서 생성"
+          label="활동확인서 만들기"
           icon="i-lucide-file-spreadsheet"
           @click="generateCertificate"
           :loading="generating"
@@ -59,7 +59,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useToast } from 'primevue/usetoast'
+import { useNotify } from '../composables/useNotify.js'
 import DatePicker from 'primevue/datepicker'
 import Select from 'primevue/select'
 import Checkbox from 'primevue/checkbox'
@@ -73,7 +73,7 @@ import { formatDate } from '../../../shared/utils/dateFormat.js'
 
 const XLSX_MIME = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 
-const toast = useToast()
+const notify = useNotify()
 const { semesters, currentSemester, loadSemesters } = useSemesters()
 
 const startDate = ref(new Date(new Date().getFullYear(), new Date().getMonth(), 1))
@@ -93,7 +93,7 @@ onMounted(async () => {
 
 function getParams() {
   if (!startDate.value || !endDate.value || !selectedSemester.value) {
-    toast.add({ severity: 'warn', summary: '모든 항목을 입력해주세요.', life: 2000 })
+    notify.warn('모든 항목을 입력해주세요.')
     return null
   }
   return {
@@ -122,7 +122,7 @@ async function generateCertificate() {
     excluded.value = res.data.excluded || []
 
     if (!rows.length) {
-      toast.add({ severity: 'warn', summary: '확인서에 넣을 인증 기록이 없습니다.', life: 3000 })
+      notify.warn('확인서에 넣을 인증 기록이 없습니다.')
       return
     }
 
@@ -136,7 +136,7 @@ async function generateCertificate() {
     const buffer = await wb.xlsx.writeBuffer()
     saveAs(new Blob([buffer], { type: XLSX_MIME }), `자원봉사활동확인서_${params.startDate}_${params.endDate}.xlsx`)
   } catch (e) {
-    toast.add({ severity: 'error', summary: e.error?.message || e.message || '인증서 생성 실패', life: 3000 })
+    notify.error(e, e.message || '활동확인서 생성 실패')
   } finally {
     generating.value = false
   }

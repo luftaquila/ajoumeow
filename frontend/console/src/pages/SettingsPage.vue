@@ -2,7 +2,7 @@
   <div>
     <PageHeader
       title="설정"
-      description="서비스 운영 설정을 관리합니다."
+      description="학기 전환, 가입 신청·신입 모집 기간, 공지, 급식 관련 값을 바꿉니다."
       icon="i-lucide-wrench"
     />
 
@@ -35,8 +35,9 @@
       <div class="card-section">
         <h2 class="text-base font-semibold mb-4 flex items-center gap-2">
           <span class="i-lucide-utensils text-lg text-text-secondary"></span>
-          최대 급식 인원
+          코스당 최대 신청 인원
         </h2>
+        <p class="text-xs text-text-muted -mt-2 mb-4">하루 한 코스에 신청할 수 있는 인원입니다.</p>
         <div class="flex items-center gap-3 flex-wrap">
           <div class="w-20"><InputNumber v-model="maxCount" :min="1" :max="100" :allowEmpty="false" fluid /></div>
           <span class="text-text-secondary">명</span>
@@ -50,6 +51,7 @@
           <span class="i-lucide-hand-helping text-lg text-text-secondary"></span>
           1365 봉사시간
         </h2>
+        <p class="text-xs text-text-muted -mt-2 mb-4">하루에 돈 코스 수에 따라 활동확인서에 적히는 시간입니다.</p>
         <div class="flex flex-col gap-3">
           <div v-for="(_, i) in volunteerHours" :key="i" class="flex items-center gap-3">
             <label class="w-24 text-sm text-text-secondary">하루 {{ i + 1 }}개 코스</label>
@@ -64,11 +66,11 @@
       <div class="card-section">
         <h2 class="text-base font-semibold mb-4 flex items-center gap-2">
           <span class="i-lucide-user-check text-lg text-text-secondary"></span>
-          회원 등록
+          가입 신청
         </h2>
         <div class="flex flex-col gap-4">
           <div class="flex items-center justify-between">
-            <label class="text-sm text-text-secondary">등록 활성화</label>
+            <label class="text-sm text-text-secondary">신청 받기</label>
             <ToggleSwitch v-model="settings.isApply" @change="saveBool('isApply', settings.isApply)" />
           </div>
           <div class="flex items-center justify-between">
@@ -90,11 +92,11 @@
       <div class="card-section">
         <h2 class="text-base font-semibold mb-4 flex items-center gap-2">
           <span class="i-lucide-user-plus text-lg text-text-secondary"></span>
-          신입 모집
+          신입 모집 설문
         </h2>
         <div class="flex flex-col gap-4">
           <div class="flex items-center justify-between">
-            <label class="text-sm text-text-secondary">모집 활성화</label>
+            <label class="text-sm text-text-secondary">설문 받기</label>
             <ToggleSwitch v-model="settings.isRegister" @change="saveBool('isRegister', settings.isRegister)" />
           </div>
           <div class="flex items-center justify-between">
@@ -262,7 +264,7 @@
 
 <script setup>
 import { ref, computed, reactive, onMounted } from 'vue'
-import { useToast } from 'primevue/usetoast'
+import { useNotify } from '../composables/useNotify.js'
 import InputNumber from 'primevue/inputnumber'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
@@ -281,8 +283,10 @@ import { previewTransition, executeTransition } from '../api/semesters.js'
 import { getData, updateData } from '../api/data.js'
 import { COURSES } from '../../../timetable/src/constants.js'
 import { formatDate } from '../../../shared/utils/dateFormat.js'
+import { useStatus } from '../composables/useStatus.js'
 
-const toast = useToast()
+const notify = useNotify()
+const { refreshStatus } = useStatus()
 const loading = ref(true)
 
 const semesterYear = ref(2025)
@@ -337,7 +341,7 @@ function parseVolunteerHours(value) {
   try {
     const hours = JSON.parse(value)
     if (Array.isArray(hours) && hours.length && hours.every(h => typeof h === 'number')) return hours
-  } catch {}
+  } catch (e) {}
   return null
 }
 
@@ -390,7 +394,7 @@ onMounted(async () => {
     const hours = parseVolunteerHours(vals.volunteerHours)
     if (hours) volunteerHours.value = volunteerHours.value.map((_, i) => hours[Math.min(i, hours.length - 1)])
   } catch (e) {
-    toast.add({ severity: 'error', summary: '설정 로드 실패', life: 3000 })
+    notify.error(e, '설정 로드 실패')
   } finally {
     loading.value = false
   }
@@ -404,8 +408,8 @@ async function loadData(key, setter) {
   try {
     const d = await getData(key)
     setter(d)
-  } catch {
-    toast.add({ severity: 'error', summary: `${key} 데이터 로드 실패`, life: 3000 })
+  } catch (e) {
+    notify.error(e, `${key} 데이터 로드 실패`)
   } finally {
     dataLoading[key] = false
   }
@@ -425,8 +429,7 @@ async function onTransition() {
     transitionPreview.value = res.data
   } catch (e) {
     showTransitionDialog.value = false
-    const msg = e?.error?.message || '미리보기 조회 실패'
-    toast.add({ severity: 'error', summary: msg, life: 3000 })
+    notify.error(e, '미리보기 조회 실패')
   } finally {
     transitioning.value = false
     previewLoading.value = false
@@ -439,15 +442,10 @@ async function confirmTransition() {
     const res = await executeTransition(transitionPreview.value.targetSemester)
     const { semester, carryOverMembers } = res.data
     showTransitionDialog.value = false
-    toast.add({
-      severity: 'success',
-      summary: `${semester} 학기로 전환 완료`,
-      detail: carryOverMembers.length ? `임원 ${carryOverMembers.length}명 이전됨` : undefined,
-      life: 4000,
-    })
+    refreshStatus()
+    notify.success(`${semester} 학기로 전환 완료`, carryOverMembers.length ? `임원 ${carryOverMembers.length}명 이전됨` : undefined)
   } catch (e) {
-    const msg = e?.error?.message || '학기 전환 실패'
-    toast.add({ severity: 'error', summary: msg, life: 3000 })
+    notify.error(e, '학기 전환 실패')
   } finally {
     executing.value = false
   }
@@ -456,24 +454,27 @@ async function confirmTransition() {
 async function saveBool(key, val) {
   try {
     await updateSetting(key, val ? 'TRUE' : 'FALSE')
-    toast.add({ severity: 'success', summary: '설정이 변경되었습니다.', life: 2000 })
-  } catch { toast.add({ severity: 'error', summary: '저장 실패', life: 2000 }) }
+    notify.success('설정이 변경되었습니다.')
+    refreshStatus()
+  } catch (e) { notify.error(e, '저장 실패') }
 }
 
 async function saveApplyTerm() {
   if (!applyStart.value || !applyEnd.value) return
   try {
     await updateSetting('applyTerm', `${fmtDate(applyStart.value)}~${fmtDate(applyEnd.value)}`)
-    toast.add({ severity: 'success', summary: '등록 기간이 변경되었습니다.', life: 2000 })
-  } catch { toast.add({ severity: 'error', summary: '저장 실패', life: 2000 }) }
+    notify.success('가입 신청 기간을 바꿨습니다.')
+    refreshStatus()
+  } catch (e) { notify.error(e, '저장 실패') }
 }
 
 async function saveRegisterTerm() {
   if (!registerStart.value || !registerEnd.value) return
   try {
     await updateSetting('registerTerm', `${fmtDate(registerStart.value)}~${fmtDate(registerEnd.value)}`)
-    toast.add({ severity: 'success', summary: '모집 기간이 변경되었습니다.', life: 2000 })
-  } catch { toast.add({ severity: 'error', summary: '저장 실패', life: 2000 }) }
+    notify.success('신입 모집 기간을 바꿨습니다.')
+    refreshStatus()
+  } catch (e) { notify.error(e, '저장 실패') }
 }
 
 async function saveNotice() {
@@ -481,22 +482,22 @@ async function saveNotice() {
     const newVersion = noticeVersion.value + 1
     await updateSetting('notice', `${newVersion}$${noticeContent.value}`)
     noticeVersion.value = newVersion
-    toast.add({ severity: 'success', summary: '공지사항이 변경되었습니다.', life: 2000 })
-  } catch { toast.add({ severity: 'error', summary: '저장 실패', life: 2000 }) }
+    notify.success('공지사항이 변경되었습니다.')
+  } catch (e) { notify.error(e, '저장 실패') }
 }
 
 async function saveMaxCount() {
   try {
     await updateSetting('maxFeedingUserCount', String(maxCount.value))
-    toast.add({ severity: 'success', summary: '최대 인원이 변경되었습니다.', life: 2000 })
-  } catch { toast.add({ severity: 'error', summary: '저장 실패', life: 2000 }) }
+    notify.success('최대 신청 인원을 바꿨습니다.')
+  } catch (e) { notify.error(e, '저장 실패') }
 }
 
 async function saveVolunteerHours() {
   try {
     await updateSetting('volunteerHours', JSON.stringify(volunteerHours.value))
-    toast.add({ severity: 'success', summary: '봉사시간이 변경되었습니다.', life: 2000 })
-  } catch (e) { toast.add({ severity: 'error', summary: e?.error?.message || '저장 실패', life: 2000 }) }
+    notify.success('봉사시간이 변경되었습니다.')
+  } catch (e) { notify.error(e, '저장 실패') }
 }
 
 // --- Data editor functions ---
@@ -505,7 +506,7 @@ function addCollege() {
   const name = newCollegeName.value.trim()
   if (!name) return
   if (collegeData.value[name]) {
-    toast.add({ severity: 'warn', summary: '이미 존재하는 단과대입니다.', life: 2000 })
+    notify.warn('이미 존재하는 단과대입니다.')
     return
   }
   collegeData.value[name] = []
@@ -520,8 +521,8 @@ async function saveCollege() {
   dataSaving.college = true
   try {
     await updateData('college', collegeData.value)
-    toast.add({ severity: 'success', summary: '단과대/학과가 저장되었습니다.', life: 2000 })
-  } catch { toast.add({ severity: 'error', summary: '저장 실패', life: 2000 }) }
+    notify.success('단과대/학과가 저장되었습니다.')
+  } catch (e) { notify.error(e, '저장 실패') }
   finally { dataSaving.college = false }
 }
 
@@ -533,8 +534,8 @@ async function saveMap() {
       mapData.value[key].color = courseColor(key)
     }
     await updateData('map', mapData.value)
-    toast.add({ severity: 'success', summary: '급식소 위치가 저장되었습니다.', life: 2000 })
-  } catch { toast.add({ severity: 'error', summary: '저장 실패', life: 2000 }) }
+    notify.success('급식소 위치가 저장되었습니다.')
+  } catch (e) { notify.error(e, '저장 실패') }
   finally { dataSaving.map = false }
 }
 </script>

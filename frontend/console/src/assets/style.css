@@ -4,7 +4,9 @@
   box-sizing: border-box;
 }
 
-*:focus {
+/* Inputs show focus with their border; everything else keeps the browser's keyboard focus ring */
+input:focus,
+textarea:focus {
   outline: none;
 }
 
@@ -59,12 +61,9 @@ body {
   background: var(--c-surface-muted);
 }
 
-.p-button:focus,
-.p-button:focus-visible,
-.p-dialog-close-button:focus,
-.p-dialog-close-button:focus-visible,
-.p-drawer-close-button:focus,
-.p-drawer-close-button:focus-visible {
+.p-button:focus:not(:focus-visible),
+.p-dialog-close-button:focus:not(:focus-visible),
+.p-drawer-close-button:focus:not(:focus-visible) {
   box-shadow: none !important;
   outline: none !important;
   border-color: transparent !important;
