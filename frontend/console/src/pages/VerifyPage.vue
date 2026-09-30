@@ -166,7 +166,7 @@
               :label="selectedRows.length ? `${selectedRows.length}명 인증 · ${selectedTotal}점` : '인증'"
               icon="i-lucide-check"
               :loading="submitting"
-              :disabled="!selectedRows.length"
+              :disabled="!selectedRows.length || loading"
               @click="submit"
             />
           </div>
@@ -214,6 +214,7 @@ const showExtra = ref(false)
 const memberSuggestions = ref([])
 
 const dateKey = computed(() => formatDate(selectedDate.value, 'yyyy-mm-dd'))
+const loadedDate = ref('')
 const dateLabel = computed(() => formatDate(selectedDate.value, 'm월 d일 (ddd)'))
 const verifiedCount = computed(() => rows.value.filter(r => r.verified).length)
 
@@ -236,7 +237,7 @@ function courseHeadcount(course) {
 }
 
 function previewScore(row) {
-  return calculateScore(dateKey.value, row.course, courseHeadcount(row.course), boost.value)
+  return calculateScore(loadedDate.value, row.course, courseHeadcount(row.course), boost.value)
 }
 
 const groups = computed(() => {
@@ -290,10 +291,15 @@ async function jumpTo(date) {
   await loadDate()
 }
 
+// rows belong to loadedDate, which lags dateKey while a request is in flight
+let loadSeq = 0
 async function loadDate() {
+  const mine = ++loadSeq
+  const date = dateKey.value
   loading.value = true
   try {
-    const res = await getVerifications(dateKey.value)
+    const res = await getVerifications(date)
+    if (mine !== loadSeq) return
     const records = res.data.records || []
     const verified = res.data.verifications || []
     const feeding = verified.filter(v => isFeeding(v.course))
@@ -315,12 +321,15 @@ async function loadDate() {
     }
     rows.value = list
     extras.value = verified.filter(v => !isFeeding(v.course)).map(v => ({ ...v, key: `v${v.id}`, saving: false }))
+    loadedDate.value = date
   } catch (e) {
+    if (mine !== loadSeq) return
     rows.value = []
     extras.value = []
+    loadedDate.value = date
     notify.error(e, '인증 기록을 불러오지 못했습니다.')
   } finally {
-    loading.value = false
+    if (mine === loadSeq) loading.value = false
   }
 }
 
@@ -338,7 +347,7 @@ function toggleGroup(g) {
 async function submit() {
   const items = selectedRows.value.map(r => ({
     studentId: r.studentId,
-    date: dateKey.value,
+    date: loadedDate.value,
     course: r.course,
     score: previewScore(r),
   }))
@@ -371,7 +380,7 @@ function onExtraGranted(result) {
 async function cancelVerification(row) {
   row.saving = true
   try {
-    await deleteVerifications([{ studentId: row.studentId, date: dateKey.value, course: row.course }])
+    await deleteVerifications([{ studentId: row.studentId, date: loadedDate.value, course: row.course }])
     notify.success(`${row.name} ${row.course} 인증을 취소했습니다.`)
     await refreshAll()
   } catch (e) {
