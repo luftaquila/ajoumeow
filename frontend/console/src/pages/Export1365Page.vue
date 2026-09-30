@@ -42,6 +42,16 @@
           @click="generateCertificate"
           :loading="generating"
         />
+
+        <div v-if="excluded.length" class="text-xs text-yellow-600 flex flex-col gap-1">
+          <p class="font-medium">
+            <span class="i-lucide-triangle-alert align-text-bottom mr-0.5"></span>
+            확인서에서 빠진 회원 {{ excluded.length }}명
+          </p>
+          <p v-for="e in excluded" :key="e.studentId">
+            {{ e.name }} ({{ e.studentId }}) · {{ e.reason === 'noVolunteerId' ? '1365 아이디 없음' : `${selectedSemester} 명단에 없음` }} · 인증 {{ e.count }}건
+          </p>
+        </div>
       </div>
     </div>
   </div>
@@ -71,6 +81,7 @@ const endDate = ref(new Date())
 const selectedSemester = ref('')
 const maskPrivacy = ref(false)
 const generating = ref(false)
+const excluded = ref([])
 
 const semesterOptions = ref([])
 
@@ -104,12 +115,14 @@ async function generateCertificate() {
   if (!params) return
 
   generating.value = true
+  excluded.value = []
   try {
     const res = await getCertificateData(params)
     const { rows, chief } = res.data
+    excluded.value = res.data.excluded || []
 
     if (!rows.length) {
-      toast.add({ severity: 'warn', summary: '해당 기간에 인증 데이터가 없습니다.', life: 3000 })
+      toast.add({ severity: 'warn', summary: '확인서에 넣을 인증 기록이 없습니다.', life: 3000 })
       return
     }
 

@@ -189,9 +189,21 @@ export default async function(fastify, opts) {
     }
 
     let rows = [];
+    // 확인서에서 빠지는 회원: 해당 학기 명단에 없거나 1365 아이디가 없음
+    const excluded = new Map();
     for (const activity of verifyRows) {
       const member = namelist.find(o => o.studentId == activity.studentId);
-      if (!member || !member.volunteerId) continue;
+      if (!member || !member.volunteerId) {
+        const entry = excluded.get(activity.studentId) || {
+          studentId: activity.studentId,
+          name: activity.name,
+          reason: member ? 'noVolunteerId' : 'notInSemester',
+          count: 0,
+        };
+        entry.count++;
+        excluded.set(activity.studentId, entry);
+        continue;
+      }
 
       const fmtDate = dateformat(activity.date, 'yyyy.mm.dd');
       const prev = rows.find(data => data.ID == member.studentId && data.date == fmtDate);
@@ -216,7 +228,7 @@ export default async function(fastify, opts) {
       row.hour = hourTable[Math.min(row.courses.size, hourTable.length) - 1];
     }
 
-    return { rows, chief, maskName, maskBirthday, maskPhone };
+    return { rows, chief, excluded: [...excluded.values()], maskName, maskBirthday, maskPhone };
   }
 
   fastify.get('/1365-data', { preHandler: [util.isAdmin] }, async (request, reply) => {
@@ -226,7 +238,7 @@ export default async function(fastify, opts) {
         return reply.code(400).send(error('ERR_SEMESTER_NOT_FOUND', '해당 학기를 찾을 수 없습니다.'));
       }
 
-      const { rows, chief, maskName, maskBirthday, maskPhone } = result;
+      const { rows, chief, excluded, maskName, maskBirthday, maskPhone } = result;
 
       const data = {
         rows: rows.map(r => ({
@@ -242,6 +254,7 @@ export default async function(fastify, opts) {
           name: chief ? chief.name : '',
           phone: chief ? chief.phone : '',
         },
+        excluded,
       };
 
       util.logger(new Log('info', request.remoteIP, request.originalPath, '1365 인증서 데이터 요청', request.method, 200, request.query, null));
