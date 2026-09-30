@@ -104,6 +104,49 @@ export default async function(fastify, opts) {
     }
   });
 
+  // 신청자 대신 실제로 급식한 회원으로 변경 (관리자). 이미 발급된 같은 코스 인증도 함께 옮긴다.
+  fastify.put('/:id', { preHandler: [util.isAdmin] }, async (request, reply) => {
+    try {
+      const recordId = Number(request.params.id);
+      const record = db.select().from(records).where(eq(records.id, recordId)).get();
+      if (!record) {
+        return reply.code(404).send(error('ERR_NOT_FOUND', '신청 기록을 찾을 수 없습니다.'));
+      }
+
+      const member = util.getMemberByStudentId(request.body.studentId);
+      if (!member) {
+        return reply.code(400).send(error('ERR_NOT_REGISTERED', '등록되지 않은 학번입니다.'));
+      }
+
+      const dup = db.select().from(records)
+        .where(and(eq(records.memberId, member.id), eq(records.date, record.date), eq(records.course, record.course)))
+        .get();
+      if (dup) {
+        util.logger(new Log('info', request.remoteIP, request.originalPath, '급식자 변경', request.method, 400, request.body, 'ERR_DUP_ENTRY'));
+        return reply.code(400).send(error('ERR_DUP_ENTRY', `${member.name} 회원은 이미 ${record.course}에 신청되어 있습니다.`));
+      }
+
+      const change = sqlite.transaction(() => {
+        const moved = sqlite.prepare('UPDATE records SET member_id = ? WHERE id = ?').run(member.id, recordId);
+        // 바뀐 회원이 이미 같은 코스 인증을 받았다면 중복되므로 인증은 옮기지 않는다
+        const verified = sqlite.prepare('SELECT 1 FROM verifications WHERE member_id = ? AND date = ? AND course = ?')
+          .get(member.id, record.date, record.course);
+        const movedVerifications = verified ? { changes: 0 } : sqlite
+          .prepare('UPDATE verifications SET member_id = ? WHERE member_id = ? AND date = ? AND course = ?')
+          .run(member.id, record.memberId, record.date, record.course);
+        return { records: moved.changes, verifications: movedVerifications.changes };
+      });
+      const result = change();
+
+      util.logger(new Log('info', request.remoteIP, request.originalPath, '급식자 변경', request.method, 200, { record, studentId: member.studentId }, result));
+      return reply.code(200).send(success({ studentId: member.studentId, name: member.name, verifications: result.verifications }));
+    }
+    catch(e) {
+      util.logger(new Log('error', request.remoteIP, request.originalPath, '급식자 변경 오류', request.method, 500, request.body, e.stack));
+      return reply.code(500).send(error('ERR_UNKNOWN', '알 수 없는 오류입니다.'));
+    }
+  });
+
   fastify.get('/statistics', async (request, reply) => {
     try {
       let data = [], verify = null;

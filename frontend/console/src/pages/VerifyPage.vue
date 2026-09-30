@@ -57,16 +57,36 @@
             </button>
             <div class="flex flex-col gap-2">
               <div
-                v-for="(rec, idx) in records"
-                :key="idx"
+                v-for="rec in records"
+                :key="rec.id"
                 class="card flex items-center gap-3 p-3"
               >
                 <Checkbox v-model="rec.checked" :binary="true" />
-                <div class="flex-1">
+                <div v-if="rec.editing" class="flex-1 min-w-0">
+                  <AutoComplete
+                    v-model="rec.replacement"
+                    :inputId="`feeder-${rec.id}`"
+                    :suggestions="memberSuggestions"
+                    @complete="searchMember"
+                    @option-select="changeFeeder(rec, $event.value)"
+                    optionLabel="display"
+                    :placeholder="`${rec.name} 대신 급식한 회원`"
+                    :disabled="rec.saving"
+                    fluid
+                  />
+                </div>
+                <div v-else class="flex-1">
                   <span class="font-medium">{{ rec.name }}</span>
                   <span class="text-text-muted text-sm ml-2 hidden sm:inline">{{ rec.studentId }}</span>
                 </div>
                 <span class="text-sm text-text-secondary">{{ rec.course }}</span>
+                <button
+                  @click="toggleFeederEdit(rec)"
+                  class="text-text-muted hover:text-primary cursor-pointer"
+                  :title="rec.editing ? '취소' : '급식자 변경'"
+                >
+                  <span :class="rec.editing ? 'i-lucide-x' : 'i-lucide-user-pen'" class="text-base"></span>
+                </button>
               </div>
             </div>
           </div>
@@ -146,6 +166,7 @@
           <ol class="list-decimal pl-4 flex flex-col gap-1 mt-2 text-xs text-text-muted">
             <li>날짜를 선택하면 해당일의 급식 신청자가 모두 표시됩니다.</li>
             <li>인증할 회원만 좌측 체크박스에 체크합니다. 기본값은 전체 체크입니다.</li>
+            <li>신청자와 실제 급식자가 다르면 우측 <span class="i-lucide-user-pen"></span> 버튼으로 실제 급식자로 변경합니다. 급식표에도 반영됩니다.</li>
             <li>시험기간/연휴/악천후 등에는 상향 지급 체크박스를 선택합니다.</li>
             <li><b>인증</b>을 탭해 서버로 인증 기록을 전송합니다.</li>
           </ol>
@@ -159,7 +180,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, nextTick } from 'vue'
 import { useToast } from 'primevue/usetoast'
 import DatePicker from 'primevue/datepicker'
 import SelectButton from 'primevue/selectbutton'
@@ -171,6 +192,7 @@ import Button from 'primevue/button'
 import PageHeader from '../components/PageHeader.vue'
 import { getVerifications, createVerifications, deleteVerifications, getLatestVerification } from '../api/verifications.js'
 import { searchMembers } from '../api/members.js'
+import { changeRecordMember } from '../api/records.js'
 import { calculateScore } from '../utils/scoreCalculator.js'
 import { formatDate } from '../../../shared/utils/dateFormat.js'
 
@@ -242,7 +264,7 @@ async function loadDate() {
   recordsLoading.value = true
   try {
     const res = await getVerifications(d)
-    records.value = (res.data.records || []).map(r => ({ ...r, checked: true }))
+    records.value = (res.data.records || []).map(r => ({ ...r, checked: true, editing: false, replacement: null, saving: false }))
     verifications.value = (res.data.verifications || []).map(v => ({ ...v, checked: false }))
   } catch {
     records.value = []
@@ -275,6 +297,46 @@ async function searchMember(event) {
     }))
   } catch {
     memberSuggestions.value = []
+  }
+}
+
+async function toggleFeederEdit(rec) {
+  rec.editing = !rec.editing
+  rec.replacement = null
+  if (rec.editing) {
+    await nextTick()
+    document.getElementById(`feeder-${rec.id}`)?.focus()
+  }
+}
+
+async function changeFeeder(rec, member) {
+  if (member.studentId === rec.studentId) {
+    rec.editing = false
+    return
+  }
+  rec.saving = true
+  try {
+    const res = await changeRecordMember(rec.id, member.studentId)
+    const prev = { name: rec.name, studentId: rec.studentId }
+    rec.name = res.data.name
+    rec.studentId = res.data.studentId
+    rec.editing = false
+    if (res.data.verifications) {
+      verifications.value
+        .filter(v => v.studentId === prev.studentId && v.course === rec.course)
+        .forEach(v => { v.name = rec.name; v.studentId = rec.studentId })
+    }
+    toast.add({
+      severity: 'success',
+      summary: `급식자 변경: ${prev.name} → ${rec.name}`,
+      detail: res.data.verifications ? '기존 인증 기록도 함께 변경되었습니다.' : undefined,
+      life: 3000,
+    })
+  } catch (e) {
+    rec.replacement = null
+    toast.add({ severity: 'error', summary: e.error?.message || '급식자 변경 실패', life: 3000 })
+  } finally {
+    rec.saving = false
   }
 }
 
