@@ -116,7 +116,7 @@ const acknowledged = ref(false)
 const executing = ref(false)
 const done = ref(null)
 
-const target = computed(() => `${year.value}-${term.value}`)
+const target = computed(() => `${String(year.value).padStart(2, '0')}-${term.value}`)
 
 const nextSteps = computed(() => [
   {
@@ -152,11 +152,13 @@ onMounted(async () => {
 
 let seq = 0
 async function loadPreview() {
+  // Bump first so a response for an older target never lands, even after an early return
+  const mine = ++seq
   const name = target.value
   preview.value = null
   acknowledged.value = false
+  previewLoading.value = false
   if (!current.value || name === current.value) return
-  const mine = ++seq
   previewLoading.value = true
   try {
     const res = await previewTransition(name)

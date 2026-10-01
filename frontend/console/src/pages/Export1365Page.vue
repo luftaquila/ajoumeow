@@ -105,7 +105,7 @@ const previewError = ref('')
 
 const summary = computed(() => ({
   people: new Set(data.value.rows.map(r => r.volID)).size,
-  hours: data.value.rows.reduce((sum, r) => sum + r.hour, 0),
+  hours: Math.round(data.value.rows.reduce((sum, r) => sum + r.hour, 0) * 100) / 100,
 }))
 
 function applyPreset() {
@@ -173,12 +173,18 @@ async function generateCertificate() {
 
   generating.value = true
   try {
-    const [module, seal, logo] = await Promise.all([
+    const [res, module, seal, logo] = await Promise.all([
+      getCertificateData(p),
       import('exceljs'),
       fetchBinary('/cert/seal.jpg'),
       fetchBinary('/cert/logo.jpg'),
     ])
-    const wb = buildCertificateWorkbook(data.value.rows, data.value.chief, { ExcelJS: module.default ?? module, seal, logo })
+    data.value = res.data
+    if (!res.data.rows.length) {
+      notify.warn('해당 기간에 인증 데이터가 없습니다.')
+      return
+    }
+    const wb = buildCertificateWorkbook(res.data.rows, res.data.chief, { ExcelJS: module.default ?? module, seal, logo })
     const buffer = await wb.xlsx.writeBuffer()
     saveAs(new Blob([buffer], { type: XLSX_MIME }), `자원봉사활동확인서_${p.startDate}_${p.endDate}.xlsx`)
   } catch (e) {
