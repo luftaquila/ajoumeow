@@ -53,15 +53,17 @@
           <div v-else>
             <!-- Select all -->
             <button class="text-xs text-text-muted hover:text-text mb-2 cursor-pointer" @click="toggleAllRecords">
-              {{ checkedRecordCount }}/{{ records.length }}명 선택
+              {{ checkedRecordCount }}/{{ pendingRecords.length }}명 선택
+              <span v-if="pendingRecords.length < records.length">· {{ records.length - pendingRecords.length }}명 인증됨</span>
             </button>
             <div class="flex flex-col gap-2">
               <div
                 v-for="rec in records"
                 :key="rec.id"
                 class="card flex items-center gap-3 p-3"
+                :class="{ 'opacity-60': rec.verified }"
               >
-                <Checkbox v-model="rec.checked" :binary="true" />
+                <Checkbox v-model="rec.checked" :binary="true" :disabled="rec.verified" />
                 <div v-if="rec.editing" class="flex-1 min-w-0">
                   <AutoComplete
                     v-model="rec.replacement"
@@ -79,6 +81,7 @@
                   <span class="font-medium">{{ rec.name }}</span>
                   <span class="text-text-muted text-sm ml-2 hidden sm:inline">{{ rec.studentId }}</span>
                 </div>
+                <span v-if="rec.verified" class="text-xs font-medium text-primary">인증됨 {{ rec.score }}점</span>
                 <span class="text-sm text-text-secondary">{{ rec.course }}</span>
                 <button
                   @click="toggleFeederEdit(rec)"
@@ -218,18 +221,19 @@ const manualItems = ref([])
 const memberSuggestions = ref([])
 
 const checkedItems = computed(() => {
-  if (mode.value === 'auto') return records.value.filter(r => r.checked)
+  if (mode.value === 'auto') return records.value.filter(r => r.checked && !r.verified)
   if (mode.value === 'manual') return manualItems.value.filter(m => m.checked && m.member && m.score > 0)
   if (mode.value === 'delete') return verifications.value.filter(v => v.checked)
   return []
 })
 
-const checkedRecordCount = computed(() => records.value.filter(r => r.checked).length)
+const pendingRecords = computed(() => records.value.filter(r => !r.verified))
+const checkedRecordCount = computed(() => pendingRecords.value.filter(r => r.checked).length)
 const checkedVerificationCount = computed(() => verifications.value.filter(v => v.checked).length)
 
 function toggleAllRecords() {
-  const allChecked = records.value.every(r => r.checked)
-  records.value.forEach(r => { r.checked = !allChecked })
+  const allChecked = pendingRecords.value.every(r => r.checked)
+  pendingRecords.value.forEach(r => { r.checked = !allChecked })
 }
 
 function toggleAllVerifications() {
@@ -264,8 +268,13 @@ async function loadDate() {
   recordsLoading.value = true
   try {
     const res = await getVerifications(d)
-    records.value = (res.data.records || []).map(r => ({ ...r, checked: true, editing: false, replacement: null, saving: false }))
-    verifications.value = (res.data.verifications || []).map(v => ({ ...v, checked: false }))
+    const verified = res.data.verifications || []
+    // 이미 인증된 신청은 다시 체크되지 않게 해서 같은 날 두 번 지급되는 것을 막는다
+    records.value = (res.data.records || []).map(r => {
+      const ver = verified.find(v => v.studentId === r.studentId && v.course === r.course)
+      return { ...r, verified: !!ver, score: ver?.score, checked: !ver, editing: false, replacement: null, saving: false }
+    })
+    verifications.value = verified.map(v => ({ ...v, checked: false }))
   } catch {
     records.value = []
     verifications.value = []
@@ -340,11 +349,23 @@ async function changeFeeder(rec, member) {
   }
 }
 
+function notifyCreated({ inserted, skipped }) {
+  toast.add({ severity: 'success', summary: `${inserted}건 인증 완료`, life: 2000 })
+  if (skipped.length) {
+    toast.add({
+      severity: 'warn',
+      summary: `${skipped.length}건은 이미 인증되어 건너뜀`,
+      detail: skipped.map(s => `${s.name} ${s.course}`).join(', '),
+      life: 5000,
+    })
+  }
+}
+
 async function submit() {
   const d = dateStr(selectedDate.value)
 
   if (mode.value === 'auto') {
-    const checked = records.value.filter(r => r.checked)
+    const checked = records.value.filter(r => r.checked && !r.verified)
     if (!checked.length) return
 
     // Group by course to calculate dual/solo
@@ -363,8 +384,8 @@ async function submit() {
 
     submitting.value = true
     try {
-      await createVerifications(items)
-      toast.add({ severity: 'success', summary: `${items.length}건 인증 완료`, life: 2000 })
+      const res = await createVerifications(items)
+      notifyCreated(res.data)
       latestDate.value = d
       await loadDate()
     } catch (e) {
@@ -385,8 +406,8 @@ async function submit() {
 
     submitting.value = true
     try {
-      await createVerifications(items)
-      toast.add({ severity: 'success', summary: `${items.length}건 인증 완료`, life: 2000 })
+      const res = await createVerifications(items)
+      notifyCreated(res.data)
       manualItems.value = [{ checked: true, member: null, reason: '', score: 1 }]
     } catch (e) {
       toast.add({ severity: 'error', summary: e.error?.message || '인증 실패', life: 3000 })

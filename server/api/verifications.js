@@ -1,7 +1,7 @@
 import dateformat from 'dateformat';
 import { eq, and, between, desc, like } from 'drizzle-orm';
 
-import { db } from '../db/index.js';
+import { db, sqlite } from '../db/index.js';
 import { members, semesters, semesterMembers, records, verifications } from '../db/schema.js';
 import util from '../controllers/util/util.js';
 import { Log, success, error } from '../controllers/util/interface.js';
@@ -41,7 +41,7 @@ function getRecordsWithMember(date) {
 
 export default async function(fastify, opts) {
 
-  fastify.get('/', { preHandler: [util.isLogin] }, async (request, reply) => {
+  fastify.get('/', { preHandler: [util.isAdmin] }, async (request, reply) => {
     try {
       const recordList = getRecordsWithMember(request.query.date);
       const verifyList = getVerificationsWithMember(eq(verifications.date, request.query.date));
@@ -54,21 +54,35 @@ export default async function(fastify, opts) {
     }
   });
 
-  fastify.post('/', { preHandler: [util.isLogin] }, async (request, reply) => {
+  fastify.post('/', { preHandler: [util.isAdmin] }, async (request, reply) => {
     try {
       const payload = request.body.items;
-      let result = [];
-      for(let obj of payload) {
-        const member = util.getMemberByStudentId(obj.studentId);
-        if (!member) continue;
-        const att = db.insert(verifications).values({
-          memberId: member.id,
-          date: obj.date,
-          course: obj.course,
-          score: obj.score,
-        }).run();
-        result.push(att);
-      }
+      let inserted = 0;
+      const skipped = [];
+      // 같은 회원·날짜·코스(사유) 인증이 이미 있으면 다시 지급하지 않는다
+      const insert = sqlite.transaction(() => {
+        for(let obj of payload) {
+          const member = util.getMemberByStudentId(obj.studentId);
+          if (!member) continue;
+          const dup = db.select({ id: verifications.id })
+            .from(verifications)
+            .where(and(eq(verifications.memberId, member.id), eq(verifications.date, obj.date), eq(verifications.course, obj.course)))
+            .get();
+          if (dup) {
+            skipped.push({ studentId: member.studentId, name: member.name, course: obj.course });
+            continue;
+          }
+          db.insert(verifications).values({
+            memberId: member.id,
+            date: obj.date,
+            course: obj.course,
+            score: obj.score,
+          }).run();
+          inserted++;
+        }
+      });
+      insert();
+      const result = { inserted, skipped };
       util.logger(new Log('info', request.remoteIP, request.originalPath, '급식 인증', request.method, 201, request.body, result));
       return reply.code(201).send(success(result));
     }
@@ -78,7 +92,7 @@ export default async function(fastify, opts) {
     }
   });
 
-  fastify.delete('/', { preHandler: [util.isLogin] }, async (request, reply) => {
+  fastify.delete('/', { preHandler: [util.isAdmin] }, async (request, reply) => {
     try {
       const payload = request.body.items;
       let result = [];
@@ -99,7 +113,7 @@ export default async function(fastify, opts) {
     }
   });
 
-  fastify.get('/latest', { preHandler: [util.isLogin] }, async (request, reply) => {
+  fastify.get('/latest', { preHandler: [util.isAdmin] }, async (request, reply) => {
     try {
       const row = db.select({
         studentId: members.studentId,
@@ -175,9 +189,21 @@ export default async function(fastify, opts) {
     }
 
     let rows = [];
+    // 확인서에서 빠지는 회원: 해당 학기 명단에 없거나 1365 아이디가 없음
+    const excluded = new Map();
     for (const activity of verifyRows) {
       const member = namelist.find(o => o.studentId == activity.studentId);
-      if (!member || !member.volunteerId) continue;
+      if (!member || !member.volunteerId) {
+        const entry = excluded.get(activity.studentId) || {
+          studentId: activity.studentId,
+          name: activity.name,
+          reason: member ? 'noVolunteerId' : 'notInSemester',
+          count: 0,
+        };
+        entry.count++;
+        excluded.set(activity.studentId, entry);
+        continue;
+      }
 
       const fmtDate = dateformat(activity.date, 'yyyy.mm.dd');
       const prev = rows.find(data => data.ID == member.studentId && data.date == fmtDate);
@@ -202,7 +228,7 @@ export default async function(fastify, opts) {
       row.hour = hourTable[Math.min(row.courses.size, hourTable.length) - 1];
     }
 
-    return { rows, chief, maskName, maskBirthday, maskPhone };
+    return { rows, chief, excluded: [...excluded.values()], maskName, maskBirthday, maskPhone };
   }
 
   fastify.get('/1365-data', { preHandler: [util.isAdmin] }, async (request, reply) => {
@@ -212,7 +238,7 @@ export default async function(fastify, opts) {
         return reply.code(400).send(error('ERR_SEMESTER_NOT_FOUND', '해당 학기를 찾을 수 없습니다.'));
       }
 
-      const { rows, chief, maskName, maskBirthday, maskPhone } = result;
+      const { rows, chief, excluded, maskName, maskBirthday, maskPhone } = result;
 
       const data = {
         rows: rows.map(r => ({
@@ -228,6 +254,7 @@ export default async function(fastify, opts) {
           name: chief ? chief.name : '',
           phone: chief ? chief.phone : '',
         },
+        excluded,
       };
 
       util.logger(new Log('info', request.remoteIP, request.originalPath, '1365 인증서 데이터 요청', request.method, 200, request.query, null));

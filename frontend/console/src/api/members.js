@@ -1,4 +1,4 @@
-import { get, put, del } from '../../../shared/api.js'
+import { get, putJSON, del } from '../../../shared/api.js'
 
 export function getMembers(semester) {
   return get('/members', { semester })
@@ -8,10 +8,15 @@ export function searchMembers(query) {
   return get('/members/search', { query })
 }
 
-export function updateMember(studentId, data) {
-  return put(`/members/${studentId}`, data)
+export function getRoles() {
+  return get('/members/roles')
 }
 
-export function deleteMember(studentId) {
-  return del(`/members/${studentId}`)
+// JSON body keeps null fields as null (form encoding turns them into the string 'null')
+export function updateMember(studentId, data) {
+  return putJSON(`/members/${studentId}`, data)
+}
+
+export function deleteMember(studentId, semester) {
+  return del(`/members/${studentId}`, { semester })
 }
