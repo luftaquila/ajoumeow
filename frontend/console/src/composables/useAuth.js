@@ -5,7 +5,11 @@ import { post } from '../../../shared/api.js'
 const user = ref(null)
 
 const isLoggedIn = computed(() => !!user.value)
-const isAdmin = computed(() => user.value && user.value.role !== '회원')
+// Same rule as the server: a blank or padded role is not an admin role
+const isAdmin = computed(() => {
+  const role = (user.value?.role || '').trim()
+  return !!role && role !== '회원'
+})
 
 export function useAuth() {
   async function doAutoLogin() {

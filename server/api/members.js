@@ -121,6 +121,12 @@ export default async function(fastify, opts) {
         volunteerId: request.body.volunteerId,
       }).where(eq(members.id, member.id)).run();
 
+      const current = util.getCurrentSemester();
+      if (role === '회원' && current && semester.id === current.id && util.currentRole({ memberId: member.id }) !== '회원'
+          && util.countOtherAdmins(semester.id, member.id) === 0) {
+        return reply.code(400).send(error('ERR_LAST_ADMIN', '이번 학기에 남는 임원이 없어 직책을 회원으로 바꿀 수 없습니다.'));
+      }
+
       if (role) {
         db.update(semesterMembers).set({ role })
           .where(and(eq(semesterMembers.memberId, member.id), eq(semesterMembers.semesterId, semester.id))).run();
@@ -147,6 +153,12 @@ export default async function(fastify, opts) {
       if (!member) {
         util.logger(new Log('info', request.remoteIP, request.originalPath, '회원 삭제', request.method, 400, request.params, 'ERR_NO_MATCHING_ID'));
         return reply.code(400).send(error('ERR_NO_MATCHING_ID', 'No matching ID'));
+      }
+
+      const current = util.getCurrentSemester();
+      if (current && semester.id === current.id && util.currentRole({ memberId: member.id }) !== '회원'
+          && util.countOtherAdmins(semester.id, member.id) === 0) {
+        return reply.code(400).send(error('ERR_LAST_ADMIN', '이번 학기에 남는 임원이 없어 제명할 수 없습니다.'));
       }
 
       const result = db.delete(semesterMembers)
