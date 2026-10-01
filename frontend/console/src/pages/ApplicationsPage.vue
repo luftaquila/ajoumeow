@@ -81,6 +81,7 @@
           <template #body="{ data }">
             <!-- min-width on a table cell is ignored, so size the content itself -->
             <div class="min-w-52">
+            <template v-if="data.status === 'pending'">
             <span v-if="data.isNew" class="text-xs text-text-muted">새 회원으로 등록</span>
             <span v-else-if="!data.current" class="text-xs text-red-500">기존 회원 기록 없음 (승인 불가)</span>
             <div v-else-if="changes(data).length" class="text-xs flex flex-col gap-0.5">
@@ -91,6 +92,7 @@
               </p>
             </div>
             <span v-else class="text-xs text-text-muted">정보 변경 없음</span>
+            </template>
             </div>
           </template>
         </Column>
@@ -102,7 +104,7 @@
         <Column header="" style="min-width: 10rem">
           <template #body="{ data }">
             <div v-if="data.status === 'pending'" class="flex gap-1">
-              <Button label="승인" severity="success" size="small" :disabled="busy" @click="confirmOne(data, 'approve')" />
+              <Button label="승인" severity="success" size="small" :disabled="busy || (!data.isNew && !data.current)" @click="confirmOne(data, 'approve')" />
               <Button label="거절" severity="danger" size="small" outlined :disabled="busy" @click="confirmOne(data, 'reject')" />
             </div>
           </template>

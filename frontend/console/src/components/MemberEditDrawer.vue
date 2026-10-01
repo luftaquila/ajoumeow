@@ -16,7 +16,7 @@
       <div class="grid grid-cols-2 gap-3">
         <div class="field">
           <label for="m-college">단과대학</label>
-          <Select id="m-college" v-model="form.college" :options="collegeOptions" placeholder="선택" @change="form.department = null" fluid />
+          <Select id="m-college" :modelValue="form.college" @update:modelValue="setCollege" :options="collegeOptions" placeholder="선택" fluid />
         </div>
         <div class="field">
           <label for="m-dept">학과</label>
@@ -109,6 +109,13 @@ watch(() => [props.visible, props.member], () => {
   customRole.value = ''
 }, { immediate: true })
 
+// Select emits a change even when the same college is picked again; only a different one clears the department
+function setCollege(value) {
+  if (value === form.value.college) return
+  form.value.college = value
+  form.value.department = null
+}
+
 // Keep the member's current value selectable even if it's not in the college list any more
 function withCurrent(list, current) {
   return current && !list.includes(current) ? [current, ...list] : list
@@ -120,7 +127,7 @@ const departmentOptions = computed(() => {
 })
 
 const roleChoices = computed(() => {
-  const names = ['회원', ...props.roles.filter(r => r !== '회원')]
+  const names = [...new Set(['회원', '회장', ...props.roles.filter(r => r !== '회원')])]
   if (props.member && !names.includes(props.member.role)) names.push(props.member.role)
   return [
     ...names.map(r => ({ label: r, value: r, admin: r !== '회원' })),

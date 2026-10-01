@@ -9,7 +9,7 @@
     <!-- Survey state and link -->
     <div class="card p-4 mb-5 flex flex-col sm:flex-row sm:items-center gap-3">
       <div class="flex items-center gap-3">
-        <ToggleSwitch :modelValue="register.enabled" :disabled="toggling" aria-label="모집 활성화" @update:modelValue="toggleSurvey" />
+        <ToggleSwitch :key="toggleKey" :modelValue="register.enabled" :disabled="toggling" aria-label="모집 활성화" @update:modelValue="toggleSurvey" />
         <div>
           <p class="font-medium">{{ register.open ? '모집 중' : '모집 닫힘' }}</p>
           <p class="text-xs text-text-muted">
@@ -95,7 +95,6 @@ import Select from 'primevue/select'
 import Button from 'primevue/button'
 import Menu from 'primevue/menu'
 import Tag from 'primevue/tag'
-import QRCode from 'qrcode'
 import ToggleSwitch from 'primevue/toggleswitch'
 import PageHeader from '../components/PageHeader.vue'
 import ActionBar from '../components/ActionBar.vue'
@@ -118,13 +117,16 @@ const loading = ref(false)
 const toggling = ref(false)
 const onlyNotJoined = ref(false)
 const exportMenu = ref()
+const toggleKey = ref(0)
 
 const registerUrl = `${location.origin}/register/`
 // QR of the survey link for posters and group chats: a small preview and a large PNG to save
 const qrSmall = ref('')
 const qrLarge = ref('')
-QRCode.toDataURL(registerUrl, { width: 160, margin: 1 }).then(url => { qrSmall.value = url }).catch(() => {})
-QRCode.toDataURL(registerUrl, { width: 1024, margin: 2 }).then(url => { qrLarge.value = url }).catch(() => {})
+import('qrcode').then(async ({ default: QRCode }) => {
+  qrSmall.value = await QRCode.toDataURL(registerUrl, { width: 160, margin: 1 })
+  qrLarge.value = await QRCode.toDataURL(registerUrl, { width: 1024, margin: 2 })
+}).catch(() => {})
 
 const notJoinedCount = computed(() => registrations.value.filter(r => !r.joinStatus).length)
 const shown = computed(() => onlyNotJoined.value ? registrations.value.filter(r => !r.joinStatus) : registrations.value)
@@ -146,6 +148,7 @@ async function toggleSurvey(value) {
     await refreshStatus()
     notify.success(value ? '신입 모집을 켰습니다.' : '신입 모집을 껐습니다.')
   } catch (e) {
+    toggleKey.value++
     notify.error(e, '설정 변경 실패')
   } finally {
     toggling.value = false
@@ -197,7 +200,7 @@ function downloadExcel() {
 }
 
 function downloadCsvFile(content, filename) {
-  const BOM = '﻿'
+  const BOM = '\uFEFF'
   const blob = new Blob([BOM + content], { type: 'text/csv;charset=utf-8;' })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
