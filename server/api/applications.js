@@ -67,13 +67,17 @@ export default async function(fastify, opts) {
       const isNewBool = isNew === true || isNew === 'true';
       const adminEmails = util.adminEmails();
 
-      // 설정의 '웹사이트 가입 신청' 기간 (관리자 이메일은 언제든 가능)
-      if (!adminEmails.includes(googleEmail) && !util.isWindowOpen('isApply', 'applyTerm')) {
-        return reply.code(400).send(error('ERR_APPLY_CLOSED', '지금은 웹사이트 가입 신청 기간이 아닙니다.'));
+      const sameStudent = db.select({ id: members.id }).from(members).where(eq(members.studentId, String(studentId))).get();
+      // 이미 이번 학기 명단에 있는 회원이 구글 계정을 다시 연동하는 신청은 등록 기간과 무관하다
+      const onRoster = !isNewBool && sameStudent && sqlite.prepare(`SELECT 1 FROM semester_members WHERE semester_id = ? AND member_id = ?`)
+        .get(semester.id, sameStudent.id);
+
+      // 설정의 '회원 등록' 기간 (관리자 이메일은 언제든 가능)
+      if (!adminEmails.includes(googleEmail) && !onRoster && !util.isWindowOpen('isApply', 'applyTerm')) {
+        return reply.code(400).send(error('ERR_APPLY_CLOSED', '지금은 회원 등록 기간이 아닙니다.'));
       }
 
       // 승인 단계에서 실패하지 않도록 신규/기존 여부를 학번과 맞춰 본다
-      const sameStudent = db.select({ id: members.id }).from(members).where(eq(members.studentId, String(studentId))).get();
       if (isNewBool && sameStudent) {
         return reply.code(400).send(error('ERR_REGISTERED_BEFORE', '이미 가입한 적이 있는 학번입니다. 기존 회원으로 신청해 주세요.'));
       }
@@ -217,6 +221,10 @@ export default async function(fastify, opts) {
       }
       if (app.status !== 'pending') {
         return reply.code(400).send(error('ERR_ALREADY_REVIEWED', '이미 처리된 신청입니다.'));
+      }
+
+      if (app.isNew && db.select({ id: members.id }).from(members).where(eq(members.studentId, app.studentId)).get()) {
+        return reply.code(400).send(error('ERR_REGISTERED_BEFORE', '이미 같은 학번의 회원이 있습니다. 기존 회원으로 다시 신청받아 주세요.'));
       }
 
       const tx = sqlite.transaction(() => {

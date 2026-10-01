@@ -61,6 +61,11 @@ export default async function(fastify, opts) {
         util.logger(new Log('info', request.remoteIP, request.originalPath, '급식 신청', request.method, 403, request.body, 'ERR_FORBIDDEN'));
         return reply.code(403).send(error('ERR_FORBIDDEN', '본인의 급식만 신청할 수 있습니다.'));
       }
+      const semester = util.getCurrentSemester();
+      const onRoster = semester && sqlite.prepare('SELECT 1 FROM semester_members WHERE semester_id = ? AND member_id = ?').get(semester.id, member.id);
+      if (!onRoster) {
+        return reply.code(403).send(error('ERR_NOT_REGISTERED', '이번 학기 회원으로 등록되어 있지 않습니다.'));
+      }
 
       const test = db.select().from(records)
         .where(and(eq(records.memberId, member.id), eq(records.date, payload.date), eq(records.course, payload.course)))
