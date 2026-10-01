@@ -2,7 +2,7 @@
   <div>
     <PageHeader
       title="급식 인증"
-      description="관리자의 급식 인증이 완료된 활동만 시스템에서 인정됩니다."
+      description="급식 신청자 중 실제로 급식한 회원을 인증해 마일리지를 지급합니다. 인증한 급식만 마일리지와 1365 활동확인서에 반영됩니다."
       icon="i-lucide-calendar-check"
     >
       <template #subtitle>
@@ -184,7 +184,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted, nextTick } from 'vue'
-import { useToast } from 'primevue/usetoast'
+import { useNotify } from '../composables/useNotify.js'
 import DatePicker from 'primevue/datepicker'
 import SelectButton from 'primevue/selectbutton'
 import Checkbox from 'primevue/checkbox'
@@ -199,7 +199,7 @@ import { changeRecordMember } from '../api/records.js'
 import { calculateScore } from '../utils/scoreCalculator.js'
 import { formatDate } from '../../../shared/utils/dateFormat.js'
 
-const toast = useToast()
+const notify = useNotify()
 
 const selectedDate = ref(new Date())
 const latestDate = ref('')
@@ -249,7 +249,7 @@ onMounted(async () => {
   try {
     const res = await getLatestVerification()
     if (res.data) latestDate.value = res.data.date
-  } catch {}
+  } catch (e) {}
   await loadDate()
 })
 
@@ -275,7 +275,7 @@ async function loadDate() {
       return { ...r, verified: !!ver, score: ver?.score, checked: !ver, editing: false, replacement: null, saving: false }
     })
     verifications.value = verified.map(v => ({ ...v, checked: false }))
-  } catch {
+  } catch (e) {
     records.value = []
     verifications.value = []
   } finally {
@@ -304,7 +304,7 @@ async function searchMember(event) {
       ...m,
       display: `${m.name} (${m.studentId})`,
     }))
-  } catch {
+  } catch (e) {
     memberSuggestions.value = []
   }
 }
@@ -335,29 +335,19 @@ async function changeFeeder(rec, member) {
         .filter(v => v.studentId === prev.studentId && v.course === rec.course)
         .forEach(v => { v.name = rec.name; v.studentId = rec.studentId })
     }
-    toast.add({
-      severity: 'success',
-      summary: `급식자 변경: ${prev.name} → ${rec.name}`,
-      detail: res.data.verifications ? '기존 인증 기록도 함께 변경되었습니다.' : undefined,
-      life: 3000,
-    })
+    notify.success(`급식자 변경: ${prev.name} → ${rec.name}`, res.data.verifications ? '기존 인증 기록도 함께 변경되었습니다.' : undefined)
   } catch (e) {
     rec.replacement = null
-    toast.add({ severity: 'error', summary: e.error?.message || '급식자 변경 실패', life: 3000 })
+    notify.error(e, '급식자 변경 실패')
   } finally {
     rec.saving = false
   }
 }
 
 function notifyCreated({ inserted, skipped }) {
-  toast.add({ severity: 'success', summary: `${inserted}건 인증 완료`, life: 2000 })
+  notify.success(`${inserted}건 인증 완료`)
   if (skipped.length) {
-    toast.add({
-      severity: 'warn',
-      summary: `${skipped.length}건은 이미 인증되어 건너뜀`,
-      detail: skipped.map(s => `${s.name} ${s.course}`).join(', '),
-      life: 5000,
-    })
+    notify.warn(`${skipped.length}건은 이미 인증되어 건너뜀`, skipped.map(s => `${s.name} ${s.course}`).join(', '))
   }
 }
 
@@ -389,7 +379,7 @@ async function submit() {
       latestDate.value = d
       await loadDate()
     } catch (e) {
-      toast.add({ severity: 'error', summary: e.error?.message || '인증 실패', life: 3000 })
+      notify.error(e, '인증 실패')
     } finally {
       submitting.value = false
     }
@@ -410,7 +400,7 @@ async function submit() {
       notifyCreated(res.data)
       manualItems.value = [{ checked: true, member: null, reason: '', score: 1 }]
     } catch (e) {
-      toast.add({ severity: 'error', summary: e.error?.message || '인증 실패', life: 3000 })
+      notify.error(e, '인증 실패')
     } finally {
       submitting.value = false
     }
@@ -427,10 +417,10 @@ async function submit() {
     submitting.value = true
     try {
       await deleteVerifications(items)
-      toast.add({ severity: 'success', summary: `${items.length}건 삭제 완료`, life: 2000 })
+      notify.success(`${items.length}건 삭제 완료`)
       await loadDate()
     } catch (e) {
-      toast.add({ severity: 'error', summary: e.error?.message || '삭제 실패', life: 3000 })
+      notify.error(e, '삭제 실패')
     } finally {
       submitting.value = false
     }

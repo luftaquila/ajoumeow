@@ -1,9 +1,9 @@
 <template>
   <div>
     <PageHeader
-      title="신입 모집"
-      description="가입 신청 목록을 조회하고 내보냅니다."
-      icon="i-lucide-user-plus"
+      title="신입 모집 설문"
+      description="/register 설문으로 받은 신입 연락처입니다. 계정은 만들어지지 않으며, 회원 등록은 가입 신청으로 따로 받습니다."
+      icon="i-lucide-clipboard-list"
     />
 
     <!-- Register link -->
@@ -77,7 +77,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useToast } from 'primevue/usetoast'
+import { useNotify } from '../composables/useNotify.js'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Select from 'primevue/select'
@@ -89,7 +89,7 @@ import { toGoogleContactsCsv, toNaverContactsCsv } from '../utils/contactExport.
 import { useSemesters } from '../composables/useSemesters.js'
 import { formatLocal } from '../../../shared/utils/dateFormat.js'
 
-const toast = useToast()
+const notify = useNotify()
 const { currentSemester, loadSemesters } = useSemesters()
 
 const selectedSemester = ref('')
@@ -100,7 +100,7 @@ const loading = ref(false)
 function copyRegisterUrl() {
   const url = `${location.origin}/register/`
   navigator.clipboard.writeText(url).then(() => {
-    toast.add({ severity: 'success', summary: 'URL이 복사되었습니다.', life: 1500 })
+    notify.success('URL이 복사되었습니다.')
   })
 }
 
@@ -116,8 +116,8 @@ onMounted(async () => {
       selectedSemester.value = currentSemester.value || semesterOptions.value[0].value
       await loadRegistrations()
     }
-  } catch {
-    toast.add({ severity: 'error', summary: '학기 목록 로드 실패', life: 3000 })
+  } catch (e) {
+    notify.error(e, '학기 목록 로드 실패')
   }
 })
 
@@ -127,8 +127,8 @@ async function loadRegistrations() {
   try {
     const res = await getRegistrations(selectedSemester.value)
     registrations.value = res.data
-  } catch {
-    toast.add({ severity: 'error', summary: '신청 목록 로드 실패', life: 3000 })
+  } catch (e) {
+    notify.error(e, '신청 목록 로드 실패')
   } finally {
     loading.value = false
   }

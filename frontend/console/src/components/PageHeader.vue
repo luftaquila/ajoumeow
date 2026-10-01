@@ -4,7 +4,7 @@
       <span v-if="icon" :class="icon" class="text-xl text-primary"></span>
       <h1 class="text-xl font-bold">{{ title }}</h1>
     </div>
-    <p class="text-text-muted text-sm">{{ description }}</p>
+    <p v-if="description" class="text-text-muted text-sm">{{ description }}</p>
     <slot name="subtitle" />
   </div>
 </template>

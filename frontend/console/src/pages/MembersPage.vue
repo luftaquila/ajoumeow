@@ -1,9 +1,9 @@
 <template>
   <div>
     <PageHeader
-      title="회원 관리"
-      description="학기별 회원 목록을 조회하고 관리합니다."
-      icon="i-lucide-user-pen"
+      title="회원 명단"
+      description="학기별 회원 명단입니다. 칸을 눌러 바로 고칠 수 있고, '회원' 외의 직책은 모두 관리자 권한입니다."
+      icon="i-lucide-users"
     />
 
     <ActionBar>
@@ -105,7 +105,7 @@
         </Column>
         <Column header="" style="min-width: 3rem">
           <template #body="{ data }">
-            <button @click="confirmDelete(data)" class="text-text-muted hover:text-red-500 cursor-pointer" title="제명">
+            <button @click="confirmDelete(data)" class="text-text-muted hover:text-red-500 cursor-pointer" title="명단에서 제외">
               <span class="i-lucide-trash-2 text-base"></span>
             </button>
           </template>
@@ -119,7 +119,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useToast } from 'primevue/usetoast'
+import { useNotify } from '../composables/useNotify.js'
 import { useConfirm } from 'primevue/useconfirm'
 import { FilterMatchMode } from '@primevue/core/api'
 import DataTable from 'primevue/datatable'
@@ -133,7 +133,7 @@ import ActionBar from '../components/ActionBar.vue'
 import { getMembers, getRoles, updateMember, deleteMember } from '../api/members.js'
 import { useSemesters } from '../composables/useSemesters.js'
 
-const toast = useToast()
+const notify = useNotify()
 const confirm = useConfirm()
 const { semesters, currentSemester, loadSemesters } = useSemesters()
 
@@ -167,8 +167,8 @@ async function loadMembers() {
   try {
     const res = await getMembers(selectedSemester.value)
     members.value = res.data
-  } catch {
-    toast.add({ severity: 'error', summary: '회원 목록 로드 실패', life: 3000 })
+  } catch (e) {
+    notify.error(e, '회원 목록 로드 실패')
   } finally {
     loading.value = false
   }
@@ -192,28 +192,28 @@ async function onCellEditComplete(event) {
       volunteerId: data.volunteerId,
       role: data.role,
     })
-    toast.add({ severity: 'success', summary: '수정되었습니다.', life: 1500 })
+    notify.success('수정되었습니다.')
   } catch (e) {
     data[field] = prev
-    toast.add({ severity: 'error', summary: e.error?.message || '수정 실패', life: 3000 })
+    notify.error(e, '수정 실패')
   }
 }
 
 async function confirmDelete(row) {
   confirm.require({
-    message: `${row.name} (${row.studentId}) 회원을 ${selectedSemester.value} 학기에서 제명하시겠습니까?`,
-    header: '회원 제명',
+    message: `${row.name} (${row.studentId}) 회원을 ${selectedSemester.value} 명단에서 제외할까요? 계정과 급식 기록은 남습니다.`,
+    header: '명단에서 제외',
     icon: 'i-lucide-triangle-alert',
     acceptClass: 'p-button-danger',
-    acceptLabel: '제명',
+    acceptLabel: '제외',
     rejectLabel: '취소',
     accept: async () => {
       try {
         await deleteMember(row.studentId, selectedSemester.value)
         members.value = members.value.filter(m => m.studentId !== row.studentId)
-        toast.add({ severity: 'success', summary: '제명되었습니다.', life: 2000 })
+        notify.success('명단에서 제외했습니다.')
       } catch (e) {
-        toast.add({ severity: 'error', summary: e.error?.message || '제명 실패', life: 3000 })
+        notify.error(e, '제외 실패')
       }
     },
   })

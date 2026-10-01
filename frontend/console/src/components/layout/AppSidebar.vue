@@ -7,12 +7,25 @@
     </a>
 
     <div class="flex-1 overflow-y-auto py-2">
+      <SidebarItem to="/console/home" icon="i-lucide-house" label="홈" @click="$emit('navigate')" />
+
+      <p class="group-label">운영</p>
       <SidebarItem to="/console/verify" icon="i-lucide-calendar-check" label="급식 인증" @click="$emit('navigate')" />
-      <SidebarItem to="/console/settings" icon="i-lucide-wrench" label="설정" @click="$emit('navigate')" />
-      <SidebarItem to="/console/members" icon="i-lucide-user-pen" label="회원 관리" @click="$emit('navigate')" />
-      <SidebarItem to="/console/1365" icon="i-lucide-hand-helping" label="1365" @click="$emit('navigate')" />
-      <SidebarItem to="/console/applications" icon="i-lucide-user-round-check" label="가입 신청" @click="$emit('navigate')" />
-      <SidebarItem to="/console/recruit" icon="i-lucide-user-plus" label="신입 모집" @click="$emit('navigate')" />
+      <SidebarItem
+        to="/console/applications" icon="i-lucide-user-round-check" label="가입 승인"
+        :badge="pendingApplications" badge-title="승인 대기"
+        @click="$emit('navigate')"
+      />
+
+      <p class="group-label">회원</p>
+      <SidebarItem to="/console/members" icon="i-lucide-users" label="회원 명단" @click="$emit('navigate')" />
+      <SidebarItem to="/console/recruit" icon="i-lucide-clipboard-list" label="신입 모집 설문" @click="$emit('navigate')" />
+
+      <p class="group-label">문서</p>
+      <SidebarItem to="/console/1365" icon="i-lucide-hand-helping" label="1365 활동확인서" @click="$emit('navigate')" />
+
+      <p class="group-label">관리</p>
+      <SidebarItem to="/console/settings" icon="i-lucide-settings" label="설정" @click="$emit('navigate')" />
     </div>
 
     <!-- User info + logout -->
@@ -36,9 +49,20 @@
 
 <script setup>
 import { useAuth } from '../../composables/useAuth.js'
+import { useStatus } from '../../composables/useStatus.js'
 import SidebarItem from './SidebarItem.vue'
 
 defineEmits(['navigate'])
 
-const { user, isAdmin, logout } = useAuth()
+const { user, logout } = useAuth()
+const { pendingApplications } = useStatus()
 </script>
+
+<style scoped>
+.group-label {
+  padding: 1rem 1.25rem 0.25rem;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--c-text-muted);
+}
+</style>
