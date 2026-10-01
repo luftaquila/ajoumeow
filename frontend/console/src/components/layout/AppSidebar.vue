@@ -10,7 +10,11 @@
       <SidebarItem to="/console/home" icon="i-lucide-house" label="홈" @click="$emit('navigate')" />
 
       <p class="group-label">운영</p>
-      <SidebarItem to="/console/verify" icon="i-lucide-calendar-check" label="급식 인증" @click="$emit('navigate')" />
+      <SidebarItem
+        to="/console/verify" icon="i-lucide-calendar-check" label="급식 인증"
+        :badge="unverifiedDates.length" :badge-title="`최근 ${UNVERIFIED_DAYS}일 중 인증하지 않은 날`"
+        @click="$emit('navigate')"
+      />
       <SidebarItem
         to="/console/applications" icon="i-lucide-user-round-check" label="가입 승인"
         :badge="pendingApplications" badge-title="승인 대기"
@@ -49,13 +53,13 @@
 
 <script setup>
 import { useAuth } from '../../composables/useAuth.js'
-import { useStatus } from '../../composables/useStatus.js'
+import { useStatus, UNVERIFIED_DAYS } from '../../composables/useStatus.js'
 import SidebarItem from './SidebarItem.vue'
 
 defineEmits(['navigate'])
 
 const { user, logout } = useAuth()
-const { pendingApplications } = useStatus()
+const { pendingApplications, unverifiedDates } = useStatus()
 </script>
 
 <style scoped>

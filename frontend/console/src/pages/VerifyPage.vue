@@ -4,426 +4,500 @@
       title="급식 인증"
       description="급식 신청자 중 실제로 급식한 회원을 인증해 마일리지를 지급합니다. 인증한 급식만 마일리지와 1365 활동확인서에 반영됩니다."
       icon="i-lucide-calendar-check"
-    >
-      <template #subtitle>
-        <p class="text-text-muted text-xs mt-1">
-          마지막 인증 기록: <span class="font-medium">{{ latestDate || '없음' }}</span>
-        </p>
-      </template>
-    </PageHeader>
+    />
 
     <div class="flex flex-col lg:flex-row gap-6">
-      <!-- Calendar (sticky on desktop) -->
-      <div class="lg:sticky lg:top-0 lg:self-start flex-shrink-0">
+      <!-- Calendar + dates still to verify (sticky on desktop) -->
+      <div class="lg:sticky lg:top-0 lg:self-start flex-shrink-0 flex flex-col gap-3 lg:w-80">
         <DatePicker
           v-model="selectedDate"
-          :inline="true"
+          inline
           dateFormat="yy-mm-dd"
-          @date-select="onDateSelect"
-        />
+          @date-select="loadDate"
+          @month-change="onMonthChange"
+        >
+          <template #date="{ date }">
+            <span class="cal-cell">
+              {{ date.day }}
+              <span v-if="marker(date)" class="cal-dot" :class="`cal-dot-${marker(date)}`"></span>
+            </span>
+          </template>
+        </DatePicker>
+        <div class="flex items-center gap-3 text-[11px] text-text-muted px-1">
+          <span class="flex items-center gap-1"><span class="legend-dot cal-dot-none"></span>미인증</span>
+          <span class="flex items-center gap-1"><span class="legend-dot cal-dot-partial"></span>일부 인증</span>
+          <span class="flex items-center gap-1"><span class="legend-dot cal-dot-done"></span>완료</span>
+        </div>
+
+        <div v-if="unverifiedDates.length" class="card p-4">
+          <p class="text-xs font-semibold text-text-secondary mb-2">최근 {{ UNVERIFIED_DAYS }}일 중 인증하지 않은 날</p>
+          <div class="flex flex-wrap gap-1.5">
+            <button
+              v-for="d in unverifiedDates"
+              :key="d.date"
+              class="date-chip"
+              :class="{ active: d.date === dateKey }"
+              @click="jumpTo(d.date)"
+            >{{ shortDate(d.date) }} · {{ d.records }}건</button>
+          </div>
+        </div>
       </div>
 
-      <!-- Content -->
+      <!-- Selected date -->
       <div class="flex-1 min-w-0">
-        <!-- Action bar -->
-        <div class="card-section flex items-center gap-3 mb-4 flex-wrap">
-          <SelectButton v-model="mode" :options="modeOptions" optionLabel="label" optionValue="value" />
-          <div v-if="mode === 'auto'" class="flex items-center gap-2">
-            <Checkbox v-model="boost" :binary="true" inputId="boost" />
-            <label for="boost" class="text-sm cursor-pointer">상향 지급</label>
-          </div>
+        <div class="flex items-center gap-3 flex-wrap mb-4">
+          <h2 class="text-lg font-bold">{{ dateLabel }}</h2>
+          <span v-if="rows.length" class="text-xs text-text-muted">
+            신청 {{ rows.length }}건 · 인증 {{ verifiedCount }}건
+          </span>
           <div class="flex-1"></div>
-          <Button
-            :label="mode === 'delete' ? '삭제' : '인증'"
-            :severity="mode === 'delete' ? 'danger' : 'success'"
-            @click="submit"
-            :loading="submitting"
-            :disabled="!checkedItems.length"
-          />
+          <label class="flex items-center gap-2 text-sm cursor-pointer select-none">
+            <ToggleSwitch v-model="boost" />
+            상향 지급
+            <span class="text-xs text-text-muted">(시험기간·연휴·악천후)</span>
+          </label>
         </div>
 
-        <!-- Auto mode: records list -->
-        <div v-if="mode === 'auto'">
-          <div v-if="recordsLoading" class="text-center py-8">
-            <div class="i-lucide-loader-circle text-2xl text-primary animate-spin mx-auto"></div>
-          </div>
-          <div v-else-if="!records.length" class="text-center py-8 text-text-muted">
-            해당 날짜에 급식 신청이 없습니다.
-          </div>
-          <div v-else>
-            <!-- Select all -->
-            <button class="text-xs text-text-muted hover:text-text mb-2 cursor-pointer" @click="toggleAllRecords">
-              {{ checkedRecordCount }}/{{ pendingRecords.length }}명 선택
-              <span v-if="pendingRecords.length < records.length">· {{ records.length - pendingRecords.length }}명 인증됨</span>
-            </button>
-            <div class="flex flex-col gap-2">
-              <div
-                v-for="rec in records"
-                :key="rec.id"
-                class="card flex items-center gap-3 p-3"
-                :class="{ 'opacity-60': rec.verified }"
-              >
-                <Checkbox v-model="rec.checked" :binary="true" :disabled="rec.verified" />
-                <div v-if="rec.editing" class="flex-1 min-w-0">
-                  <AutoComplete
-                    v-model="rec.replacement"
-                    :inputId="`feeder-${rec.id}`"
-                    :suggestions="memberSuggestions"
-                    @complete="searchMember"
-                    @option-select="changeFeeder(rec, $event.value)"
-                    optionLabel="display"
-                    :placeholder="`${rec.name} 대신 급식한 회원`"
-                    :disabled="rec.saving"
-                    fluid
-                  />
-                </div>
-                <div v-else class="flex-1">
-                  <span class="font-medium">{{ rec.name }}</span>
-                  <span class="text-text-muted text-sm ml-2 hidden sm:inline">{{ rec.studentId }}</span>
-                </div>
-                <span v-if="rec.verified" class="text-xs font-medium text-primary">인증됨 {{ rec.score }}점</span>
-                <span class="text-sm text-text-secondary">{{ rec.course }}</span>
-                <button
-                  @click="toggleFeederEdit(rec)"
-                  class="text-text-muted hover:text-primary cursor-pointer"
-                  :title="rec.editing ? '취소' : '급식자 변경'"
-                >
-                  <span :class="rec.editing ? 'i-lucide-x' : 'i-lucide-user-pen'" class="text-base"></span>
-                </button>
+        <div v-if="loading" class="text-center py-10">
+          <div class="i-lucide-loader-circle text-2xl text-primary animate-spin mx-auto"></div>
+        </div>
+
+        <div v-else-if="!rows.length && !extras.length" class="card p-8 text-center text-sm text-text-muted">
+          이 날은 급식 신청이 없습니다.
+        </div>
+
+        <div v-else class="flex flex-col gap-4">
+          <!-- One card per course -->
+          <div v-for="g in groups" :key="g.course" class="card overflow-hidden">
+            <div class="flex items-center gap-2 px-4 py-2.5 border-b border-surface-border bg-surface-muted/60">
+              <span class="w-2.5 h-2.5 rounded-full" :style="{ background: courseColor(g.course) }"></span>
+              <span class="font-semibold text-sm">{{ g.course }}</span>
+              <span class="text-xs text-text-muted">{{ g.summary }}</span>
+              <div class="flex-1"></div>
+              <button
+                v-if="g.pending.length > 1"
+                class="text-xs text-text-muted hover:text-text cursor-pointer"
+                @click="toggleGroup(g)"
+              >{{ g.pending.every(r => r.checked) ? '모두 해제' : '모두 선택' }}</button>
+            </div>
+
+            <div
+              v-for="row in g.rows"
+              :key="row.key"
+              class="flex items-center gap-3 px-4 py-2.5 border-b border-surface-border/60 last:border-b-0"
+            >
+              <Checkbox v-if="!row.verified" v-model="row.checked" :binary="true" :inputId="`row-${row.key}`" :disabled="row.saving" />
+              <span v-else class="i-lucide-circle-check text-lg text-emerald-500 flex-shrink-0" title="인증됨"></span>
+
+              <div v-if="row.editing" class="flex-1 min-w-0">
+                <AutoComplete
+                  v-model="row.replacement"
+                  :inputId="`feeder-${row.key}`"
+                  :suggestions="memberSuggestions"
+                  @complete="searchMember"
+                  @option-select="changeFeeder(row, $event.value)"
+                  optionLabel="display"
+                  :placeholder="`${row.name} 대신 급식한 회원`"
+                  :disabled="row.saving"
+                  size="small"
+                  fluid
+                />
               </div>
+              <label v-else :for="`row-${row.key}`" class="flex-1 min-w-0 truncate" :class="{ 'cursor-pointer': !row.verified }">
+                <span class="font-medium">{{ row.name }}</span>
+                <span class="text-text-muted text-xs ml-2 hidden sm:inline">{{ row.studentId }}</span>
+              </label>
+
+              <span v-if="row.verified" class="text-sm font-semibold text-emerald-600 tabular-nums">{{ row.score }}점</span>
+              <span v-else-if="row.checked" class="text-sm font-semibold text-primary tabular-nums">{{ previewScore(row) }}점</span>
+              <span v-else class="text-sm text-text-muted">—</span>
+
+              <button
+                v-if="row.recordId"
+                class="row-action hover:text-primary"
+                :title="row.editing ? '변경 취소' : '실제 급식자로 변경'"
+                :disabled="row.saving"
+                @click="toggleFeederEdit(row)"
+              ><span :class="row.editing ? 'i-lucide-x' : 'i-lucide-user-pen'"></span></button>
+              <button
+                v-if="row.verified && !row.editing"
+                class="row-action hover:text-red-500"
+                title="인증 취소"
+                :disabled="row.saving"
+                @click="cancelVerification(row)"
+              ><span class="i-lucide-undo-2"></span></button>
             </div>
           </div>
-        </div>
 
-        <!-- Manual mode -->
-        <div v-if="mode === 'manual'">
-          <div class="flex flex-col gap-2 mb-3">
+          <!-- Non-feeding grants on this date -->
+          <div v-if="extras.length" class="card overflow-hidden">
+            <div class="flex items-center gap-2 px-4 py-2.5 border-b border-surface-border bg-surface-muted/60">
+              <span class="i-lucide-sparkles text-sm text-text-muted"></span>
+              <span class="font-semibold text-sm">기타 활동</span>
+            </div>
             <div
-              v-for="(item, idx) in manualItems"
-              :key="idx"
-              class="card flex items-center gap-2 p-3"
+              v-for="ex in extras"
+              :key="ex.key"
+              class="flex items-center gap-3 px-4 py-2.5 border-b border-surface-border/60 last:border-b-0"
             >
-              <Checkbox v-model="item.checked" :binary="true" />
-              <AutoComplete
-                v-model="item.member"
-                :suggestions="memberSuggestions"
-                @complete="searchMember"
-                optionLabel="display"
-                placeholder="회원 검색"
-                class="flex-1"
-              />
-              <InputText v-model="item.reason" placeholder="지급 사유" class="flex-1" />
-              <InputNumber v-model="item.score" :min="0" :max="10" :minFractionDigits="1" :maxFractionDigits="1" class="w-20" placeholder="점수" />
-              <button @click="manualItems.splice(idx, 1)" class="text-text-muted hover:text-red-500 cursor-pointer">
-                <span class="i-lucide-x text-base"></span>
+              <span class="flex-1 min-w-0 truncate">
+                <span class="font-medium">{{ ex.name }}</span>
+                <span class="text-text-muted text-xs ml-2">{{ ex.course }}</span>
+              </span>
+              <span class="text-sm font-semibold text-emerald-600 tabular-nums">{{ ex.score }}점</span>
+              <button class="row-action hover:text-red-500" title="지급 취소" :disabled="ex.saving" @click="cancelVerification(ex)">
+                <span class="i-lucide-undo-2"></span>
               </button>
             </div>
           </div>
-          <div class="flex gap-2">
-            <Button label="추가" icon="i-lucide-plus" size="small" @click="addManualItem" severity="secondary" />
-            <Button v-if="manualItems.length > 1" label="사유 통일" size="small" @click="unifyReasons" severity="secondary" />
-          </div>
 
-          <div class="mt-4 text-xs text-text-muted">
-            <p>동아리박람회나 봉사활동 등 급식 외 활동에 대한 마일리지를 지급합니다.</p>
-            <p>기타 인증 활동은 1365 봉사활동 확인서 및 급식 마일리지 종합에서 제외됩니다.</p>
-          </div>
-        </div>
-
-        <!-- Delete mode: verifications list -->
-        <div v-if="mode === 'delete'">
-          <div v-if="recordsLoading" class="text-center py-8">
-            <div class="i-lucide-loader-circle text-2xl text-primary animate-spin mx-auto"></div>
-          </div>
-          <div v-else-if="!verifications.length" class="text-center py-8 text-text-muted">
-            해당 날짜에 인증 기록이 없습니다.
-          </div>
-          <div v-else>
-            <!-- Select all -->
-            <button class="text-xs text-text-muted hover:text-text mb-2 cursor-pointer" @click="toggleAllVerifications">
-              {{ checkedVerificationCount }}/{{ verifications.length }}명 선택
-            </button>
-            <div class="flex flex-col gap-2">
-              <div
-                v-for="(ver, idx) in verifications"
-                :key="idx"
-                class="card flex items-center gap-3 p-3"
-              >
-                <Checkbox v-model="ver.checked" :binary="true" />
-                <div class="flex-1">
-                  <span class="font-medium">{{ ver.name }}</span>
-                  <span class="text-text-muted text-sm ml-2 hidden sm:inline">{{ ver.studentId }}</span>
-                </div>
-                <span class="text-sm text-text-secondary">{{ ver.course }}</span>
-                <span class="text-sm font-medium text-primary">{{ ver.score }}점</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Auto mode instructions -->
-        <div v-if="mode === 'auto'" class="mt-6">
-          <p class="text-xs text-text-muted select-none">
-            <span class="i-lucide-circle-help text-sm align-text-bottom mr-1"></span>사용 안내
+          <p class="text-[11px] text-text-muted leading-relaxed">
+            점수: 평일 1.5 (2인 이상 1) · 주말 2 (2인 이상 1.5) · 상향 지급 시 평일 2 (1.5) · 주말 3 (2).
+            인원은 같은 날 같은 코스에서 인증된 사람을 모두 셉니다.
           </p>
-          <ol class="list-decimal pl-4 flex flex-col gap-1 mt-2 text-xs text-text-muted">
-            <li>날짜를 선택하면 해당일의 급식 신청자가 모두 표시됩니다.</li>
-            <li>인증할 회원만 좌측 체크박스에 체크합니다. 기본값은 전체 체크입니다.</li>
-            <li>신청자와 실제 급식자가 다르면 우측 <span class="i-lucide-user-pen"></span> 버튼으로 실제 급식자로 변경합니다. 급식표에도 반영됩니다.</li>
-            <li>시험기간/연휴/악천후 등에는 상향 지급 체크박스를 선택합니다.</li>
-            <li><b>인증</b>을 탭해 서버로 인증 기록을 전송합니다.</li>
-          </ol>
-          <div class="mt-2 text-xs text-yellow-600">
-            <p>같은 날 같은 코스 급식자는 한 번에 인증해야 합니다. 따로 인증하면 1인 급식으로 처리됩니다.</p>
+        </div>
+
+        <!-- Action bar -->
+        <div class="action-bar sticky bottom-0 mt-4 -mx-1 px-1 pb-1 pt-3">
+          <div class="card flex items-center gap-3 px-4 py-3 flex-wrap">
+            <Button label="기타 활동 지급" icon="i-lucide-plus" severity="secondary" size="small" text @click="showExtra = true" />
+            <div class="flex-1"></div>
+            <Button
+              :label="selectedRows.length ? `${selectedRows.length}명 인증 · ${selectedTotal}점` : '인증'"
+              icon="i-lucide-check"
+              :loading="submitting"
+              :disabled="!selectedRows.length || loading"
+              @click="submit"
+            />
           </div>
         </div>
       </div>
     </div>
+
+    <ExtraGrantDialog v-model:visible="showExtra" :date="dateKey" @granted="onExtraGranted" />
   </div>
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, nextTick } from 'vue'
-import { useNotify } from '../composables/useNotify.js'
+import { ref, computed, onMounted, nextTick } from 'vue'
 import DatePicker from 'primevue/datepicker'
-import SelectButton from 'primevue/selectbutton'
 import Checkbox from 'primevue/checkbox'
+import ToggleSwitch from 'primevue/toggleswitch'
 import AutoComplete from 'primevue/autocomplete'
-import InputText from 'primevue/inputtext'
-import InputNumber from 'primevue/inputnumber'
 import Button from 'primevue/button'
 import PageHeader from '../components/PageHeader.vue'
-import { getVerifications, createVerifications, deleteVerifications, getLatestVerification } from '../api/verifications.js'
+import ExtraGrantDialog from '../components/ExtraGrantDialog.vue'
+import {
+  getVerifications, createVerifications, deleteVerifications, getMonthSummary,
+} from '../api/verifications.js'
 import { searchMembers } from '../api/members.js'
 import { changeRecordMember } from '../api/records.js'
 import { calculateScore } from '../utils/scoreCalculator.js'
 import { formatDate } from '../../../shared/utils/dateFormat.js'
+import { COURSES } from '../../../timetable/src/constants.js'
+import { useNotify } from '../composables/useNotify.js'
+import { useStatus, UNVERIFIED_DAYS } from '../composables/useStatus.js'
 
 const notify = useNotify()
+const { unverifiedDates, refreshStatus } = useStatus()
 
 const selectedDate = ref(new Date())
-const latestDate = ref('')
-const mode = ref('auto')
-const modeOptions = [
-  { label: '급식 인증', value: 'auto' },
-  { label: '기타 인증', value: 'manual' },
-  { label: '인증 삭제', value: 'delete' },
-]
+const viewMonth = ref(formatDate(new Date(), 'yyyy-mm'))
+const summary = ref({})
 
-const boost = ref(false)
-const records = ref([])
-const verifications = ref([])
-const recordsLoading = ref(false)
+const rows = ref([])
+const extras = ref([])
+const loading = ref(false)
 const submitting = ref(false)
-
-// Manual mode
-const manualItems = ref([])
+const boost = ref(false)
+const showExtra = ref(false)
 const memberSuggestions = ref([])
 
-const checkedItems = computed(() => {
-  if (mode.value === 'auto') return records.value.filter(r => r.checked && !r.verified)
-  if (mode.value === 'manual') return manualItems.value.filter(m => m.checked && m.member && m.score > 0)
-  if (mode.value === 'delete') return verifications.value.filter(v => v.checked)
-  return []
-})
+const dateKey = computed(() => formatDate(selectedDate.value, 'yyyy-mm-dd'))
+const loadedDate = ref('')
+const dateLabel = computed(() => formatDate(selectedDate.value, 'm월 d일 (ddd)'))
+const verifiedCount = computed(() => rows.value.filter(r => r.verified).length)
 
-const pendingRecords = computed(() => records.value.filter(r => !r.verified))
-const checkedRecordCount = computed(() => pendingRecords.value.filter(r => r.checked).length)
-const checkedVerificationCount = computed(() => verifications.value.filter(v => v.checked).length)
-
-function toggleAllRecords() {
-  const allChecked = pendingRecords.value.every(r => r.checked)
-  pendingRecords.value.forEach(r => { r.checked = !allChecked })
+// 통계·1365와 같은 기준: '…코스'로 끝나면 급식
+function isFeeding(course) {
+  return course.endsWith('코스')
 }
 
-function toggleAllVerifications() {
-  const allChecked = verifications.value.every(v => v.checked)
-  verifications.value.forEach(v => { v.checked = !allChecked })
+function courseColor(course) {
+  return COURSES[parseInt(course)]?.color || '#94A3B8'
 }
 
-function dateStr(d) {
-  return formatDate(d, 'yyyy-mm-dd')
+function shortDate(date) {
+  return formatDate(new Date(date + 'T00:00:00'), 'm/d (ddd)')
 }
 
-onMounted(async () => {
-  try {
-    const res = await getLatestVerification()
-    if (res.data) latestDate.value = res.data.date
-  } catch (e) {}
-  await loadDate()
-})
+// Everyone verified in the course counts toward "2인 이상", plus the ones checked now
+function courseHeadcount(course) {
+  return rows.value.filter(r => r.course === course && (r.verified || r.checked)).length
+}
 
-watch(mode, () => {
-  if (mode.value === 'manual' && !manualItems.value.length) {
-    addManualItem()
+function previewScore(row) {
+  return calculateScore(loadedDate.value, row.course, courseHeadcount(row.course), boost.value)
+}
+
+const groups = computed(() => {
+  const byCourse = new Map()
+  for (const row of rows.value) {
+    if (!byCourse.has(row.course)) byCourse.set(row.course, [])
+    byCourse.get(row.course).push(row)
   }
-})
-
-async function onDateSelect() {
-  await loadDate()
-}
-
-async function loadDate() {
-  const d = dateStr(selectedDate.value)
-  recordsLoading.value = true
-  try {
-    const res = await getVerifications(d)
-    const verified = res.data.verifications || []
-    // 이미 인증된 신청은 다시 체크되지 않게 해서 같은 날 두 번 지급되는 것을 막는다
-    records.value = (res.data.records || []).map(r => {
-      const ver = verified.find(v => v.studentId === r.studentId && v.course === r.course)
-      return { ...r, verified: !!ver, score: ver?.score, checked: !ver, editing: false, replacement: null, saving: false }
+  return [...byCourse.entries()]
+    .sort(([a], [b]) => a.localeCompare(b, 'ko', { numeric: true }))
+    .map(([course, list]) => {
+      const verified = list.filter(r => r.verified).length
+      const parts = [`신청 ${list.length}명`]
+      if (verified) parts.push(`인증 ${verified}명`)
+      return { course, rows: list, pending: list.filter(r => !r.verified), summary: parts.join(' · ') }
     })
-    verifications.value = verified.map(v => ({ ...v, checked: false }))
-  } catch (e) {
-    records.value = []
-    verifications.value = []
-  } finally {
-    recordsLoading.value = false
-  }
+})
+
+const selectedRows = computed(() => rows.value.filter(r => !r.verified && r.checked))
+const selectedTotal = computed(() => selectedRows.value.reduce((sum, r) => sum + previewScore(r), 0))
+
+function marker(date) {
+  const key = `${date.year}-${String(date.month + 1).padStart(2, '0')}-${String(date.day).padStart(2, '0')}`
+  const s = summary.value[key]
+  if (!s) return null
+  if (s.verified >= s.records) return 'done'
+  return s.processed ? 'partial' : 'none'
 }
 
-function addManualItem() {
-  manualItems.value.push({ checked: true, member: null, reason: '', score: 1 })
-}
-
-function unifyReasons() {
-  if (!manualItems.value.length) return
-  const reason = manualItems.value[0].reason
-  manualItems.value.forEach(m => { m.reason = reason })
-}
-
-async function searchMember(event) {
-  if (!event.query || event.query.length < 1) {
-    memberSuggestions.value = []
-    return
-  }
+async function loadSummary() {
   try {
-    const res = await searchMembers(event.query)
-    memberSuggestions.value = (res.data || []).map(m => ({
-      ...m,
-      display: `${m.name} (${m.studentId})`,
-    }))
-  } catch (e) {
-    memberSuggestions.value = []
+    const res = await getMonthSummary(viewMonth.value)
+    summary.value = Object.fromEntries(res.data.map(d => [d.date, d]))
+  } catch {
+    summary.value = {}
   }
 }
 
-async function toggleFeederEdit(rec) {
-  rec.editing = !rec.editing
-  rec.replacement = null
-  if (rec.editing) {
-    await nextTick()
-    document.getElementById(`feeder-${rec.id}`)?.focus()
-  }
+function onMonthChange({ month, year }) {
+  viewMonth.value = `${year}-${String(month).padStart(2, '0')}`
+  loadSummary()
 }
 
-async function changeFeeder(rec, member) {
-  if (member.studentId === rec.studentId) {
-    rec.editing = false
-    return
+async function jumpTo(date) {
+  selectedDate.value = new Date(date + 'T00:00:00')
+  const month = date.slice(0, 7)
+  if (month !== viewMonth.value) {
+    viewMonth.value = month
+    loadSummary()
   }
-  rec.saving = true
+  await loadDate()
+}
+
+// rows belong to loadedDate, which lags dateKey while a request is in flight
+let loadSeq = 0
+async function loadDate() {
+  const mine = ++loadSeq
+  const date = dateKey.value
+  loading.value = true
   try {
-    const res = await changeRecordMember(rec.id, member.studentId)
-    const prev = { name: rec.name, studentId: rec.studentId }
-    rec.name = res.data.name
-    rec.studentId = res.data.studentId
-    rec.editing = false
-    if (res.data.verifications) {
-      verifications.value
-        .filter(v => v.studentId === prev.studentId && v.course === rec.course)
-        .forEach(v => { v.name = rec.name; v.studentId = rec.studentId })
+    const res = await getVerifications(date)
+    if (mine !== loadSeq) return
+    const records = res.data.records || []
+    const verified = res.data.verifications || []
+    const feeding = verified.filter(v => isFeeding(v.course))
+    const matches = (a, b) => a.studentId === b.studentId && a.course === b.course
+
+    const list = records.map(r => {
+      const ver = feeding.find(v => matches(v, r))
+      return {
+        key: `r${r.id}`, recordId: r.id, studentId: r.studentId, name: r.name, course: r.course,
+        verified: !!ver, score: ver?.score, checked: !ver,
+        editing: false, replacement: null, saving: false,
+      }
+    })
+    // Verified without a matching application (e.g. the application was deleted later)
+    for (const v of feeding) {
+      if (!records.some(r => matches(v, r))) {
+        list.push({ key: `v${v.id}`, recordId: null, studentId: v.studentId, name: v.name, course: v.course, verified: true, score: v.score, checked: false, saving: false })
+      }
     }
-    notify.success(`급식자 변경: ${prev.name} → ${rec.name}`, res.data.verifications ? '기존 인증 기록도 함께 변경되었습니다.' : undefined)
+    rows.value = list
+    extras.value = verified.filter(v => !isFeeding(v.course)).map(v => ({ ...v, key: `v${v.id}`, saving: false }))
+    loadedDate.value = date
   } catch (e) {
-    rec.replacement = null
-    notify.error(e, '급식자 변경 실패')
+    if (mine !== loadSeq) return
+    rows.value = []
+    extras.value = []
+    loadedDate.value = date
+    notify.error(e, '인증 기록을 불러오지 못했습니다.')
   } finally {
-    rec.saving = false
+    if (mine === loadSeq) loading.value = false
+  }
+}
+
+async function refreshAll() {
+  await Promise.all([loadDate(), loadSummary(), refreshStatus()])
+}
+
+onMounted(refreshAll)
+
+function toggleGroup(g) {
+  const all = g.pending.every(r => r.checked)
+  g.pending.forEach(r => { r.checked = !all })
+}
+
+async function submit() {
+  const items = selectedRows.value.map(r => ({
+    studentId: r.studentId,
+    date: loadedDate.value,
+    course: r.course,
+    score: previewScore(r),
+  }))
+  if (!items.length) return
+
+  submitting.value = true
+  try {
+    const res = await createVerifications(items)
+    notifyCreated(res.data)
+    await refreshAll()
+  } catch (e) {
+    notify.error(e, '인증 실패')
+  } finally {
+    submitting.value = false
   }
 }
 
 function notifyCreated({ inserted, skipped }) {
-  notify.success(`${inserted}건 인증 완료`)
+  notify.success(`${inserted}건 인증했습니다.`)
   if (skipped.length) {
     notify.warn(`${skipped.length}건은 이미 인증되어 건너뜀`, skipped.map(s => `${s.name} ${s.course}`).join(', '))
   }
 }
 
-async function submit() {
-  const d = dateStr(selectedDate.value)
+function onExtraGranted(result) {
+  notifyCreated(result)
+  refreshAll()
+}
 
-  if (mode.value === 'auto') {
-    const checked = records.value.filter(r => r.checked && !r.verified)
-    if (!checked.length) return
+async function cancelVerification(row) {
+  row.saving = true
+  try {
+    await deleteVerifications([{ studentId: row.studentId, date: loadedDate.value, course: row.course }])
+    notify.success(`${row.name} ${row.course} 인증을 취소했습니다.`)
+    await refreshAll()
+  } catch (e) {
+    row.saving = false
+    notify.error(e, '취소 실패')
+  }
+}
 
-    // Group by course to calculate dual/solo
-    const courseGroups = {}
-    checked.forEach(r => {
-      if (!courseGroups[r.course]) courseGroups[r.course] = []
-      courseGroups[r.course].push(r)
-    })
+async function searchMember(event) {
+  if (!event.query) {
+    memberSuggestions.value = []
+    return
+  }
+  try {
+    const res = await searchMembers(event.query)
+    memberSuggestions.value = (res.data || []).map(m => ({ ...m, display: `${m.name} (${m.studentId})` }))
+  } catch {
+    memberSuggestions.value = []
+  }
+}
 
-    const items = checked.map(r => ({
-      studentId: r.studentId,
-      date: d,
-      course: r.course,
-      score: calculateScore(d, r.course, courseGroups[r.course].length, boost.value),
-    }))
+async function toggleFeederEdit(row) {
+  row.editing = !row.editing
+  row.replacement = null
+  if (row.editing) {
+    await nextTick()
+    document.getElementById(`feeder-${row.key}`)?.focus()
+  }
+}
 
-    submitting.value = true
-    try {
-      const res = await createVerifications(items)
-      notifyCreated(res.data)
-      latestDate.value = d
-      await loadDate()
-    } catch (e) {
-      notify.error(e, '인증 실패')
-    } finally {
-      submitting.value = false
-    }
-  } else if (mode.value === 'manual') {
-    const valid = manualItems.value.filter(m => m.checked && m.member && m.score > 0)
-    if (!valid.length) return
-
-    const items = valid.map(m => ({
-      studentId: m.member.studentId,
-      date: d,
-      course: m.reason || '기타',
-      score: m.score,
-    }))
-
-    submitting.value = true
-    try {
-      const res = await createVerifications(items)
-      notifyCreated(res.data)
-      manualItems.value = [{ checked: true, member: null, reason: '', score: 1 }]
-    } catch (e) {
-      notify.error(e, '인증 실패')
-    } finally {
-      submitting.value = false
-    }
-  } else if (mode.value === 'delete') {
-    const checked = verifications.value.filter(v => v.checked)
-    if (!checked.length) return
-
-    const items = checked.map(v => ({
-      studentId: v.studentId,
-      date: d,
-      course: v.course,
-    }))
-
-    submitting.value = true
-    try {
-      await deleteVerifications(items)
-      notify.success(`${items.length}건 삭제 완료`)
-      await loadDate()
-    } catch (e) {
-      notify.error(e, '삭제 실패')
-    } finally {
-      submitting.value = false
-    }
+async function changeFeeder(row, member) {
+  if (member.studentId === row.studentId) {
+    row.editing = false
+    return
+  }
+  row.saving = true
+  try {
+    const res = await changeRecordMember(row.recordId, member.studentId)
+    const prev = row.name
+    row.name = res.data.name
+    row.studentId = res.data.studentId
+    row.editing = false
+    notify.success(`급식자 변경: ${prev} → ${row.name}`, res.data.verifications ? '기존 인증 기록도 함께 옮겼습니다.' : undefined)
+    if (res.data.verifications) await loadDate()
+  } catch (e) {
+    row.replacement = null
+    notify.error(e, '급식자 변경 실패')
+  } finally {
+    row.saving = false
   }
 }
 </script>
+
+<style scoped>
+.cal-cell {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+.cal-dot {
+  position: absolute;
+  bottom: 1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 5px;
+  height: 5px;
+  border-radius: 9999px;
+}
+.legend-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+}
+.cal-dot-none { background: #ef4444; }
+.cal-dot-partial { background: #f59e0b; }
+.cal-dot-done { background: #10b981; }
+.date-chip {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  color: #dc2626;
+  background: rgba(239, 68, 68, 0.1);
+  cursor: pointer;
+}
+.date-chip:hover {
+  background: rgba(239, 68, 68, 0.2);
+}
+.date-chip.active {
+  box-shadow: inset 0 0 0 1px #ef4444;
+}
+.p-dark .date-chip {
+  color: #fca5a5;
+  background: rgba(239, 68, 68, 0.18);
+}
+.action-bar {
+  background: linear-gradient(to top, var(--c-surface-muted) 75%, transparent);
+}
+.row-action {
+  width: 1.75rem;
+  height: 1.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.375rem;
+  color: var(--c-text-muted);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.row-action:hover {
+  background: var(--c-surface-dim);
+}
+.row-action:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+</style>

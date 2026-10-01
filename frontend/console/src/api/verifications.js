@@ -19,3 +19,7 @@ export function getLatestVerification() {
 export function getCertificateData(params) {
   return get('/verifications/1365-data', params)
 }
+
+export function getMonthSummary(month) {
+  return get('/verifications/summary', { month })
+}
