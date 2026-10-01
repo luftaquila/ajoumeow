@@ -8,7 +8,7 @@
         <div class="home-card-label"><span class="i-lucide-user-round-check"></span>가입 신청 대기</div>
         <div class="home-card-value" :class="{ 'text-red-500': pending.length }">{{ pending.length }}<span class="unit">건</span></div>
         <p class="home-card-sub">
-          <template v-if="pending.length">가장 오래된 신청 {{ ago(oldestPending) }}</template>
+          <template v-if="pending.length">가장 오래된 신청 {{ ago(formatLocal(oldestPending, 'yyyy-mm-dd')) }}</template>
           <template v-else>대기 중인 신청이 없습니다</template>
         </p>
       </router-link>
@@ -53,6 +53,7 @@ import { getApplications } from '../api/applications.js'
 import { getLatestVerification } from '../api/verifications.js'
 import { getMembers } from '../api/members.js'
 import { useStatus, UNVERIFIED_DAYS } from '../composables/useStatus.js'
+import { formatLocal } from '../../../shared/utils/dateFormat.js'
 
 const { semester, apply, register, unverifiedDates, refreshStatus } = useStatus()
 

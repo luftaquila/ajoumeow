@@ -13,7 +13,8 @@ export function useNotify() {
   }
 
   function error(e, fallback) {
-    toast.add({ severity: 'error', summary: e?.error?.message || fallback })
+    const message = e?.error?.message
+    toast.add({ severity: 'error', summary: message && message !== 'Network error' ? message : fallback })
   }
 
   return { success, warn, error }
