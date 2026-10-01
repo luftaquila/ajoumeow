@@ -5,6 +5,7 @@
     header="기타 인증"
     modal
     :closable="!submitting"
+    :closeOnEscape="!submitting"
     :style="{ width: '30rem' }"
     :breakpoints="{ '640px': '94vw' }"
   >

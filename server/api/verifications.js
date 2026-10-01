@@ -137,7 +137,7 @@ export default async function(fastify, opts) {
     }
   });
 
-  // 달력 표시용 월별 요약: 날짜마다 신청 수와 그중 인증된 수
+  // 달력 표시용 월별 요약: 날짜마다 신청 수, 그중 인증된 수, 인증이 하나도 없는 코스 수
   fastify.get('/summary', { preHandler: [util.isAdmin] }, async (request, reply) => {
     try {
       const month = String(request.query.month || '');
@@ -148,13 +148,13 @@ export default async function(fastify, opts) {
         SELECT r.date,
           COUNT(*) AS records,
           SUM(EXISTS (SELECT 1 FROM verifications v WHERE v.member_id = r.member_id AND v.date = r.date AND v.course = r.course)) AS verified,
-          EXISTS (SELECT 1 FROM verifications v WHERE v.date = r.date AND v.course LIKE '%코스') AS processed
+          COUNT(DISTINCT CASE WHEN NOT EXISTS (SELECT 1 FROM verifications v WHERE v.date = r.date AND v.course = r.course) THEN r.course END) AS pendingCourses
         FROM records r
         WHERE r.date LIKE ?
         GROUP BY r.date
         ORDER BY r.date
       `).all(`${month}-%`);
-      const result = rows.map(r => ({ date: r.date, records: r.records, verified: r.verified, processed: !!r.processed }));
+      const result = rows.map(r => ({ date: r.date, records: r.records, verified: r.verified, pendingCourses: r.pendingCourses }));
       util.logger(new Log('info', request.remoteIP, request.originalPath, '월별 인증 요약 요청', request.method, 200, request.query, null));
       return reply.code(200).send(success(result));
     }
@@ -164,7 +164,7 @@ export default async function(fastify, opts) {
     }
   });
 
-  // 최근 N일(어제까지) 중 신청은 있는데 급식 인증을 한 건도 하지 않은 날
+  // 최근 N일(어제까지) 중 신청은 있는데 인증이 하나도 없는 코스가 있는 날
   fastify.get('/unverified-dates', { preHandler: [util.isAdmin] }, async (request, reply) => {
     try {
       const days = Math.min(Math.max(parseInt(request.query.days) || 30, 1), 365);
@@ -175,7 +175,7 @@ export default async function(fastify, opts) {
         SELECT r.date, COUNT(*) AS records
         FROM records r
         WHERE r.date BETWEEN ? AND ?
-          AND NOT EXISTS (SELECT 1 FROM verifications v WHERE v.date = r.date AND v.course LIKE '%코스')
+          AND NOT EXISTS (SELECT 1 FROM verifications v WHERE v.date = r.date AND v.course = r.course)
         GROUP BY r.date
         ORDER BY r.date DESC
       `).all(from, to);

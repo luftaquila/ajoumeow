@@ -10,6 +10,7 @@
       <!-- Calendar + dates still to verify (sticky on desktop) -->
       <div class="lg:sticky lg:top-0 lg:self-start flex-shrink-0 flex flex-col gap-3 lg:w-80">
         <DatePicker
+          :key="pickerKey"
           v-model="selectedDate"
           inline
           dateFormat="yy-mm-dd"
@@ -76,6 +77,9 @@
               <span class="font-semibold text-sm">{{ g.course }}</span>
               <span class="text-xs text-text-muted">{{ g.summary }}</span>
             </div>
+            <p v-if="g.scoreMismatch" class="px-4 py-2 text-xs text-yellow-600 border-b border-surface-border/60">
+              이미 인증된 회원과 점수가 다릅니다. 같은 점수로 맞추려면 기존 인증을 삭제하고 함께 다시 인증하세요.
+            </p>
 
             <div
               v-for="row in g.rows"
@@ -207,6 +211,7 @@ const memberSuggestions = ref([])
 
 const dateKey = computed(() => formatDate(selectedDate.value, 'yyyy-mm-dd'))
 const loadedDate = ref('')
+const pickerKey = ref(0)
 const dateLabel = computed(() => formatDate(selectedDate.value, 'm월 d일 (ddd)'))
 const verifiedCount = computed(() => rows.value.filter(r => r.verified).length)
 
@@ -241,10 +246,13 @@ const groups = computed(() => {
   return [...byCourse.entries()]
     .sort(([a], [b]) => a.localeCompare(b, 'ko', { numeric: true }))
     .map(([course, list]) => {
-      const verified = list.filter(r => r.verified).length
+      const verifiedRows = list.filter(r => r.verified)
       const parts = [`신청 ${list.length}명`]
-      if (verified) parts.push(`인증 ${verified}명`)
-      return { course, rows: list, summary: parts.join(' · ') }
+      if (verifiedRows.length) parts.push(`인증 ${verifiedRows.length}명`)
+      // Verifying a course in two passes leaves the earlier ones at the rate they got then
+      const adding = list.find(r => !r.verified && r.checked)
+      const scoreMismatch = !!adding && verifiedRows.some(v => v.score !== previewScore(adding))
+      return { course, rows: list, summary: parts.join(' · '), scoreMismatch }
     })
 })
 
@@ -252,20 +260,25 @@ const pendingRows = computed(() => rows.value.filter(r => !r.verified))
 const selectedRows = computed(() => pendingRows.value.filter(r => r.checked))
 const selectedTotal = computed(() => selectedRows.value.reduce((sum, r) => sum + previewScore(r), 0))
 
+const todayKey = formatDate(new Date(), 'yyyy-mm-dd')
+
 function marker(date) {
   const key = `${date.year}-${String(date.month + 1).padStart(2, '0')}-${String(date.day).padStart(2, '0')}`
   const s = summary.value[key]
-  if (!s) return null
+  // Applications for days still ahead are not waiting for verification
+  if (!s || key > todayKey) return null
   if (s.verified >= s.records) return 'done'
-  return s.processed ? 'partial' : 'none'
+  return s.pendingCourses > 0 ? 'none' : 'partial'
 }
 
+let summarySeq = 0
 async function loadSummary() {
+  const mine = ++summarySeq
   try {
     const res = await getMonthSummary(viewMonth.value)
-    summary.value = Object.fromEntries(res.data.map(d => [d.date, d]))
+    if (mine === summarySeq) summary.value = Object.fromEntries(res.data.map(d => [d.date, d]))
   } catch {
-    summary.value = {}
+    if (mine === summarySeq) summary.value = {}
   }
 }
 
@@ -279,6 +292,7 @@ async function jumpTo(date) {
   const month = date.slice(0, 7)
   if (month !== viewMonth.value) {
     viewMonth.value = month
+    pickerKey.value++
     loadSummary()
   }
   await loadDate()
@@ -298,11 +312,14 @@ async function loadDate() {
     const feeding = verified.filter(v => isFeeding(v.course))
     const matches = (a, b) => a.studentId === b.studentId && a.course === b.course
 
+    // In a course that was already verified, the rest were left out on purpose (or their verification was
+    // deleted), so they start unchecked; a course nobody verified yet starts all checked as before
+    const verifiedCourses = new Set(feeding.map(v => v.course))
     const list = records.map(r => {
       const ver = feeding.find(v => matches(v, r))
       return {
         key: `r${r.id}`, recordId: r.id, studentId: r.studentId, name: r.name, course: r.course,
-        verified: !!ver, score: ver?.score, checked: !ver,
+        verified: !!ver, score: ver?.score, checked: !ver && !verifiedCourses.has(r.course),
         editing: false, replacement: null, saving: false,
       }
     })
