@@ -67,7 +67,7 @@
       </div>
       <p v-if="lookupError" class="text-red-500 text-xs mt-1" v-html="lookupError"></p>
       <div class="mt-3">
-        <Button label="뒤로" severity="secondary" size="small" text @click="step = 'choose'" />
+        <Button label="뒤로" severity="secondary" size="small" text @click="step = authStatus === 'admin' ? 'admin' : 'choose'" />
       </div>
     </div>
 
@@ -84,7 +84,7 @@
         </div>
         <div>
           <label class="block text-xs text-text-muted mb-1">단과대학 <span class="text-red-500">*</span></label>
-          <Select v-model="form.college" :options="collegeOptions" optionLabel="label" optionValue="value" placeholder="단과대학 선택" class="w-full" @change="form.department = ''" />
+          <Select :modelValue="form.college" @update:modelValue="setCollege" :options="collegeOptions" optionLabel="label" optionValue="value" placeholder="단과대학 선택" class="w-full" />
         </div>
         <div>
           <label class="block text-xs text-text-muted mb-1">학과 <span class="text-red-500">*</span></label>
@@ -136,7 +136,7 @@
         </div>
         <div>
           <label class="block text-xs text-text-muted mb-1">단과대학 <span class="text-red-500">*</span></label>
-          <Select v-model="form.college" :options="collegeOptions" optionLabel="label" optionValue="value" placeholder="단과대학 선택" class="w-full" @change="form.department = ''" />
+          <Select :modelValue="form.college" @update:modelValue="setCollege" :options="collegeOptions" optionLabel="label" optionValue="value" placeholder="단과대학 선택" class="w-full" />
         </div>
         <div>
           <label class="block text-xs text-text-muted mb-1">학과 <span class="text-red-500">*</span></label>
@@ -294,6 +294,13 @@ function loginAsAdmin() {
     Cookies.set('jwt', result.adminToken, { expires: 365 })
     if (result.semester) Cookies.set('currentSemester', result.semester, { expires: 365 })
   }
+}
+
+// Select emits a change even when the same college is picked again; only a different one clears the department
+function setCollege(value) {
+  if (value === form.value.college) return
+  form.value.college = value
+  form.value.department = ''
 }
 
 function startExisting(studentId = '') {
