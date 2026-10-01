@@ -11,68 +11,103 @@
         <Select
           v-model="selectedSemester"
           :options="semesterOptions"
-          optionLabel="label"
-          optionValue="value"
           placeholder="학기 선택"
-          class="w-40"
+          class="w-36"
           @change="loadApplications"
         />
-        <Select
+        <SelectButton
           v-model="selectedStatus"
           :options="statusOptions"
           optionLabel="label"
           optionValue="value"
-          class="w-28"
+          :allowEmpty="false"
+          size="small"
           @change="loadApplications"
         />
-        <span v-if="applications.length" class="text-xs text-text-muted bg-surface-dim px-2 py-1 rounded-full">
-          {{ applications.length }}건
-        </span>
+        <span class="text-xs text-text-muted">{{ applications.length }}건</span>
+      </template>
+      <template #right>
+        <template v-if="selected.length">
+          <Button :label="`선택 ${selected.length}건 승인`" icon="i-lucide-check" severity="success" size="small" :loading="busy" @click="confirmBulk('approve')" />
+          <Button :label="`거절`" severity="danger" size="small" outlined :disabled="busy" @click="confirmBulk('reject')" />
+        </template>
       </template>
     </ActionBar>
 
     <div class="card overflow-x-auto">
       <DataTable
+        v-model:selection="selected"
         :value="applications"
         :loading="loading"
+        dataKey="id"
         paginator
         :rows="20"
-        :rowsPerPageOptions="[10, 20, 50, 100]"
-        sortMode="multiple"
+        :rowsPerPageOptions="[20, 50, 100]"
+        :alwaysShowPaginator="false"
         removableSort
-        stripedRows
-        class="text-sm row-normal"
+        class="text-sm"
       >
-        <Column field="createdAt" header="신청일" sortable style="min-width: 11rem">
+        <template #empty>
+          <p class="text-center text-text-muted py-6">
+            {{ selectedStatus === 'pending' ? '승인을 기다리는 신청이 없습니다.' : '신청이 없습니다.' }}
+          </p>
+        </template>
+
+        <Column v-if="selectedStatus === 'pending'" selectionMode="multiple" style="width: 3rem" />
+        <Column field="createdAt" header="신청일" sortable style="min-width: 6rem">
           <template #body="{ data }">
-            <span class="text-xs">{{ formatLocal(data.createdAt) }}</span>
+            <span class="text-xs whitespace-nowrap" :title="formatLocal(data.createdAt)">{{ formatLocal(data.createdAt, 'mm-dd HH:MM') }}</span>
           </template>
         </Column>
-        <Column field="isNew" header="유형" sortable style="min-width: 5rem">
+        <Column field="name" header="신청자" sortable style="min-width: 9rem">
           <template #body="{ data }">
-            <Tag :value="data.isNew ? '신규' : '기존'" :severity="data.isNew ? 'info' : 'secondary'" />
+            <div class="flex items-center gap-2">
+              <span class="font-medium">{{ data.name }}</span>
+              <Tag :value="data.isNew ? '신규' : '기존'" :severity="data.isNew ? 'info' : 'secondary'" class="text-[11px]!" />
+            </div>
+            <div class="text-xs text-text-muted">{{ data.studentId }}</div>
           </template>
         </Column>
-        <Column field="studentId" header="학번" sortable style="min-width: 7rem" />
-        <Column field="name" header="이름" sortable style="min-width: 5rem" />
-        <Column field="college" header="단과대학" sortable style="min-width: 7rem" />
-        <Column field="department" header="학과" sortable style="min-width: 8rem" />
-        <Column field="phone" header="연락처" sortable style="min-width: 9rem" />
-        <Column field="googleEmail" header="Google" sortable style="min-width: 10rem">
+        <Column field="department" header="소속" sortable style="min-width: 9rem">
           <template #body="{ data }">
-            <span class="text-xs text-text-muted">{{ data.googleEmail }}</span>
+            <div>{{ data.department }}</div>
+            <div class="text-xs text-text-muted">{{ data.college }}</div>
           </template>
         </Column>
-        <Column field="status" header="상태" sortable style="min-width: 6rem">
+        <Column header="연락처" style="min-width: 9rem">
+          <template #body="{ data }">
+            <div class="whitespace-nowrap">{{ data.phone }}</div>
+            <div class="text-xs text-text-muted whitespace-nowrap">
+              {{ data.birthday || '생년월일 없음' }} ·
+              <span v-if="data.volunteerId">{{ data.volunteerId }}</span>
+              <span v-else class="text-amber-600" title="1365 ID가 없으면 활동확인서에서 빠집니다">1365 없음</span>
+            </div>
+          </template>
+        </Column>
+        <Column header="승인하면" style="min-width: 12rem">
+          <template #body="{ data }">
+            <span v-if="data.isNew" class="text-xs text-text-muted">새 회원으로 등록</span>
+            <span v-else-if="!data.current" class="text-xs text-red-500">기존 회원 기록 없음 (승인 불가)</span>
+            <div v-else-if="changes(data).length" class="text-xs flex flex-col gap-0.5">
+              <p v-for="c in changes(data)" :key="c.label">
+                <span class="text-text-muted">{{ c.label }}</span>
+                <span class="line-through text-text-muted mx-1 whitespace-nowrap">{{ c.from || '없음' }}</span>
+                <span class="whitespace-nowrap">→ <span class="font-medium">{{ c.to || '없음' }}</span></span>
+              </p>
+            </div>
+            <span v-else class="text-xs text-text-muted">정보 변경 없음</span>
+          </template>
+        </Column>
+        <Column v-if="selectedStatus !== 'pending'" field="status" header="상태" sortable style="min-width: 5rem">
           <template #body="{ data }">
             <Tag :value="statusLabel(data.status)" :severity="statusSeverity(data.status)" />
           </template>
         </Column>
-        <Column header="" style="min-width: 10rem">
+        <Column header="" style="width: 7rem">
           <template #body="{ data }">
-            <div v-if="data.status === 'pending'" class="flex gap-1">
-              <Button label="승인" severity="success" size="small" @click="confirmApprove(data)" />
-              <Button label="거절" severity="danger" size="small" outlined @click="confirmReject(data)" />
+            <div v-if="data.status === 'pending'" class="flex gap-0.5 justify-end whitespace-nowrap">
+              <Button label="승인" severity="success" size="small" :disabled="busy" @click="confirmOne(data, 'approve')" />
+              <Button label="거절" severity="secondary" size="small" text :disabled="busy" @click="confirmOne(data, 'reject')" />
             </div>
           </template>
         </Column>
@@ -85,11 +120,11 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useNotify } from '../composables/useNotify.js'
 import { useConfirm } from 'primevue/useconfirm'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Select from 'primevue/select'
+import SelectButton from 'primevue/selectbutton'
 import Button from 'primevue/button'
 import Tag from 'primevue/tag'
 import ConfirmDialog from 'primevue/confirmdialog'
@@ -97,6 +132,7 @@ import PageHeader from '../components/PageHeader.vue'
 import ActionBar from '../components/ActionBar.vue'
 import { getApplications, getApplicationSemesters, approveApplication, rejectApplication } from '../api/applications.js'
 import { useSemesters } from '../composables/useSemesters.js'
+import { useNotify } from '../composables/useNotify.js'
 import { useStatus } from '../composables/useStatus.js'
 import { formatLocal } from '../../../shared/utils/dateFormat.js'
 
@@ -106,50 +142,51 @@ const { currentSemester, loadSemesters } = useSemesters()
 const { refreshStatus } = useStatus()
 
 const selectedSemester = ref('')
-const selectedStatus = ref('all')
+const selectedStatus = ref('pending')
 const semesterOptions = ref([])
 const applications = ref([])
+const selected = ref([])
 const loading = ref(false)
+const busy = ref(false)
 
 const statusOptions = [
-  { label: '전체', value: 'all' },
   { label: '대기', value: 'pending' },
   { label: '승인', value: 'approved' },
   { label: '거절', value: 'rejected' },
+  { label: '전체', value: 'all' },
 ]
 
-function statusLabel(status) {
-  if (status === 'pending') return '대기'
-  if (status === 'approved') return '승인'
-  if (status === 'rejected') return '거절'
-  return status
+const STATUS = {
+  pending: ['대기', 'warn'],
+  approved: ['승인', 'success'],
+  rejected: ['거절', 'danger'],
 }
+const statusLabel = s => STATUS[s]?.[0] || s
+const statusSeverity = s => STATUS[s]?.[1] || 'secondary'
 
-function statusSeverity(status) {
-  if (status === 'pending') return 'warn'
-  if (status === 'approved') return 'success'
-  if (status === 'rejected') return 'danger'
-  return 'secondary'
+// Approving an existing member's application overwrites these fields (server: PUT /applications/:id/approve)
+const OVERWRITTEN = [
+  ['phone', '연락처'],
+  ['birthday', '생년월일'],
+  ['volunteerId', '1365 ID'],
+  ['googleEmail', 'Google'],
+]
+
+function changes(app) {
+  if (!app.current) return []
+  return OVERWRITTEN
+    .filter(([key]) => (app[key] || '') !== (app.current[key] || ''))
+    .map(([key, label]) => ({ label, from: app.current[key], to: app[key] }))
 }
 
 onMounted(async () => {
   try {
-    const [semRes] = await Promise.all([
-      getApplicationSemesters(),
-      loadSemesters(),
-    ])
-    const sorted = (semRes.data || []).sort((a, b) => b.localeCompare(a))
-    semesterOptions.value = sorted.map(s => ({ label: s, value: s }))
-
-    // Add current semester if not in list
-    if (currentSemester.value && !sorted.includes(currentSemester.value)) {
-      semesterOptions.value.unshift({ label: currentSemester.value, value: currentSemester.value })
-    }
-
-    if (semesterOptions.value.length) {
-      selectedSemester.value = currentSemester.value || semesterOptions.value[0].value
-      await loadApplications()
-    }
+    const [semRes] = await Promise.all([getApplicationSemesters(), loadSemesters()])
+    const names = new Set(semRes.data || [])
+    if (currentSemester.value) names.add(currentSemester.value)
+    semesterOptions.value = [...names].sort((a, b) => b.localeCompare(a))
+    selectedSemester.value = currentSemester.value || semesterOptions.value[0]
+    await loadApplications()
   } catch (e) {
     notify.error(e, '학기 목록 로드 실패')
   }
@@ -158,6 +195,7 @@ onMounted(async () => {
 async function loadApplications() {
   if (!selectedSemester.value) return
   loading.value = true
+  selected.value = []
   try {
     const res = await getApplications(selectedSemester.value, selectedStatus.value)
     applications.value = res.data
@@ -168,54 +206,57 @@ async function loadApplications() {
   }
 }
 
-function confirmApprove(app) {
+const ACTIONS = {
+  approve: { label: '승인', run: approveApplication },
+  reject: { label: '거절', run: rejectApplication },
+}
+
+function confirmOne(app, action) {
+  const { label } = ACTIONS[action]
+  const diff = action === 'approve' ? changes(app) : []
   confirm.require({
-    message: `${app.name} (${app.studentId})의 가입 신청을 승인하시겠습니까?`,
-    header: '가입 승인',
-    acceptLabel: '승인',
+    header: `가입 ${label}`,
+    message: `${app.name} (${app.studentId})의 신청을 ${label}할까요?`
+      + (diff.length ? `\n승인하면 ${diff.map(c => c.label).join(', ')}이(가) 신청서 내용으로 바뀝니다.` : ''),
+    acceptLabel: label,
     rejectLabel: '취소',
-    rejectProps: { severity: 'secondary' },
-    accept: () => doApprove(app),
+    acceptProps: { severity: action === 'approve' ? 'success' : 'danger' },
+    rejectProps: { severity: 'secondary', outlined: true },
+    accept: () => run(action, [app]),
   })
 }
 
-function confirmReject(app) {
+function confirmBulk(action) {
+  const { label } = ACTIONS[action]
+  const list = [...selected.value]
   confirm.require({
-    message: `${app.name} (${app.studentId})의 가입 신청을 거절하시겠습니까?`,
-    header: '가입 거절',
-    acceptLabel: '거절',
+    header: `선택한 신청 ${label}`,
+    message: `${list.length}건(${list.map(a => a.name).join(', ')})을 ${label}할까요?`,
+    acceptLabel: `${list.length}건 ${label}`,
     rejectLabel: '취소',
-    acceptClass: 'p-button-danger',
-    accept: () => doReject(app),
+    acceptProps: { severity: action === 'approve' ? 'success' : 'danger' },
+    rejectProps: { severity: 'secondary', outlined: true },
+    accept: () => run(action, list),
   })
 }
 
-async function doApprove(app) {
-  try {
-    await approveApplication(app.id)
-    notify.success(`${app.name}의 가입을 승인했습니다.`)
-    await loadApplications()
-    refreshStatus()
-  } catch (e) {
-    notify.error(e, '승인 실패')
+async function run(action, list) {
+  const { label, run: call } = ACTIONS[action]
+  busy.value = true
+  const failed = []
+  for (const app of list) {
+    try {
+      await call(app.id)
+    } catch (e) {
+      failed.push(`${app.name}: ${e.error?.message || '실패'}`)
+    }
   }
-}
+  busy.value = false
 
-async function doReject(app) {
-  try {
-    await rejectApplication(app.id)
-    notify.warn(`${app.name}의 가입을 거절했습니다.`)
-    await loadApplications()
-    refreshStatus()
-  } catch (e) {
-    notify.error(e, '거절 실패')
-  }
+  const done = list.length - failed.length
+  if (done) notify.success(`${done}건 ${label}했습니다.`)
+  if (failed.length) notify.error({ error: { message: `${failed.length}건 ${label} 실패 — ${failed.join(', ')}` } })
+  await loadApplications()
+  refreshStatus()
 }
 </script>
-
-<style scoped>
-:deep(.row-normal .p-datatable-tbody > tr > td) {
-  padding-top: 0.75rem;
-  padding-bottom: 0.75rem;
-}
-</style>

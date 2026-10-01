@@ -105,8 +105,8 @@ export default async function(fastify, opts) {
           }
 
           sqlite.prepare(`
-            INSERT INTO applications (google_id, google_email, google_name, student_id, name, college, department, phone, birthday, volunteer_id, is_new, semester_id, status, reviewed_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'approved', datetime('now'))
+            INSERT INTO applications (google_id, google_email, google_name, student_id, name, college, department, phone, birthday, volunteer_id, is_new, semester_id, status, reviewed_at, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'approved', datetime('now'), datetime('now'))
           `).run(googleId, googleEmail, googleName, String(studentId), name, college, department, phone, birthday || null, volunteerId || null, isNewBool ? 1 : 0, semester.id);
         });
         tx();
@@ -158,7 +158,13 @@ export default async function(fastify, opts) {
         semesterId = current.id;
       }
 
-      let query = `SELECT a.*, s.name AS semesterName FROM applications a JOIN semesters s ON a.semester_id = s.id WHERE a.semester_id = ?`;
+      // 기존 회원 신청은 승인 시 덮어쓸 현재 값을 같이 내려준다
+      let query = `SELECT a.*, s.name AS semesterName,
+          m.name AS m_name, m.phone AS m_phone, m.birthday AS m_birthday, m.volunteer_id AS m_volunteer_id, m.google_email AS m_google_email
+        FROM applications a
+        JOIN semesters s ON a.semester_id = s.id
+        LEFT JOIN members m ON m.student_id = a.student_id
+        WHERE a.semester_id = ?`;
       const params = [semesterId];
 
       if (status && status !== 'all') {
@@ -187,6 +193,13 @@ export default async function(fastify, opts) {
         semesterName: r.semesterName,
         reviewedAt: r.reviewed_at,
         createdAt: r.created_at,
+        current: r.is_new || !r.m_name ? null : {
+          name: r.m_name,
+          phone: r.m_phone,
+          birthday: r.m_birthday,
+          volunteerId: r.m_volunteer_id,
+          googleEmail: r.m_google_email,
+        },
       }));
 
       util.logger(new Log('info', request.remoteIP, request.originalPath, '가입 신청 목록', request.method, 200, request.query, `${result.length}건`));
