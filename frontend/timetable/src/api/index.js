@@ -40,14 +40,6 @@ export function deleteRecord(id) {
   })
 }
 
-export function login(studentId) {
-  return request(`${API_BASE}/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({ studentId }),
-  })
-}
-
 export function autoLogin() {
   return request(`${API_BASE}/auth/refresh`, {
     method: 'POST',
@@ -77,10 +69,6 @@ export function submitApplication(data) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   })
-}
-
-export function lookupMember(studentId) {
-  return request(`${API_BASE}/members/lookup/${studentId}`)
 }
 
 export function linkGoogleAccount(credential, studentId) {

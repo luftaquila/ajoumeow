@@ -65,30 +65,27 @@ export default async function(fastify, opts) {
       }
 
       const isNewBool = isNew === true || isNew === 'true';
+      const adminEmails = util.adminEmails();
 
-      // Auto-approve for officers already registered in current semester
-      const officerMember = sqlite.prepare(`SELECT id FROM members WHERE student_id = ?`).get(String(studentId));
-      if (officerMember) {
-        const sm = sqlite.prepare(`SELECT role FROM semester_members WHERE semester_id = ? AND member_id = ?`).get(semester.id, officerMember.id);
-        if (sm && sm.role !== '회원') {
-          const tx = sqlite.transaction(() => {
-            sqlite.prepare(`UPDATE members SET phone = ?, birthday = ?, volunteer_id = ?, google_id = ?, google_email = ? WHERE id = ?`)
-              .run(phone, birthday || null, volunteerId || null, googleId, googleEmail, officerMember.id);
+      const sameStudent = db.select({ id: members.id }).from(members).where(eq(members.studentId, String(studentId))).get();
+      // 이미 이번 학기 명단에 있는 회원이 구글 계정을 다시 연동하는 신청은 등록 기간과 무관하다
+      const onRoster = !isNewBool && sameStudent && sqlite.prepare(`SELECT 1 FROM semester_members WHERE semester_id = ? AND member_id = ?`)
+        .get(semester.id, sameStudent.id);
 
-            sqlite.prepare(`
-              INSERT INTO applications (google_id, google_email, google_name, student_id, name, college, department, phone, birthday, volunteer_id, is_new, semester_id, status, reviewed_at)
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'approved', datetime('now'))
-            `).run(googleId, googleEmail, googleName, String(studentId), name, college, department, phone, birthday || null, volunteerId || null, isNewBool ? 1 : 0, semester.id);
-          });
-          tx();
+      // 설정의 '회원 등록' 기간 (관리자 이메일은 언제든 가능)
+      if (!adminEmails.includes(googleEmail) && !onRoster && !util.isWindowOpen('isApply', 'applyTerm')) {
+        return reply.code(400).send(error('ERR_APPLY_CLOSED', '지금은 회원 등록 기간이 아닙니다.'));
+      }
 
-          util.logger(new Log('info', request.remoteIP, request.originalPath, '임원 자동 승인', request.method, 201, { googleEmail, studentId, name, role: sm.role }, 'auto-approved'));
-          return reply.code(201).send(success({ submitted: true, autoApproved: true }));
-        }
+      // 승인 단계에서 실패하지 않도록 신규/기존 여부를 학번과 맞춰 본다
+      if (isNewBool && sameStudent) {
+        return reply.code(400).send(error('ERR_REGISTERED_BEFORE', '이미 가입한 적이 있는 학번입니다. 기존 회원으로 신청해 주세요.'));
+      }
+      if (!isNewBool && !sameStudent) {
+        return reply.code(400).send(error('ERR_NEVER_REGISTERED', '기존 회원 기록이 없는 학번입니다. 신규 회원으로 신청해 주세요.'));
       }
 
       // Auto-approve for admin emails
-      const adminEmails = (process.env.ADMIN_EMAILS || '').split(',').map(s => s.trim()).filter(Boolean);
       if (adminEmails.includes(googleEmail)) {
         const tx = sqlite.transaction(() => {
           if (isNewBool) {
@@ -101,8 +98,8 @@ export default async function(fastify, opts) {
           } else {
             const existingMember = sqlite.prepare(`SELECT id FROM members WHERE student_id = ?`).get(String(studentId));
             if (!existingMember) throw new Error('기존 회원을 찾을 수 없습니다.');
-            sqlite.prepare(`UPDATE members SET phone = ?, birthday = ?, volunteer_id = ?, google_id = ?, google_email = ? WHERE id = ?`)
-              .run(phone, birthday || null, volunteerId || null, googleId, googleEmail, existingMember.id);
+            sqlite.prepare(`UPDATE members SET name = ?, college = ?, department = ?, phone = ?, birthday = ?, volunteer_id = ?, google_id = ?, google_email = ? WHERE id = ?`)
+              .run(name, college, department, phone, birthday || null, volunteerId || null, googleId, googleEmail, existingMember.id);
             sqlite.prepare(`INSERT INTO semester_members (semester_id, member_id, role) VALUES (?, ?, '관리자')`)
               .run(semester.id, existingMember.id);
           }
@@ -226,6 +223,10 @@ export default async function(fastify, opts) {
         return reply.code(400).send(error('ERR_ALREADY_REVIEWED', '이미 처리된 신청입니다.'));
       }
 
+      if (app.isNew && db.select({ id: members.id }).from(members).where(eq(members.studentId, app.studentId)).get()) {
+        return reply.code(400).send(error('ERR_REGISTERED_BEFORE', '이미 같은 학번의 회원이 있습니다. 기존 회원으로 다시 신청받아 주세요.'));
+      }
+
       const tx = sqlite.transaction(() => {
         if (app.isNew) {
           // New member: insert into members
@@ -244,12 +245,16 @@ export default async function(fastify, opts) {
             throw new Error('기존 회원을 찾을 수 없습니다.');
           }
 
-          sqlite.prepare(`UPDATE members SET phone = ?, birthday = ?, volunteer_id = ?, google_id = ?, google_email = ? WHERE id = ?`)
-            .run(app.phone, app.birthday, app.volunteerId, app.googleId, app.googleEmail, member.id);
+          sqlite.prepare(`UPDATE members SET name = ?, college = ?, department = ?, phone = ?, birthday = ?, volunteer_id = ?, google_id = ?, google_email = ? WHERE id = ?`)
+            .run(app.name, app.college, app.department, app.phone, app.birthday, app.volunteerId, app.googleId, app.googleEmail, member.id);
 
-          // Add semester membership
-          sqlite.prepare(`INSERT INTO semester_members (semester_id, member_id, role) VALUES (?, ?, '회원')`)
-            .run(app.semesterId, member.id);
+          // Add semester membership unless already on the roster (e.g. linking a new Google account)
+          const onRoster = sqlite.prepare(`SELECT 1 FROM semester_members WHERE semester_id = ? AND member_id = ?`)
+            .get(app.semesterId, member.id);
+          if (!onRoster) {
+            sqlite.prepare(`INSERT INTO semester_members (semester_id, member_id, role) VALUES (?, ?, '회원')`)
+              .run(app.semesterId, member.id);
+          }
         }
 
         // Update application status

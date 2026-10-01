@@ -7,7 +7,7 @@
 ## 아키텍처
 
 - **백엔드**: Fastify 5 (Node.js, native ESM)
-- **프론트엔드**: Vite MPA — Vue 3 SPA (timetable, dashboard, console, apply, register) + 레거시 페이지 (gallery)
+- **프론트엔드**: Vite MPA — Vue 3 SPA (timetable, dashboard, console, register) + 레거시 페이지 (gallery)
 - **DB**: SQLite (better-sqlite3 + Drizzle ORM)
 - **배포**: Docker multi-stage build, Traefik 리버스 프록시
 
@@ -16,7 +16,7 @@
 ```
 frontend/                   # 통합 Vite MPA 프로젝트
   package.json              # Vue + jQuery/Bootstrap 등 통합 의존성
-  vite.config.js            # MPA 설정 (14개 HTML entry)
+  vite.config.js            # MPA 설정 (13개 HTML entry)
   uno.config.js             # UnoCSS (Vue SPA들 공용)
   shared/                   # 앱 간 공유 코드
     api.js                  # fetch wrapper (request, get, post, put, del, postJSON, putJSON, authHeader)
@@ -37,9 +37,6 @@ frontend/                   # 통합 Vite MPA 프로젝트
       components/layout/    # AppLayout, AppSidebar, AppTopbar, SidebarItem
       pages/                # Verify, Settings, Members, Export1365, Applications, Recruit
       utils/                # scoreCalculator, contactExport
-  apply/                    # Vue 3 SPA (회원 등록)
-    index.html
-    src/                    # main.js, App.vue, components/, composables/
   register/                 # Vue 3 SPA (신입 모집)
     index.html
     src/                    # main.js, App.vue, components/, composables/
@@ -95,12 +92,12 @@ npm run build              # = cd frontend && vite build → server/dist/
 ## 프론트엔드 구조
 
 ### Vite MPA 설정
-- `vite.config.js`에 14개 HTML entry point 정의 (rollupOptions.input)
+- `vite.config.js`에 13개 HTML entry point 정의 (rollupOptions.input)
 - `build.target: 'esnext'` — 레거시 entry 파일의 top-level await 지원
 - `rollupOptions.external: /res/` — `/res/` 절대경로는 번들링하지 않음
 - `public/` 파일은 빌드 시 그대로 `dist/`로 복사
 
-### Vue 3 SPA 패턴 (timetable, dashboard, console, apply, register)
+### Vue 3 SPA 패턴 (timetable, dashboard, console, register)
 - 각 SPA는 `index.html` + `src/main.js` + `src/App.vue` 구조
 - `main.js`에서 Vue + PrimeVue(Aura 테마) + UnoCSS + ToastService 부트스트랩
 - `shared/api.js`의 `get()/post()/put()/del()/postJSON()/putJSON()` 헬퍼 사용 (JWT 자동 첨부)

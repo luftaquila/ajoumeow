@@ -53,6 +53,9 @@ export default async function(fastify, opts) {
   // Submit registration
   fastify.post('/', async (request, reply) => {
     try {
+      if (!util.isWindowOpen('isRegister', 'registerTerm')) {
+        return reply.code(400).send(error('ERR_REGISTER_CLOSED', '지금은 신입 모집 기간이 아닙니다.'));
+      }
       const semesterName = util.getSettings('currentSemester');
       let semester = db.select().from(semesters).where(eq(semesters.name, semesterName)).get();
 

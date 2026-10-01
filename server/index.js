@@ -74,6 +74,10 @@ await fastify.register(fastifyStatic, {
 
 // SPA fallback: serve index.html for unmatched SPA routes
 fastify.setNotFoundHandler(async (request, reply) => {
+  // The old /apply page was removed; sign-up happens in the timetable
+  if (request.url === '/apply' || request.url.startsWith('/apply/') || request.url.startsWith('/apply?')) {
+    return reply.redirect('/timetable');
+  }
   if (request.url.startsWith('/timetable')) {
     return reply.sendFile('timetable/index.html', distRoot);
   }

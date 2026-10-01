@@ -41,37 +41,6 @@ function getStatistics(memberId) {
 
 export default async function(fastify, opts) {
 
-  fastify.post('/login', async (request, reply) => {
-    try {
-      if(request.body.studentId) {
-        const result = getMemberInfo(request.body.studentId);
-        const semester = util.getSettings('currentSemester');
-
-        if(result) {
-          const tokenPayload = { id: request.body.studentId, memberId: result.memberId, role: result.role };
-          const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, { expiresIn: '365d' });
-          const statistics = getStatistics(result.memberId);
-          const user = { name: result.name, studentId: result.studentId, role: result.role, volunteerId: result.volunteerId, memberId: result.memberId };
-          util.logger(new Log('info', request.remoteIP, request.originalPath, '로그인 요청', request.method, 200, request.body, token));
-          return reply.code(200).send(success({ token, user, statistics, semester }));
-        }
-        else {
-          util.logger(new Log('info', request.remoteIP, request.originalPath, '로그인 요청', request.method, 400, request.body, 'ERR_NOT_REGISTERED'));
-          return reply.code(400).send(error('ERR_NOT_REGISTERED', '등록되지 않은 학번입니다.'));
-        }
-      }
-      else {
-        util.logger(new Log('info', request.remoteIP, request.originalPath, '로그인 요청', request.method, 400, request.body, 'ERR_INVALID_ID'));
-        return reply.code(400).send(error('ERR_INVALID_ID', '유효하지 않은 학번입니다.'));
-      }
-    }
-    catch(e) {
-      console.log(e);
-      util.logger(new Log('error', request.remoteIP, request.originalPath, '로그인 요청 오류', request.method, 500, request.body, e.stack));
-      return reply.code(500).send(error('ERR_UNKNOWN', '알 수 없는 오류입니다.'));
-    }
-  });
-
   fastify.post('/google', async (request, reply) => {
     try {
       const { credential } = request.body;
@@ -235,6 +204,13 @@ export default async function(fastify, opts) {
       const member = db.select().from(members).where(eq(members.studentId, String(studentId))).get();
       if (!member) {
         return reply.code(400).send(error('ERR_NOT_FOUND', '해당 학번의 회원을 찾을 수 없습니다.'));
+      }
+
+      // Knowing a student ID proves nothing, so linking straight away is only allowed for the account
+      // already linked to this Google login or for ADMIN_EMAILS; everyone else goes through an application
+      if (member.googleId !== googleId && !util.adminEmails().includes(googleEmail)) {
+        util.logger(new Log('info', request.remoteIP, request.originalPath, 'Google 계정 연동 거부', request.method, 403, { googleId, studentId }, 'ERR_LINK_NEEDS_APPROVAL'));
+        return reply.code(403).send(error('ERR_LINK_NEEDS_APPROVAL', '기존 회원 연동은 가입 신청으로 임원진 확인을 받아야 합니다.'));
       }
 
       // Link Google account
