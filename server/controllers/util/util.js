@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import { eq, and } from 'drizzle-orm';
 
 import { Log, error } from './interface.js';
-import { db } from '../../db/index.js';
+import { db, sqlite } from '../../db/index.js';
 import { members, semesters, semesterMembers, settings } from '../../db/schema.js';
 
 let util = {};
@@ -43,25 +43,26 @@ util.isAdmin = async function(request, reply) {
     reply.code(400).send(error('ERR_NO_TOKEN', '로그인 상태가 아닙니다.'));
     return reply;
   }
+  let decoded;
   try {
-    const decoded = await new Promise((resolve, reject) => {
+    decoded = await new Promise((resolve, reject) => {
       jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
         if (err) reject(err);
         else resolve(decoded);
       });
     });
-    if (util.currentRole(decoded) == '회원') {
-      util.logger(new Log('info', 'util', 'util.isAdmin', '관리자 확인', 'internal', 403, token, 'ERR_USER_NOT_ADMIN'));
-      reply.code(403).send(error('ERR_USER_NOT_ADMIN', '관리자가 아닙니다.'));
-      return reply;
-    }
-    request.decoded = decoded;
-    util.logger(new Log('info', 'util', 'util.isAdmin', '관리자 확인', 'internal', 0, token, request.decoded));
   } catch (err) {
     util.logger(new Log('info', 'util', 'util.isAdmin', '관리자 확인', 'internal', 401, token, 'ERR_INVALID_TOKEN'));
     reply.code(401).send(error('ERR_INVALID_TOKEN', '로그인이 만료되었습니다. 다시 로그인해 주세요.'));
     return reply;
   }
+  if (util.currentRole(decoded) == '회원') {
+    util.logger(new Log('info', 'util', 'util.isAdmin', '관리자 확인', 'internal', 403, token, 'ERR_USER_NOT_ADMIN'));
+    reply.code(403).send(error('ERR_USER_NOT_ADMIN', '관리자가 아닙니다.'));
+    return reply;
+  }
+  request.decoded = decoded;
+  util.logger(new Log('info', 'util', 'util.isAdmin', '관리자 확인', 'internal', 0, token, request.decoded));
 };
 
 // Intake window stored as settings `${prefix}`, `${prefix}Restricted` and a 'YYYY-MM-DD~YYYY-MM-DD' term;
@@ -92,7 +93,14 @@ util.currentRole = function(decoded) {
     .from(semesterMembers)
     .where(and(eq(semesterMembers.memberId, memberId), eq(semesterMembers.semesterId, semester.id)))
     .get();
-  return row ? row.role : '회원';
+  const role = row ? String(row.role).trim() : '';
+  return role && role !== '회원' ? role : '회원';
+};
+
+// Admins left in a semester other than `exceptMemberId` (members with a role other than '회원')
+util.countOtherAdmins = function(semesterId, exceptMemberId) {
+  return sqlite.prepare(`SELECT COUNT(*) AS n FROM semester_members WHERE semester_id = ? AND member_id != ? AND TRIM(role) NOT IN ('회원', '')`)
+    .get(semesterId, exceptMemberId).n;
 };
 
 util.optionalAuth = async function(request, reply) {

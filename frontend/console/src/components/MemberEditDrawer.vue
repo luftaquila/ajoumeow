@@ -16,7 +16,7 @@
       <div class="grid grid-cols-2 gap-3">
         <div class="field">
           <label for="m-college">단과대학</label>
-          <Select id="m-college" v-model="form.college" :options="collegeOptions" placeholder="선택" @change="form.department = null" fluid />
+          <Select id="m-college" :modelValue="form.college" @update:modelValue="setCollege" :options="collegeOptions" placeholder="선택" fluid />
         </div>
         <div class="field">
           <label for="m-dept">학과</label>
@@ -39,8 +39,8 @@
       </div>
 
       <div class="field">
-        <label for="m-vol">1365 아이디</label>
-        <InputText id="m-vol" v-model="form.volunteerId" placeholder="없으면 활동확인서에서 빠집니다" />
+        <label for="m-vol">1365 ID</label>
+        <InputText id="m-vol" v-model="form.volunteerId" />
       </div>
 
       <div class="field">
@@ -57,26 +57,13 @@
       </div>
 
       <div class="field">
-        <label>Google 계정</label>
-        <p class="text-sm">{{ member.googleEmail || '연동 안 됨' }}</p>
+        <label>Google</label>
+        <p class="text-sm">{{ member.googleEmail || '미연동' }}</p>
       </div>
 
       <div class="flex gap-2 pt-2">
         <Button type="submit" label="저장" :loading="saving" :disabled="!dirty || hasErrors" class="flex-1" />
         <Button type="button" label="닫기" severity="secondary" outlined @click="$emit('update:visible', false)" />
-      </div>
-
-      <div class="border-t border-surface-border pt-4 mt-2">
-        <Button
-          type="button"
-          :label="`${semester} 명단에서 제외`"
-          icon="i-lucide-user-minus"
-          severity="danger"
-          text
-          size="small"
-          @click="$emit('remove', member)"
-        />
-        <p class="hint">계정과 급식 기록은 남고, 이 학기 명단에서만 빠집니다.</p>
       </div>
     </form>
   </Drawer>
@@ -98,7 +85,7 @@ const props = defineProps({
   roles: { type: Array, default: () => [] },
   colleges: { type: Object, default: () => ({}) },
 })
-const emit = defineEmits(['update:visible', 'saved', 'remove'])
+const emit = defineEmits(['update:visible', 'saved'])
 
 const CUSTOM = '__custom__'
 // Same formats as the apply form (apply/src/components/*MemberForm.vue)
@@ -122,6 +109,13 @@ watch(() => [props.visible, props.member], () => {
   customRole.value = ''
 }, { immediate: true })
 
+// Select emits a change even when the same college is picked again; only a different one clears the department
+function setCollege(value) {
+  if (value === form.value.college) return
+  form.value.college = value
+  form.value.department = null
+}
+
 // Keep the member's current value selectable even if it's not in the college list any more
 function withCurrent(list, current) {
   return current && !list.includes(current) ? [current, ...list] : list
@@ -133,7 +127,7 @@ const departmentOptions = computed(() => {
 })
 
 const roleChoices = computed(() => {
-  const names = ['회원', ...props.roles.filter(r => r !== '회원')]
+  const names = [...new Set(['회원', '회장', ...props.roles.filter(r => r !== '회원')])]
   if (props.member && !names.includes(props.member.role)) names.push(props.member.role)
   return [
     ...names.map(r => ({ label: r, value: r, admin: r !== '회원' })),
@@ -182,11 +176,11 @@ async function save() {
   }
   try {
     await updateMember(props.member.studentId, data)
-    notify.success(`${data.name} 정보를 저장했습니다.`)
+    notify.success('수정되었습니다.')
     emit('saved', data)
     emit('update:visible', false)
   } catch (e) {
-    notify.error(e, '저장 실패')
+    notify.error(e, '수정 실패')
   } finally {
     saving.value = false
   }

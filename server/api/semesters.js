@@ -36,8 +36,9 @@ export default async function(fastify, opts) {
       // 대상 학기가 이미 존재하는지 확인
       const targetExists = db.select().from(semesters).where(eq(semesters.name, name)).get();
 
-      // 현재 학기 임원 조회
-      const executives = db.select({
+      // 현재 학기 명단 (임원만 새 학기로 넘어간다)
+      const roster = db.select({
+        memberId: semesterMembers.memberId,
         name: members.name,
         studentId: members.studentId,
         role: semesterMembers.role,
@@ -45,14 +46,21 @@ export default async function(fastify, opts) {
         .from(semesterMembers)
         .innerJoin(members, eq(semesterMembers.memberId, members.id))
         .where(eq(semesterMembers.semesterId, current.id))
-        .all()
-        .filter(r => r.role !== '회원');
+        .all();
+      const isOfficer = r => String(r.role).trim() !== '회원' && String(r.role).trim() !== '';
+      const executives = roster.filter(isOfficer).map(({ memberId, ...e }) => e);
+      // Regular members who will not be on the target roster (an existing target semester may already have them)
+      const targetIds = new Set(targetExists
+        ? db.select({ memberId: semesterMembers.memberId }).from(semesterMembers).where(eq(semesterMembers.semesterId, targetExists.id)).all().map(r => r.memberId)
+        : []);
+      const regularCount = roster.filter(r => !isOfficer(r) && !targetIds.has(r.memberId)).length;
 
       const result = {
         currentSemester: current.name,
         targetSemester: name,
         targetExists: !!targetExists,
         executives,
+        regularCount,
       };
 
       util.logger(new Log('info', request.remoteIP, request.originalPath, '학기 전환 미리보기', request.method, 200, request.query, result));
@@ -102,7 +110,7 @@ export default async function(fastify, opts) {
           .innerJoin(members, eq(semesterMembers.memberId, members.id))
           .where(eq(semesterMembers.semesterId, previous.id))
           .all()
-          .filter(r => r.role !== '회원');
+          .filter(r => String(r.role).trim() !== '회원' && String(r.role).trim() !== '');
 
         // 3. 임원을 새 학기에 복사
         for (const exec of executives) {

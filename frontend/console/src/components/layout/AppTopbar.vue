@@ -13,15 +13,15 @@
     <!-- Most console actions act on the current semester, so keep it in view -->
     <router-link
       v-if="semester"
-      to="/console/settings"
-      class="text-xs font-semibold px-2.5 py-1 rounded-full bg-surface-dim text-text-secondary hover:text-text"
-      title="현재 학기 (설정에서 전환)"
+      to="/console/semester"
+      class="text-xs font-semibold px-2.5 py-1 rounded-full bg-surface-dim text-text-secondary hover:text-text whitespace-nowrap"
+      title="현재 학기 (눌러서 학기 전환)"
     >{{ semester }}학기</router-link>
-    <span v-if="apply.open" class="status-pill" title="가입 신청을 받는 중">
-      <span class="dot"></span>가입 신청
+    <span v-if="apply.open" class="status-pill" title="회원 등록을 받는 중">
+      <span class="dot"></span>회원 등록 중
     </span>
-    <span v-if="register.open" class="status-pill" title="신입 모집 설문을 받는 중">
-      <span class="dot"></span>신입 모집
+    <span v-if="register.open" class="status-pill" title="신입 모집 중">
+      <span class="dot"></span>신입 모집 중
     </span>
 
     <button
@@ -47,6 +47,7 @@ const { semester, apply, register } = useStatus()
 <style scoped>
 .status-pill {
   display: inline-flex;
+  white-space: nowrap;
   align-items: center;
   gap: 0.375rem;
   font-size: 0.75rem;

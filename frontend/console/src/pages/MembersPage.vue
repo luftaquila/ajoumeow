@@ -1,7 +1,7 @@
 <template>
   <div>
     <PageHeader
-      title="회원 명단"
+      title="회원 관리"
       description="학기별 회원 명단입니다. 회원을 누르면 정보와 직책을 고칠 수 있고, '회원' 외의 직책은 모두 관리자 권한입니다."
       icon="i-lucide-users"
     />
@@ -15,6 +15,9 @@
           class="w-36"
           @change="loadMembers"
         />
+        <span v-if="members.length" class="text-xs text-text-muted bg-surface-dim px-2 py-1 rounded-full">
+          {{ filtered.length === members.length ? `${members.length}명` : `${filtered.length} / ${members.length}명` }}
+        </span>
         <IconField class="w-full sm:w-64">
           <InputIcon class="i-lucide-search" />
           <InputText v-model="query" placeholder="이름, 학번, 학과, 연락처" fluid />
@@ -30,14 +33,13 @@
         </div>
       </template>
       <template #right>
-        <span class="text-xs text-text-muted">{{ filtered.length === members.length ? `${members.length}명` : `${filtered.length} / ${members.length}명` }}</span>
-        <Button label="Excel" icon="i-lucide-download" size="small" severity="secondary" @click="downloadExcel" :disabled="!filtered.length" title="지금 보이는 목록을 내려받습니다" />
+        <Button label="Excel 다운로드" icon="i-lucide-download" size="small" severity="success" @click="downloadExcel" :disabled="!members.length" />
       </template>
     </ActionBar>
 
     <p v-if="selectedSemester && currentSemester && selectedSemester !== currentSemester" class="mb-3 text-xs text-amber-600 flex items-center gap-1">
       <span class="i-lucide-history"></span>
-      지난 학기({{ selectedSemester }}) 명단입니다. 직책 변경과 명단 제외는 이 학기에만 적용되고, 이름·연락처 등 개인 정보는 모든 학기에 공통입니다.
+      지난 학기({{ selectedSemester }}) 명단입니다. 직책 변경과 제명은 이 학기에만 적용되고, 이름·연락처 등 개인 정보는 모든 학기에 공통입니다.
     </p>
 
     <div class="card overflow-x-auto">
@@ -46,54 +48,36 @@
         :loading="loading"
         dataKey="studentId"
         paginator
-        :rows="50"
-        :rowsPerPageOptions="[20, 50, 100]"
-        :alwaysShowPaginator="false"
+        :rows="20"
+        :rowsPerPageOptions="[10, 20, 50, 100]"
+        sortMode="multiple"
         removableSort
+        stripedRows
         rowHover
         class="text-sm member-table"
         @row-click="openEditor($event.data)"
       >
-        <template #empty>
-          <p class="text-center text-text-muted py-6">{{ members.length ? '조건에 맞는 회원이 없습니다.' : '명단이 비어 있습니다.' }}</p>
-        </template>
-        <Column field="name" header="이름" sortable style="min-width: 8rem">
-          <template #body="{ data }">
-            <div class="font-medium">{{ data.name }}</div>
-            <div class="text-xs text-text-muted">{{ data.studentId }}</div>
-          </template>
-        </Column>
-        <Column field="role" header="직책" sortable style="min-width: 5rem">
-          <template #body="{ data }">
-            <Tag v-if="data.role !== '회원'" :value="data.role" severity="info" class="whitespace-nowrap" />
-            <span v-else class="text-text-muted">회원</span>
-          </template>
-        </Column>
-        <Column field="department" header="소속" sortable style="min-width: 9rem">
-          <template #body="{ data }">
-            <div>{{ data.department }}</div>
-            <div class="text-xs text-text-muted">{{ data.college }}</div>
-          </template>
-        </Column>
-        <Column field="phone" header="연락처" style="min-width: 8.5rem">
-          <template #body="{ data }"><span class="whitespace-nowrap">{{ data.phone }}</span></template>
-        </Column>
-        <Column field="birthday" header="생년월일" headerClass="hidden md:table-cell" bodyClass="hidden md:table-cell" />
-        <Column field="volunteerId" header="1365 ID" style="min-width: 6rem">
-          <template #body="{ data }">
-            <span v-if="data.volunteerId">{{ data.volunteerId }}</span>
-            <span v-else class="text-xs text-amber-600">없음</span>
-          </template>
-        </Column>
-        <Column field="googleEmail" header="Google" headerClass="hidden lg:table-cell" bodyClass="hidden lg:table-cell">
+        <Column field="college" header="단과대학" sortable style="min-width: 10rem" />
+        <Column field="department" header="학과" sortable style="min-width: 10rem" />
+        <Column field="studentId" header="학번" sortable style="min-width: 7rem" />
+        <Column field="name" header="이름" sortable style="min-width: 6rem" />
+        <Column field="phone" header="연락처" sortable style="min-width: 9rem" />
+        <Column field="birthday" header="생년월일" sortable style="min-width: 7rem" />
+        <Column field="volunteerId" header="1365 ID" sortable style="min-width: 7rem" />
+        <Column field="googleEmail" header="Google" sortable style="min-width: 7rem">
           <template #body="{ data }">
             <span v-if="data.googleEmail" class="text-xs" :title="data.googleEmail">{{ data.googleEmail.split('@')[0] }}</span>
             <span v-else class="text-xs text-text-muted">미연동</span>
           </template>
         </Column>
-        <Column field="enrolledSemester" header="가입학기" sortable headerClass="hidden lg:table-cell" bodyClass="hidden lg:table-cell" />
-        <Column style="width: 2.5rem">
-          <template #body><span class="i-lucide-chevron-right text-text-muted"></span></template>
+        <Column field="enrolledSemester" header="가입학기" sortable style="min-width: 7rem" />
+        <Column field="role" header="직책" sortable style="min-width: 6rem" />
+        <Column header="" style="min-width: 3rem">
+          <template #body="{ data }">
+            <button @click.stop="confirmRemove(data)" class="text-text-muted hover:text-red-500 cursor-pointer" title="제명">
+              <span class="i-lucide-trash-2 text-base"></span>
+            </button>
+          </template>
         </Column>
       </DataTable>
     </div>
@@ -105,7 +89,6 @@
       :roles="roles"
       :colleges="colleges"
       @saved="onSaved"
-      @remove="confirmRemove"
     />
     <ConfirmDialog />
   </div>
@@ -121,7 +104,6 @@ import InputText from 'primevue/inputtext'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
 import Button from 'primevue/button'
-import Tag from 'primevue/tag'
 import ConfirmDialog from 'primevue/confirmdialog'
 import PageHeader from '../components/PageHeader.vue'
 import ActionBar from '../components/ActionBar.vue'
@@ -148,7 +130,7 @@ const editorVisible = ref(false)
 const FILTERS = [
   { key: 'officer', label: '임원', test: m => m.role !== '회원' },
   { key: 'noVolunteerId', label: '1365 ID 없음', test: m => !m.volunteerId },
-  { key: 'noGoogle', label: '구글 미연동', test: m => !m.googleEmail },
+  { key: 'noGoogle', label: 'Google 미연동', test: m => !m.googleEmail },
 ]
 
 const counts = computed(() => Object.fromEntries(FILTERS.map(f => [f.key, members.value.filter(f.test).length])))
@@ -206,10 +188,10 @@ function onSaved(data) {
 
 function confirmRemove(row) {
   confirm.require({
-    header: '명단에서 제외',
-    message: `${row.name} (${row.studentId}) 회원을 ${selectedSemester.value} 명단에서 제외할까요?\n계정과 급식 기록은 남습니다.`,
+    header: '회원 제명',
+    message: `${row.name} (${row.studentId}) 회원을 ${selectedSemester.value} 학기에서 제명하시겠습니까?`,
     icon: 'i-lucide-triangle-alert',
-    acceptLabel: '제외',
+    acceptLabel: '제명',
     rejectLabel: '취소',
     acceptProps: { severity: 'danger' },
     rejectProps: { severity: 'secondary', outlined: true },
@@ -217,10 +199,9 @@ function confirmRemove(row) {
       try {
         await deleteMember(row.studentId, selectedSemester.value)
         members.value = members.value.filter(m => m.studentId !== row.studentId)
-        editorVisible.value = false
-        notify.success(`${row.name}을(를) 명단에서 제외했습니다.`)
+        notify.success('제명되었습니다.')
       } catch (e) {
-        notify.error(e, '제외 실패')
+        notify.error(e, '제명 실패')
       }
     },
   })
@@ -228,7 +209,7 @@ function confirmRemove(row) {
 
 function downloadExcel() {
   import('xlsx').then(XLSX => {
-    const data = filtered.value.map(m => ({
+    const data = members.value.map(m => ({
       '단과대학': m.college,
       '학과': m.department,
       '학번': m.studentId,

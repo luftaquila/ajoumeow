@@ -1,7 +1,7 @@
 <template>
   <router-link
     :to="to"
-    class="flex items-center gap-3 px-3 py-2 mx-2 rounded-lg text-sm transition-colors"
+    class="flex items-center gap-3 px-5 py-2.5 mx-2 rounded-lg text-sm transition-colors"
     :class="isActive
       ? 'bg-primary/10 text-primary font-medium'
       : 'text-text-secondary hover:bg-surface-dim hover:text-text'"

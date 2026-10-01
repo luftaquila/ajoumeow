@@ -2,20 +2,21 @@
   <Dialog
     :visible="visible"
     @update:visible="$emit('update:visible', $event)"
-    header="기타 활동 지급"
+    header="기타 인증"
     modal
     :closable="!submitting"
+    :closeOnEscape="!submitting"
     :style="{ width: '30rem' }"
     :breakpoints="{ '640px': '94vw' }"
   >
     <div class="flex flex-col gap-4">
       <p class="text-xs text-text-muted">
-        {{ date }} 기록으로 지급합니다. 기타 활동은 1365 활동확인서와 급식 마일리지 집계에서 빠집니다.
+        {{ date }} 기록으로 인증합니다. 기타 인증 활동은 1365 봉사활동 확인서 및 급식 마일리지 종합에서 제외됩니다.
       </p>
 
       <div class="flex flex-col gap-1">
-        <label for="extra-reason" class="text-sm font-medium text-text-secondary">사유</label>
-        <InputText id="extra-reason" v-model="reason" placeholder="예: 동아리박람회 부스 운영" :invalid="!!reasonError" />
+        <label for="extra-reason" class="text-sm font-medium text-text-secondary">지급 사유</label>
+        <InputText id="extra-reason" v-model="reason" :invalid="!!reasonError" />
         <p v-if="reasonError" class="text-xs text-red-500">{{ reasonError }}</p>
       </div>
 
@@ -36,7 +37,7 @@
           :suggestions="suggestions"
           @complete="search"
           optionLabel="display"
-          placeholder="이름 또는 학번"
+          placeholder="회원 검색"
           fluid
         />
       </div>
@@ -45,7 +46,7 @@
     <template #footer>
       <Button label="취소" severity="secondary" size="small" :disabled="submitting" @click="$emit('update:visible', false)" />
       <Button
-        :label="selected.length ? `${selected.length}명에게 ${score}점 지급` : '지급'"
+        :label="selected.length ? `${selected.length}명 인증` : '인증'"
         size="small"
         :loading="submitting"
         :disabled="!canSubmit"
@@ -73,7 +74,7 @@ const props = defineProps({
 })
 const emit = defineEmits(['update:visible', 'granted'])
 
-const SCORE_PRESETS = [0.5, 1, 1.5, 2, 3]
+const SCORE_PRESETS = [0.5, 1, 1.5, 2]
 
 const notify = useNotify()
 const reason = ref('')
@@ -124,7 +125,7 @@ async function submit() {
     emit('granted', res.data)
     emit('update:visible', false)
   } catch (e) {
-    notify.error(e, '지급 실패')
+    notify.error(e, '인증 실패')
   } finally {
     submitting.value = false
   }

@@ -1,19 +1,20 @@
 import { useToast } from 'primevue/usetoast'
 
-// Success and warnings fade out; errors stay until closed so they aren't missed.
+// Errors stay until closed so they aren't missed.
 export function useNotify() {
   const toast = useToast()
 
   function success(summary, detail) {
-    toast.add({ severity: 'success', summary, detail, life: 2500 })
+    toast.add({ severity: 'success', summary, detail, life: 2000 })
   }
 
   function warn(summary, detail) {
-    toast.add({ severity: 'warn', summary, detail, life: 5000 })
+    toast.add({ severity: 'warn', summary, detail, life: 3000 })
   }
 
   function error(e, fallback) {
-    toast.add({ severity: 'error', summary: e?.error?.message || fallback })
+    const message = e?.error?.message
+    toast.add({ severity: 'error', summary: message && message !== 'Network error' ? message : fallback })
   }
 
   return { success, warn, error }

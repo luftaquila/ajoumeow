@@ -5,20 +5,20 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <!-- Pending applications -->
       <router-link to="/console/applications" class="home-card">
-        <div class="home-card-label"><span class="i-lucide-user-round-check"></span>가입 승인 대기</div>
+        <div class="home-card-label"><span class="i-lucide-user-round-check"></span>가입 신청 대기</div>
         <div class="home-card-value" :class="{ 'text-red-500': pending.length }">{{ pending.length }}<span class="unit">건</span></div>
         <p class="home-card-sub">
-          <template v-if="pending.length">가장 오래된 신청 {{ ago(oldestPending) }}</template>
+          <template v-if="pending.length">가장 오래된 신청 {{ ago(formatLocal(oldestPending, 'yyyy-mm-dd')) }}</template>
           <template v-else>대기 중인 신청이 없습니다</template>
         </p>
       </router-link>
 
       <!-- Verification -->
       <router-link to="/console/verify" class="home-card">
-        <div class="home-card-label"><span class="i-lucide-calendar-check"></span>인증하지 않은 급식일 (최근 {{ UNVERIFIED_DAYS }}일)</div>
+        <div class="home-card-label"><span class="i-lucide-calendar-check"></span>미인증 급식일</div>
         <div class="home-card-value" :class="{ 'text-red-500': unverifiedDates.length }">{{ unverifiedDates.length }}<span class="unit">일</span></div>
         <p class="home-card-sub">
-          마지막 인증 {{ latestDate ? `${latestDate} (${ago(latestDate)})` : '없음' }}
+          최근 {{ UNVERIFIED_DAYS }}일 · 마지막 인증 {{ latestDate ? `${latestDate} (${ago(latestDate)})` : '없음' }}
         </p>
       </router-link>
 
@@ -30,8 +30,8 @@
       </router-link>
 
       <!-- Intake windows -->
-      <router-link to="/console/settings" class="home-card">
-        <div class="home-card-label"><span class="i-lucide-calendar-clock"></span>신청 받기</div>
+      <router-link to="/console/settings" class="home-card" title="설정에서 바꾸기">
+        <div class="home-card-label"><span class="i-lucide-calendar-clock"></span>신청 기간</div>
         <div class="flex flex-col gap-2 mt-1">
           <div v-for="w in windows" :key="w.label" class="flex items-center justify-between gap-3 text-sm">
             <span class="font-medium">{{ w.label }}</span>
@@ -53,6 +53,7 @@ import { getApplications } from '../api/applications.js'
 import { getLatestVerification } from '../api/verifications.js'
 import { getMembers } from '../api/members.js'
 import { useStatus, UNVERIFIED_DAYS } from '../composables/useStatus.js'
+import { formatLocal } from '../../../shared/utils/dateFormat.js'
 
 const { semester, apply, register, unverifiedDates, refreshStatus } = useStatus()
 
@@ -64,8 +65,8 @@ const oldestPending = computed(() => pending.value.map(a => a.createdAt).sort()[
 const memberCount = computed(() => members.value.length)
 const officerCount = computed(() => members.value.filter(m => m.role !== '회원').length)
 const windows = computed(() => [
-  { label: '가입 신청', state: apply.value },
-  { label: '신입 모집 설문', state: register.value },
+  { label: '회원 등록', state: apply.value },
+  { label: '신입 모집', state: register.value },
 ])
 
 function ago(dateStr) {
