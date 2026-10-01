@@ -6,14 +6,19 @@
       icon="i-lucide-settings"
     />
 
-    <div v-if="!draft" class="text-center py-12">
+    <div v-if="loadFailed" class="card-section text-center text-sm">
+      <p class="mb-3">설정을 불러오지 못했습니다.</p>
+      <Button label="다시 시도" size="small" severity="secondary" @click="load" />
+    </div>
+
+    <div v-else-if="!draft" class="text-center py-12">
       <div class="i-lucide-loader-circle text-3xl text-primary animate-spin mx-auto"></div>
     </div>
 
     <Tabs v-else v-model:value="tab">
       <TabList>
         <Tab v-for="t in TABS" :key="t.value" :value="t.value">
-          {{ t.label }}<span v-if="dirtyTabs.has(t.value)" class="dirty-dot" title="저장하지 않은 변경"></span>
+          {{ t.label }}<span v-if="errorTabs.has(t.value)" class="dirty-dot error" title="고쳐야 저장할 수 있는 항목"></span><span v-else-if="dirtyTabs.has(t.value)" class="dirty-dot" title="저장하지 않은 변경"></span>
         </Tab>
       </TabList>
       <TabPanels class="px-0!">
@@ -120,6 +125,7 @@
                 </AccordionPanel>
               </Accordion>
             </div>
+            <p v-else class="text-sm text-text-muted">급식소 위치를 불러오지 못했습니다.</p>
           </section>
         </TabPanel>
 
@@ -127,6 +133,8 @@
         <TabPanel value="data" class="flex flex-col gap-5">
           <section class="card-section">
             <h2 class="section-title mb-4"><span class="i-lucide-school"></span>단과대 / 학과</h2>
+            <p v-if="!draft.college" class="text-sm text-text-muted">단과대/학과 목록을 불러오지 못했습니다.</p>
+            <template v-else>
             <Accordion multiple>
               <AccordionPanel v-for="(depts, college) in draft.college" :key="college" :value="college">
                 <AccordionHeader>
@@ -152,6 +160,7 @@
               <InputText v-model="newCollegeName" placeholder="새 단과대 이름" size="small" class="w-2/3" @keydown.enter.prevent="addCollege" />
               <Button label="추가" icon="i-lucide-plus" size="small" severity="secondary" @click="addCollege" />
             </div>
+            </template>
           </section>
         </TabPanel>
       </TabPanels>
@@ -278,15 +287,19 @@ function parseVolunteerHours(value) {
   return null
 }
 
-onMounted(async () => {
-  window.addEventListener('beforeunload', onBeforeUnload)
+const loadFailed = ref(false)
+
+// Settings and the two data documents load separately: missing college/map data (404) only disables
+// that editor, and a failed settings request offers a retry instead of an endless spinner
+async function load() {
+  loadFailed.value = false
   try {
     const keys = ['isApply', 'isApplyRestricted', 'applyTerm', 'isRegister', 'isRegisterRestricted', 'registerTerm',
       'notice', 'maxFeedingUserCount', 'volunteerHours']
     const [values, college, map] = await Promise.all([
       Promise.all(keys.map(k => getSetting(k).then(r => r.data))),
-      getData('college'),
-      getData('map'),
+      getData('college').catch(() => null),
+      getData('map').catch(() => null),
     ])
     const v = Object.fromEntries(keys.map((k, i) => [k, values[i]]))
 
@@ -309,23 +322,34 @@ onMounted(async () => {
     original.value = state
     draft.value = cloneState(state)
   } catch (e) {
+    loadFailed.value = true
     notify.error(e, '설정을 불러오지 못했습니다.')
   }
+}
+
+onMounted(() => {
+  window.addEventListener('beforeunload', onBeforeUnload)
+  load()
 })
 
 onBeforeUnmount(() => window.removeEventListener('beforeunload', onBeforeUnload))
 
 const dirtyKeys = computed(() => {
   if (!draft.value) return []
+  const d = draft.value
   return Object.entries(KEYS)
-    .filter(([k, { serialize }]) => serialize(draft.value[k]) !== serialize(original.value[k]))
+    .filter(([k, { serialize }]) => {
+      const w = WINDOWS.find(w => w.termKey === k)
+      if (w && !(d[k]?.[0] && d[k]?.[1]) && !(d[w.key] && d[w.restrictKey])) return false
+      return serialize(d[k]) !== serialize(original.value[k])
+    })
     .map(([k]) => k)
 })
 const dirtyTabs = computed(() => new Set(dirtyKeys.value.map(k => KEYS[k].tab)))
 
 const LATLNG_RE = /^-?\d{1,3}(\.\d+)?$/
 
-const errors = computed(() => {
+const allErrors = computed(() => {
   const e = {}
   const d = draft.value
   if (!d) return e
@@ -352,7 +376,18 @@ const errors = computed(() => {
   }
   return e
 })
+// Setting keys an error belongs to
+function errorOwners(errorKey) {
+  if (errorKey.startsWith('map.')) return ['map']
+  if (errorKey.startsWith('college.')) return ['college']
+  const w = WINDOWS.find(w => w.termKey === errorKey)
+  return w ? [w.key, w.restrictKey, w.termKey] : [errorKey]
+}
+const errors = computed(() => Object.fromEntries(
+  Object.entries(allErrors.value).filter(([k]) => errorOwners(k).some(o => dirtyKeys.value.includes(o))),
+))
 const errorCount = computed(() => Object.keys(errors.value).length)
+const errorTabs = computed(() => new Set(Object.keys(errors.value).map(k => KEYS[errorOwners(k)[0]].tab)))
 
 const mapCourseKeys = computed(() => (draft.value?.map ? Object.keys(draft.value.map).filter(k => k !== 'home') : []))
 
@@ -384,10 +419,19 @@ async function saveKey(key, value) {
   }
 }
 
+function saveOrder(keys) {
+  const ordered = []
+  for (const w of WINDOWS) {
+    const group = [w.termKey, w.restrictKey, w.key].filter(k => keys.includes(k))
+    ordered.push(...(draft.value[w.key] ? group : group.reverse()))
+  }
+  return [...ordered, ...keys.filter(k => !ordered.includes(k))]
+}
+
 async function save() {
   if (errorCount.value) return
   saving.value = true
-  const keys = [...dirtyKeys.value]
+  const keys = saveOrder(dirtyKeys.value)
   let saved = 0
   try {
     for (const key of keys) {
@@ -484,6 +528,9 @@ onBeforeRouteLeave(() => {
 .field-error {
   font-size: 0.75rem;
   color: #ef4444;
+}
+.dirty-dot.error {
+  background: #ef4444;
 }
 .dirty-dot {
   display: inline-block;
