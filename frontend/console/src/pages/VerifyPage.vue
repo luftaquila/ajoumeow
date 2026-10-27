@@ -94,7 +94,7 @@
                   v-model="row.replacement"
                   :inputId="`feeder-${row.key}`"
                   :suggestions="memberSuggestions"
-                  @complete="searchMember"
+                  @complete="searchMember($event, row)"
                   @option-select="changeFeeder(row, $event.value)"
                   optionLabel="display"
                   :placeholder="`${row.name} 대신 급식한 회원`"
@@ -123,6 +123,7 @@
                 v-if="row.added"
                 class="row-action hover:text-red-500"
                 title="추가 취소"
+                :disabled="submitting"
                 @click="removeAdded(row)"
               ><span class="i-lucide-x"></span></button>
               <button
@@ -163,7 +164,7 @@
         <div class="action-bar sticky bottom-0 mt-4 -mx-1 px-1 pb-1 pt-3">
           <div class="card flex items-center gap-3 px-4 py-3 flex-wrap">
             <Button label="기타 인증" icon="i-lucide-plus" severity="secondary" size="small" text @click="showExtra = true" />
-            <Button label="급식 인원 추가" icon="i-lucide-user-plus" severity="secondary" size="small" text :disabled="loading || submitting" @click="showAddFeeder = true" />
+            <Button label="급식 인원 추가" icon="i-lucide-user-plus" severity="secondary" size="small" text :disabled="loading || submitting || loadFailed" @click="showAddFeeder = true" />
             <!-- ml-auto keeps 인증 on the right when the bar wraps on narrow screens -->
             <div class="flex items-center gap-3 ml-auto">
               <span v-if="selectedRows.length" class="text-sm text-text-secondary tabular-nums">{{ selectedRows.length }}명 · 합계 {{ selectedTotal }}점</span>
@@ -215,6 +216,8 @@ const summary = ref({})
 const rows = ref([])
 const extras = ref([])
 const loading = ref(false)
+// Adding feeders against rows that failed to load would score them without the course's other feeders
+const loadFailed = ref(false)
 const submitting = ref(false)
 const boost = ref(false)
 const showExtra = ref(false)
@@ -347,14 +350,23 @@ async function loadDate() {
         list.push({ key: `v${v.id}`, recordId: null, studentId: v.studentId, name: v.name, course: v.course, verified: true, score: v.score, checked: false, saving: false })
       }
     }
+    // Added feeders exist only here until they are verified, so reloading the same date
+    // (after 인증 삭제, 기타 인증, 급식자 변경) keeps them
+    if (date === loadedDate.value) {
+      for (const r of rows.value) {
+        if (r.added && !list.some(x => matches(x, r))) list.push(r)
+      }
+    }
     rows.value = list
     extras.value = verified.filter(v => !isFeeding(v.course)).map(v => ({ ...v, key: `v${v.id}`, saving: false }))
     loadedDate.value = date
+    loadFailed.value = false
   } catch (e) {
     if (mine !== loadSeq) return
     rows.value = []
     extras.value = []
     loadedDate.value = date
+    loadFailed.value = true
     notify.error(e, '인증 기록을 불러오지 못했습니다.')
   } finally {
     if (mine === loadSeq) loading.value = false
@@ -411,16 +423,20 @@ let addSeq = 0
 function addFeeders({ course, members }) {
   const skipped = []
   for (const m of members) {
-    if (rows.value.some(r => r.course === course && r.studentId === m.studentId)) {
+    const listed = rows.value.find(r => r.course === course && r.studentId === m.studentId)
+    if (listed?.verified) {
       skipped.push(m.name)
-      continue
+    } else if (listed) {
+      // Already in the course but not checked (e.g. left out when the course was verified earlier)
+      listed.checked = true
+    } else {
+      rows.value.push({
+        key: `a${++addSeq}`, recordId: null, studentId: m.studentId, name: m.name, course,
+        verified: false, score: undefined, checked: true, editing: false, replacement: null, saving: false, added: true,
+      })
     }
-    rows.value.push({
-      key: `a${++addSeq}`, recordId: null, studentId: m.studentId, name: m.name, course,
-      verified: false, score: undefined, checked: true, editing: false, replacement: null, saving: false, added: true,
-    })
   }
-  if (skipped.length) notify.warn(`${skipped.length}명은 이미 ${course}에 있어 건너뜀`, skipped.join(', '))
+  if (skipped.length) notify.warn(`${skipped.length}명은 이미 ${course}에 인증되어 건너뜀`, skipped.join(', '))
 }
 
 function removeAdded(row) {
@@ -439,14 +455,18 @@ async function cancelVerification(row) {
   }
 }
 
-async function searchMember(event) {
+async function searchMember(event, row) {
   if (!event.query) {
     memberSuggestions.value = []
     return
   }
   try {
     const res = await searchMembers(event.query)
-    memberSuggestions.value = (res.data || []).map(m => ({ ...m, display: `${m.name} (${m.studentId})` }))
+    // Someone already in the course would be listed twice, and the server keeps the old feeder's
+    // verification when the new one is already verified there
+    memberSuggestions.value = (res.data || [])
+      .filter(m => !rows.value.some(r => r.course === row.course && r.studentId === m.studentId))
+      .map(m => ({ ...m, display: `${m.name} (${m.studentId})` }))
   } catch {
     memberSuggestions.value = []
   }

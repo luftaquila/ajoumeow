@@ -51,7 +51,7 @@ import { COURSES } from '../../../timetable/src/constants.js'
 
 const props = defineProps({
   visible: Boolean,
-  // Rows already on the verify page; members listed in the chosen course aren't suggested again
+  // Rows already on the verify page; members verified or checked in the chosen course aren't suggested
   rows: { type: Array, default: () => [] },
 })
 const emit = defineEmits(['update:visible', 'add'])
@@ -69,7 +69,10 @@ watch(() => props.visible, v => {
   }
 })
 
+// A slower earlier response must not replace the list for what is typed now
+let searchSeq = 0
 async function search(event) {
+  const mine = ++searchSeq
   const q = event.query.trim()
   if (!q) {
     suggestions.value = []
@@ -77,17 +80,20 @@ async function search(event) {
   }
   try {
     const res = await searchMembers(q)
+    if (mine !== searchSeq) return
     const chosen = new Set(selected.value.map(m => m.studentId))
-    const listed = new Set(props.rows.filter(r => r.course === course.value).map(r => r.studentId))
+    const included = new Set(props.rows.filter(r => r.course === course.value && (r.verified || r.checked)).map(r => r.studentId))
     suggestions.value = (res.data || [])
-      .filter(m => !chosen.has(m.studentId) && !listed.has(m.studentId))
+      .filter(m => !chosen.has(m.studentId) && !included.has(m.studentId))
       .map(m => ({ ...m, display: `${m.name} (${m.studentId})` }))
   } catch {
-    suggestions.value = []
+    if (mine === searchSeq) suggestions.value = []
   }
 }
 
 function add() {
+  // A second click can land while the dialog fades out
+  if (!props.visible) return
   emit('add', { course: course.value, members: selected.value })
   emit('update:visible', false)
 }
