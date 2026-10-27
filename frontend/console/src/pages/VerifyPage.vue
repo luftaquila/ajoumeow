@@ -164,15 +164,17 @@
           <div class="card flex items-center gap-3 px-4 py-3 flex-wrap">
             <Button label="기타 인증" icon="i-lucide-plus" severity="secondary" size="small" text @click="showExtra = true" />
             <Button label="급식 인원 추가" icon="i-lucide-user-plus" severity="secondary" size="small" text :disabled="loading || submitting" @click="showAddFeeder = true" />
-            <div class="flex-1"></div>
-            <span v-if="selectedRows.length" class="text-sm text-text-secondary tabular-nums">{{ selectedRows.length }}명 · 합계 {{ selectedTotal }}점</span>
-            <Button
-              label="인증"
-              icon="i-lucide-check"
-              :loading="submitting"
-              :disabled="!selectedRows.length || loading"
-              @click="submit"
-            />
+            <!-- ml-auto keeps 인증 on the right when the bar wraps on narrow screens -->
+            <div class="flex items-center gap-3 ml-auto">
+              <span v-if="selectedRows.length" class="text-sm text-text-secondary tabular-nums">{{ selectedRows.length }}명 · 합계 {{ selectedTotal }}점</span>
+              <Button
+                label="인증"
+                icon="i-lucide-check"
+                :loading="submitting"
+                :disabled="!selectedRows.length || loading"
+                @click="submit"
+              />
+            </div>
           </div>
         </div>
       </div>
