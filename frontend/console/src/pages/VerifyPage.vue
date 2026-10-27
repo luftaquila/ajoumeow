@@ -49,7 +49,7 @@
         <div class="flex items-center gap-3 flex-wrap mb-4">
           <h2 class="text-lg font-bold">{{ dateLabel }}</h2>
           <span v-if="rows.length" class="text-xs text-text-muted">
-            신청 {{ rows.length }}건 · 인증 {{ verifiedCount }}건
+            신청 {{ appliedCount }}건 · 인증 {{ verifiedCount }}건
           </span>
           <div class="flex-1"></div>
           <div class="flex items-center gap-2" title="시험기간/연휴/악천후 등">
@@ -120,6 +120,12 @@
                 @click="toggleFeederEdit(row)"
               ><span :class="row.editing ? 'i-lucide-x' : 'i-lucide-user-pen'"></span></button>
               <button
+                v-if="row.added"
+                class="row-action hover:text-red-500"
+                title="추가 취소"
+                @click="removeAdded(row)"
+              ><span class="i-lucide-x"></span></button>
+              <button
                 v-if="row.verified && !row.editing"
                 class="row-action hover:text-red-500"
                 title="인증 삭제"
@@ -157,6 +163,7 @@
         <div class="action-bar sticky bottom-0 mt-4 -mx-1 px-1 pb-1 pt-3">
           <div class="card flex items-center gap-3 px-4 py-3 flex-wrap">
             <Button label="기타 인증" icon="i-lucide-plus" severity="secondary" size="small" text @click="showExtra = true" />
+            <Button label="급식 인원 추가" icon="i-lucide-user-plus" severity="secondary" size="small" text :disabled="loading || submitting" @click="showAddFeeder = true" />
             <div class="flex-1"></div>
             <span v-if="selectedRows.length" class="text-sm text-text-secondary tabular-nums">{{ selectedRows.length }}명 · 합계 {{ selectedTotal }}점</span>
             <Button
@@ -172,6 +179,7 @@
     </div>
 
     <ExtraGrantDialog v-model:visible="showExtra" :date="dateKey" @granted="onExtraGranted" />
+    <AddFeederDialog v-model:visible="showAddFeeder" :rows="rows" @add="addFeeders" />
   </div>
 </template>
 
@@ -183,6 +191,7 @@ import AutoComplete from 'primevue/autocomplete'
 import Button from 'primevue/button'
 import PageHeader from '../components/PageHeader.vue'
 import ExtraGrantDialog from '../components/ExtraGrantDialog.vue'
+import AddFeederDialog from '../components/AddFeederDialog.vue'
 import {
   getVerifications, createVerifications, deleteVerifications, getMonthSummary,
 } from '../api/verifications.js'
@@ -207,6 +216,7 @@ const loading = ref(false)
 const submitting = ref(false)
 const boost = ref(false)
 const showExtra = ref(false)
+const showAddFeeder = ref(false)
 const memberSuggestions = ref([])
 
 const dateKey = computed(() => formatDate(selectedDate.value, 'yyyy-mm-dd'))
@@ -214,6 +224,12 @@ const loadedDate = ref('')
 const pickerKey = ref(0)
 const dateLabel = computed(() => formatDate(selectedDate.value, 'm월 d일 (ddd)'))
 const verifiedCount = computed(() => rows.value.filter(r => r.verified).length)
+
+// Rows without a recordId are feeders who never applied (added here, or verified that way before)
+function isApplied(row) {
+  return row.recordId != null
+}
+const appliedCount = computed(() => rows.value.filter(isApplied).length)
 
 // 통계·1365와 같은 기준: '…코스'로 끝나면 급식
 function isFeeding(course) {
@@ -247,7 +263,7 @@ const groups = computed(() => {
     .sort(([a], [b]) => a.localeCompare(b, 'ko', { numeric: true }))
     .map(([course, list]) => {
       const verifiedRows = list.filter(r => r.verified)
-      const parts = [`신청 ${list.length}명`]
+      const parts = [`신청 ${list.filter(isApplied).length}명`]
       if (verifiedRows.length) parts.push(`인증 ${verifiedRows.length}명`)
       // Verifying a course in two passes leaves the earlier ones at the rate they got then
       const adding = list.find(r => !r.verified && r.checked)
@@ -385,6 +401,28 @@ function notifyCreated({ inserted, skipped }) {
 function onExtraGranted(result) {
   notifyCreated(result)
   refreshAll()
+}
+
+// Feeders who didn't apply join the course as checked rows, so they're verified and counted toward
+// "2인 이상" together with the applicants
+let addSeq = 0
+function addFeeders({ course, members }) {
+  const skipped = []
+  for (const m of members) {
+    if (rows.value.some(r => r.course === course && r.studentId === m.studentId)) {
+      skipped.push(m.name)
+      continue
+    }
+    rows.value.push({
+      key: `a${++addSeq}`, recordId: null, studentId: m.studentId, name: m.name, course,
+      verified: false, score: undefined, checked: true, editing: false, replacement: null, saving: false, added: true,
+    })
+  }
+  if (skipped.length) notify.warn(`${skipped.length}명은 이미 ${course}에 있어 건너뜀`, skipped.join(', '))
+}
+
+function removeAdded(row) {
+  rows.value = rows.value.filter(r => r.key !== row.key)
 }
 
 async function cancelVerification(row) {
