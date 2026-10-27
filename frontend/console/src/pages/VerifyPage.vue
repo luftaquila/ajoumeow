@@ -49,7 +49,7 @@
         <div class="flex items-center gap-3 flex-wrap mb-4">
           <h2 class="text-lg font-bold">{{ dateLabel }}</h2>
           <span v-if="rows.length" class="text-xs text-text-muted">
-            신청 {{ rows.length }}건 · 인증 {{ verifiedCount }}건
+            신청 {{ appliedCount }}건 · 인증 {{ verifiedCount }}건
           </span>
           <div class="flex-1"></div>
           <div class="flex items-center gap-2" title="시험기간/연휴/악천후 등">
@@ -94,7 +94,7 @@
                   v-model="row.replacement"
                   :inputId="`feeder-${row.key}`"
                   :suggestions="memberSuggestions"
-                  @complete="searchMember"
+                  @complete="searchMember($event, row)"
                   @option-select="changeFeeder(row, $event.value)"
                   optionLabel="display"
                   :placeholder="`${row.name} 대신 급식한 회원`"
@@ -119,6 +119,13 @@
                 :disabled="row.saving"
                 @click="toggleFeederEdit(row)"
               ><span :class="row.editing ? 'i-lucide-x' : 'i-lucide-user-pen'"></span></button>
+              <button
+                v-if="row.added"
+                class="row-action hover:text-red-500"
+                title="추가 취소"
+                :disabled="submitting"
+                @click="removeAdded(row)"
+              ><span class="i-lucide-x"></span></button>
               <button
                 v-if="row.verified && !row.editing"
                 class="row-action hover:text-red-500"
@@ -157,21 +164,25 @@
         <div class="action-bar sticky bottom-0 mt-4 -mx-1 px-1 pb-1 pt-3">
           <div class="card flex items-center gap-3 px-4 py-3 flex-wrap">
             <Button label="기타 인증" icon="i-lucide-plus" severity="secondary" size="small" text @click="showExtra = true" />
-            <div class="flex-1"></div>
-            <span v-if="selectedRows.length" class="text-sm text-text-secondary tabular-nums">{{ selectedRows.length }}명 · 합계 {{ selectedTotal }}점</span>
-            <Button
-              label="인증"
-              icon="i-lucide-check"
-              :loading="submitting"
-              :disabled="!selectedRows.length || loading"
-              @click="submit"
-            />
+            <Button label="급식 인원 추가" icon="i-lucide-user-plus" severity="secondary" size="small" text :disabled="loading || submitting || loadFailed" @click="showAddFeeder = true" />
+            <!-- ml-auto keeps 인증 on the right when the bar wraps on narrow screens -->
+            <div class="flex items-center gap-3 ml-auto">
+              <span v-if="selectedRows.length" class="text-sm text-text-secondary tabular-nums">{{ selectedRows.length }}명 · 합계 {{ selectedTotal }}점</span>
+              <Button
+                label="인증"
+                icon="i-lucide-check"
+                :loading="submitting"
+                :disabled="!selectedRows.length || loading"
+                @click="submit"
+              />
+            </div>
           </div>
         </div>
       </div>
     </div>
 
     <ExtraGrantDialog v-model:visible="showExtra" :date="dateKey" @granted="onExtraGranted" />
+    <AddFeederDialog v-model:visible="showAddFeeder" :rows="rows" @add="addFeeders" />
   </div>
 </template>
 
@@ -183,6 +194,7 @@ import AutoComplete from 'primevue/autocomplete'
 import Button from 'primevue/button'
 import PageHeader from '../components/PageHeader.vue'
 import ExtraGrantDialog from '../components/ExtraGrantDialog.vue'
+import AddFeederDialog from '../components/AddFeederDialog.vue'
 import {
   getVerifications, createVerifications, deleteVerifications, getMonthSummary,
 } from '../api/verifications.js'
@@ -204,9 +216,12 @@ const summary = ref({})
 const rows = ref([])
 const extras = ref([])
 const loading = ref(false)
+// Adding feeders against rows that failed to load would score them without the course's other feeders
+const loadFailed = ref(false)
 const submitting = ref(false)
 const boost = ref(false)
 const showExtra = ref(false)
+const showAddFeeder = ref(false)
 const memberSuggestions = ref([])
 
 const dateKey = computed(() => formatDate(selectedDate.value, 'yyyy-mm-dd'))
@@ -214,6 +229,12 @@ const loadedDate = ref('')
 const pickerKey = ref(0)
 const dateLabel = computed(() => formatDate(selectedDate.value, 'm월 d일 (ddd)'))
 const verifiedCount = computed(() => rows.value.filter(r => r.verified).length)
+
+// Rows without a recordId are feeders who never applied (added here, or verified that way before)
+function isApplied(row) {
+  return row.recordId != null
+}
+const appliedCount = computed(() => rows.value.filter(isApplied).length)
 
 // 통계·1365와 같은 기준: '…코스'로 끝나면 급식
 function isFeeding(course) {
@@ -247,7 +268,7 @@ const groups = computed(() => {
     .sort(([a], [b]) => a.localeCompare(b, 'ko', { numeric: true }))
     .map(([course, list]) => {
       const verifiedRows = list.filter(r => r.verified)
-      const parts = [`신청 ${list.length}명`]
+      const parts = [`신청 ${list.filter(isApplied).length}명`]
       if (verifiedRows.length) parts.push(`인증 ${verifiedRows.length}명`)
       // Verifying a course in two passes leaves the earlier ones at the rate they got then
       const adding = list.find(r => !r.verified && r.checked)
@@ -329,14 +350,23 @@ async function loadDate() {
         list.push({ key: `v${v.id}`, recordId: null, studentId: v.studentId, name: v.name, course: v.course, verified: true, score: v.score, checked: false, saving: false })
       }
     }
+    // Added feeders exist only here until they are verified, so reloading the same date
+    // (after 인증 삭제, 기타 인증, 급식자 변경) keeps them
+    if (date === loadedDate.value) {
+      for (const r of rows.value) {
+        if (r.added && !list.some(x => matches(x, r))) list.push(r)
+      }
+    }
     rows.value = list
     extras.value = verified.filter(v => !isFeeding(v.course)).map(v => ({ ...v, key: `v${v.id}`, saving: false }))
     loadedDate.value = date
+    loadFailed.value = false
   } catch (e) {
     if (mine !== loadSeq) return
     rows.value = []
     extras.value = []
     loadedDate.value = date
+    loadFailed.value = true
     notify.error(e, '인증 기록을 불러오지 못했습니다.')
   } finally {
     if (mine === loadSeq) loading.value = false
@@ -387,6 +417,32 @@ function onExtraGranted(result) {
   refreshAll()
 }
 
+// Feeders who didn't apply join the course as checked rows, so they're verified and counted toward
+// "2인 이상" together with the applicants
+let addSeq = 0
+function addFeeders({ course, members }) {
+  const skipped = []
+  for (const m of members) {
+    const listed = rows.value.find(r => r.course === course && r.studentId === m.studentId)
+    if (listed?.verified) {
+      skipped.push(m.name)
+    } else if (listed) {
+      // Already in the course but not checked (e.g. left out when the course was verified earlier)
+      listed.checked = true
+    } else {
+      rows.value.push({
+        key: `a${++addSeq}`, recordId: null, studentId: m.studentId, name: m.name, course,
+        verified: false, score: undefined, checked: true, editing: false, replacement: null, saving: false, added: true,
+      })
+    }
+  }
+  if (skipped.length) notify.warn(`${skipped.length}명은 이미 ${course}에 인증되어 건너뜀`, skipped.join(', '))
+}
+
+function removeAdded(row) {
+  rows.value = rows.value.filter(r => r.key !== row.key)
+}
+
 async function cancelVerification(row) {
   row.saving = true
   try {
@@ -399,14 +455,18 @@ async function cancelVerification(row) {
   }
 }
 
-async function searchMember(event) {
+async function searchMember(event, row) {
   if (!event.query) {
     memberSuggestions.value = []
     return
   }
   try {
     const res = await searchMembers(event.query)
-    memberSuggestions.value = (res.data || []).map(m => ({ ...m, display: `${m.name} (${m.studentId})` }))
+    // Someone already in the course would be listed twice, and the server keeps the old feeder's
+    // verification when the new one is already verified there
+    memberSuggestions.value = (res.data || [])
+      .filter(m => !rows.value.some(r => r.course === row.course && r.studentId === m.studentId))
+      .map(m => ({ ...m, display: `${m.name} (${m.studentId})` }))
   } catch {
     memberSuggestions.value = []
   }
