@@ -44,6 +44,6 @@
     "@iconify-json/lucide": "^1.2.95",
     "@vitejs/plugin-vue": "^5.2.1",
     "sass": "^1.86.0",
-    "vite": "^6.2.0"
+    "vite": "^6.4.5"
   }
 }
